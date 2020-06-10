@@ -1,0 +1,49 @@
+Functionalities: 
+- Transmit LoRa packets from a USRP to a USRP, from a commercial LoRa transceiver to a USRP, and from a USRP to a commercial LoRa transceiver (tested for Adafruit Feather 32u4 RFM95). 
+
+- The implementation can be used for fully end-to-end experimental performance results of a LoRa SDR receiver at low SNRs.
+
+Spreading factors: 7-12 (without reduced rate mode)
+Coding rates: 0-4
+Implicit and explicit header mode
+Payload length: up to LoRa maximum packet length (255 Bytes)
+
+Verification of payload CRC
+Verification of explicit header checksum
+
+Requirements:
+-Gnuradio 3.7
+-python 2
+-cmake
+-swig
+-libvolk
+-UHD
+
+Installation:
+
+-The installation path can be set in CMakeLists.txt under #set destination.(default: home/lora_sdr)
+
+-Similarly to any GNU Radio OOT module, it can be build with: (It might require to use sudo depending of the installation destination)
+	mkdir build
+	cd build
+	cmake ../
+	make
+	make install
+-The new blocks can be loaded in gnuradio companion by adding the following lines in home/.gnuradio/config.conf (If this file doesn't exist you need to create it):
+[grc]
+local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
+
+Usage:
+-The script /gr-lora_sdr/apps/setpaths.sh add the pythonpaths required to run the generated python files for the current shell process. It has to be attapted accordingly to the installation folder, and should be executed with 
+	. setpaths.sh
+
+-An example of a transmitter and a receiver can be found in gr-lora_sdr/app (both python and grc).
+-An example of an automated testing script and the corresponding grc and python file can also be found.
+
+
+
+
+
+
+
+

@@ -1,0 +1,76 @@
+<block>
+  <name>Header decoder</name>
+  <key>lora_sdr_header_decoder</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.header_decoder($impl_head, $cr, $pay_len, $has_crc)</make>
+  <param>
+    <name>Impl_head</name>
+    <key>impl_head</key>
+    <type>bool</type>
+  </param>
+  <param>
+    <name>Cr</name>
+    <key>cr</key>
+    <value>3</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Pay_len</name>
+    <key>pay_len</key>
+    <value>255</value>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Has_crc</name>
+    <key>has_crc</key>
+    <value>False</value>
+    <type>bool</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>new_frame</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <source>
+    <name>CR</name>
+    <type>message</type>
+  </source>
+  <source>
+    <name>pay_len</name>
+    <type>message</type>
+  </source>
+  <source>
+    <name>CRC</name>
+    <type>message</type>
+  </source>
+  <source>
+    <name>err</name>
+    <type>message</type>
+  </source>
+  <doc>
+    Recover information present in the header of a frame and send them to the other blocks in the receiver chain.
+In implicit header mode, the values given as parameters will be transmitted to the other blocks. 
+    Parameters:
+        impl_head: indicate the usage of implicit header mode (explicit otherwise)
+        cr: coding rate(will be ignored in explicit header mode)
+        pay_len: payload length in bytes(will be ignored in explicit header mode)
+        has_crc: indicate the presence of a payload CRC(will be ignored in explicit header mode)
+    Input:
+        in: stream of nibbles containing the header, payload (and CRC if used)
+        new_frame: indicate the beginning of a new frame
+    Output:
+        out: stream of nibbles containing payload (and CRC)
+        CR: coding rate of the frame
+        pay_len: payload length of the frame
+        CRC: presence of a payload CRC
+        err: error in the explicit header (checksum incorrect)
+</doc>
+</block>

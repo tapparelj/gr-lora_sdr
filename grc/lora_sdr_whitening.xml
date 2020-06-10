@@ -1,0 +1,22 @@
+<block>
+  <name>Whitening</name>
+  <key>lora_sdr_whitening</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.whitening()</make>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Whiten the payload data with a pseudo random sequence
+    Input:
+        msg: the payload as a string
+    Output:
+        out: Stream of whitened payload nibbles
+</doc>
+</block>

@@ -1,0 +1,33 @@
+<block>
+  <name>Crc verif</name>
+  <key>lora_sdr_crc_verif</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.crc_verif()</make>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>pay_len</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>CRC</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>msg</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+   <doc>
+  Calculate the CRC of the received data and compare it with the received CRC.
+  Input:
+    in: stream of payload bytes
+    pay_len: length of the payload in bytes
+    CRC: Indication of the payload crc presence
+  Output:
+    (optional) msg: Received payload
+    </doc>
+</block>

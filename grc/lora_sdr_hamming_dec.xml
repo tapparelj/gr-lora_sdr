@@ -1,0 +1,33 @@
+<block>
+  <name>Hamming dec</name>
+  <key>lora_sdr_hamming_dec</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.hamming_dec()</make>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>CR</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>new_frame</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Hamming decoder using the correcting capabilities of coding rates 4/8 and 4/7.
+(As implemented now, we can detect errors with coding rates 4/6 and 4/5 but don't do anything with this information.)
+    Input:
+        in: Stream of bytes containing each a codeword
+        CR: coding rate
+        new_frame: indication that a new frame has started
+    Output:
+        out: stream of bytes containing ones nibble of payload each
+</doc>
+</block>

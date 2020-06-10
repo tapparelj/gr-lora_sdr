@@ -1,0 +1,22 @@
+<block>
+  <name>Gray demap</name>
+  <key>lora_sdr_gray_enc</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.gray_enc()</make>
+  <sink>
+    <name>in</name>
+    <type>int</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>int</type>
+  </source>
+  <doc>
+    Apply the gray demapping operation. (Corresponding to a gray encoding with a shift)
+    Input:
+        in: decimal value gray mapped
+    Output:
+        out: decimal value demapped
+</doc>
+</block>

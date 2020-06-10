@@ -1,0 +1,35 @@
+<block>
+  <name>Data source</name>
+  <key>lora_sdr_data_source</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.data_source($pay_len, $n_frames)</make>
+  <param>
+    <name>Pay_len</name>
+    <key>pay_len</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>N_frames</name>
+    <key>n_frames</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>trigg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>msg</name>
+    <type>message</type>
+  </source>
+  <doc>
+    Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)
+    Parameters:
+        Pay_len: length of the payload in bytes
+        N_frames: number of frames to send
+    Input:
+        trigg: trigger signal
+    Output:
+        msg: payload data as a string
+</doc>
+</block>

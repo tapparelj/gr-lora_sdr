@@ -1,0 +1,35 @@
+<block>
+  <name>Hamming enc</name>
+  <key>lora_sdr_hamming_enc</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.hamming_enc($cr, $sf)</make>
+  <param>
+    <name>Cr</name>
+    <key>cr</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Append the parity bits to a nibble in accordance to the coding rate.
+    Parameters:
+        Cr: coding rate
+        sf: spreading factor
+    Input:
+        in: stream of nibble
+    Output:
+        out: stream of bytes containing a nibble of data and corresponding parity bits.
+  </doc>
+</block>

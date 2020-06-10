@@ -1,0 +1,29 @@
+<block>
+  <name>Gray mapping</name>
+  <key>lora_sdr_gray_decode</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.gray_decode($sf)</make>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>int</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>int</type>
+  </source>
+  <doc>
+    Apply the gray mapping operation. (Corresponding to a reverse gray encoding with a shift)
+    Parameters:
+        sf: spreading factor
+    Input:
+        in: decimal value
+    Output:
+        out: decimal value mapped
+</doc>
+</block>

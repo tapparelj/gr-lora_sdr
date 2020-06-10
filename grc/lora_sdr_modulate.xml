@@ -1,0 +1,46 @@
+<block>
+  <name>Modulate</name>
+  <key>lora_sdr_modulate</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.modulate($sf, $samp_rate, $bw)</make>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Samp_rate</name>
+    <key>samp_rate</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Bw</name>
+    <key>bw</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>int</type>
+  </sink>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+  <doc>
+    Add the preamble to the frame and modulate lora symbols accordingly to the input decimal values.
+    Parameters:
+        sf: spreading factor
+        samp_rate: sampling rate (has to be the same as bw)
+        Bw: bandwidth
+    Input:
+        in: stream of decimal symbol values
+        msg: payload as a string
+    Output:
+        out: stream of complex valued samples
+</doc>
+</block>

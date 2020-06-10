@@ -1,0 +1,35 @@
+<block>
+  <name>Add crc</name>
+  <key>lora_sdr_add_crc</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.add_crc($has_crc)</make>
+  <param>
+    <name>Has_crc</name>
+    <key>has_crc</key>
+    <value>False</value>
+    <type>bool</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+      Append the payload CRC to the payload.
+      Parameters:
+        has_crc: indicate the presence of a payload CRC
+      Input:
+        in: stream of header and payload nibbles
+        msg: payload bytes
+      Output:
+        out: stream of header, payload and CRC nibbles
+  </doc>
+</block>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<block>
+  <name>fft_demod</name>
+  <key>lora_sdr_fft_demod</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.fft_demod($samp_rate, $bandwidth, $sf, $impl_head)</make>
+  <param>
+     <name>Samp_rate</name>
+     <key>samp_rate</key>
+     <type>float</type>
+   </param>
+   <param>
+     <name>Bandwidth</name>
+     <key>bandwidth</key>
+     <type>int</type>
+   </param>
+   <param>
+     <name>Sf</name>
+     <key>sf</key>
+     <type>int</type>
+   </param>
+   <param>
+     <name>Impl_head</name>
+     <key>impl_head</key>
+     <type>bool</type>
+   </param>
+   <sink>
+     <name>in</name>
+     <type>complex</type>
+     <vlen>2**${sf}</vlen>
+   </sink>
+   <sink>
+     <name>CR</name>
+     <type>message</type>
+   </sink>
+   <sink>
+   <name>new_frame</name>
+   <type>message</type>
+ </sink>
+   <source>
+     <name>out</name>
+     <type>int</type>
+   </source>
+   <doc>
+    Recover the value of a lora symbol using argmax(DFT(lora_symbol ⨀ ref_downchirp)
+    Parameters:
+        Samp_rate: Sampling rate (should be equal to the bandwidth in the current implementation)
+        Bandwidth: Bandwidth
+        sf: spreading factor
+        impl_head: usage of an implicit header (explicit will be used otherwise)
+    Input:
+        in: vector of 2^sf complex samples
+        CR: coding rate
+        new_frame: indicate beginning of a new frame with the value of the reference downchirp (to compensate CFO integer part)
+    Output:
+        out: stream of lora symbol decimal values
+</doc>
+ </block>

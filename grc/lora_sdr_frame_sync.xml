@@ -1,0 +1,78 @@
+<block>
+  <name>Frame sync</name>
+  <key>lora_sdr_frame_sync</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.frame_sync($samp_rate, $bandwidth, $sf, $impl_head)</make>
+  <param>
+    <name>Samp_rate</name>
+    <key>samp_rate</key>
+    <type>float</type>
+  </param>
+  <param>
+    <name>Bandwidth</name>
+    <key>bandwidth</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Impl_head</name>
+    <key>impl_head</key>
+    <type>bool</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+  <sink>
+    <name>CR</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>pay_len</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>crc</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>err</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>frame_err</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>2**${sf}</vlen>
+  </source>
+  <source>
+    <name>new_frame</name>
+    <type>message</type>
+  </source>
+  <doc>
+    Block taking care of the preamble detection, CFO and STO estimation and correction.
+    Parameters:
+        Samp_rate: Sampling rate (should be equal to the bandwidth in the current implementation)
+        Bandwidth: Bandwidth
+        sf: spreading factor
+        impl_head: usage of an implicit header (explicit will be used otherwise)
+    Input:
+        in: stream of complex valued sampled
+        CR: coding rate
+        pay_len: payload length in bytes
+        crc: presence of a payload CRC
+        err: error in the explicit header
+        (optional) frame_err: indicate to save the samples from the last received frame (Need to define GRLORA_DEBUG in cpp code)
+    Output:
+        out: stream of vectors of 2^sf samples
+</doc>
+</block>

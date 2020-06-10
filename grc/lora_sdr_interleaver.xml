@@ -1,0 +1,40 @@
+<block>
+  <name>Interleaver</name>
+  <key>lora_sdr_interleaver</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.interleaver($cr, $sf)</make>
+  <param>
+    <name>Cr</name>
+    <key>cr</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>int</type>
+  </source>
+  <doc>
+      Interleaves multiple sf codewords together
+    Parameters:
+        cr: coding rate
+        sf: spreading factor
+    Input:
+        in: stream of bytes containing a codeword each
+        msg: payload as a string
+    Output:
+        out: stream of interleaved codewords as decimal values
+</doc>
+</block>

@@ -1,0 +1,39 @@
+<block>
+  <name>Deinterleaver</name>
+  <key>lora_sdr_deinterleaver</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.deinterleaver($sf)</make>
+  <param>
+    <name>Sf</name>
+    <key>sf</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>int</type>
+  </sink>
+  <sink>
+    <name>new_frame</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>CR</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Deinterleave the received codewords.
+    Parameters:
+        sf: spreading factor
+    Input:
+        in: stream of received (gray demapped) decimal values
+        new_frame: begining of a new frame
+        CR: coding rate
+    Output:
+        out: stream of deinterleaved codewords (one per byte)
+</doc>
+</block>

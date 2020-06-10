@@ -1,0 +1,37 @@
+<block>
+  <name>Dewhitening</name>
+  <key>lora_sdr_dewhitening</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.dewhitening()</make>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>pay_len</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>new_frame</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>CRC</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Dewhiten the payload data.
+    Input:
+        in: stream of payload and CRC nibbles
+        pay_len: payload length in bytes
+        new_frame: indicate begining of new frame
+        CRC: payload crc presence
+    Output:
+        out: dewhitened payload bytes (and CRC if present)
+</doc>
+</block>

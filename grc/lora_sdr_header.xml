@@ -1,0 +1,48 @@
+<block>
+  <name>Add header</name>
+  <key>lora_sdr_header</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.header($impl_head, $has_crc, $cr)</make>
+  <param>
+    <name>Impl_head</name>
+    <key>impl_head</key>
+    <type>bool</type>
+  </param>
+  <param>
+    <name>Has_crc</name>
+    <key>has_crc</key>
+    <value>False</value>
+    <type>bool</type>
+  </param>
+  <param>
+    <name>Cr</name>
+    <key>cr</key>
+    <value>3</value>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+  <doc>
+    Add the explicit header in the beginning of a frame if this mode is specified.
+    Parameters:
+        impl_head: indicate to use the implicit header mode (explicit otherwise)
+        has_crc: indicate the presence of a payload crc
+        CR: coding rate
+    Input:
+        in: stream of payload nibbles
+        msg: payload as a string
+    Output:
+        out: stream of header and payload nibbles
+</doc>
+</block>

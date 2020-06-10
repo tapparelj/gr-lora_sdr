@@ -1,0 +1,51 @@
+<block>
+  <name>Rh rf95 header</name>
+  <key>lora_sdr_RH_RF95_header</key>
+  <category>[LoRa_TX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.RH_RF95_header($_to, $_from, $_id, $_flags)</make>
+  <param>
+    <name>_to</name>
+    <key>_to</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>_from</name>
+    <key>_from</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>_id</name>
+    <key>_id</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>_flags</name>
+    <key>_flags</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>msg</name>
+    <type>message</type>
+  </source>
+  <doc>
+    Add 4 bytes in the beginning of the payload, required in order to send messages to a lora chip using the Radiohead library.
+    Be careful to take those 4 additional bytes in consideration if used with a usrp as receiver.
+    (During testing, we used the Adafruit Feather 32u4 RFM95).
+    more information on thoses 4 bytes on :
+    https://www.airspayce.com/mikem/arduino/RadioHead/classRHGenericDriver.html#abf4db9bddfee361cc44fbf4bd22202bc
+    Parameters:
+        _to: destination identifier
+        _from: source identifier
+        _id: message identifier
+        _flags: flags
+    Input:
+        msg: payload as a string
+    Output:
+        out: radiohead header and payload as a string
+</doc>
+</block>

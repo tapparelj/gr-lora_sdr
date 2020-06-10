@@ -1,0 +1,31 @@
+<block>
+  <name>Err measures</name>
+  <key>lora_sdr_err_measures</key>
+  <category>[LoRa_RX]</category>
+  <import>import lora_sdr</import>
+  <make>lora_sdr.err_measures()</make>
+  <sink>
+    <name>msg</name>
+    <type>message</type>
+  </sink>
+  <sink>
+    <name>ref</name>
+    <type>message</type>
+  </sink>
+  <source>
+    <name>err</name>
+    <type>message</type>
+    <optional>1</optional>
+</source>
+<doc>
+    Compare two strings and write the number of bit difference to matlab/measurements/errx.txt as well as lost packets.
+    This block expect one ref input every sent frame and will consider a packet as lost if another ref input is received before a msg input.
+    The frame sending period needs to be large enough for the received frame to be decoded before sending the next one!
+    This block is not very generic and therefore has to be modified in accordance to the experimentation procedure needs.
+    Input:
+        ref: a reference string
+        msg: the received string
+    Output:
+        (optional) err: indicate that errors were present
+</doc>
+</block>
