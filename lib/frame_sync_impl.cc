@@ -389,7 +389,7 @@ namespace gr {
                   case NET_ID1:{
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
-                        else if (abs(bin_idx-net_id_1)>1){ //wrong network identifier
+                        else if (abs(bin_idx - (int32_t)net_id_1)>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
                             noutput_items = 0;
@@ -403,7 +403,7 @@ namespace gr {
                         break;
                     }
                     case NET_ID2:{
-                        if (abs(bin_idx-net_id_2)>1){ //wrong network identifier
+                        if (abs(bin_idx - (int32_t)net_id_2)>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
                             noutput_items = 0;
