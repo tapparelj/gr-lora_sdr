@@ -1,8 +1,4 @@
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/io_signature.h>
 #include "header_decoder_impl.h"
 

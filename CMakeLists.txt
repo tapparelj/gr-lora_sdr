@@ -37,6 +37,23 @@ if(NOT CMAKE_BUILD_TYPE)
    message(STATUS "Build type not specified: defaulting to release.")
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
+message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
+
+########################################################################
+# Check if cmake build type is debug and if so add logging and set debug variables
+########################################################################
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
+    message(STATUS "Build type is Debug, including logging...")
+    message(STATUS "Build type is Debug, setting GRLORA_DEBUG=True")
+
+    add_definitions(-DGRLORA_DEBUG=True)
+
+    # add_definitions(-DGRLORA_MEASUREMENTS=True)
+
+    include(cmake/Modules/GrMiscUtils.cmake)
+    GR_LOGGING()
+endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Make sure our local CMake Modules path comes first
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
@@ -52,12 +69,6 @@ cmake_policy(SET CMP0011 NEW)
 # Enable generation of compile_commands.json for code completion engines
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-########################################################################
-# Include logging
-########################################################################
-
-include(cmake/Modules/GrMiscUtils.cmake)
-GR_LOGGING()
 
 ########################################################################
 # Compiler specific setup

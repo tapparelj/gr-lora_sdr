@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include "config.h"
 #include <gnuradio/io_signature.h>
 #include "frame_sync_impl.h"
 
@@ -463,8 +459,8 @@ namespace gr {
                   sync_log<< std::fixed<<std::setprecision(10)<<determine_energy(&in_down[0])<<",";
                   #endif
                   #ifdef GRLORA_DEBUG
-                  if(symbol_cnt<numb_symbol_to_save)
-                    memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+                //   if(symbol_cnt<numb_symbol_to_save)
+                //     memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
                   #endif
                   items_to_consume = usFactor*m_samples_per_symbol;
                   noutput_items = 1;
@@ -481,7 +477,7 @@ namespace gr {
               break;
           }
           default: {
-              std::cerr << "[LoRa sync] WARNING : No state! Shouldn't happen\n";
+              GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen\n");
               break;
           }
         }

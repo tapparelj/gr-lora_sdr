@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/io_signature.h>
 #include "interleaver_impl.h"
 #include <lora_sdr/utilities.h>
@@ -77,14 +73,14 @@ namespace gr {
         }
 
         #ifdef GRLORA_DEBUG
-        std::cout<<"codewords---- "<<std::endl;
-        for (uint32_t i =0u ; i<sf_app ;i++){
-            for(int j=0;j<int(ppm);j++){
-                std::cout<<cw_bin[i][j];
-            }
-            std::cout<<" 0x"<<std::hex<<(int)in[i]<<std::dec<< std::endl;
-        }
-        std::cout<<std::endl;
+          GR_LOG_DEBUG(this->d_logger, "----Codewords----");
+          for (uint32_t i =0u ; i<sf_app ;i++){
+              for(int j=0;j<int(ppm);j++){
+                  std::cout<<cw_bin[i][j];
+              }
+              std::cout<<" 0x"<<std::hex<<(int)in[i]<<std::dec<< std::endl;
+          }
+          std::cout<<std::endl;
         #endif
          //Do the actual interleaving
         for (int32_t i = 0; i < ppm ; i++) {
@@ -99,7 +95,7 @@ namespace gr {
         }
 
          #ifdef GRLORA_DEBUG
-        std::cout<<"interleaved------"  <<std::endl;
+         GR_LOG_DEBUG(this->d_logger, "----Interleaved----");
         for (uint32_t i =0u ; i<ppm ;i++){
             for(int j=0;j<int(m_sf);j++){
                 std::cout<<inter_bin[i][j];

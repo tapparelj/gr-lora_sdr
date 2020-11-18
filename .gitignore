@@ -1,6 +1,12 @@
 ##git ignore
 
+#ignore build direcotry
 build/
+#except build scripts
+##debug build script
+!build/buils.sh 
+##release build script
+!build/release_build.sh
 
 #####
 #Pycharm and VsCode directories

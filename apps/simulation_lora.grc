@@ -108,7 +108,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -242,25 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 116.0]
-    rotation: 0
-    state: enabled
-- name: blocks_multiply_const_vxx_0
-  id: blocks_multiply_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: mult_const
-    maxoutbuf: '0'
-    minoutbuf: '10000000'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1768, 188.0]
+    coordinate: [56, 108.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_add_crc_0
@@ -291,7 +273,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [152, 520.0]
+    coordinate: [328, 520.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_data_source_0_1_0
@@ -324,7 +306,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 456.0]
+    coordinate: [1240, 456.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -339,7 +321,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 472.0]
+    coordinate: [504, 472.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_err_measures_0
@@ -354,7 +336,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [80, 280.0]
+    coordinate: [72, 280.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -373,7 +355,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1448, 424.0]
+    coordinate: [1624, 424.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -392,7 +374,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1792, 368.0]
+    coordinate: [1912, 360.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_decode_0
@@ -423,7 +405,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1288, 456.0]
+    coordinate: [1456, 456.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_hamming_dec_0
@@ -438,7 +420,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 488.0]
+    coordinate: [1016, 488.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -492,7 +474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [592, 472.0]
+    coordinate: [776, 472.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -542,7 +524,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 104.0]
+    coordinate: [584, 128.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0
@@ -571,14 +553,12 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1904, 52.0]
+    coordinate: [1976, 60.0]
     rotation: 0
-    state: true
+    state: disabled
 
 connections:
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_data_source_0_1_0, trigg]
-- [blocks_multiply_const_vxx_0, '0', lora_sdr_frame_sync_0, '0']
-- [blocks_multiply_const_vxx_0, '0', qtgui_sink_x_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
 - [lora_sdr_crc_verif_0, msg, blocks_message_debug_0, print]
 - [lora_sdr_crc_verif_0, msg, lora_sdr_err_measures_0, msg]
@@ -618,7 +598,7 @@ connections:
 - [lora_sdr_header_decoder_0, pay_len, lora_sdr_dewhitening_0, pay_len]
 - [lora_sdr_header_decoder_0, pay_len, lora_sdr_frame_sync_0, pay_len]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_decode_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_multiply_const_vxx_0, '0']
+- [lora_sdr_modulate_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 
 metadata:
