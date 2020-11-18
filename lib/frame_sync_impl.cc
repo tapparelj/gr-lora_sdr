@@ -1,28 +1,7 @@
-
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
+#include "config.h"
 #include <gnuradio/io_signature.h>
 #include "frame_sync_impl.h"
 
@@ -52,7 +31,7 @@ namespace gr {
         n_up                = 8;
         net_id_1            = 8; // should be different from 2^sf-1, 0 and 1
         net_id_2            = 16;
-        up_symb_to_use         = 6;
+        up_symb_to_use      = 6;
 
         usFactor = 4;
         lambda_sto = 0;
@@ -96,19 +75,19 @@ namespace gr {
         message_port_register_in(pmt::mp("frame_err"));
         set_msg_handler(pmt::mp("frame_err"),boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
         #ifdef GRLORA_MEASUREMENTS
-        int num = 0;//check next file name to use
-        while(1){
-            std::ifstream infile("../matlab/measurements/sync"+std::to_string(num)+".txt");
-             if(!infile.good())
-                break;
-            num++;
-        }
-        sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
+            int num = 0;//check next file name to use
+            while(1){
+                std::ifstream infile("../matlab/measurements/sync"+std::to_string(num)+".txt");
+                if(!infile.good())
+                    break;
+                num++;
+            }
+            sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
         #endif
         #ifdef GRLORA_DEBUG
-        numb_symbol_to_save=80;//number of symbol per erroneous frame to save
-        last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
-        samples_file.open("../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
+            numb_symbol_to_save=80;//number of symbol per erroneous frame to save
+            last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
+            samples_file.open("../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
         #endif
     }
 
@@ -410,7 +389,7 @@ namespace gr {
                   case NET_ID1:{
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
-                        else if (abs(bin_idx - (int32_t)net_id_1)>1){ //wrong network identifier
+                        else if (labs(bin_idx-net_id_1)>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
                             noutput_items = 0;
@@ -424,7 +403,7 @@ namespace gr {
                         break;
                     }
                     case NET_ID2:{
-                        if (abs(bin_idx - (int32_t)net_id_2)>1){ //wrong network identifier
+                        if (labs(bin_idx-net_id_2)>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
                             noutput_items = 0;

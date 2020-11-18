@@ -22,13 +22,12 @@
 This is the GNU Radio LORA_SDR module. Place your Python package
 description here (python/__init__.py).
 '''
+from __future__ import unicode_literals
 
 # import swig generated symbols into the lora_sdr namespace
-try:
-	# this might fail if the module is python-only
-	from lora_sdr_swig import *
-except ImportError:
-	pass
+
+from .lora_sdr_swig import *
+
 
 # import any pure python here
 #
