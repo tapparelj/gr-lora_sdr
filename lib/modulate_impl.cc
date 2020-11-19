@@ -93,9 +93,9 @@ namespace gr {
         symb_cnt++;
 
         #ifdef GRLORA_DEBUG
-            std::string msg_debug = "Debug : send another symbol, counter : ";
-            std::string msg = msg_debug + std::to_string(symb_cnt);
-            GR_LOG_DEBUG(this->d_logger, msg);
+            //std::string msg_debug = "Debug : send another symbol, counter : ";
+            //std::string msg = msg_debug + std::to_string(symb_cnt);
+            //GR_LOG_DEBUG(this->d_logger, msg);
         #endif
         
         return(noutput_items);

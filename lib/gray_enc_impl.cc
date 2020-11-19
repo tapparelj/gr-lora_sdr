@@ -35,7 +35,7 @@ namespace gr {
         for(int i=0; i<noutput_items;i++){
             out[i]= (in[i] ^ (in[i] >> 1u));
             #ifdef GRLORA_DEBUG
-            std::cout<<std::hex<<"0x"<<in[i]<<" ---> "<<"0x"<<out[i]<<std::dec<<std::endl;
+            //std::cout<<std::hex<<"0x"<<in[i]<<" ---> "<<"0x"<<out[i]<<std::dec<<std::endl;
             #endif
         }
     return noutput_items;

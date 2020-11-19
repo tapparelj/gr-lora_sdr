@@ -29,7 +29,6 @@ inputs:
     id: crc
 -   domain: message
     id: err
-    optional: true
 -   domain: message
     id: frame_err
     optional: true

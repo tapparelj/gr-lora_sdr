@@ -91,11 +91,13 @@ namespace gr {
 
                     if(s0 | s1){
                         //TODO inform user of erroneous nibble
+                        GR_LOG_INFO(this->d_logger, "INFO: Erroneous LSB");
                     }
                     break;
                 case 1:
                     if(!(count(codeword.begin(), codeword.end(), true)%2)){
                         //TODO inform user of erroneous nibble
+                        GR_LOG_INFO(this->d_logger, "INFO: Erroneous LSB");
                     }
                     break;
            }

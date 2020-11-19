@@ -311,11 +311,11 @@ namespace gr {
     };
     void frame_sync_impl::frame_err_handler(pmt::pmt_t err){
         #ifdef GRLORA_DEBUG
-        for(int j=0;j<numb_symbol_to_save;j++){
-            for(int i=0;i<m_number_of_bins;i++)
-                samples_file<<last_frame[i+m_number_of_bins*j].real()<<(last_frame[i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(last_frame[i+m_number_of_bins*j].imag()) <<"i,";
-        samples_file<<std::endl;
-        }
+        // for(int j=0;j<numb_symbol_to_save;j++){
+        //     for(int i=0;i<m_number_of_bins;i++)
+        //         samples_file<<last_frame[i+m_number_of_bins*j].real()<<(last_frame[i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(last_frame[i+m_number_of_bins*j].imag()) <<"i,";
+        // samples_file<<std::endl;
+        // }
         std::cout << "saved one frame" << '\n';
         #endif
     };

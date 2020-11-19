@@ -69,8 +69,7 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
         uint8_t *in = (uint8_t *) input_items[0];
-        bool *out = (bool *) output_items[0];
-        // std::cout << "input items: "<< ninput_items[0] << '\n';
+        
         for (size_t i = 0; i < ninput_items[0]; i++) {
             in_buff.push_back(in[i]);
         }
@@ -78,7 +77,7 @@ namespace gr {
 
         if(in_buff.size()>=(int)m_payload_len+2 && m_crc_presence){//wait for all the payload to come
             if(m_payload_len<2)//undefined CRC
-                std::cout << "Disable CRC for payload smaller than 2 bytes" << '\n';
+                GR_LOG_WARN(this->d_logger,"WARN:Disable CRC for payload smaller than 2 bytes")
             else{
             //calculate CRC on the N-2 firsts data bytes
             m_crc=crc16(&in_buff[0],m_payload_len-2);
@@ -86,10 +85,10 @@ namespace gr {
             //XOR the obtained CRC with the last 2 data bytes
             m_crc = m_crc ^ in_buff[m_payload_len-1] ^ (in_buff[m_payload_len-2]<<8);
             #ifdef GRLORA_DEBUG
-            for(int i =0;i<in_buff.size();i++)
-            std::cout<< std::hex << (int)in_buff[i]<<std::dec<<std::endl;
-            std::cout<<"Calculated "<<std::hex<<m_crc<<std::dec<<std::endl;
-            std::cout<<"Got "<<std::hex<<(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8))<<std::dec<<std::endl;
+                // for(int i =0;i<in_buff.size();i++)
+                // std::cout<< std::hex << (int)in_buff[i]<<std::dec<<std::endl;
+                // std::cout<<"Calculated "<<std::hex<<m_crc<<std::dec<<std::endl;
+                // std::cout<<"Got "<<std::hex<<(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8))<<std::dec<<std::endl;
             #endif
 
             //get payload as string
@@ -98,30 +97,39 @@ namespace gr {
                 m_char= (char)in_buff[i];
                 message_str = message_str+m_char;
             }
-            std::cout<<"msg: "<<message_str<<std::endl<<std::endl;
-            if(!(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8)-m_crc))
-                std::cout<<"CRC valid!"<<std::endl<<std::endl;
-            else
-                std::cout<<"CRC invalid"<<std::endl<<std::endl;
+            GR_LOG_INFO(this->d_logger, "INFO:Decode msg is:"+message_str);
+            if(!(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8)-m_crc)){
+                    #ifdef GRLORA_DEBUG
+                        GR_LOG_DEBUG(this->d_logger, "INFO:CRC is valid!");
+                    #endif
+                }
+            else{
+                #ifdef GRLORA_DEBUG
+                    GR_LOG_DEBUG(this->d_logger, "INFO:CRC is invalid");
+                #endif
+            }
             message_port_pub(pmt::intern("msg"),pmt::mp(message_str));
             in_buff.clear();
             return 0;
             }
         }
-        else if(in_buff.size()>=(int)m_payload_len && !m_crc_presence){
+        if(in_buff.size()>=(int)m_payload_len && !m_crc_presence){
             //get payload as string
             message_str.clear();
             for(int i =0;i<in_buff.size();i++){
                 m_char= (char)in_buff[i];
                 message_str=message_str+m_char;
             }
-            std::cout<<"msg: "<<message_str<<std::endl;
+            #ifdef GRLORA_DEBUG
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Decode msg is:"+message_str);
+            #endif
             message_port_pub(pmt::intern("msg"),pmt::mp(message_str));
             in_buff.clear();
             return 0;
         }
-        else
+        else{
             return 0;
+        }
     }
   } /* namespace lora */
 } /* namespace gr */

@@ -53,7 +53,7 @@ namespace gr {
           energy_file.open("../matlab/measurements/energy"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
           #endif
           #ifdef GRLORA_DEBUG
-          idx_file.open("../matlab/stats/idx.txt", std::ios::out | std::ios::trunc );
+          //idx_file.open("../matlab/stats/idx.txt", std::ios::out | std::ios::trunc );
           #endif
       }
     /*
@@ -98,7 +98,7 @@ namespace gr {
         energy_file<<std::fixed<<std::setprecision(10)<<m_fft_mag[idx]<<","<<m_fft_mag[mod(idx-1,m_number_of_bins)]<<","<<m_fft_mag[mod(idx+1,m_number_of_bins)]<<","<<rec_en<<","<<std::endl;
         #endif
         #ifdef GRLORA_DEBUG
-            idx_file<<idx<<", ";
+            // idx_file<<idx<<", ";
         #endif
         return (idx);
     }

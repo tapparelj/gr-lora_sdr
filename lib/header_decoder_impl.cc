@@ -79,7 +79,7 @@ namespace gr {
             return pay_cnt;
         }
         else{//explicit header to decode
-            std::cout<<"--------Header--------"<<std::endl;
+            // std::cout<<"--------Header--------"<<std::endl;
             m_payload_len=(in[0]<<4)+in[1];
             m_has_crc=in[2] & 1;
             m_cr = in[2]>>1;
@@ -92,21 +92,25 @@ namespace gr {
             bool c2=(in[0] & 0b0100)>>2 ^(in[1] & 0b1000)>>3^(in[1] & 0b0001)^(in[2] & 0b1000)>>3^(in[2] & 0b0010)>>1;
             bool c1=(in[0] & 0b0010)>>1 ^(in[1] & 0b0100)>>2^(in[1] & 0b0001)^(in[2] & 0b0100)>>2^(in[2] & 0b0010)>>1^(in[2] & 0b0001);
             bool c0=(in[0] & 0b0001) ^(in[1] & 0b0010)>>1^(in[2] & 0b1000)>>3^(in[2] & 0b0100)>>2^(in[2] & 0b0010)>>1^(in[2] & 0b0001);
+            #ifdef GRLORA_DEBUG
+              GR_LOG_DEBUG(this->d_logger, "DEBUG: Payload length:"+std::to_string(m_payload_len));
+              GR_LOG_DEBUG(this->d_logger, "DEBUG: CRC presence:"+std::to_string(m_has_crc));
+              GR_LOG_DEBUG(this->d_logger, "DEBUG: Coding rate:"+std::to_string(m_cr));
+            #endif
 
-            std::cout<<"Payload length: "<<(int)m_payload_len<<std::endl;
-            std::cout<<"CRC presence: "<<(int)m_has_crc<<std::endl;
-            std::cout<<"Coding rate: "<<(int)m_cr<<std::endl;
 
             if(header_chk-((int)(c4<<4)+(c3<<3)+(c2<<2)+(c1<<1)+c0)){
-                std::cout<<"Header checksum invalid!"<<std::endl<<std::endl;
+                #ifdef GRLORA_DEBUG
+                  GR_LOG_DEBUG(this->d_logger, "DEBUG: Header checksum invalid!");
+                #endif
                 message_port_pub(pmt::intern("err"),pmt::mp(true));
                 noutput_items = 0;
             }
             else{
-                std::cout<<"Header checksum valid!"<<std::endl<<std::endl;
                 #ifdef GRLORA_DEBUG
-                std::cout<<"should have "<<(int)header_chk<<std::endl;
-                std::cout<<"got: "<<(int)(c4<<4)+(c3<<3)+(c2<<2)+(c1<<1)+c0<<std::endl;
+                  GR_LOG_DEBUG(this->d_logger, "DEBUG: Header checksum valid!");
+                // std::cout<<"should have "<<(int)header_chk<<std::endl;
+                // std::cout<<"got: "<<(int)(c4<<4)+(c3<<3)+(c2<<2)+(c1<<1)+c0<<std::endl;
                 #endif
                 message_port_pub(pmt::intern("CR"),pmt::mp(m_cr));
                 message_port_pub(pmt::intern("CRC"),pmt::mp(m_has_crc));

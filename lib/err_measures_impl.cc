@@ -61,9 +61,9 @@ namespace gr {
       #ifdef GRLORA_MEASUREMENTS
       err_outfile<<BE<<",";
       #endif
-      std::cout << "Error count= "<<BE << '\n';
+      GR_LOG_INFO(this->d_logger, "INFO: Bit Error Count (BER): "+ std::to_string(BE));
       if(BE>0)
-          message_port_pub(pmt::intern("err"),pmt::mp(true));
+          message_port_pub(pmt::intern("err"),pmt::mp(BE));
       drop=0;
   };
   void err_measures_impl::ref_handler(pmt::pmt_t ref){

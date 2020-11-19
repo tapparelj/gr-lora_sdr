@@ -43,7 +43,7 @@ namespace gr {
       bool p0,p1,p2,p3,p4;
       for(int i=0; i<noutput_items;i++){
           #ifdef GRLORA_DEBUG
-          std::cout<<std::hex<<(int)in_data[i]<<"   ";
+          //std::cout<<std::hex<<(int)in_data[i]<<"   ";
           #endif
           uint8_t cr_app=(i<m_sf-2)?4:m_cr;
           data_bin = int2bool(in_data[i],4);
@@ -63,7 +63,7 @@ namespace gr {
               out[i]=(data_bin[3]<<4|data_bin[2]<<3|data_bin[1]<<2|data_bin[0]<<1|p4);
           }
           #ifdef GRLORA_DEBUG
-             std::cout<<std::hex<<(int)out[i]<<std::dec<<std::endl;
+             //std::cout<<std::hex<<(int)out[i]<<std::dec<<std::endl;
           #endif
       }
 

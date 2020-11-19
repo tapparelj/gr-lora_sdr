@@ -76,9 +76,9 @@ namespace gr {
             offset++;
         }
         #ifdef GRLORA_DEBUG
-        for (uint i=0 ; i<dewhitened.size() ; i++){
-            std::cout<<(char)(int)dewhitened[i]<<"    0x"<< std::hex << (int)dewhitened[i]<<std::dec<<std::endl;
-        }
+        // for (uint i=0 ; i<dewhitened.size() ; i++){
+        //     std::cout<<(char)(int)dewhitened[i]<<"    0x"<< std::hex << (int)dewhitened[i]<<std::dec<<std::endl;
+        // }
         #endif
         consume_each (dewhitened.size()*2);//ninput_items[0]/2*2);
         noutput_items = dewhitened.size();

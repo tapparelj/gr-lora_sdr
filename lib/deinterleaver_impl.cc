@@ -66,14 +66,14 @@ namespace gr {
                 inter_bin[i]=int2bool(in[i],sf_app);
             }
             #ifdef GRLORA_DEBUG
-            std::cout<<"interleaved----"  <<std::endl;
-            for (uint32_t i =0u ; i<cw_len ;i++){
-                for(int j=0;j<int(sf_app);j++){
-                    std::cout<<inter_bin[i][j];
-                }
-                std::cout<<" "<<(int)in[i]<< std::endl;
-            }
-            std::cout<<std::endl;
+            // std::cout<<"interleaved----"  <<std::endl;
+            // for (uint32_t i =0u ; i<cw_len ;i++){
+            //     for(int j=0;j<int(sf_app);j++){
+            //         std::cout<<inter_bin[i][j];
+            //     }
+            //     std::cout<<" "<<(int)in[i]<< std::endl;
+            // }
+            // std::cout<<std::endl;
             #endif
             //Do the actual deinterleaving
             for (int32_t i = 0; i < cw_len ; i++) {
@@ -87,14 +87,14 @@ namespace gr {
             }
 
             #ifdef GRLORA_DEBUG
-            std::cout<<"codewords----"  <<std::endl;
-            for (uint32_t i =0u ; i<sf_app ;i++){
-                for(int j=0;j<int(cw_len);j++){
-                    std::cout<<deinter_bin[i][j];
-                }
-                std::cout<<" 0x"<<std::hex<<(int)out[i]<<std::dec<< std::endl;
-            }
-            std::cout<<std::endl;
+            // std::cout<<"codewords----"  <<std::endl;
+            // for (uint32_t i =0u ; i<sf_app ;i++){
+            //     for(int j=0;j<int(cw_len);j++){
+            //         std::cout<<deinter_bin[i][j];
+            //     }
+            //     std::cout<<" 0x"<<std::hex<<(int)out[i]<<std::dec<< std::endl;
+            // }
+            // std::cout<<std::endl;
             #endif
 
             consume_each(is_first?8:m_cr+4);

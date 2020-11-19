@@ -50,7 +50,8 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      std::cout<<"there"<<std::endl;
+      // std::cout<<"there"<<std::endl;
+      //TODO find out print statement?
       // Tell runtime system how many output items we produced.
       return 0;
     }
