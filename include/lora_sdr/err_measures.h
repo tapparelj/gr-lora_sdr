@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Simple block that can count and output the number of Bit Error's (BE) ,for more information about the implementation visit err_measures_impl
      * \ingroup lora_sdr
      *
      */

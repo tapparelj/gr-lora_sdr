@@ -29,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Encode the data in the RH_RF95 header format
+     * For more information about the implementation visit RH_RF95_impl
      * \ingroup lora_sdr
      *
      */

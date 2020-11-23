@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Data source that can both generate random strings or static strings, for more information about the implementation visit data_source_impl
      * \ingroup lora_sdr
      *
      */

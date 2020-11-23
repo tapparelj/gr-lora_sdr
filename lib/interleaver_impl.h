@@ -5,32 +5,73 @@
 // #define GRLORA_DEBUG
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class interleaver_impl : public interleaver
-    {
-     private:
-        uint8_t m_cr; ///< Transmission coding rate
-        uint8_t m_sf; ///< Transmission spreading factor
+class interleaver_impl : public interleaver {
+private:
+  /**
+   * @brief Transmission coding rate
+   *
+   */
+  uint8_t m_cr;
 
-        uint32_t cw_cnt; ///< count the number of codewords
+  /**
+   * @brief Transmission spreading factor
+   *
+   */
+  uint8_t m_sf;
 
-        void msg_handler(pmt::pmt_t message);
+  /**
+   * @brief count the number of codewords
+   *
+   */
+  uint32_t cw_cnt;
 
-     public:
-      interleaver_impl(uint8_t cr, uint8_t sf);
-      ~interleaver_impl();
+  /**
+   * @brief
+   *
+   * @param message
+   */
+  void msg_handler(pmt::pmt_t message);
 
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+public:
+  /**
+   * @brief Construct a new interleaver impl object
+   *
+   * @param cr coding rate
+   * @param sf sampling rate
+   */
+  interleaver_impl(uint8_t cr, uint8_t sf);
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+  /**
+   * @brief Destroy the interleaver impl object
+   *
+   */
+  ~interleaver_impl();
 
-    };
+  /**
+   * @brief
+   *
+   * @param noutput_items
+   * @param ninput_items_required
+   */
+  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
-  } // namespace lora
+  /**
+   * @brief
+   *
+   * @param noutput_items
+   * @param ninput_items
+   * @param input_items
+   * @param output_items
+   * @return int
+   */
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
+};
+
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_INTERLEAVER_IMPL_H */

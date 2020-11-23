@@ -29,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Decode the header of the data spackage.
+     * For more information about the implementation visit header_decoder_impl
      * \ingroup lora_sdr
      *
      */

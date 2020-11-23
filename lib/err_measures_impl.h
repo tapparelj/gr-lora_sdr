@@ -13,22 +13,69 @@ namespace gr {
     class err_measures_impl : public err_measures
     {
      private:
-        std::vector<char> m_corr_payload; ///< Vector containing the reference payload
-        std::vector<char> m_payload; ///< Vector containing the received payload
-        int BE; ///< Bits errors in the frame
-        int drop; ///< variable used to detect missing frames
+        /**
+         * @brief Vector containing the reference payload
+         * 
+         */
+        std::vector<char> m_corr_payload; 
+
+        /**
+         * @brief Vector containing the received payload
+         * 
+         */
+        std::vector<char> m_payload; 
+
+        /**
+         * @brief Bits errors in the frame
+         * 
+         */
+        int BE; 
+
+        /**
+         * @brief variable used to detect missing frames
+         * 
+         */
+        int drop; 
+
         #ifdef GRLORA_MEASUREMENTS
         std::ofstream err_outfile;
         #endif
 
+        /**
+         * @brief 
+         * 
+         * @param msg 
+         */
         void msg_handler(pmt::pmt_t msg);
+
+        /**
+         * @brief 
+         * 
+         * @param ref 
+         */
         void ref_handler(pmt::pmt_t ref);
 
      public:
+     /**
+      * @brief Construct a new err measures impl object
+      * 
+      */
       err_measures_impl( );
+      
+      /**
+       * @brief Destroy the err measures impl object
+       * 
+       */
       ~err_measures_impl();
 
-      // Where all the action really happens
+      /**
+       * @brief Main function of error measurement
+       * 
+       * @param noutput_items 
+       * @param input_items 
+       * @param output_items 
+       * @return int 
+       */
       int work(int noutput_items,
          gr_vector_const_void_star &input_items,
          gr_vector_void_star &output_items);

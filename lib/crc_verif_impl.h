@@ -18,29 +18,58 @@ namespace gr {
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
 
         /**
-         *  \brief  Handles the payload length received from the header_decoder block.
+         * @brief Handles the payload length received from the header_decoder block.
+         * 
+         * @param payload_len 
          */
         void header_pay_len_handler(pmt::pmt_t payload_len);
+
         /**
-         *  \brief  Handles the crc_presence received from the header_decoder block.
+         * @brief Handles the crc_presence received from the header_decoder block.
+         * 
+         * @param crc_presence 
          */
         void header_crc_handler(pmt::pmt_t crc_presence);
+
         /**
-         *  \brief  Calculate the CRC 16 using poly=0x1021 and Init=0x0000
-         *
-         *  \param  data
-         *          The pointer to the data beginning.
-         *  \param  len
-         *          The length of the data in bytes.
+         * @brief Calculate the CRC 16 using poly=0x1021 and Init=0x0000
+         * 
+         * @param data : pointer to the data beginning.
+         * @param len : length of the data in bytes.
+         * @return unsigned int : exit code
          */
         unsigned int crc16(uint8_t* data, uint32_t len);
 
      public:
+      /**
+      * @brief Construct a new crc verif impl object
+      * 
+      */
+     
       crc_verif_impl( );
+      /**
+       * @brief Destroy the crc verif impl object
+       * 
+       */
       ~crc_verif_impl();
 
+      /**
+       * @brief 
+       * 
+       * @param noutput_items 
+       * @param ninput_items_required 
+       */
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
+      /**
+       * @brief Main crc verify function that verifies the Cyclic redundancy check (CRC) from the add_crc stage 
+       * 
+       * @param noutput_items 
+       * @param ninput_items 
+       * @param input_items 
+       * @param output_items 
+       * @return int 
+       */
       int general_work(int noutput_items,
            gr_vector_int &ninput_items,
            gr_vector_const_void_star &input_items,

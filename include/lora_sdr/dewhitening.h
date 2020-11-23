@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Dewhites the received payload, for more information about the implementation visit crc_verify_impl
      * \ingroup lora_sdr
      *
      */

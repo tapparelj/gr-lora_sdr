@@ -101,6 +101,10 @@ namespace gr {
             is_first=false;
             return sf_app;
         }
+        else{
+            //fix compile return type compile warning
+            return 0;
+        }
     }
   } /* namespace lora */
 } /* namespace gr */

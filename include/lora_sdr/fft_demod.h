@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief FFT demodulation block ,for more information about the implementation visit fft_demod_impl
      * \ingroup lora_sdr
      *
      */

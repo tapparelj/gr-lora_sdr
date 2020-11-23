@@ -24,29 +24,47 @@
 #include <lora_sdr/lora_sdr.h>
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class lora_sdr_impl : public lora_sdr
-    {
-     private:
-      // Nothing to declare in this block.
+class lora_sdr_impl : public lora_sdr {
+private:
+  // Nothing to declare in this block.
 
-     public:
-      lora_sdr_impl();
-      ~lora_sdr_impl();
+public:
+  /**
+   * @brief Construct a new lora sdr impl object
+   * 
+   */
+  lora_sdr_impl();
+  /**
+   * @brief Destroy the lora sdr impl object
+   * 
+   */
+  ~lora_sdr_impl();
 
-      // Where all the action really happens
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+  /**
+   * @brief 
+   * 
+   * @param noutput_items 
+   * @param ninput_items_required 
+   */
+  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+  /**
+   * @brief 
+   * 
+   * @param noutput_items 
+   * @param ninput_items 
+   * @param input_items 
+   * @param output_items 
+   * @return int 
+   */
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
+};
 
-    };
-
-  } // namespace lora_sdr
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_LORA_SDR_IMPL_H */
-

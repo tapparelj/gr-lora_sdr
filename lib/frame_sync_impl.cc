@@ -81,9 +81,9 @@ namespace gr {
             sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
         #endif
         #ifdef GRLORA_DEBUG
-            numb_symbol_to_save=80;//number of symbol per erroneous frame to save
-            last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
-            samples_file.open("../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
+            // numb_symbol_to_save=80;//number of symbol per erroneous frame to save
+            // last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
+            // samples_file.open("../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
         #endif
     }
 

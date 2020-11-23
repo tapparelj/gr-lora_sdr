@@ -29,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Decode the received payload with the inverse gray mapping in order to obtain the send message.
+     * For more information about the implementation visit gray_decode_impl
      * \ingroup lora_sdr
      *
      */

@@ -2,157 +2,420 @@
 #ifndef INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
 #define INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
 
-#include <lora_sdr/frame_sync.h>
-#include <iostream>
 #include <fstream>
-#include <volk/volk.h>
-#include <lora_sdr/utilities.h>
 #include <gnuradio/io_signature.h>
+#include <iostream>
+#include <lora_sdr/frame_sync.h>
+#include <lora_sdr/utilities.h>
+#include <volk/volk.h>
 extern "C" {
-  #include "kiss_fft.h"
+#include "kiss_fft.h"
 }
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class frame_sync_impl : public frame_sync
-    {
-     private:
-         enum DecoderState {
-             DETECT,
-             SYNC,
-             FRAC_CFO_CORREC,
-             STOP
-         };
-         enum SyncState {
-             NET_ID1,
-             NET_ID2,
-             DOWNCHIRP1,
-             DOWNCHIRP2,
-             QUARTER_DOWN
-         };
-         uint8_t m_state;        ///< Current state of the synchronization
-         uint32_t m_bw;          ///< Bandwidth
-         uint32_t m_samp_rate;   ///< Sampling rate
-         uint8_t m_sf;           ///< Spreading factor
-         uint8_t m_cr;           ///< Coding rate
-         uint32_t m_pay_len;     ///< payload length
-         uint8_t m_has_crc;      ///< CRC presence
-         bool m_impl_head;       ///< use implicit header mode
+class frame_sync_impl : public frame_sync {
+private:
+  /**
+   * @brief Decoder states:
+   * - DETECT
+   * - SYNC
+   * - FRAC_CFO_CORREC
+   * - STOP
+   *
+   */
+  enum DecoderState { DETECT, SYNC, FRAC_CFO_CORREC, STOP };
+  /**
+   * @brief Sync states:
+   * - NET_ID1
+   * - NET_ID2
+   * - DOWNCHIRP1
+   * - DOWNCHIRP2
+   * - QUARTER_DOWN
+   *
+   */
+  enum SyncState { NET_ID1, NET_ID2, DOWNCHIRP1, DOWNCHIRP2, QUARTER_DOWN };
 
-         bool received_cr;               ///< Indicate that the coding rate has been given by the header_decoder block
-         bool received_crc;              ///< Indicate that the crc presence has been given by the header_decoder block
-         bool received_pay_len;          ///< Indicate that the payload length has been given by the header_decoder block
+  /**
+   * @brief Current state of the synchronization
+   *
+   */
+  uint8_t m_state;
 
+  /**
+   * @brief Bandwith
+   *
+   */
+  uint32_t m_bw;
 
-         uint32_t m_number_of_bins;      ///< Number of bins in each lora Symbol
-         uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
-         uint32_t symb_numb;             ///<number of payload loar symbols
+  /**
+   * @brief Sampling rate
+   *
+   */
+  uint32_t m_samp_rate;
 
-         std::vector<gr_complex> in_down; ///< downsampled input
-         std::vector<gr_complex> m_downchirp; ///< Reference downchirp
-         std::vector<gr_complex> m_upchirp;   ///< Reference upchirp
+  /**
+   * @brief Spreading factor
+   *
+   */
+  uint8_t m_sf;
 
-         int32_t symbol_cnt;         ///< Number of symbols already received
-         int32_t bin_idx;            ///< value of previous lora symbol
-         int32_t bin_idx_new;        ///< value of newly demodulated symbol
+  /**
+   * @brief Coding rate
+   *
+   */
+  uint8_t m_cr;
 
-         uint32_t n_up;              ///< Number of consecutive upchirps in preamble
-         uint8_t symbols_to_skip;    ///< Number of integer symbol to skip after consecutive upchirps
-         uint32_t net_id_1;          ///< network identifier 1
-         uint32_t net_id_2;          ///<network identifier 2
+  /**
+   * @brief Payload length
+   *
+   */
+  uint32_t m_pay_len;
 
-         kiss_fft_cpx *cx_in;        ///<input of the FFT
-         kiss_fft_cpx *cx_out;       ///<output of the FFT
+  /**
+   * @brief CRC presence
+   *
+   */
+  uint8_t m_has_crc;
 
-         int items_to_consume;       ///< Number of items to consume after each iteration of the general_work function
+  /**
+   * @brief Use implicit header mode
+   *
+   */
+  bool m_impl_head;
 
-         std::vector<gr_complex> preamble_raw;///<vector containing the preamble upchirps without any synchronization
-         std::vector<gr_complex> preamble_up; ///<vector containing the preamble upchirps
+  /**
+   * @brief Indicate that the coding rate has been given by the
+  header_decoder block
+   *
+   */
+  bool received_cr;
 
-         int up_symb_to_use; ///<number of upchirp symbols to use for CFO and STO frac estimation
-         int k_hat;          ///<integer part of CFO+STO
-         double lambda_cfo;  ///<fractional part of CFO
-         double lambda_bernier; ///<fractional part of CFO using Berniers algo
-         double lambda_sto;  ///<fractional part of CFO
-         bool cfo_sto_est; ///< indicate that the estimation of lambda_cfo/sto has been performed
-         int usFactor;       ///<upsampling factor used by the FIR interpolator
-         std::vector<gr_complex> CFO_frac_correc; ///<cfo frac correction vector
+  /**
+   * @brief Indicate that the crc presence has been given by the
+  header_decoder block
+   *
+   */
+  bool received_crc;
 
+  /**
+   * @brief Indicate that the payload length has been given by
+  the header_decoder block
+   *
+   */
+  bool received_pay_len;
 
-         std::vector<gr_complex> symb_corr; ///< symbol with CFO frac corrected
-         int down_val; ///< value of the preamble downchirps
-         int CFOint; ///< integer part of CFO
-         int net_id_off; ///<offset of the network identifier
+  /**
+   * @brief Number of bins in each lora Symbol
+   *
+   */
+  uint32_t m_number_of_bins;
 
-         #ifdef GRLORA_MEASUREMENTS
-         int off_by_one_id; ///< Indicate that the network identifiers where off by one and corrected
-         std::ofstream sync_log; ///< savefile containing the offset estimation and the signal strength estimation
-         #endif
-         #ifdef GRLORA_DEBUG
-         int numb_symbol_to_save;///< number of symbol to save for every erroneous frame
-         std::vector<gr_complex> last_frame;///< vector storing samples of the last received frame
-         std::ofstream samples_file;///< savefile containing the samples of the erroneous frames
-         #endif
+  /**
+   * @brief Number of samples received per lora symbols
+   *
+   */
+  uint32_t m_samples_per_symbol;
 
-         void header_cr_handler(pmt::pmt_t cr);
-         void header_pay_len_handler(pmt::pmt_t pay_len);
-         void header_crc_handler(pmt::pmt_t crc);
-         void frame_err_handler(pmt::pmt_t err);
+  /**
+   * @brief number of payload loar symbols
+   *
+   */
+  uint32_t symb_numb;
 
+  /**
+   * @brief downsampled input
+   *
+   */
+  std::vector<gr_complex> in_down;
 
-         /**
-          *  \brief  Estimate the value of fractional part of the CFO using RCTSL
-          *  \param  samples
-          *          The pointer to the preamble beginning.(We might want to avoid the
-          *          first symbol since it might be incomplete)
-          */
-         void estimate_CFO(gr_complex* samples);
-         /**
-          *  \brief  (not used) Estimate the value of fractional part of the CFO using Berniers algorithm
-          */
-         void estimate_CFO_Bernier();
-         /**
-          *  \brief  Estimate the value of fractional part of the STO from m_consec_up
-          **/
-         void estimate_STO();
-         /**
-          *  \brief  Recover the lora symbol value using argmax of the dechirped symbol FFT.
-          *
-          *  \param  samples
-          *          The pointer to the symbol beginning.
-          *  \param  ref_chirp
-          *          The reference chirp to use to dechirp the lora symbol.
-          */
-         uint32_t get_symbol_val(const gr_complex *samples,gr_complex *ref_chirp);
+  /**
+   * @brief Reference downchirp
+   *
+   */
+  std::vector<gr_complex> m_downchirp;
 
-          /**
-          *  \brief  Determine the energy of a symbol.
-          *
-          *  \param  samples
-          *          The complex symbol to analyse.
-          */
-         float determine_energy(const gr_complex *samples);
+  /**
+   * @brief Reference upchirp
+   *
+   */
+  std::vector<gr_complex> m_upchirp;
 
-          /**
-          *  \brief  Handles the error message coming from the header decoding.
-          */
-         void header_err_handler(pmt::pmt_t payload_len);
+  /**
+   * @brief Number of symbols already received
+   *
+   */
+  int32_t symbol_cnt;
 
-     public:
-      frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
-      ~frame_sync_impl();
+  /**
+   * @brief value of previous lora symbol
+   *
+   */
+  int32_t bin_idx;
 
-      // Where all the action really happens
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+  /**
+   * @brief value of newly demodulated symbol
+   *
+   */
+  int32_t bin_idx_new;
+  /**
+   * @brief Number of consecutive upchirps in preamble
+   *
+   */
+  uint32_t n_up;
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
-    };
+  /**
+   * @brief Number of integer symbol to skip after
+  consecutive upchirps
+   *
+   */
+  uint8_t symbols_to_skip;
 
-  } // namespace lora_sdr
+  /**
+   * @brief network identifier 1
+   *
+   */
+  uint32_t net_id_1;
+
+  /**
+   * @brief network identifier 2
+   *
+   */
+  uint32_t net_id_2;
+
+  /**
+   * @brief input of the FFT
+   *
+   */
+  kiss_fft_cpx *cx_in;
+
+  /**
+   * @brief output of the FFT
+   *
+   */
+  kiss_fft_cpx *cx_out;
+
+  /**
+   * @brief Number of items to consume after each iteration of
+  the general_work function
+   *
+   */
+  int items_to_consume;
+
+  /**
+   * @brief vector containing the preamble
+  upchirps without any synchronization
+   *
+   */
+  std::vector<gr_complex> preamble_raw; ///<
+
+  /**
+   * @brief vector containing the preamble upchirps
+   *
+   */
+  std::vector<gr_complex> preamble_up;
+
+  /**
+   * @brief number of upchirp symbols to use for CFO and STO frac
+  estimation
+   *
+   */
+  int up_symb_to_use;
+
+  /**
+   * @brief integer part of CFO+STO
+   *
+   */
+  int k_hat;
+
+  /**
+   * @brief fractional part of CFO
+   *
+   */
+  double lambda_cfo;
+
+  /**
+   * @brief fractional part of CFO using Berniers algo
+   *
+   */
+  double lambda_bernier;
+
+  /**
+   * @brief fractional part of CFO
+   *
+   */
+  double lambda_sto;
+
+  /**
+   * @brief indicate that the estimation of lambda_cfo/sto has been
+  performed
+   *
+   */
+  bool cfo_sto_est;
+
+  /**
+   * @brief upsampling factor used by the FIR interpolator
+   *
+   */
+  int usFactor;
+
+  /**
+   * @brief cfo frac correction vector
+   *
+   */
+  std::vector<gr_complex> CFO_frac_correc;
+
+  /**
+   * @brief symbol with CFO frac corrected
+   *
+   */
+  std::vector<gr_complex> symb_corr;
+
+  /**
+   * @brief value of the preamble downchirps
+   *
+   */
+  int down_val;
+
+  /**
+   * @brief integer part of CFO
+   *
+   */
+  int CFOint;
+
+  /**
+   * @brief offset of the network identifier
+   *
+   */
+  int net_id_off;
+
+#ifdef GRLORA_MEASUREMENTS
+  int off_by_one_id; ///< Indicate that the network identifiers where off by one
+                     ///< and corrected
+  std::ofstream sync_log; ///< savefile containing the offset estimation and the
+                          ///< signal strength estimation
+  int numb_symbol_to_save; ///< number of symbol to save for every erroneous
+                           ///< frame
+  std::vector<gr_complex>
+      last_frame; ///< vector storing samples of the last received frame
+  std::ofstream
+      samples_file; ///< savefile containing the samples of the erroneous frames
+#endif
+
+  /**
+   * @brief
+   *
+   * @param cr
+   */
+  void header_cr_handler(pmt::pmt_t cr);
+
+  /**
+   * @brief
+   *
+   * @param pay_len
+   */
+  void header_pay_len_handler(pmt::pmt_t pay_len);
+
+  /**
+   * @brief
+   *
+   * @param crc
+   */
+  void header_crc_handler(pmt::pmt_t crc);
+
+  /**
+   * @brief
+   *
+   * @param err
+   */
+  void frame_err_handler(pmt::pmt_t err);
+
+  /**
+   * @brief Estimate the value of fractional part of the CFO using RCTSL
+   *
+   * @param samples The pointer to the preamble beginning.(We might want to
+   * avoid the first symbol since it might be incomplete)
+   */
+  void estimate_CFO(gr_complex *samples);
+
+  /**
+   * @brief (not used) Estimate the value of fractional part of the CFO using
+   * Berniers algorithm
+   *
+   */
+  void estimate_CFO_Bernier();
+
+  /**
+   * @brief Estimate the value of fractional part of the STO from m_consec_up
+   *
+   */
+  void estimate_STO();
+
+  /**
+   * @brief The pointer to the symbol beginning.
+   *
+   * @param samples
+   * @param ref_chirp The reference chirp to use to dechirp the lora symbol.
+   * @return uint32_t
+   */
+  uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp);
+
+  /**
+   * @brief Determine the energy of a symbol.
+   *
+   * @param samples The complex symbol to analyse.
+   * @return float
+   */
+  float determine_energy(const gr_complex *samples);
+
+  /**
+   * @brief Handles the error message coming from the header decoding.
+   *
+   * @param payload_len
+   */
+  void header_err_handler(pmt::pmt_t payload_len);
+
+public:
+  /**
+   * @brief Construct a new frame sync impl object
+   *
+   * @param samp_rate
+   * @param bandwidth
+   * @param sf
+   * @param impl_head
+   */
+  frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
+                  bool impl_head);
+  /**
+   * @brief Destroy the frame sync impl object
+   *
+   */
+  ~frame_sync_impl();
+
+  /**
+   * @brief Where all the action really happens
+   *
+   * @param noutput_items
+   * @param ninput_items_required
+   */
+  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
+
+  /**
+   * @brief
+   *
+   * @param noutput_items
+   * @param ninput_items
+   * @param input_items
+   * @param output_items
+   * @return int
+   */
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
+};
+
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H */

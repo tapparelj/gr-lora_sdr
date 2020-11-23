@@ -29,7 +29,9 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Modulate the payload with an Gray map.
+     * This ensures that bits are modulated such that two subsequent symbols differ one bit.
+     * For more information about the implementation visit gray_enc_impl
      * \ingroup lora_sdr
      *
      */

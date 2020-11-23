@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Deinterleaves the received payload, for more information about the implementation visit deinterleaver_impl
      * \ingroup lora_sdr
      *
      */

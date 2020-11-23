@@ -1,10 +1,8 @@
 /*! \mainpage
 
-Welcome to the GNU Radio LORA_SDR Block
+Welcome to the GNU Radio OOT LORA_SDR Block 
 
-This is the intro page for the Doxygen manual generated for the LORA_SDR
-block (docs/doxygen/other/main_page.dox). Edit it to add more detailed
-documentation about the new GNU Radio modules contained in this
-project.
+The documentation is still a work in progress, and still can and has to be improved.
+But at least this is a start.
 
 */

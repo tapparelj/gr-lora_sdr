@@ -43,9 +43,8 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 # Check if cmake build type is debug and if so add logging and set debug variables
 ########################################################################
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
-    message(STATUS "Build type is Debug, including logging...")
-    message(STATUS "Build type is Debug, setting GRLORA_DEBUG=True")
+    message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
+    message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
 
     add_definitions(-DGRLORA_DEBUG=True)
 

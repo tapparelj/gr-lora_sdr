@@ -29,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief End block of the sending side that modulates the final to be sent data to the LoRa standard
+     * For more information about the implementation visit modulate_impl
      * \ingroup lora_sdr
      *
      */
