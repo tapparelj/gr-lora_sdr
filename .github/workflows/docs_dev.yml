@@ -1,4 +1,4 @@
-name: Make documentation for dev branch
+name: docs-dev
 
 on: 
   push:
@@ -62,3 +62,4 @@ jobs:
           git config --local user.name "GitHub Action"
           git add .
           git commit -m "Automatically updated the wiki" && git push
+          cd ../ && rm -rf gh-pages

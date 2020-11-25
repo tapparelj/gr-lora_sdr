@@ -1,3 +1,36 @@
+![example workflow name](https://github.com/martynvdijke/gr-lora_sdr/workflows/cmake_debug_dev/badge.svg)
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+
+
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <!-- <a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a> -->
+
+  <h3 align="center">GR-LoRa</h3>
+
+  <p align="center">
+    Fully functional gnuradio OOT module to implement 
+    <br />
+    <a href="https://martynvdijke.github.io/gr-lora_sdr/html/index.html"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/martynvdijke/gr-lora_sdr/wiki">Running the demo</a>
+    ·
+    <a href="https://martynvdijke.github.io/gr-lora_sdr/issues">Report a bug</a>
+    ·
+    <a href="https://martynvdijke.github.io/gr-lora_sdr/issues">Request a feature</a>
+  </p>
+</p>
+
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs.  This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
@@ -17,10 +50,12 @@ J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “
 
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
-## Installation:
--   Download the zip archive and extract it    
-- The installation path can be set in CMakeLists.txt under #set destination.(default: home/lora_sdr)
-    
+## Getting started
+
+### Documentation
+
+### Installation:
+- git clone
 - Similarly to any GNU Radio OOT module, it can be build with: (It might require to use sudo depending of the installation destination)  
 	- mkdir build  
     - cd build  
@@ -28,11 +63,11 @@ If you find this implementation useful for your project, please consider citing 
     - make  
     - sudo make install  
 
-## Usage:    
+### Usage:    
 - An example of a transmitter and a receiver can be found in gr-lora_sdr/app (both python and grc).  
 - An example of an automated testing script and the corresponding grc and python file can also be found.
 
-## Requirements:  
+### Requirements:  
     - Gnuradio 3.8
     - python 2.7>  
     - cmake  
@@ -43,3 +78,5 @@ If you find this implementation useful for your project, please consider citing 
     - qwt (optional for gui)
     - doxygen (optional for documentation)
     - log4cpp (optional for logging/debugging)
+
+## License
