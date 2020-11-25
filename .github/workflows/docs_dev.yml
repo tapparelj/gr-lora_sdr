@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref : gh-pages
-          path : '${{runner.workspace}}/gh-pages'
+          path : '${{runner.workspace}}/gr-lora_sdr/gh-pages'
 
       - name: Add new exported documentation and push to gh-pages branch
         run: |
