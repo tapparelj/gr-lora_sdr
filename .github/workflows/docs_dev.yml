@@ -17,13 +17,13 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create Build Environment
-        run: cmake -E make_directory ${{runner.workspace}}/dev/build
+        run: cmake -E make_directory ${{runner.workspace}}/build
 
       - name: Configure CMake
         # Use a bash shell so we can use the same syntax for environment variable
         # access regardless of the host operating system
         shell: bash
-        working-directory: ${{runner.workspace}}/dev/build
+        working-directory: ${{runner.workspace}}/build
         # Note the current convention is to use the -S and -B options here to specify source 
         # and build directories, but this is only available with CMake 3.13 and higher.  
         # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
@@ -31,7 +31,7 @@ jobs:
 
       - name: Make documentation
         run : |
-          cd ${{runner.workspace}}/dev/build
+          working-directory: ${{runner.workspace}}/build
           make doc
 
       - name: Checkout gh-pages
@@ -42,7 +42,7 @@ jobs:
 
       - name: Add new exported documentation and push to gh-pages branch
         run: |
-          cp -r ${{runner.workspace}}/dev/build/docs/doxygen/html ${{runner.workspace}}/gh-pages/
+          cp -r ${{runner.workspace}}/build/docs/doxygen/html ${{runner.workspace}}/gh-pages/
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
