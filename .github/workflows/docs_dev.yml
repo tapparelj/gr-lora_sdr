@@ -40,7 +40,7 @@ jobs:
       - name: Checkout gh-pages
         uses: actions/checkout@v2
         with:
-          repository: 'gh-pages'
+          ref : gh-pages
           path : '${{runner.workspace}}/gh-pages'
 
       - name: Add new exported documentation and push to gh-pages branch
