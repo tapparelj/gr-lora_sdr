@@ -41,11 +41,14 @@ jobs:
         #run : make doc
 
       - name: Checkout gh-pages
-        working-directory: ${{runner.workspace}}
+        
         uses: actions/checkout@v2
         with:
           ref : gh-pages
           path : 'gh-pages'
+
+      - name : Move gh-pages 
+        working-directory: ${{runner.workspace}}
         #move to folder up for easy use
         run: |
             mv gr-lora_sdr/gh-pages/ gh-pages
