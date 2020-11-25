@@ -34,7 +34,8 @@ jobs:
       - name: Make documentation
         working-directory: ${{runner.workspace}}/build
         shell: bash
-        run : make doc
+        run: cmake --build . --config $BUILD_TYPE 
+        #run : make doc
 
       - name: Checkout gh-pages
         uses: actions/checkout@v2
