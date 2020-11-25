@@ -1,12 +1,8 @@
-![example workflow name](https://github.com/martynvdijke/gr-lora_sdr/workflows/cmake_debug_dev/badge.svg)
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
+![dev build status](https://github.com/martynvdijke/gr-lora_sdr/workflows/dev%20build%20status/badge.svg)
+[![docs-dev](https://github.com/martynvdijke/gr-lora_sdr/workflows/docs-dev/badge.svg)](https://martynvdijke.github.io/gr-lora_sdr/html/index.html)
+![dev test status](https://github.com/martynvdijke/gr-lora_sdr/workflows/dev%20test%20status/badge.svg)
+[![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
+[![GitHub license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/martynvdijke/gr-lora_sdr/blob/dev/LICENSE)
 
 <!-- PROJECT LOGO -->
 <br />
@@ -18,7 +14,7 @@
   <h3 align="center">GR-LoRa</h3>
 
   <p align="center">
-    Fully functional gnuradio OOT module to implement 
+    Fully-functional GNU Radio blocks to implement the physical layer (PHY)of LoRa
     <br />
     <a href="https://martynvdijke.github.io/gr-lora_sdr/html/index.html"><strong>Explore the docs »</strong></a>
     <br />
