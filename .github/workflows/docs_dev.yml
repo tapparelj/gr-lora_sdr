@@ -41,7 +41,6 @@ jobs:
         #run : make doc
 
       - name: Checkout gh-pages
-        
         uses: actions/checkout@v2
         with:
           ref : gh-pages
@@ -52,7 +51,7 @@ jobs:
         #move to folder up for easy use
         run: |
             mv gr-lora_sdr/gh-pages/ gh-pages
-            rm -rf gr-lora_sdr/gh-pages/
+        ##rm -rf gr-lora_sdr/gh-pages/
 
       - name: Add new exported documentation and push to gh-pages branch
         run: |
