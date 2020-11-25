@@ -97,6 +97,11 @@ namespace gr {
         ninput_items_required[0] = usFactor*(m_samples_per_symbol+2);
     }
 
+    /**
+     * @brief 
+     * 
+     * @param samples 
+     */
     void frame_sync_impl::estimate_CFO(gr_complex* samples){
         int k0;
         double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
@@ -154,6 +159,10 @@ namespace gr {
         }
         volk_32fc_x2_multiply_32fc(&preamble_up[0],samples,&CFO_frac_correc_aug[0],up_symb_to_use*m_number_of_bins);
     }
+    /**
+     * @brief 
+     * 
+     */
     void frame_sync_impl::estimate_CFO_Bernier(){
         int k0[m_number_of_bins];
         double k0_mag[m_number_of_bins];
@@ -458,10 +467,10 @@ namespace gr {
                   #ifdef GRLORA_MEASUREMENTS
                   sync_log<< std::fixed<<std::setprecision(10)<<determine_energy(&in_down[0])<<",";
                   #endif
-                  #ifdef GRLORA_DEBUG
-                //   if(symbol_cnt<numb_symbol_to_save)
-                //     memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
-                  #endif
+                //   #ifdef GRLORA_DEBUG
+                // //   if(symbol_cnt<numb_symbol_to_save)
+                // //     memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+                //   #endif
                   items_to_consume = usFactor*m_samples_per_symbol;
                   noutput_items = 1;
                   symbol_cnt++;
@@ -477,7 +486,7 @@ namespace gr {
               break;
           }
           default: {
-              GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen\n");
+              GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
               break;
           }
         }

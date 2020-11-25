@@ -19,9 +19,9 @@ class frame_sync_impl : public frame_sync {
 private:
   /**
    * @brief Decoder states:
-   * - DETECT
-   * - SYNC
-   * - FRAC_CFO_CORREC
+   * - DETECT : Detect preamble
+   * - SYNC : synchronize integer part STO,CFO
+   * - FRAC_CFO_CORREC : 
    * - STOP
    *
    */
@@ -208,7 +208,7 @@ private:
   upchirps without any synchronization
    *
    */
-  std::vector<gr_complex> preamble_raw; ///<
+  std::vector<gr_complex> preamble_raw; 
 
   /**
    * @brief vector containing the preamble upchirps

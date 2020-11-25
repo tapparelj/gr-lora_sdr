@@ -1,0 +1,35 @@
+name: Make documentation for dev branch
+
+on: 
+  push:
+    branches: 
+      - dev  
+
+jobs:  
+  docs:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/dev/build
+
+      - name: Make documentation
+        run : |
+          cd ${{runner.workspace}}/dev/build
+          make doc
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v2
+        with:
+          repository: 'gh-pages'
+          path : '${{runner.workspace}}/gh-pages'
+
+      - name: Add new exported documentation and push to gh-pages branch
+        run: |
+          cp -r ${{runner.workspace}}/dev/build/docs/doxygen/html ${{runner.workspace}}/gh-pages/
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Automatically updated the wiki" && git push

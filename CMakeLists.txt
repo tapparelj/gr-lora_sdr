@@ -52,6 +52,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     include(cmake/Modules/GrMiscUtils.cmake)
     GR_LOGGING()
+    add_custom_target(
+        doc
+        COMMAND make
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/docs
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Make sure our local CMake Modules path comes first
