@@ -41,15 +41,19 @@ jobs:
         #run : make doc
 
       - name: Checkout gh-pages
+        working-directory: ${{runner.workspace}}
         uses: actions/checkout@v2
         with:
           ref : gh-pages
-          path : '../gh-pages'
+          path : 'gh-pages'
+        #move to folder up for easy use
+        run: |
+            mv gr-lora_sdr/gh-pages/ gh-pages
+            rm -rf gr-lora_sdr/gh-pages/
 
-      # - name: Add new exported documentation and push to gh-pages branch
-      #   run: |
-      #     cp -r ${{runner.workspace}}/build/docs/doxygen/html ${{runner.workspace}}/gh-pages/
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     git add .
-      #     git commit -m "Automatically updated the wiki" && git push
+      - name: Add new exported documentation and push to gh-pages branch
+        run: |
+          cp -r ${{runner.workspace}}/dev/build/docs/doxygen/html ${{runner.workspace}}/gh-pages/
+          cd ${{runner.workspace}}/gh-pages/
+          git add .
+          git commit -m "Automatically updated the wiki" && git push
