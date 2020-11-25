@@ -73,51 +73,7 @@ include(GrMiscUtils)
 GR_LIBRARY_FOO(gnuradio-lora_sdr)
 
 ########################################################################
-# Build and register unit test
-########################################################################
-include(GrTest)
-
-# If your unit tests require special include paths, add them here
-#include_directories()
-include_directories(${CPPUNIT_INCLUDE_DIRS})
-
-
-# List all files that contain Boost.UTF unit tests here
-list(APPEND test_lora_sdr_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_lora_sdr.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_sdr.cc
-)
-
-add_executable(test-lora_sdr ${test_lora_sdr_sources})
-
-target_link_libraries(
-  test-lora_sdr
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  gnuradio-lora_sdr
-)
-
-GR_ADD_TEST(test_lora_sdr test-lora_sdr)
-
-########################################################################
 # Print summary
 ########################################################################
 message(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Building for version: ${VERSION} / ${LIBVER}")
-
-
-# # Anything we need to link to for the unit tests go here
-# list(APPEND GR_TEST_TARGET_DEPS gnuradio-lora_sdr)
-
-# if(NOT test_lora_sdr_sources)
-#     MESSAGE(STATUS "No C++ unit tests... skipping")
-#     return()
-# endif(NOT test_lora_sdr_sources)
-
-# foreach(qa_file ${test_lora_sdr_sources})
-#     GR_ADD_CPP_TEST("lora_sdr_${qa_file}"
-#         ${CMAKE_CURRENT_SOURCE_DIR}/${qa_file}
-#     )
-# endforeach(qa_file)
-

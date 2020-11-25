@@ -40,7 +40,7 @@ namespace gr {
        std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
        new_message = true;
     }
-
+    
     int whitening_impl::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
