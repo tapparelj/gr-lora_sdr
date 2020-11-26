@@ -44,6 +44,7 @@ list(APPEND lora_sdr_sources
     frame_sync_impl.cc
     deinterleaver_impl.cc
     err_measures_impl.cc
+    debug_tools.cc
     )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)
