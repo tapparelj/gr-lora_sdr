@@ -10,7 +10,7 @@
 # GNU Radio version: 3.8.1.0
 
 from gnuradio import blocks
-import pmt
+qa_whitening
 from gnuradio import filter
 from gnuradio.filter import firdes
 from gnuradio import gr

@@ -43,7 +43,9 @@ int interleaver_impl::general_work(int noutput_items,
   const uint8_t *in = (const uint8_t *)input_items[0];
   uint32_t *out = (uint32_t *)output_items[0];
 
+  //get codeword length ?
   uint8_t ppm = 4 + ((cw_cnt < m_sf - 2) ? 4 : m_cr);
+  //apperent spreading factor ?
   uint8_t sf_app = (cw_cnt < m_sf - 2) ? m_sf - 2 : m_sf;
 
   // Create the empty matrices
@@ -61,21 +63,21 @@ int interleaver_impl::general_work(int noutput_items,
   }
 
 #ifdef GRLORA_DEBUG
-  // GR_LOG_DEBUG(this->d_logger, "----Codewords----");
-  // for (uint32_t i =0u ; i<sf_app ;i++){
-  //     for(int j=0;j<int(ppm);j++){
-  //         std::cout<<cw_bin[i][j];
-  //     }
-  //     std::cout<<" 0x"<<std::hex<<(int)in[i]<<std::dec<< std::endl;
-  // }
-  // std::cout<<std::endl;
+  GR_LOG_DEBUG(this->d_logger, "----Codewords----");
+//  for (uint32_t i =0u ; i<sf_app ;i++){
+//      for(int j=0;j<int(ppm);j++){
+//          std::cout<<cw_bin[i][j];
+//      }
+//      std::cout<<" 0x"<<std::hex<<(int)in[i]<<std::dec<< std::endl;
+//  }
+//  std::cout<<std::endl;
 #endif
   // Do the actual interleaving
   for (int32_t i = 0; i < ppm; i++) {
     for (int32_t j = 0; j < int(sf_app); j++) {
       inter_bin[i][j] = cw_bin[mod((i - j - 1), sf_app)][i];
     }
-    // For the first bloc we add a parity bit and a zero in the end of the lora
+    // For the first block we add a parity bit and a zero in the end of the lora
     // symbol(reduced rate)
     if (cw_cnt == m_sf - 2)
       inter_bin[i][sf_app] =
@@ -85,14 +87,14 @@ int interleaver_impl::general_work(int noutput_items,
   }
 
 #ifdef GRLORA_DEBUG
-//  GR_LOG_DEBUG(this->d_logger, "----Interleaved----");
-// for (uint32_t i =0u ; i<ppm ;i++){
-//     for(int j=0;j<int(m_sf);j++){
-//         std::cout<<inter_bin[i][j];
-//     }
-//     std::cout<<" "<<out[i]<< std::endl;
-// }
-// std::cout<<std::endl;
+ GR_LOG_DEBUG(this->d_logger, "----Interleaved----");
+//for (uint32_t i =0u ; i<ppm ;i++){
+//    for(int j=0;j<int(m_sf);j++){
+//        std::cout<<inter_bin[i][j];
+//    }
+//    std::cout<<" "<<out[i]<< std::endl;
+//}
+//std::cout<<std::endl;
 #endif
   consume_each(ninput_items[0] > sf_app ? sf_app : ninput_items[0]);
 
