@@ -43,5 +43,5 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-lora_sdr)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_lora_sdr ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_sdr.py)
-GR_ADD_TEST(qa_whitening ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_whitening.py)
+GR_ADD_TEST(qa_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx.py)
 

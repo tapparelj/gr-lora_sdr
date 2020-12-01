@@ -29,8 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief This block add LoRa CRC (Cyclic redundancy check) into the payload, 
-     * more info see add_crc_impl
+     * \brief This block adds LoRa CRC (Cyclic redundancy check) into the payload if boolean has_crc is True,
+     * for more information see add_crc_impl
      * \ingroup lora_sdr
      *
      */

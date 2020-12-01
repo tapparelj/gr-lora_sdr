@@ -26,6 +26,12 @@ private:
   int m_pay_len;
 
   /**
+   * @brief : Input data source, if empty random generated data source is used.
+   * 
+   */
+  std::string m_string_input;
+
+  /**
    * @brief returns a random string containing [a-z A-Z 0-9] for testing the
    * payload data
    *
@@ -34,21 +40,23 @@ private:
    */
   std::string random_string(int nbytes);
 
-  /**
-   * @brief Handles trigger messages
-   *
-   * @param id
-   */
-  void trigg_handler(pmt::pmt_t id);
+/**
+ * @brief Main function that handles the trigger and dispatches the message making
+ * 
+ * @param msg : PMT input msg (i.e. trigger from strobe)
+ */
+  void trigg_handler(pmt::pmt_t msg);
 
 public:
   /**
    * @brief Construct a new data source impl object
-   *
+   * 
    * @param pay_len : payload length
    * @param n_frames : number of frames to generate data for
+   * @param string_input 
    */
-  data_source_impl(int pay_len, int n_frames);
+  data_source_impl(int pay_len, int n_frames,std::string string_input);
+
   /**
    * @brief Destroy the data source impl object
    *
@@ -56,7 +64,7 @@ public:
   ~data_source_impl();
 
   /**
-   * @brief Main function of data_source that generated random ([a-z A-Z 0-9])
+   * @brief Place holder function of data_source that generated random ([a-z A-Z 0-9])
    * data source to be sent over the network
    *
    * @param noutput_items

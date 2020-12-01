@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Encode the header of the data package
+     * \brief Encode the header of the data package if implicit header mode (denoted by m_impl_head) is turned on
      * For more information about the implementation visit header_impl
      * \ingroup lora_sdr
      *

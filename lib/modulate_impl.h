@@ -74,9 +74,9 @@ private:
   uint32_t symb_cnt;
 
   /**
-   * @brief 
+   * @brief Gnuradio function that handles the PMT message
    * 
-   * @param message 
+   * @param message : PMT message (i.e. input data from datasource)
    */
   void msg_handler(pmt::pmt_t message);
 
@@ -97,20 +97,21 @@ public:
   ~modulate_impl();
 
   /**
-   * @brief 
+   * @brief standard gnuradio forecast function that tells the system that input data is needed before it can continue and compute the actual modulation
    * 
-   * @param noutput_items 
-   * @param ninput_items_required 
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required input items
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief 
+   * @brief Main function where the actual computation is done.
    * 
-   * @param noutput_items 
-   * @param ninput_items 
-   * @param input_items 
-   * @param output_items 
+   * 
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : input data  (i.e. output of gray mapping stage)
+   * @param output_items : output data
    * @return int 
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

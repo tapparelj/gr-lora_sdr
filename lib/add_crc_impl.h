@@ -27,12 +27,12 @@ private:
   uint8_t m_payload_len;
 
   /**
-   * @brief Message handler, handles all the control messages
+   * @brief Message handler, handles the pmt input message (i.e. input data)
    *
-   * @param message :pmt message
+   * @param message : input message (i.e input data)
    */
   void msg_handler(pmt::pmt_t message);
-  
+
   /**
    * @brief CRC16, add 16 bit CRC to the payload.
    *
@@ -46,7 +46,7 @@ public:
   /**
    * @brief Construct a new add crc impl object
    *
-   * @param has_crc
+   * @param has_crc : boolean to indicate if crc should be added to the payload
    */
   add_crc_impl(bool has_crc);
 
@@ -57,7 +57,8 @@ public:
   ~add_crc_impl();
 
   /**
-   * @brief Where all the action really happens
+   * @brief Gnuradio standard function to tell the system it should operate once
+   * it has a input item
    *
    * @param noutput_items : number of output items
    * @param ninput_items_required : number of required input items
@@ -67,6 +68,7 @@ public:
   /**
    * @brief Main function of the add_crc module, this module will add Cyclic
    * Redundancy Check (CRC) to the payload to be able to detect more bit errors.
+   * If m_has_crc is set to True
    *
    * @param noutput_items : number of output items
    * @param ninput_items : number of input items

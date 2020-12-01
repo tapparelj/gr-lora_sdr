@@ -22,13 +22,14 @@ private:
   uint8_t m_sf;
 
   /**
-   * @brief count the number of codewords
+   * @brief variable that counts the number of codewords
    *
    */
   uint32_t cw_cnt;
 
   /**
-   * @brief
+   * @brief PMT input message handler.
+   * Handles the pmt message (i.e. input data)
    *
    * @param message
    */
@@ -50,20 +51,21 @@ public:
   ~interleaver_impl();
 
   /**
-   * @brief
+   * @brief Standard gnuradio function to ensure a number of input items are received before continuing
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of input items
+   * @param ninput_items_required : number of requires input items = 1
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief
+   * @brief Main function that does the actual computation of the interleaver.
+   * 
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : the data of the input items (i.e hamming encoding stage)
+   * @param output_items : output data
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

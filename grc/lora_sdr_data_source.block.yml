@@ -11,6 +11,10 @@ parameters:
 -   id: n_frames
     label: N_frames
     dtype: int
+-   id: string_input
+    label: Input string
+    dtype: string
+
 
 inputs:
 -   domain: message
@@ -22,13 +26,14 @@ outputs:
 
 templates:
     imports: import lora_sdr
-    make: lora_sdr.data_source(${pay_len}, ${n_frames})
+    make: lora_sdr.data_source(${pay_len}, ${n_frames}, ${string_input})
 
 documentation: |-
     Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)
         Parameters:
             Pay_len: length of the payload in bytes
             N_frames: number of frames to send
+            Input string: specific input string to be used, if empty random generated will be used
         Input:
             trigg: trigger signal
         Output:

@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <numeric>
 #include <string.h>
+#include <iostream>
 
 namespace gr {
 namespace lora_sdr {
@@ -74,10 +75,12 @@ inline void build_ref_chirps(gr_complex *upchirp, gr_complex *downchirp,
  */
 inline void build_upchirp(gr_complex *chirp, uint32_t id, uint8_t sf) {
   double N = 1 << sf;
+  //procces all samples
   for (uint n = 0; n < N; n++) {
     // the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
-    chirp[n] = gr_complex(0.9f, 0.0f) *
-               gr_expj(2.0 * M_PI * (n * n / (2 * N) + (id / N - 0.5) * n));
+      chirp[n] = gr_complex(0.9f, 0.0f) *
+                 gr_expj(2.0 * M_PI * (n * n / (2 * N) + (id / N - 0.5) * n));
+
   }
 }
 } // namespace lora_sdr

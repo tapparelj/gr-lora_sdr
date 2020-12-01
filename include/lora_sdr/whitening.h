@@ -28,7 +28,8 @@ namespace gr {
 namespace lora_sdr {
 
 /*!
- * \brief <+description of block+>
+ * \brief Whiten the input data
+ * For more information about the implementation visit whitening_impl
  * \ingroup lora_sdr
  *
  */

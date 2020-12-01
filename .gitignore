@@ -8,6 +8,9 @@ build/
 ##release build script
 !build/release_build.sh
 
+#test folder
+test/
+
 #####
 #Pycharm and VsCode directories
 

@@ -9,13 +9,13 @@ namespace lora_sdr {
 class header_impl : public header {
 private:
   /**
-   * @brief indicate if the header is implicit
+   * @brief boolean variable to indicate implicit header mode is used
    * 
    */
   bool m_impl_head;     
   
   /**
-   * @brief indicate the presence of a payload crc
+   * @brief boolean variable to indicate the presence of a payload crc
    * 
    */
   bool m_has_crc;      
@@ -27,13 +27,13 @@ private:
   uint8_t m_cr;          
   
   /**
-   * @brief Payload length
+   * @brief Payload length (i.e input data length)
    * 
    */
   uint8_t m_payload_len; 
 
   /**
-   * @brief M
+   * @brief Function that handles on the input PMT message (i.e. input data from data source)
    * 
    * @param message pmt message
    */
@@ -43,9 +43,9 @@ public:
   /**
    * @brief Construct a new header impl object
    * 
-   * @param impl_head boolean if implicit header mode is on or off
-   * @param has_crc boolean if crc stage is active or not
-   * @param cr coding rate
+   * @param impl_head boolean variable to indicate implicit header mode is used
+   * @param has_crc boolean variable to indicate the presence of a payload crc
+   * @param cr Transmission coding rate 
    */
   header_impl(bool impl_head, bool has_crc, uint8_t cr);
   
@@ -56,20 +56,22 @@ public:
   ~header_impl();
 
   /**
-   * @brief 
+   * @brief Gnuradio forecast function which tells the 
+   * gnuradio system how many items are needed before it can continue to the work function
    * 
-   * @param noutput_items 
-   * @param ninput_items_required 
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required output items before 
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief 
+   * @brief Main function where the actual computation is done.
+   * If impl_head is set to true the output will be  the payload added with an header
    * 
-   * @param noutput_items 
-   * @param ninput_items 
-   * @param input_items 
-   * @param output_items 
+   * @param noutput_items : number of ouput items
+   * @param ninput_items : number of input items
+   * @param input_items : input items (output of whitening stage)
+   * @param output_items : output items (added header if applicable)
    * @return int 
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

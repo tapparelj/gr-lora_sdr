@@ -290,44 +290,44 @@ private:
    */
   int net_id_off;
 
-#ifdef GRLORA_MEASUREMENTS
-  int off_by_one_id; ///< Indicate that the network identifiers where off by one
-                     ///< and corrected
-  std::ofstream sync_log; ///< savefile containing the offset estimation and the
-                          ///< signal strength estimation
-  int numb_symbol_to_save; ///< number of symbol to save for every erroneous
-                           ///< frame
-  std::vector<gr_complex>
-      last_frame; ///< vector storing samples of the last received frame
-  std::ofstream
-      samples_file; ///< savefile containing the samples of the erroneous frames
-#endif
+// #ifdef GRLORA_MEASUREMENTS
+//   int off_by_one_id; ///< Indicate that the network identifiers where off by one
+//                      ///< and corrected
+//   std::ofstream sync_log; ///< savefile containing the offset estimation and the
+//                           ///< signal strength estimation
+//   int numb_symbol_to_save; ///< number of symbol to save for every erroneous
+//                            ///< frame
+//   std::vector<gr_complex>
+//       last_frame; ///< vector storing samples of the last received frame
+//   std::ofstream
+//       samples_file; ///< savefile containing the samples of the erroneous frames
+// #endif
 
   /**
-   * @brief
-   *
-   * @param cr
+   * @brief Function that handles the coding rate
+   * 
+   * @param cr : coding rate
    */
   void header_cr_handler(pmt::pmt_t cr);
 
   /**
-   * @brief
+   * @brief Function that handles the payload length (i.e. data length)
    *
-   * @param pay_len
+   * @param pay_len :payload length
    */
   void header_pay_len_handler(pmt::pmt_t pay_len);
 
   /**
-   * @brief
+   * @brief Function to handle the crc of the header
    *
-   * @param crc
+   * @param crc : crc 
    */
   void header_crc_handler(pmt::pmt_t crc);
 
   /**
-   * @brief
+   * @brief Handles frame errors coming from the decoding
    *
-   * @param err
+   * @param err : error message
    */
   void frame_err_handler(pmt::pmt_t err);
 
@@ -353,9 +353,9 @@ private:
   void estimate_STO();
 
   /**
-   * @brief The pointer to the symbol beginning.
+   * @brief Function that gets the symbol from the received samples
    *
-   * @param samples
+   * @param samples : the complex samples 
    * @param ref_chirp The reference chirp to use to dechirp the lora symbol.
    * @return uint32_t
    */
@@ -372,18 +372,18 @@ private:
   /**
    * @brief Handles the error message coming from the header decoding.
    *
-   * @param payload_len
+   * @param err : error message
    */
-  void header_err_handler(pmt::pmt_t payload_len);
+  void header_err_handler(pmt::pmt_t err);
 
 public:
   /**
    * @brief Construct a new frame sync impl object
    *
-   * @param samp_rate
-   * @param bandwidth
-   * @param sf
-   * @param impl_head
+   * @param samp_rate : sampling rate
+   * @param bandwidth : bandwidth
+   * @param sf : spreading factor
+   * @param impl_head : boolean to tell if system is in implicit header mode or not
    */
   frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                   bool impl_head);
@@ -394,20 +394,23 @@ public:
   ~frame_sync_impl();
 
   /**
-   * @brief Where all the action really happens
+   * @brief Standard gnuradio function to tell the system
+   * how many input items are needed to produce one output item
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required input items
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief
+   * @brief Main function where the main logic and computation resides.
+   * Function will find the window of samples and preform several estimates 
+   * to synchronies the internal window of samples to have been received (i.e. align them in time and frequency)
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : input items
+   * @param output_items : output items (i.e. start of Rx decoding)
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

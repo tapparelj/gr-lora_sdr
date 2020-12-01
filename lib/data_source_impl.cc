@@ -6,19 +6,27 @@
 namespace gr {
 namespace lora_sdr {
 
-data_source::sptr data_source::make(int pay_len, int n_frames) {
-  return gnuradio::get_initial_sptr(new data_source_impl(pay_len, n_frames));
+data_source::sptr data_source::make(int pay_len, int n_frames,
+                                    std::string string_input) {
+  return gnuradio::get_initial_sptr(
+      new data_source_impl(pay_len, n_frames, string_input));
 }
 
-/*
- * The private constructor
- */
-data_source_impl::data_source_impl(int pay_len, int n_frames)
+  /**
+   * @brief Construct a new data source impl object
+   * 
+   * @param pay_len : payload length
+   * @param n_frames : number of frames to generate data for
+   * @param string_input : input string from gnuradio-companian
+   */
+data_source_impl::data_source_impl(int pay_len, int n_frames,
+                                   std::string string_input)
     : gr::sync_block("data_source", gr::io_signature::make(0, 0, 0),
                      gr::io_signature::make(0, 0, 0)) {
   m_n_frames = n_frames;
   m_pay_len = pay_len;
   frame_cnt = -5; // let some time to the Rx to start listening
+  m_string_input = string_input;
   message_port_register_in(pmt::mp("trigg"));
   set_msg_handler(pmt::mp("trigg"),
                   boost::bind(&data_source_impl::trigg_handler, this, _1));
@@ -26,8 +34,9 @@ data_source_impl::data_source_impl(int pay_len, int n_frames)
   message_port_register_out(pmt::mp("msg"));
 }
 
-/*
- * Our virtual destructor.
+/**
+ * @brief Destroy the data source impl object
+ *
  */
 data_source_impl::~data_source_impl() {}
 
@@ -45,22 +54,33 @@ std::string data_source_impl::random_string(int Nbytes) {
   std::string result;
   result.reserve(Nbytes);
   std::generate_n(std::back_inserter(result), Nbytes, generator);
-
-#ifdef GRLORA_DEBUG
-  GR_LOG_DEBUG(this->d_logger, "DEBUG:Random string:" + result);
-#endif
-
   return result;
 }
 
 /**
- * @brief
- *
- * @param msg
+ * @brief Main function that handles the trigger and dispatches the message making
+ * 
+ * @param msg : PMT input msg (i.e. trigger from strobe)
  */
 void data_source_impl::trigg_handler(pmt::pmt_t msg) {
-  if (frame_cnt < m_n_frames && frame_cnt >= 0) { // send a new payload
-    std::string str = random_string(m_pay_len);
+  // send a new payload
+  if (frame_cnt < m_n_frames && frame_cnt >= 0) {
+    // variable to hold string input
+    std::string str;
+
+    // if no string is set generate random string otherwise use set string.
+    if (m_string_input.empty()) {
+      //generate random string
+      str = random_string(m_pay_len);
+    } else {
+      // take input string
+      str = m_string_input;
+    }
+#ifdef GRLORA_DEBUG
+    //output data string
+    GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" +str);
+#endif
+
     message_port_pub(pmt::intern("msg"), pmt::mp(str));
     // print once in every 50 frames information about the number of frames
     if (!mod(frame_cnt, 50))
@@ -78,6 +98,15 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
   }
 }
 
+/**
+ * @brief Place holder function of data_source that generated random ([a-z A-Z
+ * 0-9]) data source to be sent over the network
+ *
+ * @param noutput_items
+ * @param input_items
+ * @param output_items
+ * @return int
+ */
 int data_source_impl::work(int noutput_items,
                            gr_vector_const_void_star &input_items,
                            gr_vector_void_star &output_items) {

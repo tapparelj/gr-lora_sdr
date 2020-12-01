@@ -24,8 +24,8 @@ public:
   /**
    * @brief Construct a new hamming enc impl object
    *
-   * @param cr
-   * @param sf
+   * @param cr : coding rate
+   * @param sf : spreading factor
    */
   hamming_enc_impl(uint8_t cr, uint8_t sf);
 
@@ -36,11 +36,12 @@ public:
   ~hamming_enc_impl();
 
   /**
-   * @brief Main function
+   * @brief Main function that does the actual hamming encoding.
+   * With cr : coding rate, and sf : spreading factor
    *
-   * @param noutput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param input_items : number of input items
+   * @param output_items : number of output items
    * @return int
    */
   int work(int noutput_items, gr_vector_const_void_star &input_items,
