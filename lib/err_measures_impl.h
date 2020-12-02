@@ -37,21 +37,21 @@ namespace gr {
          */
         int drop; 
 
-        #ifdef GRLORA_MEASUREMENTS
-        std::ofstream err_outfile;
-        #endif
+        // #ifdef GRLORA_MEASUREMENTS
+        // std::ofstream err_outfile;
+        // #endif
 
         /**
-         * @brief 
+         * @brief Msg handler, will handle the incoming decoded message
          * 
-         * @param msg 
+         * @param msg : decoded payload message
          */
         void msg_handler(pmt::pmt_t msg);
 
         /**
-         * @brief 
+         * @brief Reference handler, input of the reference payload
          * 
-         * @param ref 
+         * @param ref : reference payload to compare against
          */
         void ref_handler(pmt::pmt_t ref);
 
@@ -71,9 +71,9 @@ namespace gr {
       /**
        * @brief Main function of error measurement
        * 
-       * @param noutput_items 
-       * @param input_items 
-       * @param output_items 
+       * @param noutput_items : number of output items
+       * @param input_items  : input items (i.e data from dewhitening)
+       * @param output_items : output data (i.e. decode payload)
        * @return int 
        */
       int work(int noutput_items,

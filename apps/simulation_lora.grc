@@ -258,7 +258,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 632.0]
+    coordinate: [304, 520.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_data_source_0_1_0
@@ -360,7 +360,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1920, 360.0]
+    coordinate: [1912, 368.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_decode_0

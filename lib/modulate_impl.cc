@@ -113,13 +113,13 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   }
   symb_cnt++;
 
-#ifdef GRLORA_DEBUG
-  // get vector length
-  double N = 1 << m_sf;
-  // output the modulated signal to the debugger
-  GR_LOG_DEBUG(this->d_logger,
-               "Output Tx:" + complex_vector_2_string(&out[0], N));
-#endif
+// #ifdef GRLORA_DEBUG
+//   // get vector length
+//   double N = 1 << m_sf;
+//   // output the modulated signal to the debugger
+//   GR_LOG_DEBUG(this->d_logger,
+//                "Output Tx:" + complex_vector_2_string(&out[0], N));
+// #endif
 
   return (noutput_items);
 }

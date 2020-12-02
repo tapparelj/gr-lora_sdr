@@ -89,20 +89,20 @@ public:
   ~header_decoder_impl();
 
   /**
-   * @brief
+   * @brief standard gnuradio function to tell the system when to start work
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required input items
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief Main function
+   * @brief Main function where the actual computation resides
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : input data (i.e. hamming decoder stage)
+   * @param output_items : output data
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

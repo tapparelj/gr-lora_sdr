@@ -46,17 +46,19 @@ public:
    *
    */
   hamming_dec_impl();
+  
   /**
    * @brief Destroy the hamming dec impl object
    *
    */
   ~hamming_dec_impl();
+
   /**
-   * @brief Main function
-   *
-   * @param noutput_items
-   * @param input_items
-   * @param output_items
+   * @brief Main function where the actual computation resides
+   * 
+   * @param noutput_items : number of output items
+   * @param input_items : input items (i.e. data from deinterleaver)
+   * @param output_items : output data
    * @return int
    */
   int work(int noutput_items, gr_vector_const_void_star &input_items,

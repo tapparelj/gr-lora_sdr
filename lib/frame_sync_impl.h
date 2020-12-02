@@ -22,17 +22,18 @@ private:
    * - DETECT : Detect preamble
    * - SYNC : synchronize integer part STO,CFO
    * - FRAC_CFO_CORREC : 
-   * - STOP
+   * - STOP :
    *
    */
   enum DecoderState { DETECT, SYNC, FRAC_CFO_CORREC, STOP };
+  
   /**
    * @brief Sync states:
-   * - NET_ID1
-   * - NET_ID2
-   * - DOWNCHIRP1
-   * - DOWNCHIRP2
-   * - QUARTER_DOWN
+   * - NET_ID1 :
+   * - NET_ID2 :
+   * - DOWNCHIRP1 :
+   * - DOWNCHIRP2 : 
+   * - QUARTER_DOWN :
    *
    */
   enum SyncState { NET_ID1, NET_ID2, DOWNCHIRP1, DOWNCHIRP2, QUARTER_DOWN };

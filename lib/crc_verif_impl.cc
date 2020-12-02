@@ -30,6 +30,12 @@ crc_verif_impl::crc_verif_impl()
  */
 crc_verif_impl::~crc_verif_impl() {}
 
+/**
+ * @brief standard gnuradio function to tell the system when to start work
+ *
+ * @param noutput_items : number of output items
+ * @param ninput_items_required : number of input items required
+ */
 void crc_verif_impl::forecast(int noutput_items,
                               gr_vector_int &ninput_items_required) {
   ninput_items_required[0] = 1; // m_payload_len;
@@ -52,14 +58,35 @@ unsigned int crc_verif_impl::crc16(uint8_t *data, uint32_t len) {
   return crc;
 }
 
+/**
+ * @brief Handles the payload length received from the header_decoder block.
+ *
+ * @param payload_len : payload length
+ */
 void crc_verif_impl::header_pay_len_handler(pmt::pmt_t payload_len) {
   m_payload_len = pmt::to_long(payload_len);
   in_buff.clear();
 };
+
+/**
+ * @brief Handles the crc_presence received from the header_decoder block.
+ *
+ * @param crc_presence : boolean is crc is turned on
+ */
 void crc_verif_impl::header_crc_handler(pmt::pmt_t crc_presence) {
   m_crc_presence = pmt::to_long(crc_presence);
 };
 
+/**
+ * @brief Main crc verify function that verifies the Cyclic redundancy check
+ * (CRC) from the add_crc stage
+ *
+ * @param noutput_items : number of output items
+ * @param ninput_items  : number of input items
+ * @param input_items  : input items (i.e. dewhitening)
+ * @param output_items : output data
+ * @return int
+ */
 int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                  gr_vector_const_void_star &input_items,
                                  gr_vector_void_star &output_items) {
@@ -82,13 +109,15 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       // XOR the obtained CRC with the last 2 data bytes
       m_crc = m_crc ^ in_buff[m_payload_len - 1] ^
               (in_buff[m_payload_len - 2] << 8);
-#ifdef GRLORA_DEBUG
-      // for(int i =0;i<in_buff.size();i++)
-      // std::cout<< std::hex << (int)in_buff[i]<<std::dec<<std::endl;
-      // std::cout<<"Calculated "<<std::hex<<m_crc<<std::dec<<std::endl;
-      // std::cout<<"Got
-      // "<<std::hex<<(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8))<<std::dec<<std::endl;
-#endif
+      // #ifdef GRLORA_DEBUG
+      //       // for(int i =0;i<in_buff.size();i++)
+      //       // std::cout<< std::hex << (int)in_buff[i]<<std::dec<<std::endl;
+      //       // std::cout<<"Calculated
+      //       "<<std::hex<<m_crc<<std::dec<<std::endl;
+      //       // std::cout<<"Got
+      //       //
+      //       "<<std::hex<<(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8))<<std::dec<<std::endl;
+      // #endif
 
       // get payload as string
       message_str.clear();
@@ -96,15 +125,16 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         m_char = (char)in_buff[i];
         message_str = message_str + m_char;
       }
-      GR_LOG_INFO(this->d_logger, "INFO:Decode msg is:" + message_str);
+      GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
       if (!(in_buff[m_payload_len] + (in_buff[m_payload_len + 1] << 8) -
             m_crc)) {
 #ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger, "INFO:CRC is valid!");
+        GR_LOG_DEBUG(this->d_logger, "CRC is valid!");
 #endif
       } else {
+        GR_LOG_INFO(this->d_logger, "CRC is invalid");
 #ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger, "INFO:CRC is invalid");
+        GR_LOG_DEBUG(this->d_logger, "CRC is invalid");
 #endif
       }
       message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
@@ -119,9 +149,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       m_char = (char)in_buff[i];
       message_str = message_str + m_char;
     }
-#ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Decode msg is:" + message_str);
-#endif
+
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     in_buff.clear();
     return 0;

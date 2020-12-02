@@ -29,11 +29,11 @@ public:
   ~gray_decode_impl();
 
   /**
-   * @brief Main function
+   * @brief Main function where the actual computation resides
    *
-   * @param noutput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param input_items : input items (i.e. fft_demod)
+   * @param output_items : output data
    * @return int
    */
   int work(int noutput_items, gr_vector_const_void_star &input_items,

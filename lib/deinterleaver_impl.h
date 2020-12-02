@@ -50,7 +50,7 @@ private:
   /**
    * @brief Handles the coding rate received from the header_decoder block.
    * 
-   * @param cr 
+   * @param cr : coding rate
    */
   void header_cr_handler(pmt::pmt_t cr);
 
@@ -58,9 +58,10 @@ public:
   /**
    * @brief Construct a new deinterleaver impl object
    *
-   * @param sf
+   * @param sf : sampling rate
    */
   deinterleaver_impl(uint8_t sf);
+
   /**
    * @brief Destroy the deinterleaver impl object
    *
@@ -68,20 +69,20 @@ public:
   ~deinterleaver_impl();
 
   /**
-   * @brief
+   * @brief Standard gnuradio function to tell the system with 
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required output items
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief
+   * @brief Main function where the actual computation is done
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : input (i.e gray demapping output)
+   * @param output_items : output data
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

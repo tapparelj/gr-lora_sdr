@@ -120,9 +120,9 @@ private:
    *
    */
   bool received_pay_len;
-#ifdef GRLORA_MEASUREMENTS
-  std::ofstream energy_file;
-#endif
+// #ifdef GRLORA_MEASUREMENTS
+//   std::ofstream energy_file;
+// #endif
 
   /**
    * @brief Recover the lora symbol value using argmax of the dechirped symbol
@@ -153,10 +153,10 @@ public:
   /**
    * @brief Construct a new fft demod impl object
    *
-   * @param samp_rate
-   * @param bandwidth
-   * @param sf
-   * @param impl_head
+   * @param samp_rate : sampling rate
+   * @param bandwidth : bandwith
+   * @param sf : spreading factor 
+   * @param impl_head : impl_head mode
    */
   fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                  bool impl_head);
@@ -167,20 +167,20 @@ public:
   ~fft_demod_impl();
 
   /**
-   * @brief
+   * @brief Standard gnuradio function to tell the system how many input and output items are needed.
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of output items required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief Main function
+   * @brief Main function where the actual computation is done
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items to produce
+   * @param ninput_items : number of input items
+   * @param input_items : input item (i.e. output of the frame sync stage)
+   * @param output_items : output data
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

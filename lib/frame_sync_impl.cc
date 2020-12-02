@@ -544,16 +544,16 @@ int frame_sync_impl::general_work(int noutput_items,
       } else if (net_id_off &&
                  (bin_idx - net_id_2) ==
                      net_id_off) { // correct case off by one net id
-#ifdef GRLORA_MEASUREMENTS
-        off_by_one_id = 1;
-#endif
+// #ifdef GRLORA_MEASUREMENTS
+//         off_by_one_id = 1;
+// #endif
 
         items_to_consume -= usFactor * net_id_off;
         symbol_cnt = DOWNCHIRP1;
       } else {
-#ifdef GRLORA_MEASUREMENTS
-        off_by_one_id = 0;
-#endif
+// #ifdef GRLORA_MEASUREMENTS
+//         off_by_one_id = 0;
+// #endif
         symbol_cnt = DOWNCHIRP1;
       }
       break;
@@ -580,11 +580,11 @@ int frame_sync_impl::general_work(int noutput_items,
           usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
       symbol_cnt = 0;
       m_state = FRAC_CFO_CORREC;
-#ifdef GRLORA_MEASUREMENTS
-      sync_log << std::endl
-               << lambda_cfo << ", " << lambda_sto << ", " << CFOint << ","
-               << off_by_one_id << "," << lambda_bernier << ",";
-#endif
+// #ifdef GRLORA_MEASUREMENTS
+//       sync_log << std::endl
+//                << lambda_cfo << ", " << lambda_sto << ", " << CFOint << ","
+//                << off_by_one_id << "," << lambda_bernier << ",";
+// #endif
     }
     }
     noutput_items = 0;

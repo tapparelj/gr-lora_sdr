@@ -59,6 +59,7 @@ public:
    *
    */
   dewhitening_impl();
+  
   /**
    * @brief Destroy the dewhitening impl object
    *
@@ -66,20 +67,20 @@ public:
   ~dewhitening_impl();
 
   /**
-   * @brief
+   * @brief standard gnuradio function to tell the system when to start work
    *
-   * @param noutput_items
-   * @param ninput_items_required
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of input items required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
    * @brief Main dewhitining function
    *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
+   * @param noutput_items : number of output items 
+   * @param ninput_items : number of input items
+   * @param input_items : input data (i.e. header_decoder stage)
+   * @param output_items : output data
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,
