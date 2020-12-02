@@ -77,7 +77,7 @@ class qa_rx(gr_unittest.TestCase):
 
         # get the writen file
         base = os.getcwd()
-        file_result = base + "/../results/1_result.txt"
+        file_result = base + "/../results/2_result.txt"
         f = open(file_result, "r")
         vector = f.read()
         f.close()
@@ -171,8 +171,9 @@ class qa_rx(gr_unittest.TestCase):
         # get the message from the store port of the message debug printer
         msg = self.blocks_message_debug_0.get_message(1)
         print("Message!")
-        print(msg)
+        msg = pmt.symbol_to_string(msg)
         print(type(msg))
+        #print(msg)
         # #self.tb.run()
         # self.tb.start()
         # time.sleep(10)

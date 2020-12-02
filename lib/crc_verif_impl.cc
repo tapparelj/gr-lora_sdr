@@ -149,7 +149,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       m_char = (char)in_buff[i];
       message_str = message_str + m_char;
     }
-
+    GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     in_buff.clear();
     return 0;
