@@ -48,9 +48,9 @@ class qa_rx(gr_unittest.TestCase):
         self.sf = sf = 5
         self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 1
-        self.impl_head = impl_head = True
-        self.has_crc = has_crc = True
+        self.n_frame = n_frame = 2
+        self.impl_head = impl_head = False
+        self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
         self.cr = cr = 0
 
@@ -77,14 +77,14 @@ class qa_rx(gr_unittest.TestCase):
 
         # get the writen file
         base = os.getcwd()
-        file_result = base + "/../results/2_result.txt"
+        file_result = base + "/../results/test_2_result.txt"
         f = open(file_result, "r")
         vector = f.read()
         f.close()
         # transform vector string from file to the right format
         vector = ast.literal_eval(vector)
         self.blocks_vector_source_x_0 = blocks.vector_source_c(
-            vector, True, 1, [])
+            vector, False, 1, [])
 
         ##################################################
         # Connections
@@ -168,19 +168,24 @@ class qa_rx(gr_unittest.TestCase):
 
         # run the flowgraph
         self.tb.run()
+        num = self.blocks_message_debug_0.num_messages()
+        print("Number:")
+        print(num)
         # get the message from the store port of the message debug printer
-        msg = self.blocks_message_debug_0.get_message(1)
+        msg_debug = self.blocks_message_debug_0.get_message(0)
         print("Message!")
-        msg = pmt.symbol_to_string(msg)
+        msg = pmt.symbol_to_string(msg_debug)
         print(type(msg))
+        print(msg)
         #print(msg)
         # #self.tb.run()
         # self.tb.start()
         # time.sleep(10)
         # self.tb.stop()
         # self.tb.wait()
-        self.assertMultiLineEqual(
-            src_data, msg, msg="Error decoded data is not the same as input data")
+        self.assertMultiLineEqual(src_data,msg,msg="Error decoded data {0} is not the same as input data {1}".format(msg,src_data))
+
+
 
 
 if __name__ == '__main__':

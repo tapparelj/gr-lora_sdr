@@ -37,7 +37,7 @@ class sim_lor(gr.top_block):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 2
+        self.n_frame = n_frame = 8
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -70,8 +70,10 @@ class sim_lor(gr.top_block):
         self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, '')
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
+        self.blocks_vector_sink_x_0_0 = blocks.vector_sink_c(1, 1024)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
+        self.blocks_interleaved_char_to_complex_0 = blocks.interleaved_char_to_complex(False)
 
 
 
@@ -97,11 +99,12 @@ class sim_lor(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
+        self.connect((self.blocks_interleaved_char_to_complex_0, 0), (self.blocks_vector_sink_x_0_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
         self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))
@@ -116,6 +119,7 @@ class sim_lor(gr.top_block):
         self.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
         self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_decode_0, 0))
         self.connect((self.lora_sdr_modulate_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.lora_sdr_whitening_0, 0), (self.blocks_interleaved_char_to_complex_0, 0))
         self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.lora_sdr_frame_sync_0, 0))
 
@@ -212,7 +216,7 @@ def main(top_block_cls=sim_lor, options=None):
     tb.start()
 
     try:
-        input('Press Enter to quit: \n')
+        input('Press Enter to quit: ')
     except EOFError:
         pass
     tb.stop()

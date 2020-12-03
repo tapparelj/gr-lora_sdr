@@ -59,7 +59,7 @@ class qa_tx(gr.top_block):
         self.sf = sf = file_sf
         self.samp_rate = samp_rate = file_bw
         self.pay_len = pay_len = file_paylen
-        self.n_frame = n_frame = 1
+        self.n_frame = n_frame = 2
         self.impl_head = impl_head = file_impl_head
         self.has_crc = has_crc = file_has_crc
         self.frame_period = frame_period = 200
@@ -111,7 +111,7 @@ class qa_tx(gr.top_block):
         # #get current working folder
         base = os.getcwd()
         # #set the written data file
-        file_result = base+"/results/"+str(file_testcase[0])+"_result.txt"
+        file_result = base+"/results/test_"+str(file_testcase[0])+"_result.txt"
         result_data = dst.data()
         f = open(file_result, "w")
         f.write(str(result_data))
@@ -128,33 +128,40 @@ def from_dict(dct):
 def main():
 
         #list test values to make reference files for and test cases
-        source_data_list = ["PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ","PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"]
+        source_data_list = ["PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"]
         bw_list = [250000]
         sf_list = [5,6,7,8]
         paylen_list = [64]
         impl_head_list = [True,False]
-        has_crc_list = [True,False]
-        cr_list = [0,1]
+
+        has_crc_list = [False]
+        cr_list = [0]
+        # has_crc_list = [True,False]
+        # cr_list = [0,1]
+
+        #start test counter at 1
+        test_counter = 1
         
         #write standard beginning of template into test_cases/qa_tx.py
         f_template = open('template/standard_tx_first.py','r')
         f_template_text = f_template.read()
-        f = open("test_cases/qa_tx.py","w")
+        file_name = "test_cases/qa"+str(test_counter)+"_tx.py"
+        f = open(file_name,"w")
         f.write(f_template_text)
         f.close()
         f_template.close()
         #write standard beginning of template into test_cases/qa_tx.py
+        file_name = "test_cases/qa"+str(test_counter)+"_rx.py"
         f_template = open('template/standard_rx_first.py','r')
         f_template_text = f_template.read()
-        f = open("test_cases/qa_rx.py","w")
+        f = open(file_name,"w")
         f.write(f_template_text)
         f.close()
         f_template.close()
 
 
 
-        #start test counter at 1
-        test_counter = 1
+
         #loop over all values and make the test cases and the reference file
         for source_data in source_data_list:
             for bw in bw_list:
@@ -163,6 +170,25 @@ def main():
                         for impl_head in impl_head_list:
                             for has_crc in has_crc_list:
                                 for cr in cr_list:
+
+                                    file_name_tx = "test_cases/qa"+str(test_counter)+"_tx.py"
+                                    file_name_rx = "test_cases/qa"+str(test_counter)+"_rx.py"
+
+                                    #write standard beginning of template into test_cases/qa_tx.py
+                                    f_template = open('template/standard_tx_first.py','r')
+                                    f_template_text = f_template.read()
+                                    f = open(file_name_tx,"w")
+                                    f.write(f_template_text)
+                                    f.close()
+                                    f_template.close()
+
+                                    #write standard beginning of template into test_cases/qa_tx.py
+                                    f_template = open('template/standard_rx_first.py','r')
+                                    f_template_text = f_template.read()
+                                    f = open(file_name_rx,"w")
+                                    f.write(f_template_text)
+                                    f.close()
+                                    f_template.close()
 
                                     #write config file for 
                                     f = open("config", "w")
@@ -176,7 +202,7 @@ def main():
                                     f.write(str(cr)+"\n")
                                     f.close()
 
-                                
+
                                     f_template = open('template/testcase_tx.py','r')
                                     f_template_text = f_template.read()
                                     subs = {
@@ -190,11 +216,12 @@ def main():
                                         "cr" : str(cr)
                                     }
                                     replaced_text = re.sub('@@(.*?)@@', from_dict(subs), f_template_text)
-
-                                    f = open("test_cases/qa_tx.py","a")
+                                    
+                                    f = open(file_name_tx,"a")
                                     f.write(replaced_text)
                                     f.close()
 
+                                    
                                     f_template = open('template/testcase_rx.py','r')
                                     f_template_text = f_template.read()
                                     subs = {
@@ -210,29 +237,31 @@ def main():
                                     #replace placeholder text with actual variables
                                     replaced_text = re.sub('@@(.*?)@@', from_dict(subs), f_template_text)
                                     
-
-                                    f = open("test_cases/qa_rx.py","a")
+                                    f = open(file_name_rx,"a")
                                     f.write(replaced_text)
                                     f.close()
-
-                                    test_counter = test_counter+1
+                                    print("Generating test case {}".format(test_counter))
+                                    print("file: {0} source: {1} bw: {2} sf: {3} paylen: {4} impl: {5} crc: {6} cr: {7}".format(test_counter,source_data,bw,sf,paylen,impl_head,has_crc,cr))
+                                    
                                     qa_tx().reference_generator()
             
-        #write standard last of template into test_cases/qa_tx.py
-        f_template = open('template/standard_tx_last.py','r')
-        f_template_text = f_template.read()
-        f = open("test_cases/qa_tx.py","a")
-        f.write(f_template_text)
-        f.close()
-        f_template.close()
-        #write standard last of template into test_cases/qa_rx.py
-        f_template = open('template/standard_rx_last.py','r')
-        f_template_text = f_template.read()
-        f = open("test_cases/qa_rx.py","a")
-        f.write(f_template_text)
-        f.close()
-        f_template.close()
-                                
+                                    #write standard last of template into test_cases/qa_tx.py
+                                    f_template = open('template/standard_tx_last.py','r')
+                                    f_template_text = f_template.read()
+                                    f = open(file_name_tx,"a")
+                                    f.write(f_template_text)
+                                    f.close()
+                                    f_template.close()
+                                    #write standard last of template into test_cases/qa_rx.py
+                                    f_template = open('template/standard_rx_last.py','r')
+                                    f_template_text = f_template.read()
+                                    f = open(file_name_rx,"a")
+                                    f.write(f_template_text)
+                                    f.close()
+                                    f_template.close()
+
+                                    test_counter = test_counter+1
+                                                            
 
 
 main()

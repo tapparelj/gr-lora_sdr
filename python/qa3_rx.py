@@ -1,18 +1,59 @@
-    def test_@@filename@@(self):
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2020 "Martyn van Dijke".
+#
+# This is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this software; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street,
+# Boston, MA 02110-1301, USA.
+#
+
+from gnuradio import gr, gr_unittest
+from gnuradio import blocks
+import lora_sdr_swig as lora_sdr
+import pmt
+import time
+import filecmp
+import os
+from gnuradio import filter
+from gnuradio.filter import firdes
+import ast
+
+class qa_rx(gr_unittest.TestCase):
+
+    def setUp(self):
+        self.tb = gr.top_block()
+
+
+    def tearDown(self):
+        self.tb = None  
+
+    def test_001(self):
         ##################################################
         # Variables
         ##################################################
         #input data into the system
-        src_data = "@@source_data@@"
-        self.bw = bw = @@bw@@
-        self.sf = sf = @@sf@@
-        self.samp_rate = samp_rate = @@bw@@
-        self.pay_len = pay_len = @@pay_len@@
+        src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
+        self.bw = bw = 250000
+        self.sf = sf = 7
+        self.samp_rate = samp_rate = 250000
+        self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
-        self.impl_head = impl_head = @@impl_head@@
-        self.has_crc = has_crc = @@has_crc@@
+        self.impl_head = impl_head = True
+        self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.cr = cr = @@cr@@
+        self.cr = cr = 0
 
 
         ##################################################
@@ -35,7 +76,7 @@
 
         #get the writen file
         base = os.getcwd()
-        file_result = base+"/../../test-case-generator/reference_files/test_@@filename@@_result.txt"
+        file_result = base+"/../../test-case-generator/reference_files/test_3_result.txt"
         f = open(file_result, "r")
         vector = f.read()
         f.close()
@@ -85,3 +126,5 @@
         #check if message received is message decoded
         self.assertMultiLineEqual(src_data,msg,msg="Error decoded data {0} is not the same as input data {1}".format(msg,src_data))
 
+if __name__ == '__main__':
+    gr_unittest.run(qa_rx)
