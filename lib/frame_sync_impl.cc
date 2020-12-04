@@ -100,19 +100,19 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   // #endif
 }
 
-  /**
-   * @brief Destroy the frame sync impl object
-   *
-   */
+/**
+ * @brief Destroy the frame sync impl object
+ *
+ */
 frame_sync_impl::~frame_sync_impl() {}
 
-  /**
-   * @brief Standard gnuradio function to tell the system
-   * how many input items are needed to produce one output item
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items_required : number of required input items
-   */
+/**
+ * @brief Standard gnuradio function to tell the system
+ * how many input items are needed to produce one output item
+ *
+ * @param noutput_items : number of output items
+ * @param ninput_items_required : number of required input items
+ */
 void frame_sync_impl::forecast(int noutput_items,
                                gr_vector_int &ninput_items_required) {
   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
@@ -346,6 +346,7 @@ uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples,
   // Return argmax here
   return ((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag));
 }
+
 /**
  * @brief Determine the energy of a symbol.
  *
@@ -417,6 +418,7 @@ void frame_sync_impl::header_err_handler(pmt::pmt_t err) {
   GR_LOG_INFO(this->d_logger,
               "Error in header decoding, reverting to detecting the header" +
                   pmt::symbol_to_string(err));
+  //Set sync state to detect and start over the synchronisation
   m_state = DETECT;
   symbol_cnt = 1;
 };
@@ -457,56 +459,92 @@ int frame_sync_impl::general_work(int noutput_items,
                                   gr_vector_int &ninput_items,
                                   gr_vector_const_void_star &input_items,
                                   gr_vector_void_star &output_items) {
+  // cast input and output to the right format (i.e. gr_complex)
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
   // downsampling
-  for (int ii = 0; ii < m_number_of_bins; ii++)
+  for (int ii = 0; ii < m_number_of_bins; ii++) {
     in_down[ii] =
         in[(int)(usFactor - 1 + usFactor * ii - round(lambda_sto * usFactor))];
+  }
+
+  // switch case to distinguish between the possible sync states
   switch (m_state) {
+  // detect preamble
   case DETECT: {
+    /**
+     * @brief Detect preamble.
+     * In order to detect preamble we start looking for consecutive symbols
+     * (with a margin of ±1) (The +- 1 margin is needed for the possible fractal
+     * part offset)
+     *
+     */
+    // get value of symbol
     bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
-    if (std::abs(bin_idx_new - bin_idx) <=
-        1) { // look for consecutive reference upchirps(with a margin of ±1)
-      if (symbol_cnt == 1) // we should also add the first symbol value
+    // First search for consecutive symbols with symbol {s+1,s,s-1}
+    if (std::abs(bin_idx_new - bin_idx) <= 1) {
+      // we should also add the first symbol value
+      if (symbol_cnt == 1) {
         k_hat += bin_idx;
-
+      }
+      //
       k_hat += bin_idx_new;
       memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
              m_samples_per_symbol * sizeof(gr_complex));
       symbol_cnt++;
-    } else {
+    }
+    // no consecutive symbols found
+    else {
       memcpy(&preamble_raw[0], &in_down[0],
              m_samples_per_symbol * sizeof(gr_complex));
       symbol_cnt = 1;
       k_hat = 0;
     }
+    // set index of symbol
     bin_idx = bin_idx_new;
+    // if the number of consecutive symbols is n_up (number of consecutive
+    // symbols) -1
     if (symbol_cnt == (int)(n_up - 1)) {
+      // preamble synchronisation is done !, set new sync state
       m_state = SYNC;
+      // clear variables
       symbol_cnt = 0;
       cfo_sto_est = false;
-
+      //
       k_hat = round(k_hat / (n_up - 1));
-
-      // perform the coarse synchronization
+      // perform coarse synchronization, i.e shift the samples inside the buffer
       items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
-    } else
+    }
+    // preamble sync not completed
+    else {
       items_to_consume = usFactor * m_samples_per_symbol;
+    }
+    // set number of output items to be 0, since output is only used for
+    // synchronisation and no output
     noutput_items = 0;
     break;
   }
+  // synchronize integer part CFO and STO
   case SYNC: {
+    /**
+     * @brief Synchronize integer part STO,CFO
+     * We have preamble detection, now we need part 2 of synchronisation
+     * synchronisation of integer part of STO and CFO
+     */
+    // if there is not
     if (!cfo_sto_est) {
+      // preform CFO estimate
       estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
+      // preform STO estimate
       estimate_STO();
-      // create correction vector
+      // create CFO correction vector
       for (int n = 0; n < m_number_of_bins; n++) {
         CFO_frac_correc[n] =
             gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
       }
+      // set
       cfo_sto_est = true;
     }
     items_to_consume = usFactor * m_samples_per_symbol;
@@ -515,27 +553,44 @@ int frame_sync_impl::general_work(int noutput_items,
                                m_samples_per_symbol);
 
     bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
-
+    //
     switch (symbol_cnt) {
+      /**
+       * @brief
+       *
+       */
     case NET_ID1: {
-      if (bin_idx == 0 || bin_idx == 1 ||
-          bin_idx == m_number_of_bins -
-                         1) { // look for additional upchirps. Won't work if
-                              // network identifier 1 equals 2^sf-1, 0 or 1!
-      } else if (labs(bin_idx - net_id_1) > 1) { // wrong network identifier
+      /**
+       * @brief Network identifier 1
+       *
+       */
+      // look for additional upchirps. Won't work if
+      // network identifier 1 equals 2^sf-1, 0 or 1!
+      if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
+
+      }
+      // wrong network identifier
+      else if (labs(bin_idx - net_id_1) > 1) {
         m_state = DETECT;
         symbol_cnt = 1;
         noutput_items = 0;
         k_hat = 0;
         lambda_sto = 0;
-      } else { // network identifier 1 correct or off by one
+      }
+      // network identifier 1 correct or off by one
+      else {
         net_id_off = bin_idx - net_id_1;
         symbol_cnt = NET_ID2;
       }
       break;
     }
     case NET_ID2: {
-      if (labs(bin_idx - net_id_2) > 1) { // wrong network identifier
+      /**
+       * @brief Network identifier 2
+       *
+       */
+      // wrong network identifier
+      if (labs(bin_idx - net_id_2) > 1) {
         m_state = DETECT;
         symbol_cnt = 1;
         noutput_items = 0;
@@ -544,24 +599,32 @@ int frame_sync_impl::general_work(int noutput_items,
       } else if (net_id_off &&
                  (bin_idx - net_id_2) ==
                      net_id_off) { // correct case off by one net id
-// #ifdef GRLORA_MEASUREMENTS
-//         off_by_one_id = 1;
-// #endif
+                                   // #ifdef GRLORA_MEASUREMENTS
+                                   //         off_by_one_id = 1;
+                                   // #endif
 
         items_to_consume -= usFactor * net_id_off;
         symbol_cnt = DOWNCHIRP1;
       } else {
-// #ifdef GRLORA_MEASUREMENTS
-//         off_by_one_id = 0;
-// #endif
+        // #ifdef GRLORA_MEASUREMENTS
+        //         off_by_one_id = 0;
+        // #endif
         symbol_cnt = DOWNCHIRP1;
       }
       break;
     }
     case DOWNCHIRP1:
+      /**
+       * @brief
+       *
+       */
       symbol_cnt = DOWNCHIRP2;
       break;
     case DOWNCHIRP2: {
+      /**
+       * @brief
+       *
+       */
       down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
       symbol_cnt = QUARTER_DOWN;
       break;
@@ -580,17 +643,22 @@ int frame_sync_impl::general_work(int noutput_items,
           usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
       symbol_cnt = 0;
       m_state = FRAC_CFO_CORREC;
-// #ifdef GRLORA_MEASUREMENTS
-//       sync_log << std::endl
-//                << lambda_cfo << ", " << lambda_sto << ", " << CFOint << ","
-//                << off_by_one_id << "," << lambda_bernier << ",";
-// #endif
+      // #ifdef GRLORA_MEASUREMENTS
+      //       sync_log << std::endl
+      //                << lambda_cfo << ", " << lambda_sto << ", " << CFOint <<
+      //                ","
+      //                << off_by_one_id << "," << lambda_bernier << ",";
+      // #endif
     }
     }
     noutput_items = 0;
     break;
   }
   case FRAC_CFO_CORREC: {
+    /**
+     * @brief synchronize the fractal part of the CFO
+     *
+     */
     // transmitt only useful symbols (at least 8 symbol)
     if (symbol_cnt < symb_numb ||
         !(received_cr && received_crc && received_pay_len)) {
@@ -609,7 +677,9 @@ int frame_sync_impl::general_work(int noutput_items,
       items_to_consume = usFactor * m_samples_per_symbol;
       noutput_items = 1;
       symbol_cnt++;
-    } else {
+    }
+    //Error revert to the syncing stage 
+    else {
       m_state = DETECT;
       symbol_cnt = 1;
       items_to_consume = usFactor * m_samples_per_symbol;
