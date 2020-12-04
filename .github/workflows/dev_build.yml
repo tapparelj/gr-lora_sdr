@@ -21,8 +21,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref : dev
-        path : dev
-        fetch-depth: 0
     
     - name: Remove build dir
       working-directory: $GITHUB_WORKSPACE
