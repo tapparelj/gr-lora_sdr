@@ -70,10 +70,8 @@ class sim_lor(gr.top_block):
         self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, '')
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        self.blocks_vector_sink_x_0_0 = blocks.vector_sink_c(1, 1024)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
-        self.blocks_interleaved_char_to_complex_0 = blocks.interleaved_char_to_complex(False)
 
 
 
@@ -104,7 +102,6 @@ class sim_lor(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
-        self.connect((self.blocks_interleaved_char_to_complex_0, 0), (self.blocks_vector_sink_x_0_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
         self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))
@@ -119,7 +116,6 @@ class sim_lor(gr.top_block):
         self.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
         self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_decode_0, 0))
         self.connect((self.lora_sdr_modulate_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.lora_sdr_whitening_0, 0), (self.blocks_interleaved_char_to_complex_0, 0))
         self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.lora_sdr_frame_sync_0, 0))
 

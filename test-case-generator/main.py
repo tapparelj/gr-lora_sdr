@@ -27,17 +27,15 @@ def main():
     source_data_list = [
         "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"]
     bw_list = [250000]
-    sf_list = [5, 6, 7, 8]
+    sf_list = [7, 8,9,10,11,12]
     paylen_list = [64]
-    impl_head_list = [True]
-    has_crc_list = [False]
-    cr_list = [0]
-    # impl_head_list = [True, False]
-    # has_crc_list = [True,False]
-    # cr_list = [0,1]
+    impl_head_list = [True, False]
+    has_crc_list = [False, True]
+    cr_list = [0,5,6,7,8]
 
     # start test counter at 1
     test_counter = 1
+    file_writer.write_cmake_begin()
     
     # loop over all values and make the test cases and the reference file
     for source_data in source_data_list:
@@ -48,6 +46,8 @@ def main():
                         for has_crc in has_crc_list:
                             for cr in cr_list:
 
+                                file_writer.clean_template(test_counter)
+
                                 print("Generating test case {}".format(
                                     test_counter))
                                 print("file: {0} source: {1} bw: {2} sf: {3} paylen: {4} impl: {5} crc: {6} cr: {7}".format(
@@ -56,6 +56,8 @@ def main():
                                 # write info into test case template
                                 file_writer.write_template(
                                     test_counter, source_data, bw, sf, paylen, impl_head, has_crc, cr)
+
+                                file_writer.update_cmake(test_counter)
 
                                 test_counter = test_counter+1
 

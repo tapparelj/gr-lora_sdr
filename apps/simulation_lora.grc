@@ -152,22 +152,6 @@ blocks:
     coordinate: [352, 0.0]
     rotation: 0
     state: enabled
-- name: blocks_interleaved_char_to_complex_0
-  id: blocks_interleaved_char_to_complex
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    vector_input: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [664, 260.0]
-    rotation: 0
-    state: true
 - name: blocks_message_strobe_random_0_1_0
   id: blocks_message_strobe_random
   parameters:
@@ -204,22 +188,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1776, 188.0]
-    rotation: 0
-    state: true
-- name: blocks_vector_sink_x_0_0
-  id: blocks_vector_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    reserve_items: '1024'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [896, 264.0]
     rotation: 0
     state: true
 - name: channels_channel_model_0
@@ -567,7 +535,6 @@ blocks:
     state: enabled
 
 connections:
-- [blocks_interleaved_char_to_complex_0, '0', blocks_vector_sink_x_0_0, '0']
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_data_source_0_1_0, trigg]
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
 - [blocks_throttle_0, '0', rational_resampler_xxx_0, '0']
@@ -608,7 +575,6 @@ connections:
 - [lora_sdr_header_decoder_0, pay_len, lora_sdr_frame_sync_0, pay_len]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_decode_0, '0']
 - [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
-- [lora_sdr_whitening_0, '0', blocks_interleaved_char_to_complex_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 - [rational_resampler_xxx_0, '0', lora_sdr_frame_sync_0, '0']
 
