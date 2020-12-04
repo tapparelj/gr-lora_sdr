@@ -82,10 +82,10 @@ class qa_tx_rx(gr_unittest.TestCase):
             pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
         # Rx side
         self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
-                interpolation=4,
-                decimation=1,
-                taps=None,
-                fractional_bw=None)
+            interpolation=4,
+            decimation=1,
+            taps=None,
+            fractional_bw=None)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(
             impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
@@ -106,17 +106,17 @@ class qa_tx_rx(gr_unittest.TestCase):
         ##################################################
         # Tx side
         self.tb.msg_connect((self.blocks_message_strobe_random_0_1_0,
-                            'strobe'), (self.lora_sdr_data_source_0_1_0, 'trigg'))
+                             'strobe'), (self.lora_sdr_data_source_0_1_0, 'trigg'))
         self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                            'msg'), (self.lora_sdr_add_crc_0, 'msg'))
+                             'msg'), (self.lora_sdr_add_crc_0, 'msg'))
         self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                            'msg'), (self.lora_sdr_header_0, 'msg'))
+                             'msg'), (self.lora_sdr_header_0, 'msg'))
         self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                            'msg'), (self.lora_sdr_interleaver_0, 'msg'))
+                             'msg'), (self.lora_sdr_interleaver_0, 'msg'))
         self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                            'msg'), (self.lora_sdr_modulate_0, 'msg'))
+                             'msg'), (self.lora_sdr_modulate_0, 'msg'))
         self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                            'msg'), (self.lora_sdr_whitening_0, 'msg'))
+                             'msg'), (self.lora_sdr_whitening_0, 'msg'))
         self.tb.connect((self.lora_sdr_add_crc_0, 0),
                         (self.lora_sdr_hamming_enc_0, 0))
         self.tb.connect((self.lora_sdr_gray_decode_0, 0),
@@ -148,27 +148,27 @@ class qa_tx_rx(gr_unittest.TestCase):
         self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
                             (self.lora_sdr_header_decoder_0, 'new_frame'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
+                             'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
+                             'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0, 'CR'),
                             (self.lora_sdr_deinterleaver_0, 'CR'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
+                             'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
+                             'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
+                             'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
+                             'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'err'), (self.lora_sdr_frame_sync_0, 'err'))
+                             'err'), (self.lora_sdr_frame_sync_0, 'err'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
+                             'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
+                             'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                            'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
+                             'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
         self.tb.connect((self.lora_sdr_deinterleaver_0, 0),
                         (self.lora_sdr_hamming_dec_0, 0))
         self.tb.connect((self.lora_sdr_dewhitening_0, 0),
@@ -198,11 +198,14 @@ class qa_tx_rx(gr_unittest.TestCase):
         except:
             # if not possible set message to be None
             msg = None
-        # check if message received is the same as the message decoded
-        meg_err = "Error decoded data {0} is not the same as input data {1}.\n Test : {2} with test parameters, input data: {3}, bw: {4}, sf: {3}, paylen: {4}, impl header: {5}, crc: {6}, cr:{7} failed, please fix or report".format(
-            msg, src_data, test_counter, source_data, bw, sf, paylen, impl_head, has_crc, cr)
 
-        self.assertMultiLineEqual(src_data, msg, msg=msg_err)
+        # check if message received is the same as the message decoded
+        self.assertMultiLineEqual(
+            src_data, msg, msg="Error decoded data {0} is not the same as input data {1}".format(msg, src_data))
+
+        # self.assertMultiLineEqual(src_data, msg, msg="Error decoded data {0} is not the same as input data {1}.".format(
+        #     msg, src_data
+
 
 if __name__ == '__main__':
     gr_unittest.run(qa_tx_rx)
