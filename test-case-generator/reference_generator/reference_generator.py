@@ -34,7 +34,6 @@ class qa_tx(gr.top_block):
     def reference_generator(self):
         self.tb = gr.top_block()
         # input data into the system
-
         # open config file to load the settings and
         f = open("config", "r")
         file_testcase = str(f.readline()).splitlines()
@@ -46,6 +45,7 @@ class qa_tx(gr.top_block):
         file_has_crc = bool(f.readline())
         file_cr = int(f.readline())
         f.close()
+        print(file_testcase,src_data,file_bw,file_sf,file_paylen,file_impl_head,file_has_crc,file_cr)
 
         ##################################################
         # Variables
@@ -72,9 +72,8 @@ class qa_tx(gr.top_block):
         self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
         self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, src_data)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex *1)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
-        # destination block -> complex vector sink
         dst = blocks.vector_sink_c()
 
 
@@ -93,8 +92,8 @@ class qa_tx(gr.top_block):
         self.tb.connect((self.lora_sdr_header_0, 0), (self.lora_sdr_add_crc_0, 0))
         self.tb.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_decode_0, 0))
         self.tb.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
-        # connect to complex vector sink
-        self.tb.connect((self.lora_sdr_modulate_0, 0) ,dst)
+        #connect to complex vector sink 
+        self.tb.connect((self.lora_sdr_modulate_0, 0),dst) 
 
         # self.tb.run()
         # run for 10 seconds and then close

@@ -35,7 +35,7 @@
 
         #get the writen file
         base = os.getcwd()
-        file_result = base+"/../../test-case-generator/reference_files/test_@@filename@@_result.txt"
+        file_result = base+"/../../test-case-generator/reference_files/ref_@@filename@@_result.txt"
         f = open(file_result, "r")
         vector = f.read()
         f.close()

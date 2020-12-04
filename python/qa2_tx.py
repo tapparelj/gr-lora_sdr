@@ -95,7 +95,7 @@ class qa_tx(gr_unittest.TestCase):
         #get current working folder
         base = os.getcwd()
         #file with output data that is expected
-        file_expected = base+"/../../test-case-generator/reference_files/test_2_result.txt"
+        file_expected = base+"/../../test-case-generator/reference_files/ref_2_result.txt"
 
         #set the written data file
         file_result = base+"/../../test-case-generator/reference_files/tx_2_result.txt"

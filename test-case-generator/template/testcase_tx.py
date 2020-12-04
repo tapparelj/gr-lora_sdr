@@ -58,7 +58,7 @@
         #get current working folder
         base = os.getcwd()
         #file with output data that is expected
-        file_expected = base+"/../../test-case-generator/reference_files/test_@@filename@@_result.txt"
+        file_expected = base+"/../../test-case-generator/reference_files/ref_@@filename@@_result.txt"
 
         #set the written data file
         file_result = base+"/../../test-case-generator/reference_files/tx_@@filename@@_result.txt"

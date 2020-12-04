@@ -76,7 +76,7 @@ class qa_rx(gr_unittest.TestCase):
 
         #get the writen file
         base = os.getcwd()
-        file_result = base+"/../../test-case-generator/reference_files/test_3_result.txt"
+        file_result = base+"/../../test-case-generator/reference_files/ref_3_result.txt"
         f = open(file_result, "r")
         vector = f.read()
         f.close()
