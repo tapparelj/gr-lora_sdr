@@ -52,7 +52,7 @@ jobs:
       run: ctest -C $BUILD_TYPE
     
     - name: Remove build dir
-        working-directory: ${{runner.workspace}}
-        shell: bash
-        run: |
-          rm -rf dev-test
+      working-directory: ${{runner.workspace}}
+      shell: bash
+      run: |
+        rm -rf dev-test
