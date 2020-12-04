@@ -15,7 +15,6 @@ import filecmp
 import os
 import sys
 import re
-from reference_generator import reference_generator
 from file_writer import file_writer
 
 
@@ -39,7 +38,7 @@ def main():
 
     # start test counter at 1
     test_counter = 1
-
+    
     # loop over all values and make the test cases and the reference file
     for source_data in source_data_list:
         for bw in bw_list:
@@ -54,21 +53,9 @@ def main():
                                 print("file: {0} source: {1} bw: {2} sf: {3} paylen: {4} impl: {5} crc: {6} cr: {7}".format(
                                     test_counter, source_data, bw, sf, paylen, impl_head, has_crc, cr))
 
-                                # write beginning of file
-                                file_writer.write_begin(test_counter)
-
-                                # write info into template
+                                # write info into test case template
                                 file_writer.write_template(
                                     test_counter, source_data, bw, sf, paylen, impl_head, has_crc, cr)
-
-                                # write config file for reference generator
-                                file_writer.write_config(
-                                    test_counter, source_data, bw, sf, paylen, impl_head, has_crc, cr)
-
-                                reference_generator.qa_tx().reference_generator()
-
-                                # write end of the file
-                                file_writer.write_end(test_counter)
 
                                 test_counter = test_counter+1
 

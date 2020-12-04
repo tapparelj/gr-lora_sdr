@@ -30,7 +30,7 @@ from gnuradio import filter
 from gnuradio.filter import firdes
 import ast
 
-class qa_rx(gr_unittest.TestCase):
+class qa_tx_rx(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.top_block()
@@ -38,15 +38,16 @@ class qa_rx(gr_unittest.TestCase):
 
     def tearDown(self):
         self.tb = None  
-
-    def test_001(self):
+ 
+ 
+    def test_2(self):
         ##################################################
         # Variables
         ##################################################
         #input data into the system
         src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
-        self.sf = sf = 7
+        self.sf = sf = 6
         self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
@@ -55,10 +56,22 @@ class qa_rx(gr_unittest.TestCase):
         self.frame_period = frame_period = 200
         self.cr = cr = 0
 
-
         ##################################################
         # Blocks
         ##################################################
+        ##Tx side
+        self.lora_sdr_whitening_0 = lora_sdr.whitening()
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw)
+        self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
+        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
+        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
+        self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
+        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, src_data)
+        self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
+        ##Rx side
         self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
                 interpolation=4,
                 decimation=1,
@@ -73,21 +86,28 @@ class qa_rx(gr_unittest.TestCase):
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
         self.blocks_message_debug_0 = blocks.message_debug()
-
-        #get the writen file
-        base = os.getcwd()
-        file_result = base+"/../../test-case-generator/reference_files/ref_3_result.txt"
-        f = open(file_result, "r")
-        vector = f.read()
-        f.close()
-        #transform vector string from file to the right format
-        vector = ast.literal_eval(vector)
-        self.blocks_vector_source_x_0 = blocks.vector_source_c(vector, False, 1, [])
-
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True) 
 
         ##################################################
         # Connections
         ##################################################
+        ##Tx side
+        self.tb.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_data_source_0_1_0, 'trigg'))
+        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0, 'msg'), (self.lora_sdr_add_crc_0, 'msg'))
+        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0, 'msg'), (self.lora_sdr_header_0, 'msg'))
+        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0, 'msg'), (self.lora_sdr_interleaver_0, 'msg'))
+        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0, 'msg'), (self.lora_sdr_modulate_0, 'msg'))
+        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0, 'msg'), (self.lora_sdr_whitening_0, 'msg'))
+        self.tb.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
+        self.tb.connect((self.lora_sdr_gray_decode_0, 0), (self.lora_sdr_modulate_0, 0))
+        self.tb.connect((self.lora_sdr_hamming_enc_0, 0), (self.lora_sdr_interleaver_0, 0))
+        self.tb.connect((self.lora_sdr_header_0, 0), (self.lora_sdr_add_crc_0, 0))
+        self.tb.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_decode_0, 0))
+        self.tb.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
+        self.tb.connect((self.lora_sdr_modulate_0, 0), (self.blocks_throttle_0, 0))
+        ##Rx side
+
+        self.tb.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.tb.msg_connect((self.lora_sdr_crc_verif_0, 'msg'), (self.blocks_message_debug_0, 'store'))
         self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_deinterleaver_0, 'new_frame'))
         self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_dewhitening_0, 'new_frame'))
@@ -113,11 +133,15 @@ class qa_rx(gr_unittest.TestCase):
         self.tb.connect((self.lora_sdr_hamming_dec_0, 0), (self.lora_sdr_header_decoder_0, 0))
         self.tb.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
         self.tb.connect((self.rational_resampler_xxx_0, 0), (self.lora_sdr_frame_sync_0, 0))
-        self.tb.connect((self.blocks_vector_source_x_0, 0), (self.rational_resampler_xxx_0, 0))
         
 
         #run the flowgraph
-        self.tb.run()
+        # self.tb.run()
+
+        self.tb.start()
+        time.sleep(10)
+        self.tb.stop()
+        self.tb.wait()
         #try to get get the message from the store port of the message debug printer and convert to string from pmt message
         try:
             msg = pmt.symbol_to_string(self.blocks_message_debug_0.get_message(0))
@@ -127,4 +151,4 @@ class qa_rx(gr_unittest.TestCase):
         self.assertMultiLineEqual(src_data,msg,msg="Error decoded data {0} is not the same as input data {1}".format(msg,src_data))
 
 if __name__ == '__main__':
-    gr_unittest.run(qa_rx)
+    gr_unittest.run(qa_tx_rx)
