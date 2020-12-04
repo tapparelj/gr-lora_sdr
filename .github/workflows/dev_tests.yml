@@ -10,7 +10,7 @@ env:
   BUILD_TYPE: Debug
 
 jobs:
-  build:
+  test:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
@@ -22,6 +22,13 @@ jobs:
       with:
         ref : dev
         path : dev-test
+
+    - name: Remove build dir
+      working-directory: $GITHUB_WORKSPACE
+      shell: bash
+      run: |
+        git pull
+
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
