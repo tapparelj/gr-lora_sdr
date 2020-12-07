@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  */
 
 
-
 #ifndef INCLUDED_LORA_SDR_ADD_CRC_H
 #define INCLUDED_LORA_SDR_ADD_CRC_H
 
@@ -30,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief This block adds LoRa CRC (Cyclic redundancy check) into the payload if boolean has_crc is True,
+     * for more information see add_crc_impl
      * \ingroup lora_sdr
      *
      */

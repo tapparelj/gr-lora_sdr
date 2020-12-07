@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+
 #ifndef INCLUDED_LORA_SDR_GRAY_ENC_H
 #define INCLUDED_LORA_SDR_GRAY_ENC_H
 
@@ -28,7 +29,9 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Modulate the payload with an Gray map.
+     * This ensures that bits are modulated such that two subsequent symbols differ one bit.
+     * For more information about the implementation visit gray_enc_impl
      * \ingroup lora_sdr
      *
      */

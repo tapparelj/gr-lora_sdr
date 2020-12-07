@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2020 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Block that is able to detect the received spectrum and start to find the data such that it can be decoded.
+     * This block is at the heart of the the RX (decoding) side and houses a lot of logic and data manipulation.
+     * For more information about the implementation visit frame_sync_impl
      * \ingroup lora_sdr
      *
      */

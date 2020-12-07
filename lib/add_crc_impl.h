@@ -1,54 +1,86 @@
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
-
 #ifndef INCLUDED_LORA_ADD_CRC_IMPL_H
 #define INCLUDED_LORA_ADD_CRC_IMPL_H
 
 #include <lora_sdr/add_crc.h>
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class add_crc_impl : public add_crc
-    {
-     private:
-        bool m_has_crc; ///<indicate the presence of a payload CRC
-        std::vector<uint8_t> m_payload; ///< payload data
-        uint8_t m_payload_len; ///< length of the payload in Bytes
+class add_crc_impl : public add_crc {
+private:
+  /**
+   * @brief Indicate the presence of a payload CRC
+   *
+   */
+  bool m_has_crc;
 
-        void msg_handler(pmt::pmt_t message);
-        unsigned int crc16(unsigned int crcValue, unsigned char newByte);
+  /**
+   * @brief The payload data itself
+   *
+   */
+  std::vector<uint8_t> m_payload;
 
-     public:
-      add_crc_impl(bool has_crc);
-      ~add_crc_impl();
+  /**
+   * @brief The length of the payload in bytes
+   *
+   */
+  uint8_t m_payload_len;
 
-      // Where all the action really happens
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+  /**
+   * @brief Message handler, handles the pmt input message (i.e. input data)
+   *
+   * @param message : input message (i.e input data)
+   */
+  void msg_handler(pmt::pmt_t message);
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
-    };
-  } // namespace lora
+  /**
+   * @brief CRC16, add 16 bit CRC to the payload.
+   *
+   * @param crcValue :
+   * @param newByte :
+   * @return unsigned int
+   */
+  unsigned int crc16(unsigned int crcValue, unsigned char newByte);
+
+public:
+  /**
+   * @brief Construct a new add crc impl object
+   *
+   * @param has_crc : boolean to indicate if crc should be added to the payload
+   */
+  add_crc_impl(bool has_crc);
+
+  /**
+   * @brief Destroy the add crc impl object
+   *
+   */
+  ~add_crc_impl();
+
+  /**
+   * @brief Gnuradio standard function to tell the system it should operate once
+   * it has a input item
+   *
+   * @param noutput_items : number of output items
+   * @param ninput_items_required : number of required input items
+   */
+  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
+
+  /**
+   * @brief Main function of the add_crc module, this module will add Cyclic
+   * Redundancy Check (CRC) to the payload to be able to detect more bit errors.
+   * If m_has_crc is set to True
+   *
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items  : vector containing the input items
+   * @param output_items : vector containting the output items
+   * @return int
+   */
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
+};
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_ADD_CRC_IMPL_H */

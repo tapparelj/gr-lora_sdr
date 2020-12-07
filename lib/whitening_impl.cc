@@ -1,89 +1,96 @@
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
-#include <gnuradio/io_signature.h>
 #include "whitening_impl.h"
+#include "debug_tools.h"
 #include "tables.h"
+#include <gnuradio/io_signature.h>
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    whitening::sptr
-    whitening::make( )
-    {
-      return gnuradio::get_initial_sptr
-        (new whitening_impl());
+whitening::sptr whitening::make() {
+  return gnuradio::get_initial_sptr(new whitening_impl());
+}
+
+/**
+ * @brief Construct a new whitening impl object
+ *
+ */
+whitening_impl::whitening_impl()
+    : gr::sync_block("whitening", gr::io_signature::make(0, 0, 0),
+                     gr::io_signature::make(0, 1, sizeof(uint8_t))) {
+  new_message = false;
+
+  message_port_register_in(pmt::mp("msg"));
+  set_msg_handler(pmt::mp("msg"), // This is the port identifier
+                  boost::bind(&whitening_impl::msg_handler, this, _1));
+}
+
+/**
+ * @brief Destroy the whitening impl object
+ *
+ */
+whitening_impl::~whitening_impl() {}
+
+/**
+ * @brief Function that waits for the input message, if received copy its to
+ * m_payload to be used in work function
+ *
+ * @param message : string input data
+ */
+void whitening_impl::msg_handler(pmt::pmt_t message) {
+  // get pmt message and parse to string
+  std::string str = pmt::symbol_to_string(message);
+  // copy string into variable m_payload
+  std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
+#ifdef GRLORA_DEBUG
+  // if debugging is turned on debug the input message
+  GR_LOG_DEBUG(this->d_logger, "Input Tx:" + str);
+#endif
+  new_message = true;
+}
+
+/**
+ * @brief General work function, the actual interleaving happens here
+ *
+ * @param noutput_items : number of output items (2 * m_payload.size())
+ * @param input_items : standard input item
+ * @param output_items : output data
+ * @return int
+ */
+int whitening_impl::work(int noutput_items,
+                         gr_vector_const_void_star &input_items,
+                         gr_vector_void_star &output_items) {
+  if (new_message) {
+    uint8_t *out = (uint8_t *)output_items[0];
+
+// #ifdef GRLORA_DEBUG
+//     // debug variable to hold output
+//     std::string str_debug;
+// #endif
+    //do the actual whitening of the payload data
+    for (uint i = 0; i < m_payload.size(); i++) {
+      out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
+      out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
+// #ifdef GRLORA_DEBUG
+//       // append output to debug output string
+//       str_debug.append(std::to_string(out[2 * i]));
+//       str_debug.append(std::to_string(out[2 * i + 1]));
+// #endif
     }
 
+// #ifdef GRLORA_DEBUG
+//     // print debug output string
+//     GR_LOG_DEBUG(this->d_logger, "Output:" + str_debug);
+// #endif
+    //set number of output items and clear payload message
+    noutput_items = 2 * m_payload.size();
+    m_payload.clear();
+    new_message = false;
+  } else
+    noutput_items = 0;
+  return noutput_items;
+}
 
-    /*
-     * The private constructor
-     */
-    whitening_impl::whitening_impl( )
-      : gr::sync_block("whitening",
-              gr::io_signature::make(0, 0, 0),
-              gr::io_signature::make(0, 1, sizeof(uint8_t)))
-    {
-        new_message = false;
-
-        message_port_register_in(pmt::mp("msg"));
-        set_msg_handler(pmt::mp("msg"), // This is the port identifier
-        boost::bind(&whitening_impl::msg_handler, this, _1));
-    }
-
-    /*
-     * Our virtual destructor.
-     */
-    whitening_impl::~whitening_impl()
-    {}
-    void whitening_impl::msg_handler(pmt::pmt_t message){
-       std::string str=pmt::symbol_to_string(message);
-       std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
-       new_message = true;
-    }
-
-    int whitening_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-        if(new_message){
-
-            uint8_t *out = (uint8_t *) output_items[0];
-
-            for(uint i=0;i<m_payload.size();i++){
-                out[2*i]=(m_payload[i] ^whitening_seq[i]) & 0x0F;
-                out[2*i+1]=(m_payload[i]^whitening_seq[i])>>4;
-            }
-
-            noutput_items=2*m_payload.size();
-            m_payload.clear();
-            new_message=false;
-        }
-        else
-            noutput_items=0;
-        return noutput_items;
-    }
-
-  } /* namespace lora */
+} // namespace lora_sdr
 } /* namespace gr */

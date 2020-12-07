@@ -1,21 +1,25 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-##################################################
+
+#
+# SPDX-License-Identifier: GPL-3.0
+#
 # GNU Radio Python Flow Graph
 # Title: Lora Tx
-# Generated: Tue Feb 18 17:01:26 2020
-##################################################
+# GNU Radio version: 3.8.1.0
 
 from gnuradio import blocks
-from gnuradio import eng_notation
-from gnuradio import gr
-from gnuradio import uhd
-from gnuradio.eng_option import eng_option
-from gnuradio.filter import firdes
-from optparse import OptionParser
-import lora_sdr
 import pmt
+from gnuradio import gr
+from gnuradio.filter import firdes
+import sys
+import signal
+from argparse import ArgumentParser
+from gnuradio.eng_arg import eng_float, intx
+from gnuradio import eng_notation
+from gnuradio import uhd
 import time
+import lora_sdr
 
 
 class lora_TX(gr.top_block):
@@ -40,26 +44,31 @@ class lora_TX(gr.top_block):
         # Blocks
         ##################################################
         self.uhd_usrp_sink_0 = uhd.usrp_sink(
-        	",".join(('', "addr=192.168.10.2")),
-        	uhd.stream_args(
-        		cpu_format="fc32",
-        		channels=range(1),
-        	),
+            ",".join(('', "addr=192.168.10.2")),
+            uhd.stream_args(
+                cpu_format="fc32",
+                args='',
+                channels=list(range(0,1)),
+            ),
+            '',
         )
-        self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
         self.uhd_usrp_sink_0.set_center_freq(915e6, 0)
         self.uhd_usrp_sink_0.set_gain(TX_gain, 0)
         self.uhd_usrp_sink_0.set_antenna('TX/RX', 0)
         self.uhd_usrp_sink_0.set_bandwidth(bw, 0)
+        self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
+        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec())
         self.lora_sdr_whitening_0 = lora_sdr.whitening()
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw)
-        (self.lora_sdr_modulate_0).set_min_output_buffer(10000000)
+        self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern("Hello world"), 1000)
+
+
 
         ##################################################
         # Connections
@@ -76,6 +85,7 @@ class lora_TX(gr.top_block):
         self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_decode_0, 0))
         self.connect((self.lora_sdr_modulate_0, 0), (self.uhd_usrp_sink_0, 0))
         self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
+
 
     def get_bw(self):
         return self.bw
@@ -137,12 +147,24 @@ class lora_TX(gr.top_block):
 
 
 
-def main(top_block_cls=lora_TX, options=None):
 
+
+def main(top_block_cls=lora_TX, options=None):
     tb = top_block_cls()
+
+    def sig_handler(sig=None, frame=None):
+        tb.stop()
+        tb.wait()
+
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGTERM, sig_handler)
+
     tb.start()
+
     try:
-        raw_input('Press Enter to quit: ')
+        input('Press Enter to quit: ')
     except EOFError:
         pass
     tb.stop()
