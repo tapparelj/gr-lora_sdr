@@ -29,11 +29,11 @@ private:
   
   /**
    * @brief Sync states:
-   * - NET_ID1 :
-   * - NET_ID2 :
-   * - DOWNCHIRP1 :
-   * - DOWNCHIRP2 : 
-   * - QUARTER_DOWN :
+   * - NET_ID1 : network identifier 1
+   * - NET_ID2 : network identifier 2
+   * - DOWNCHIRP1 : downchirp 1
+   * - DOWNCHIRP2 : downchirp 2
+   * - QUARTER_DOWN : the extra quater downschirp symbol presetn in the LoRa preamble
    *
    */
   enum SyncState { NET_ID1, NET_ID2, DOWNCHIRP1, DOWNCHIRP2, QUARTER_DOWN };

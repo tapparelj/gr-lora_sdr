@@ -125,19 +125,25 @@ void frame_sync_impl::forecast(int noutput_items,
  * avoid the first symbol since it might be incomplete)
  */
 void frame_sync_impl::estimate_CFO(gr_complex *samples) {
+  //DFt frequency bin index
   int k0;
-  double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
+  //
+  double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
+  //< CFO frac correction vector
   std::vector<gr_complex> CFO_frac_correc_aug(
-      up_symb_to_use * m_number_of_bins); ///< CFO frac correction vector
+      up_symb_to_use * m_number_of_bins); 
+  //dechirped signal
   std::vector<gr_complex> dechirped(up_symb_to_use * m_number_of_bins);
+  //DFT variables
   kiss_fft_cpx *cx_in_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
-
+  //sqaure of DFT signal
   float fft_mag_sq[2 * up_symb_to_use * m_number_of_bins];
   kiss_fft_cfg cfg_cfo =
       kiss_fft_alloc(2 * up_symb_to_use * m_samples_per_symbol, 0, 0, 0);
+
   // create longer downchirp
   std::vector<gr_complex> downchirp_aug(up_symb_to_use * m_number_of_bins);
   for (int i = 0; i < up_symb_to_use; i++) {
@@ -153,35 +159,43 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
     if (i < up_symb_to_use * m_samples_per_symbol) {
       cx_in_cfo[i].r = dechirped[i].real();
       cx_in_cfo[i].i = dechirped[i].imag();
-    } else { // add padding
+    } else { 
+      // zero add padding to the DFT signal
       cx_in_cfo[i].r = 0;
       cx_in_cfo[i].i = 0;
     }
   }
   // do the FFT
   kiss_fft(cfg_cfo, cx_in_cfo, cx_out_cfo);
-  // Get magnitude
+  // make the sqaure DFT signal
+
+  //TODO:check optimization possible first find Y_plus, Y_min, Y and then square those only
   for (uint32_t i = 0u; i < 2 * up_symb_to_use * m_samples_per_symbol; i++) {
     fft_mag_sq[i] =
         cx_out_cfo[i].r * cx_out_cfo[i].r + cx_out_cfo[i].i * cx_out_cfo[i].i;
   }
   free(cfg_cfo);
-  // get argmax here
+  //get index of maximal frequency bin of DFT
   k0 = ((std::max_element(fft_mag_sq,
                           fft_mag_sq + 2 * up_symb_to_use * m_number_of_bins) -
          fft_mag_sq));
 
-  // get three spectral lines
-  Y_1 = fft_mag_sq[mod(k0 - 1, 2 * up_symb_to_use * m_number_of_bins)];
+  // Y-1
+  Y_min = fft_mag_sq[mod(k0 - 1, 2 * up_symb_to_use * m_number_of_bins)];
+  // Y normal
   Y0 = fft_mag_sq[k0];
-  Y1 = fft_mag_sq[mod(k0 + 1, 2 * up_symb_to_use * m_number_of_bins)];
-  // set constant coeff
-  u = 64 * m_number_of_bins / 406.5506497; // from Cui yang (15)
+  // Y+1
+  Y_plus = fft_mag_sq[mod(k0 + 1, 2 * up_symb_to_use * m_number_of_bins)];
+  // set constant coeff from Cui yang (15)
+  u = 64 * m_number_of_bins / 406.5506497; 
   v = u * 2.4674;
-  // RCTSL
-  wa = (Y1 - Y_1) / (u * (Y1 + Y_1) + v * Y0);
+  // preform RCTSL
+  wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
+  // get k_alpha
   ka = wa * m_number_of_bins / M_PI;
+  //
   k_residual = fmod((k0 + ka) / 2 / up_symb_to_use, 1);
+  //compute actual fractal offset
   lambda_cfo = k_residual - (k_residual > 0.5 ? 1 : 0);
   // Correct CFO in preamble
   for (int n = 0; n < up_symb_to_use * m_number_of_bins; n++) {
@@ -255,17 +269,22 @@ void frame_sync_impl::estimate_CFO_Bernier() {
  *
  */
 void frame_sync_impl::estimate_STO() {
+  //DFT bin index
   int k0;
-  double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
-
+  //
+  double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
+  //dechirped vector
   std::vector<gr_complex> dechirped(m_number_of_bins);
+  //DFT variables
   kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
-
+  //variable to hold the sqaure of the fft
   float fft_mag_sq[2 * m_number_of_bins];
+  //compute square of fft
   for (size_t i = 0; i < 2 * m_number_of_bins; i++) {
     fft_mag_sq[i] = 0;
   }
+  //fft memory allocation
   kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * m_samples_per_symbol, 0, 0, 0);
 
   for (int i = 0; i < up_symb_to_use; i++) {
@@ -278,7 +297,8 @@ void frame_sync_impl::estimate_STO() {
       if (i < m_samples_per_symbol) {
         cx_in_cfo[i].r = dechirped[i].real();
         cx_in_cfo[i].i = dechirped[i].imag();
-      } else { // add padding
+      } else { 
+        // zero add padding to DFT
         cx_in_cfo[i].r = 0;
         cx_in_cfo[i].i = 0;
       }
@@ -293,21 +313,24 @@ void frame_sync_impl::estimate_STO() {
   }
   free(cfg_cfo);
 
-  // get argmax here
+  // get DFT bin index
   k0 = std::max_element(fft_mag_sq, fft_mag_sq + 2 * m_number_of_bins) -
        fft_mag_sq;
 
-  // get three spectral lines
-  Y_1 = fft_mag_sq[mod(k0 - 1, 2 * m_number_of_bins)];
+  // get DFT at k0 - 1
+  Y_min = fft_mag_sq[mod(k0 - 1, 2 * m_number_of_bins)];
+  //get DFT at k0
   Y0 = fft_mag_sq[k0];
-  Y1 = fft_mag_sq[mod(k0 + 1, 2 * m_number_of_bins)];
-  // set constant coeff
-  u = 64 * m_number_of_bins / 406.5506497; // from Cui yang (eq.15)
+  //get DFT at k0 + 1 
+  Y_plus = fft_mag_sq[mod(k0 + 1, 2 * m_number_of_bins)];
+  // set constant coeff from Cui yang (eq.15) to be used in RCTSL
+  u = 64 * m_number_of_bins / 406.5506497; 
   v = u * 2.4674;
   // RCTSL
-  wa = (Y1 - Y_1) / (u * (Y1 + Y_1) + v * Y0);
+  wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
   ka = wa * m_number_of_bins / M_PI;
   k_residual = fmod((k0 + ka) / 2, 1);
+  //compute actual fractal offset of sto
   lambda_sto = k_residual - (k_residual > 0.5 ? 1 : 0);
 }
 
@@ -362,12 +385,14 @@ float frame_sync_impl::determine_energy(const gr_complex *samples) {
 }
 
 /**
- * @brief Function that handles the coding rate
+ * @brief Function that handles the coding rate from the header decoding stage
  *
  * @param cr : coding rate
  */
 void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
+  //get coding rate from header decoder
   m_cr = pmt::to_long(cr);
+  //set variable that we have an coding rate to true
   received_cr = true;
   if (received_cr && received_crc &&
       received_pay_len) // get number of symbol of the frame
@@ -378,7 +403,7 @@ void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
 };
 
 /**
- * @brief Function that handles the payload length (i.e. data length)
+ * @brief Function that handles the payload length (i.e. data length) from the header decoder stage
  *
  * @param pay_len :payload length
  */
@@ -394,7 +419,7 @@ void frame_sync_impl::header_pay_len_handler(pmt::pmt_t pay_len) {
 };
 
 /**
- * @brief Function to handle the crc of the header
+ * @brief Function to handle the crc of the header from the header decoder stage
  *
  * @param crc : crc
  */
@@ -418,13 +443,13 @@ void frame_sync_impl::header_err_handler(pmt::pmt_t err) {
   GR_LOG_INFO(this->d_logger,
               "Error in header decoding, reverting to detecting the header" +
                   pmt::symbol_to_string(err));
-  //Set sync state to detect and start over the synchronisation
+  // Set sync state to detect and start over the synchronisation
   m_state = DETECT;
   symbol_cnt = 1;
 };
 
 /**
- * @brief Handles frame errors coming from the decoding
+ * @brief Handles frame errors coming from the header decoding stage
  *
  * @param err : error message
  */
@@ -489,7 +514,7 @@ int frame_sync_impl::general_work(int noutput_items,
       if (symbol_cnt == 1) {
         k_hat += bin_idx;
       }
-      //
+      // set integer offset to the value of the demoudlated symbol
       k_hat += bin_idx_new;
       memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
              m_samples_per_symbol * sizeof(gr_complex));
@@ -504,15 +529,15 @@ int frame_sync_impl::general_work(int noutput_items,
     }
     // set index of symbol
     bin_idx = bin_idx_new;
-    // if the number of consecutive symbols is n_up (number of consecutive
-    // symbols) -1
+    // if the number of consecutive symbols is n_up -1 (number of consecutive
+    // symbols) -1 we have found the preamble
     if (symbol_cnt == (int)(n_up - 1)) {
       // preamble synchronisation is done !, set new sync state
       m_state = SYNC;
       // clear variables
       symbol_cnt = 0;
       cfo_sto_est = false;
-      //
+      // set the integer offset
       k_hat = round(k_hat / (n_up - 1));
       // perform coarse synchronization, i.e shift the samples inside the buffer
       items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
@@ -533,7 +558,7 @@ int frame_sync_impl::general_work(int noutput_items,
      * We have preamble detection, now we need part 2 of synchronisation
      * synchronisation of integer part of STO and CFO
      */
-    // if there is not
+    // if there is no estimation of the fractal offset
     if (!cfo_sto_est) {
       // preform CFO estimate
       estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
@@ -544,7 +569,7 @@ int frame_sync_impl::general_work(int noutput_items,
         CFO_frac_correc[n] =
             gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
       }
-      // set
+      // set estimation of fractal part of offset to be true
       cfo_sto_est = true;
     }
     items_to_consume = usFactor * m_samples_per_symbol;
@@ -564,13 +589,14 @@ int frame_sync_impl::general_work(int noutput_items,
        * @brief Network identifier 1
        *
        */
-      // look for additional upchirps. Won't work if
-      // network identifier 1 equals 2^sf-1, 0 or 1!
-      if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
 
+      if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
+        // TODO: look for additional upchirps. Won't work if
+        // network identifier 1 equals 2^sf-1, 0 or 1!
       }
       // wrong network identifier
       else if (labs(bin_idx - net_id_1) > 1) {
+        // start again with detecting the preamble
         m_state = DETECT;
         symbol_cnt = 1;
         noutput_items = 0;
@@ -580,6 +606,7 @@ int frame_sync_impl::general_work(int noutput_items,
       // network identifier 1 correct or off by one
       else {
         net_id_off = bin_idx - net_id_1;
+        // try the second network identifier
         symbol_cnt = NET_ID2;
       }
       break;
@@ -589,19 +616,19 @@ int frame_sync_impl::general_work(int noutput_items,
        * @brief Network identifier 2
        *
        */
-      // wrong network identifier
+      // we got the wrong network identifier
       if (labs(bin_idx - net_id_2) > 1) {
+        // start again with detecting the preamble
         m_state = DETECT;
         symbol_cnt = 1;
         noutput_items = 0;
         k_hat = 0;
         lambda_sto = 0;
-      } else if (net_id_off &&
-                 (bin_idx - net_id_2) ==
-                     net_id_off) { // correct case off by one net id
-                                   // #ifdef GRLORA_MEASUREMENTS
-                                   //         off_by_one_id = 1;
-                                   // #endif
+      } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
+        // correct case off by one net id
+        // #ifdef GRLORA_MEASUREMENTS
+        //         off_by_one_id = 1;
+        // #endif
 
         items_to_consume -= usFactor * net_id_off;
         symbol_cnt = DOWNCHIRP1;
@@ -613,6 +640,7 @@ int frame_sync_impl::general_work(int noutput_items,
       }
       break;
     }
+    // TODO: find out why this is needed ?
     case DOWNCHIRP1:
       /**
        * @brief
@@ -625,16 +653,28 @@ int frame_sync_impl::general_work(int noutput_items,
        * @brief
        *
        */
+      // get value of the preamble downchirp
       down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
       symbol_cnt = QUARTER_DOWN;
       break;
     }
     case QUARTER_DOWN: {
+      /**
+       * @brief the extra quater downschirp symbol present in the LoRa preamble
+       *
+       */
+      //
       if (down_val < m_number_of_bins / 2) {
+        //get integer part of CFO
         CFOint = floor(down_val / 2);
+        //set point for new frame
         message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
-      } else {
+      }
+      //
+      else {
+        //
         CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
+        //set point for new frame
         message_port_pub(
             pmt::intern("new_frame"),
             pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
@@ -642,6 +682,7 @@ int frame_sync_impl::general_work(int noutput_items,
       items_to_consume =
           usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
       symbol_cnt = 0;
+      //set new sync state to correct fractal part of CFO i.e. apply with complex exponential
       m_state = FRAC_CFO_CORREC;
       // #ifdef GRLORA_MEASUREMENTS
       //       sync_log << std::endl
@@ -650,9 +691,11 @@ int frame_sync_impl::general_work(int noutput_items,
       //                << off_by_one_id << "," << lambda_bernier << ",";
       // #endif
     }
+    //end case count symb
     }
     noutput_items = 0;
     break;
+    //end case SYNC
   }
   case FRAC_CFO_CORREC: {
     /**
@@ -678,9 +721,10 @@ int frame_sync_impl::general_work(int noutput_items,
       noutput_items = 1;
       symbol_cnt++;
     }
-    //Error revert to the syncing stage 
+    // Error revert to the preamble detecting case
     else {
       m_state = DETECT;
+      //clear all variables
       symbol_cnt = 1;
       items_to_consume = usFactor * m_samples_per_symbol;
       noutput_items = 0;
