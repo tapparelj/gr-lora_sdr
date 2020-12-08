@@ -2,7 +2,7 @@
 
 id: lora_sdr_crc_verif
 label: Crc verif
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 inputs:
 -   domain: stream

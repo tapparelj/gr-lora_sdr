@@ -2,7 +2,7 @@
 
 id: lora_sdr_interleaver
 label: Interleaver
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: cr

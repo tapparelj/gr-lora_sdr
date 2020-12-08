@@ -2,7 +2,7 @@
 
 id: lora_sdr_dewhitening
 label: Dewhitening
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 inputs:
 -   domain: stream

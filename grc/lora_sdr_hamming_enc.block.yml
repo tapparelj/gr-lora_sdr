@@ -2,7 +2,7 @@
 
 id: lora_sdr_hamming_enc
 label: Hamming enc
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: cr

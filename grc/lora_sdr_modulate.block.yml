@@ -2,7 +2,7 @@
 
 id: lora_sdr_modulate
 label: Modulate
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: sf

@@ -45,7 +45,7 @@ And is a fork of code from [github.com/tapparelj/gr-lora_sdr](https://github.com
 
 Next to code this project is based on :
 
-> J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “An Open-Source LoRa Physical Layer Prototype on GNU Radio”
+> J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “An Open-Source LoRa Physical Layer Prototype on GNU Radio” [1]
 
 Which can be found at [arxiv.org/abs/2002.08208](https://arxiv.org/abs/2002.08208)
 
@@ -102,8 +102,10 @@ Similarly to any GNU Radio OOT module, it can be build using cmake and make.
 
 - An example of a transmitter and a receiver can be found in gr-lora_sdr/app (both python and grc).
 
-
-
+## Changelog
+For changelog checkout [Changelog](CHANGELOG.md)
+## TODO
+For TODO list checkout [TODO](TODO.md)
 ## License
 
 Distributed under the GPL-3.0 License License. See `LICENSE` for more information.

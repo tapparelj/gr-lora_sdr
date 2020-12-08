@@ -33,17 +33,17 @@ class sim_lor(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
         self.sf = sf = 7
-        self.samp_rate = samp_rate = 250000
+        self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 5
+        self.num_recv = num_recv = 1
+        self.n_frame = n_frame = 8
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.cr = cr = 
+        self.cr = cr = 3
 
         ##################################################
         # Blocks
@@ -68,7 +68,7 @@ class sim_lor(gr.top_block):
         self.lora_sdr_err_measures_0 = lora_sdr.err_measures()
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)
-        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, src_data)
+        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, '')
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
@@ -95,13 +95,13 @@ class sim_lor(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_deinterleaver_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
@@ -150,6 +150,13 @@ class sim_lor(gr.top_block):
     def set_pay_len(self, pay_len):
         with self._lock:
             self.pay_len = pay_len
+
+    def get_num_recv(self):
+        return self.num_recv
+
+    def set_num_recv(self, num_recv):
+        with self._lock:
+            self.num_recv = num_recv
 
     def get_n_frame(self):
         return self.n_frame

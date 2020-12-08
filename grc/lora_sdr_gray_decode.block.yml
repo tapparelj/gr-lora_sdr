@@ -2,7 +2,7 @@
 
 id: lora_sdr_gray_decode
 label: Gray mapping
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: sf

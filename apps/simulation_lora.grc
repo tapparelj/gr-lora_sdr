@@ -116,6 +116,18 @@ blocks:
     coordinate: [872, 0.0]
     rotation: 0
     state: enabled
+- name: num_recv
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 4.0]
+    rotation: 0
+    state: enabled
 - name: pay_len
   id: variable
   parameters:
@@ -354,13 +366,14 @@ blocks:
     impl_head: impl_head
     maxoutbuf: '0'
     minoutbuf: '0'
+    num_recv: num_recv
     samp_rate: samp_rate
     sf: sf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1920, 360.0]
+    coordinate: [1912, 360.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_decode_0

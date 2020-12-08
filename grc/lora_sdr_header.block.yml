@@ -2,7 +2,7 @@
 
 id: lora_sdr_header
 label: Add header
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: impl_head

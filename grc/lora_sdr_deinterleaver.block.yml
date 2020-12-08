@@ -2,7 +2,7 @@
 
 id: lora_sdr_deinterleaver
 label: Deinterleaver
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 parameters:
 -   id: sf

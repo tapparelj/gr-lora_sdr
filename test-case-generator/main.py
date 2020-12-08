@@ -27,7 +27,7 @@ def main():
     source_data_list = [
         "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"]
     bw_list = [250000]
-    sf_list = [7,8,9,10,11,12]
+    sf_list = [7,8,9,10]
     paylen_list = [64]
     impl_head_list = [True, False]
     has_crc_list = [False, True]

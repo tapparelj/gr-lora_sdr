@@ -2,7 +2,7 @@
 
 id: lora_sdr_frame_sync
 label: Frame sync
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 parameters:
 -   id: samp_rate
@@ -17,10 +17,15 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: num_recv
+    label: Num_recv
+    dtype: int
+    default : '1'
 
 inputs:
 -   domain: stream
     dtype: complex
+    multiplicity: ${int(num_recv)}
 -   domain: message
     id: CR
 -   domain: message
@@ -35,7 +40,7 @@ inputs:
 
 assert:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-
+-   ${ int(num_recv) > 0 }
 
 outputs:
 -   domain: stream
@@ -55,6 +60,7 @@ documentation: |-
             Bandwidth: Bandwidth
             sf: spreading factor
             impl_head: usage of an implicit header (explicit will be used otherwise)
+            num_rscv : Number of Tx signals to receive
         Input:
             in: stream of complex valued sampled
             CR: coding rate
