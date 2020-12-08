@@ -43,7 +43,7 @@ class sim_lor(gr.top_block):
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.cr = cr = 0
+        self.cr = cr = 
 
         ##################################################
         # Blocks

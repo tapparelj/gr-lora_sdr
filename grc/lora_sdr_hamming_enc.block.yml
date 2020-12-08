@@ -8,9 +8,14 @@ parameters:
 -   id: cr
     label: Cr
     dtype: int
+    default : '3'
 -   id: sf
     label: Sf
     dtype: int
+
+asserts:
+-   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
+-   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
 
 inputs:
 -   domain: stream
@@ -27,7 +32,7 @@ templates:
 documentation: |-
     Append the parity bits to a nibble in accordance to the coding rate.
         Parameters:
-            Cr: coding rate
+            Cr: coding rate must be [0,2,3,4]
             sf: spreading factor
         Input:
             in: stream of nibble

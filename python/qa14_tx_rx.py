@@ -59,9 +59,9 @@ class qa_tx_rx(gr_unittest.TestCase):
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 10
         self.impl_head = impl_head = False
-        self.has_crc = has_crc = False
+        self.has_crc = has_crc = True
         self.frame_period = frame_period = 200
-        self.cr = cr = 7
+        self.cr = cr = 2
 
         ##################################################
         # Blocks

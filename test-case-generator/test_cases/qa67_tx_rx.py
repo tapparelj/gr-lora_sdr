@@ -54,14 +54,14 @@ class qa_tx_rx(gr_unittest.TestCase):
         # Input data into the system
         src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
-        self.sf = sf = 10
+        self.sf = sf = 11
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 10
         self.impl_head = impl_head = True
-        self.has_crc = has_crc = True
+        self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.cr = cr = 5
+        self.cr = cr = 3
 
         ##################################################
         # Blocks

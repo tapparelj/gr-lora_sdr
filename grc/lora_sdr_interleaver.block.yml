@@ -18,6 +18,11 @@ inputs:
 -   domain: message
     id: msg
 
+asserts:
+-   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
+-   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+
+
 outputs:
 -   domain: stream
     dtype: int

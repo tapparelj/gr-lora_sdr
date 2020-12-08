@@ -48,7 +48,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '3'
   states:
     bus_sink: false
     bus_source: false

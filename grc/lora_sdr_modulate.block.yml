@@ -15,6 +15,11 @@ parameters:
     label: Bw
     dtype: int
 
+
+asserts:
+-   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+
+
 inputs:
 -   domain: stream
     dtype: int
