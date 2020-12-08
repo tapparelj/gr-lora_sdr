@@ -25,7 +25,6 @@ parameters:
 inputs:
 -   domain: stream
     dtype: complex
-    multiplicity: ${int(num_recv)}
 -   domain: message
     id: CR
 -   domain: message
@@ -51,7 +50,7 @@ outputs:
 
 templates:
     imports: import lora_sdr
-    make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
+    make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head}, ${num_recv})
 
 documentation: |-
     Block taking care of the preamble detection, CFO and STO estimation and correction.

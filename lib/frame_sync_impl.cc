@@ -5,9 +5,9 @@ namespace gr {
 namespace lora_sdr {
 
 frame_sync::sptr frame_sync::make(float samp_rate, uint32_t bandwidth,
-                                  uint8_t sf, bool impl_head) {
+                                  uint8_t sf, bool impl_head, uint8_t num_recv) {
   return gnuradio::get_initial_sptr(
-      new frame_sync_impl(samp_rate, bandwidth, sf, impl_head));
+      new frame_sync_impl(samp_rate, bandwidth, sf, impl_head, num_recv));
 }
 
 /**
@@ -17,15 +17,17 @@ frame_sync::sptr frame_sync::make(float samp_rate, uint32_t bandwidth,
  * @param bandwidth : bandwidth
  * @param sf : spreading factor
  * @param impl_head : boolean to tell if implicit header mode is used
+ * @param num_recv : number of streams that are simultaneously received (may be larger then 1)
  */
 frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
-                                 uint8_t sf, bool impl_head)
+                                 uint8_t sf, bool impl_head, uint8_t num_recv)
     : gr::block("frame_sync", gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(0, 1, (1u << sf) * sizeof(gr_complex))) {
   m_state = DETECT;
   m_bw = bandwidth;
   m_samp_rate = samp_rate;
   m_sf = sf;
+  m_num_recv = num_recv;
   symbols_to_skip = 4;
   n_up = 8;
   net_id_1 = 8; // should be different from 2^sf-1, 0 and 1
@@ -475,7 +477,7 @@ void frame_sync_impl::frame_err_handler(pmt::pmt_t err) {
  * align them in time and frequency)
  *
  * @param noutput_items : number of output items
- * @param ninput_items : number of input items
+ * @param ninput_items : number of input items, may be larger then 1
  * @param input_items : input items
  * @param output_items : output items (i.e. start of Rx decoding)
  * @return int
@@ -484,6 +486,7 @@ int frame_sync_impl::general_work(int noutput_items,
                                   gr_vector_int &ninput_items,
                                   gr_vector_const_void_star &input_items,
                                   gr_vector_void_star &output_items) {
+  //TODO: use : recv_n
   // cast input and output to the right format (i.e. gr_complex)
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];

@@ -37,7 +37,7 @@ class sim_lor(gr.top_block):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.num_recv = num_recv = 1
+        self.num_recv = num_recv = 2
         self.n_frame = n_frame = 8
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
@@ -63,7 +63,7 @@ class sim_lor(gr.top_block):
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
         self.lora_sdr_gray_enc_0 = lora_sdr.gray_enc()
         self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head, num_recv)
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod(samp_rate, bw, sf, impl_head)
         self.lora_sdr_err_measures_0 = lora_sdr.err_measures()
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
@@ -98,10 +98,10 @@ class sim_lor(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))

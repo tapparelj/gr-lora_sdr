@@ -8,7 +8,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/martynvdijke/gr-lora_sdr/settings">
-    <img src="https://martynvdijke.github.io/gr-lora_sdr/logo/logo-v2-github.png" alt="Logo">
+    <img src="images/png/logo-v2-github.png" alt="Logo">
   </a>
 
   <h3 align="center">Gnuradio - LoRa SDR</h3>
@@ -36,33 +36,31 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 - In the Tx chain, the implementation contains all the main blocks of the LoRa transceiver: the header- and the CRC-insertion blocks, the whitening block, the Hamming encoder block, the interleaver block, the Gray mapping block, and the modulation block.
 - On the receiver side there is the packet synchronization block, which performs all the necessary tasks needed for the synchronization, such as the necessary STO and CFO estimation and correction. The demodulation block follows, along with the Gray demapping block, the deinterleaving block, the Hamming decoder block and the dewhitening block, as well as a CRC block.
 - The implementation can be used for fully end-to-end experimental performance results of a LoRa SDR receiver at low SNRs.
-P
+
 ## Acknowledgements
 
-This work was based on [github.com/rpp0/gr-lora](https://github.com/rpp0/gr-lora) by Pieter Robyns, Peter Quax, Wim Lamotte and William Thenaers. Which architecture and functionnalities have been improved to better emulate the physical layer of LoRa.
-This work also used the kiss FFT libary from [github.com/mborgerding/kissfft](https://github.com/mborgerding/kissfft) for FFT operations.
-And is a fork of code from [github.com/tapparelj/gr-lora_sdr](https://github.com/tapparelj/gr-lora_sdr)
+This work was based on [github.com/rpp0/gr-lora](https://github.com/rpp0/gr-lora) by Pieter Robyns, Peter Quax, Wim Lamotte and William Thenaers. Which architecture and functionalities have been improved to better emulate the physical layer of LoRa.
+This work also used the kiss FFT libary from [github.com/mborgerding/kissfft](https://github.com/mborgerding/kissfft) for FFT operations. 
+Finally this code is a fork from [github.com/tapparelj/gr-lora_sdr](https://github.com/tapparelj/gr-lora_sdr) who made the original code.
 
 Next to code this project is based on :
 
 > J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “An Open-Source LoRa Physical Layer Prototype on GNU Radio” [1]
 
-Which can be found at [arxiv.org/abs/2002.08208](https://arxiv.org/abs/2002.08208)
-
-If you find this implementation useful for your project, please consider citing the aforementioned paper.
+Which can be found at [arxiv.org/abs/2002.08208](https://arxiv.org/abs/2002.08208), if you find this implementation useful for your project, please consider citing the aforementioned paper.
 
 ## Getting started
 
 ### Documentation
 
-- The documentation of the source files can be found at [docs](https://martynvdijke.github.io/gr-lora_sdr/html/index.htm) and is automatically build from source.
-- The more practical and high level documentation and examples can be found on the [wiki](https://github.com/martynvdijke/gr-lora_sdr/wiki)
+- The documentation of the cpp source files can be found at [docs](https://martynvdijke.github.io/gr-lora_sdr/html/index.html) and is automatically build from source using doxygen.
+- The more practical and high level documentation along with examples can be found on the [wiki](https://github.com/martynvdijke/gr-lora_sdr/wiki)
 
 Both are WIP
 
 ### Installation
 
-Similarly to any GNU Radio OOT module, it can be build using cmake and make.
+Similarly to any GNU Radio OOT module, it can be build using Cmake and make.
 
 1. Clone the repo
    ```sh
@@ -84,7 +82,7 @@ Similarly to any GNU Radio OOT module, it can be build using cmake and make.
    ```sh
    sudo make install
    ```
-   You will need root or sudo acces in order to properly install the repo, since it will add module blocks to be used in gnuradio-companian and makes a local python package. Be sure to have the following requirements installed:
+   You will need root or sudo access in order to properly install the repo, since it will add module blocks to be used in gnuradio-companian and makes a local python package. Be sure to have the following requirements installed:
 
 ### Requirements
 
@@ -97,11 +95,6 @@ Similarly to any GNU Radio OOT module, it can be build using cmake and make.
     - cppunit 
     - doxygen (optional for documentation)
     - log4cpp (optional for logging/debugging)
-
-### Usage
-
-- An example of a transmitter and a receiver can be found in gr-lora_sdr/app (both python and grc).
-
 ## Changelog
 For changelog checkout [Changelog](CHANGELOG.md)
 ## TODO
