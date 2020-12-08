@@ -55,9 +55,9 @@ class qa_tx_rx(gr_unittest.TestCase):
         src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
         self.sf = sf = 10
-        self.samp_rate = samp_rate = 250000
+        self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 2
+        self.n_frame = n_frame = 10
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
         self.frame_period = frame_period = 200

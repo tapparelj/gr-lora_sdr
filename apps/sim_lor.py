@@ -33,11 +33,12 @@ class sim_lor(gr.top_block):
         ##################################################
         # Variables
         ##################################################
+        src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
         self.sf = sf = 7
-        self.samp_rate = samp_rate = bw
+        self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 8
+        self.n_frame = n_frame = 5
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -67,7 +68,7 @@ class sim_lor(gr.top_block):
         self.lora_sdr_err_measures_0 = lora_sdr.err_measures()
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)
-        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, '')
+        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(pay_len, n_frame, src_data)
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)

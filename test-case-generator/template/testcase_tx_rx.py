@@ -55,9 +55,9 @@ class qa_tx_rx(gr_unittest.TestCase):
         src_data = "@@source_data@@"
         self.bw = bw = @@bw@@
         self.sf = sf = @@sf@@
-        self.samp_rate = samp_rate = @@bw@@
+        self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = @@pay_len@@
-        self.n_frame = n_frame = 2
+        self.n_frame = n_frame = 10
         self.impl_head = impl_head = @@impl_head@@
         self.has_crc = has_crc = @@has_crc@@
         self.frame_period = frame_period = 200
