@@ -48,20 +48,6 @@ fft_demod_impl::fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
   message_port_register_in(pmt::mp("CR"));
   set_msg_handler(pmt::mp("CR"),
                   boost::bind(&fft_demod_impl::header_cr_handler, this, _1));
-  // #ifdef GRLORA_MEASUREMENTS
-  //   int num = 0; // check next file name to use
-  //   while (1) {
-  //     std::ifstream infile("../matlab/measurements/energy" +
-  //     std::to_string(num) +
-  //                          ".txt");
-  //     if (!infile.good())
-  //       break;
-  //     num++;
-  //   }
-  //   energy_file.open("../matlab/measurements/energy" + std::to_string(num) +
-  //                        ".txt",
-  //                    std::ios::out | std::ios::trunc);
-  // #endif
   // #ifdef GRLORA_DEBUG
   // // idx_file.open("../matlab/stats/idx.txt", std::ios::out | std::ios::trunc
   // ); #endif
@@ -114,13 +100,6 @@ int32_t fft_demod_impl::get_symbol_val(const gr_complex *samples) {
 
   int idx =
       std::max_element(m_fft_mag, m_fft_mag + m_number_of_bins) - m_fft_mag;
-  // #ifdef GRLORA_MEASUREMENTS
-  //   energy_file << std::fixed << std::setprecision(10) << m_fft_mag[idx] <<
-  //   ","
-  //               << m_fft_mag[mod(idx - 1, m_number_of_bins)] << ","
-  //               << m_fft_mag[mod(idx + 1, m_number_of_bins)] << "," << rec_en
-  //               << "," << std::endl;
-  // #endif
   // #ifdef GRLORA_DEBUG
   //   // idx_file<<idx<<", ";
   // #endif

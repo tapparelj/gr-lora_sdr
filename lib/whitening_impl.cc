@@ -63,26 +63,13 @@ int whitening_impl::work(int noutput_items,
                          gr_vector_void_star &output_items) {
   if (new_message) {
     uint8_t *out = (uint8_t *)output_items[0];
-
-// #ifdef GRLORA_DEBUG
-//     // debug variable to hold output
-//     std::string str_debug;
-// #endif
     //do the actual whitening of the payload data
     for (uint i = 0; i < m_payload.size(); i++) {
       out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
       out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
-// #ifdef GRLORA_DEBUG
-//       // append output to debug output string
-//       str_debug.append(std::to_string(out[2 * i]));
-//       str_debug.append(std::to_string(out[2 * i + 1]));
-// #endif
+
     }
 
-// #ifdef GRLORA_DEBUG
-//     // print debug output string
-//     GR_LOG_DEBUG(this->d_logger, "Output:" + str_debug);
-// #endif
     //set number of output items and clear payload message
     noutput_items = 2 * m_payload.size();
     m_payload.clear();

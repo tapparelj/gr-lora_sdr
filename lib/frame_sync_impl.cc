@@ -81,18 +81,6 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   message_port_register_in(pmt::mp("frame_err"));
   set_msg_handler(pmt::mp("frame_err"),
                   boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
-  // #ifdef GRLORA_MEASUREMENTS
-  //     int num = 0;//check next file name to use
-  //     while(1){
-  //         std::ifstream
-  //         infile("../matlab/measurements/sync"+std::to_string(num)+".txt");
-  //         if(!infile.good())
-  //             break;
-  //         num++;
-  //     }
-  //     sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt",
-  //     std::ios::out | std::ios::trunc );
-  // #endif
   // #ifdef GRLORA_DEBUG
   //     // numb_symbol_to_save=80;//number of symbol per erroneous frame to
   //     save
@@ -629,16 +617,9 @@ int frame_sync_impl::general_work(int noutput_items,
         lambda_sto = 0;
       } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
         // correct case off by one net id
-        // #ifdef GRLORA_MEASUREMENTS
-        //         off_by_one_id = 1;
-        // #endif
-
         items_to_consume -= usFactor * net_id_off;
         symbol_cnt = DOWNCHIRP1;
       } else {
-        // #ifdef GRLORA_MEASUREMENTS
-        //         off_by_one_id = 0;
-        // #endif
         symbol_cnt = DOWNCHIRP1;
       }
       break;
@@ -687,12 +668,6 @@ int frame_sync_impl::general_work(int noutput_items,
       symbol_cnt = 0;
       //set new sync state to correct fractal part of CFO i.e. apply with complex exponential
       m_state = FRAC_CFO_CORREC;
-      // #ifdef GRLORA_MEASUREMENTS
-      //       sync_log << std::endl
-      //                << lambda_cfo << ", " << lambda_sto << ", " << CFOint <<
-      //                ","
-      //                << off_by_one_id << "," << lambda_bernier << ",";
-      // #endif
     }
     //end case count symb
     }
@@ -711,10 +686,6 @@ int frame_sync_impl::general_work(int noutput_items,
       // apply fractional cfo correction
       volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
                                  m_samples_per_symbol);
-      // #ifdef GRLORA_MEASUREMENTS
-      //       sync_log << std::fixed << std::setprecision(10)
-      //                << determine_energy(&in_down[0]) << ",";
-      // #endif
       //   #ifdef GRLORA_DEBUG
       // //   if(symbol_cnt<numb_symbol_to_save)
       // //

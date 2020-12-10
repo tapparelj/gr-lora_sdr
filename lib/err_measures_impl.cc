@@ -23,17 +23,6 @@ err_measures_impl::err_measures_impl()
   set_msg_handler(pmt::mp("ref"),
                   boost::bind(&err_measures_impl::ref_handler, this, _1));
   message_port_register_out(pmt::mp("err"));
-  // #ifdef GRLORA_MEASUREMENTS
-  // int num = 0;//check next file name to use
-  // while(1){
-  //     std::ifstream
-  //     infile("../matlab/measurements/err"+std::to_string(num)+".txt");
-  //      if(!infile.good())
-  //         break;
-  //     num++;
-  // }
-  // err_outfile.open("../matlab/measurements/err"+std::to_string(num)+".txt",
-  // std::ios::out | std::ios::trunc ); #endif
 }
 
 /**
