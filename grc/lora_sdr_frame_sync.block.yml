@@ -17,10 +17,6 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
--   id: num_recv
-    label: Num_recv
-    dtype: int
-    default : '1'
 
 inputs:
 -   domain: stream
@@ -39,7 +35,6 @@ inputs:
 
 assert:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
--   ${ int(num_recv) > 0 }
 
 outputs:
 -   domain: stream

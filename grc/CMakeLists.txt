@@ -37,5 +37,7 @@ install(FILES
     lora_sdr_data_source.block.yml
     lora_sdr_frame_sync.block.yml
     lora_sdr_deinterleaver.block.yml
-    lora_sdr_err_measures.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora_sdr_err_measures.block.yml
+    lora_sdr_hier_rx.block.yml
+    lora_sdr_hier_tx.block.yml DESTINATION share/gnuradio/grc/blocks
 )

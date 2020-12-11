@@ -41,5 +41,7 @@ install(FILES
     data_source.h
     frame_sync.h
     deinterleaver.h
-    err_measures.h DESTINATION include/lora_sdr
+    err_measures.h
+    hier_rx.h
+    hier_tx.h DESTINATION include/lora_sdr
 )
