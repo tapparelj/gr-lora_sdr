@@ -191,13 +191,23 @@ class qa_tx_rx(gr_unittest.TestCase):
         time.sleep(10)
         self.tb.stop()
         self.tb.wait()
-        # try to get get the message from the store port of the message debug printer and convert to string from pmt message
-        try:
-            msg = pmt.symbol_to_string(
-                self.blocks_message_debug_0.get_message(0))
-        except:
-            # if not possible set message to be None
-            msg = None
+        num_messages = self.blocks_message_debug_0.num_messages()
+        if num_messages > 1:
+            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            try:
+                msg = pmt.symbol_to_string(
+                    self.blocks_message_debug_0.get_message(1))
+            except:
+                # if not possible set message to be None
+                msg = None
+        else:
+            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            try:
+                msg = pmt.symbol_to_string(
+                    self.blocks_message_debug_0.get_message(0))
+            except:
+                # if not possible set message to be None
+                msg = None
 
         # check if message received is the same as the message decoded
         self.assertMultiLineEqual(

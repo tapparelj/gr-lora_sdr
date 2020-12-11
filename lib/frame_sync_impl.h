@@ -291,12 +291,6 @@ private:
    */
   int net_id_off;
 
-  /**
-   * @brief Numer of received streams may be larger then 1
-   * 
-   */
-  uint8_t m_num_recv;
-
 // #ifdef GRLORA_MEASUREMENTS
 //   int off_by_one_id; ///< Indicate that the network identifiers where off by one
 //                      ///< and corrected
@@ -391,10 +385,9 @@ public:
    * @param bandwidth : bandwidth
    * @param sf : spreading factor
    * @param impl_head : boolean to tell if system is in implicit header mode or not
-   * @param num_recv : number of streams that are simultaneously received (may be larger then 1)
    */
   frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
-                  bool impl_head,uint8_t num_recv);
+                  bool impl_head);
   /**
    * @brief Destroy the frame sync impl object
    *

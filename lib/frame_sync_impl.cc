@@ -5,9 +5,9 @@ namespace gr {
 namespace lora_sdr {
 
 frame_sync::sptr frame_sync::make(float samp_rate, uint32_t bandwidth,
-                                  uint8_t sf, bool impl_head, uint8_t num_recv) {
+                                  uint8_t sf, bool impl_head) {
   return gnuradio::get_initial_sptr(
-      new frame_sync_impl(samp_rate, bandwidth, sf, impl_head, num_recv));
+      new frame_sync_impl(samp_rate, bandwidth, sf, impl_head));
 }
 
 /**
@@ -17,17 +17,15 @@ frame_sync::sptr frame_sync::make(float samp_rate, uint32_t bandwidth,
  * @param bandwidth : bandwidth
  * @param sf : spreading factor
  * @param impl_head : boolean to tell if implicit header mode is used
- * @param num_recv : number of streams that are simultaneously received (may be larger then 1)
  */
 frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
-                                 uint8_t sf, bool impl_head, uint8_t num_recv)
+                                 uint8_t sf, bool impl_head)
     : gr::block("frame_sync", gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(0, 1, (1u << sf) * sizeof(gr_complex))) {
   m_state = DETECT;
   m_bw = bandwidth;
   m_samp_rate = samp_rate;
   m_sf = sf;
-  m_num_recv = num_recv;
   symbols_to_skip = 4;
   n_up = 8;
   net_id_1 = 8; // should be different from 2^sf-1, 0 and 1
