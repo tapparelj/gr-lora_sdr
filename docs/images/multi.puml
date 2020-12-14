@@ -1,0 +1,31 @@
+@startuml
+state "Tx" as Tx1
+state "Tx" as Tx2
+state "Mul" as Mul
+state "Rx" as Rx1
+state "Rx" as Rx2
+state "Rx" as Rx3
+state "Rx" as Rx4
+state "Rx" as Rx5
+state "Rx" as Rx6
+
+Rx1 : sf = 7
+Rx2 : sf = 8
+Rx3 : sf = 9
+Rx4 : sf = 10
+Rx5 : sf = 11
+Rx6 : sf = 12
+
+state c <<choice>>
+ 
+Tx1 --> c
+Tx2 --> c
+c --> Mul
+
+Mul --> Rx1
+Mul --> Rx2  
+Mul --> Rx3
+Mul --> Rx4  
+Mul --> Rx5
+Mul --> Rx6 
+@enduml
