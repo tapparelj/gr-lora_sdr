@@ -48,7 +48,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '3'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -152,6 +152,18 @@ blocks:
     coordinate: [352, 0.0]
     rotation: 0
     state: enabled
+- name: sf2
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [488, 388.0]
+    rotation: 0
+    state: enabled
 - name: blocks_add_xx_0
   id: blocks_add_xx
   parameters:
@@ -223,9 +235,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1664, 284.0]
+    coordinate: [592, 1052.0]
     rotation: 0
     state: true
+- name: blocks_throttle_0_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [616, 796.0]
+    rotation: 0
+    state: enabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -503,9 +534,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 580.0]
-    rotation: 180
+    coordinate: [1096, 1004.0]
+    rotation: 0
     state: true
+- name: lora_sdr_hier_rx_0_0
+  id: lora_sdr_hier_rx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 748.0]
+    rotation: 0
+    state: enabled
 - name: lora_sdr_hier_tx_0
   id: lora_sdr_hier_tx
   parameters:
@@ -522,14 +575,38 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: ''
+    src_data: DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 236.0]
+    coordinate: [328, 988.0]
     rotation: 0
     state: true
+- name: lora_sdr_hier_tx_0_0
+  id: lora_sdr_hier_tx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf2
+    src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 732.0]
+    rotation: 0
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -597,7 +674,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1936, 260.0]
+    coordinate: [832, 1028.0]
+    rotation: 0
+    state: enabled
+- name: rational_resampler_xxx_0_0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    fbw: '0'
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: ''
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [848, 772.0]
     rotation: 0
     state: enabled
 
@@ -605,10 +702,12 @@ connections:
 - [blocks_add_xx_0, '0', lora_sdr_frame_sync_0, '0']
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_data_source_0_1_0, trigg]
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0, trigg]
+- [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0_0, trigg]
 - [blocks_stream_to_streams_0, '0', blocks_add_xx_0, '0']
 - [blocks_stream_to_streams_0, '1', blocks_add_xx_0, '1']
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
 - [blocks_throttle_0, '0', rational_resampler_xxx_0, '0']
+- [blocks_throttle_0_0, '0', rational_resampler_xxx_0_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
 - [lora_sdr_data_source_0_1_0, msg, lora_sdr_add_crc_0, msg]
@@ -643,11 +742,13 @@ connections:
 - [lora_sdr_header_decoder_0, pay_len, lora_sdr_dewhitening_0, pay_len]
 - [lora_sdr_header_decoder_0, pay_len, lora_sdr_frame_sync_0, pay_len]
 - [lora_sdr_hier_tx_0, '0', blocks_throttle_0, '0']
+- [lora_sdr_hier_tx_0_0, '0', blocks_throttle_0_0, '0']
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_decode_0, '0']
 - [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 - [rational_resampler_xxx_0, '0', blocks_stream_to_streams_0, '0']
 - [rational_resampler_xxx_0, '0', lora_sdr_hier_rx_0, '0']
+- [rational_resampler_xxx_0_0, '0', lora_sdr_hier_rx_0_0, '0']
 
 metadata:
   file_format: 1

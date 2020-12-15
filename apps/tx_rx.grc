@@ -199,8 +199,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 284]
-    rotation: 180
+    coordinate: [1216, 188.0]
+    rotation: 0
     state: enabled
 - name: blocks_null_sink_0
   id: blocks_null_sink
@@ -282,6 +282,7 @@ blocks:
     minoutbuf: '0'
     n_frames: n_frame
     pay_len: pay_len
+    string_input: ''
   states:
     bus_sink: false
     bus_source: false
@@ -796,8 +797,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [856, 252]
-    rotation: 180
+    coordinate: [1432, 116.0]
+    rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
   id: uhd_usrp_source

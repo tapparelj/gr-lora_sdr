@@ -113,21 +113,21 @@ void frame_sync_impl::forecast(int noutput_items,
  * avoid the first symbol since it might be incomplete)
  */
 void frame_sync_impl::estimate_CFO(gr_complex *samples) {
-  //DFt frequency bin index
+  // DFt frequency bin index
   int k0;
   //
   double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
   //< CFO frac correction vector
-  std::vector<gr_complex> CFO_frac_correc_aug(
-      up_symb_to_use * m_number_of_bins); 
-  //dechirped signal
+  std::vector<gr_complex> CFO_frac_correc_aug(up_symb_to_use *
+                                              m_number_of_bins);
+  // dechirped signal
   std::vector<gr_complex> dechirped(up_symb_to_use * m_number_of_bins);
-  //DFT variables
+  // DFT variables
   kiss_fft_cpx *cx_in_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
-  //sqaure of DFT signal
+  // sqaure of DFT signal
   float fft_mag_sq[2 * up_symb_to_use * m_number_of_bins];
   kiss_fft_cfg cfg_cfo =
       kiss_fft_alloc(2 * up_symb_to_use * m_samples_per_symbol, 0, 0, 0);
@@ -147,7 +147,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
     if (i < up_symb_to_use * m_samples_per_symbol) {
       cx_in_cfo[i].r = dechirped[i].real();
       cx_in_cfo[i].i = dechirped[i].imag();
-    } else { 
+    } else {
       // zero add padding to the DFT signal
       cx_in_cfo[i].r = 0;
       cx_in_cfo[i].i = 0;
@@ -157,13 +157,14 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   kiss_fft(cfg_cfo, cx_in_cfo, cx_out_cfo);
   // make the sqaure DFT signal
 
-  //TODO:check optimization possible first find Y_plus, Y_min, Y and then square those only
+  // TODO:check optimization possible first find Y_plus, Y_min, Y and then
+  // square those only
   for (uint32_t i = 0u; i < 2 * up_symb_to_use * m_samples_per_symbol; i++) {
     fft_mag_sq[i] =
         cx_out_cfo[i].r * cx_out_cfo[i].r + cx_out_cfo[i].i * cx_out_cfo[i].i;
   }
   free(cfg_cfo);
-  //get index of maximal frequency bin of DFT
+  // get index of maximal frequency bin of DFT
   k0 = ((std::max_element(fft_mag_sq,
                           fft_mag_sq + 2 * up_symb_to_use * m_number_of_bins) -
          fft_mag_sq));
@@ -175,7 +176,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   // Y+1
   Y_plus = fft_mag_sq[mod(k0 + 1, 2 * up_symb_to_use * m_number_of_bins)];
   // set constant coeff from Cui yang (15)
-  u = 64 * m_number_of_bins / 406.5506497; 
+  u = 64 * m_number_of_bins / 406.5506497;
   v = u * 2.4674;
   // preform RCTSL
   wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
@@ -183,7 +184,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   ka = wa * m_number_of_bins / M_PI;
   //
   k_residual = fmod((k0 + ka) / 2 / up_symb_to_use, 1);
-  //compute actual fractal offset
+  // compute actual fractal offset
   lambda_cfo = k_residual - (k_residual > 0.5 ? 1 : 0);
   // Correct CFO in preamble
   for (int n = 0; n < up_symb_to_use * m_number_of_bins; n++) {
@@ -257,22 +258,22 @@ void frame_sync_impl::estimate_CFO_Bernier() {
  *
  */
 void frame_sync_impl::estimate_STO() {
-  //DFT bin index
+  // DFT bin index
   int k0;
   //
   double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
-  //dechirped vector
+  // dechirped vector
   std::vector<gr_complex> dechirped(m_number_of_bins);
-  //DFT variables
+  // DFT variables
   kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
-  //variable to hold the sqaure of the fft
+  // variable to hold the sqaure of the fft
   float fft_mag_sq[2 * m_number_of_bins];
-  //compute square of fft
+  // compute square of fft
   for (size_t i = 0; i < 2 * m_number_of_bins; i++) {
     fft_mag_sq[i] = 0;
   }
-  //fft memory allocation
+  // fft memory allocation
   kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * m_samples_per_symbol, 0, 0, 0);
 
   for (int i = 0; i < up_symb_to_use; i++) {
@@ -285,7 +286,7 @@ void frame_sync_impl::estimate_STO() {
       if (i < m_samples_per_symbol) {
         cx_in_cfo[i].r = dechirped[i].real();
         cx_in_cfo[i].i = dechirped[i].imag();
-      } else { 
+      } else {
         // zero add padding to DFT
         cx_in_cfo[i].r = 0;
         cx_in_cfo[i].i = 0;
@@ -307,18 +308,18 @@ void frame_sync_impl::estimate_STO() {
 
   // get DFT at k0 - 1
   Y_min = fft_mag_sq[mod(k0 - 1, 2 * m_number_of_bins)];
-  //get DFT at k0
+  // get DFT at k0
   Y0 = fft_mag_sq[k0];
-  //get DFT at k0 + 1 
+  // get DFT at k0 + 1
   Y_plus = fft_mag_sq[mod(k0 + 1, 2 * m_number_of_bins)];
   // set constant coeff from Cui yang (eq.15) to be used in RCTSL
-  u = 64 * m_number_of_bins / 406.5506497; 
+  u = 64 * m_number_of_bins / 406.5506497;
   v = u * 2.4674;
   // RCTSL
   wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
   ka = wa * m_number_of_bins / M_PI;
   k_residual = fmod((k0 + ka) / 2, 1);
-  //compute actual fractal offset of sto
+  // compute actual fractal offset of sto
   lambda_sto = k_residual - (k_residual > 0.5 ? 1 : 0);
 }
 
@@ -378,9 +379,9 @@ float frame_sync_impl::determine_energy(const gr_complex *samples) {
  * @param cr : coding rate
  */
 void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
-  //get coding rate from header decoder
+  // get coding rate from header decoder
   m_cr = pmt::to_long(cr);
-  //set variable that we have an coding rate to true
+  // set variable that we have an coding rate to true
   received_cr = true;
   if (received_cr && received_crc &&
       received_pay_len) // get number of symbol of the frame
@@ -391,7 +392,8 @@ void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
 };
 
 /**
- * @brief Function that handles the payload length (i.e. data length) from the header decoder stage
+ * @brief Function that handles the payload length (i.e. data length) from the
+ * header decoder stage
  *
  * @param pay_len :payload length
  */
@@ -472,7 +474,7 @@ int frame_sync_impl::general_work(int noutput_items,
                                   gr_vector_int &ninput_items,
                                   gr_vector_const_void_star &input_items,
                                   gr_vector_void_star &output_items) {
-  //TODO: use : recv_n
+  // TODO: use : recv_n
   // cast input and output to the right format (i.e. gr_complex)
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
@@ -647,31 +649,39 @@ int frame_sync_impl::general_work(int noutput_items,
        */
       //
       if (down_val < m_number_of_bins / 2) {
-        //get integer part of CFO
+        // get integer part of CFO
         CFOint = floor(down_val / 2);
-        //set point for new frame
+// set point for new frame
+#ifdef GRLORA_DEBUG
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:CFOint:" + std::to_string(CFOint));
+#endif
+
         message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
       }
       //
       else {
         //
         CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
-        //set point for new frame
+        // set point for new frame
         message_port_pub(
             pmt::intern("new_frame"),
             pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
+#ifdef GRLORA_DEBUG
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:CFOint:" + std::to_string(((m_number_of_bins + CFOint) % m_number_of_bins)));
+#endif
       }
       items_to_consume =
           usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
       symbol_cnt = 0;
-      //set new sync state to correct fractal part of CFO i.e. apply with complex exponential
+      // set new sync state to correct fractal part of CFO i.e. apply with
+      // complex exponential
       m_state = FRAC_CFO_CORREC;
     }
-    //end case count symb
+      // end case count symb
     }
     noutput_items = 0;
     break;
-    //end case SYNC
+    // end case SYNC
   }
   case FRAC_CFO_CORREC: {
     /**
@@ -696,7 +706,7 @@ int frame_sync_impl::general_work(int noutput_items,
     // Error revert to the preamble detecting case
     else {
       m_state = DETECT;
-      //clear all variables
+      // clear all variables
       symbol_cnt = 1;
       items_to_consume = usFactor * m_samples_per_symbol;
       noutput_items = 0;

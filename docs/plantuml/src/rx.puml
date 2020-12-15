@@ -1,7 +1,7 @@
 @startuml
 skinparam componentStyle rectangle
 
-package Tx {
+package Rx {
   package FrameSync [
     - pay_len
     - bw

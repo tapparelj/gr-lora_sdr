@@ -5,11 +5,14 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Not titled yet
+# Title: TestFile
 # GNU Radio version: 3.8.1.0
 
-from gnuradio import gr
+from gnuradio import blocks
+import pmt
+from gnuradio import filter
 from gnuradio.filter import firdes
+from gnuradio import gr
 import sys
 import signal
 from argparse import ArgumentParser
@@ -21,16 +24,19 @@ import lora_sdr
 class test_tx(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Not titled yet")
+        gr.top_block.__init__(self, "TestFile")
 
         ##################################################
         # Variables
         ##################################################
         self.bw = bw = 250000
+        self.sf4 = sf4 = 10
+        self.sf3 = sf3 = 9
+        self.sf2 = sf2 = 8
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
-        self.pay_len = pay_len = 5
-        self.n_frame = n_frame = 2
+        self.pay_len = pay_len = 64
+        self.n_frame = n_frame = 8
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -40,44 +46,164 @@ class test_tx(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
+        self.rational_resampler_xxx_0_1_1_0 = filter.rational_resampler_ccc(
+                interpolation=4,
+                decimation=1,
+                taps=None,
+                fractional_bw=None)
+        self.lora_sdr_whitening_0_0_0 = lora_sdr.whitening()
+        self.lora_sdr_whitening_0_0 = lora_sdr.whitening()
+        self.lora_sdr_modulate_0_0_0 = lora_sdr.modulate(sf2, samp_rate, bw)
+        self.lora_sdr_modulate_0_0_0.set_min_output_buffer(10000000)
+        self.lora_sdr_modulate_0_0 = lora_sdr.modulate(sf, samp_rate, bw)
+        self.lora_sdr_modulate_0_0.set_min_output_buffer(10000000)
+        self.lora_sdr_interleaver_0_0_0 = lora_sdr.interleaver(cr, sf2)
+        self.lora_sdr_interleaver_0_0 = lora_sdr.interleaver(cr, sf)
+        self.lora_sdr_header_decoder_0_1 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc)
+        self.lora_sdr_header_decoder_0_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc)
+        self.lora_sdr_header_0_0_0 = lora_sdr.header(impl_head, has_crc, cr)
+        self.lora_sdr_header_0_0 = lora_sdr.header(impl_head, has_crc, cr)
+        self.lora_sdr_hamming_enc_0_0_0 = lora_sdr.hamming_enc(cr, sf2)
+        self.lora_sdr_hamming_enc_0_0 = lora_sdr.hamming_enc(cr, sf)
+        self.lora_sdr_hamming_dec_0_1 = lora_sdr.hamming_dec()
+        self.lora_sdr_hamming_dec_0_0 = lora_sdr.hamming_dec()
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
+        self.lora_sdr_gray_enc_0_1 = lora_sdr.gray_enc()
+        self.lora_sdr_gray_enc_0_0 = lora_sdr.gray_enc()
         self.lora_sdr_gray_enc_0 = lora_sdr.gray_enc()
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head)
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod(samp_rate, bw, sf, impl_head)
+        self.lora_sdr_gray_decode_0_0_0 = lora_sdr.gray_decode(sf2)
+        self.lora_sdr_gray_decode_0_0 = lora_sdr.gray_decode(sf)
+        self.lora_sdr_frame_sync_0_1 = lora_sdr.frame_sync(samp_rate, bw, sf3, impl_head)
+        self.lora_sdr_frame_sync_0_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf2, impl_head)
+        self.lora_sdr_fft_demod_0_1 = lora_sdr.fft_demod(samp_rate, bw, sf3, impl_head)
+        self.lora_sdr_fft_demod_0_0 = lora_sdr.fft_demod(samp_rate, bw, sf, impl_head)
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod(samp_rate, bw, sf2, impl_head)
+        self.lora_sdr_dewhitening_0_1 = lora_sdr.dewhitening()
+        self.lora_sdr_dewhitening_0_0 = lora_sdr.dewhitening()
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)
+        self.lora_sdr_deinterleaver_0_1 = lora_sdr.deinterleaver(sf3)
+        self.lora_sdr_deinterleaver_0_0 = lora_sdr.deinterleaver(sf)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf2)
+        self.lora_sdr_data_source_0_1_0_0_0 = lora_sdr.data_source(pay_len, n_frame, 'DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY')
+        self.lora_sdr_data_source_0_1_0_0 = lora_sdr.data_source(pay_len, n_frame, 'DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY')
+        self.lora_sdr_crc_verif_0_1 = lora_sdr.crc_verif()
+        self.lora_sdr_crc_verif_0_0 = lora_sdr.crc_verif()
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
+        self.lora_sdr_add_crc_0_0_0 = lora_sdr.add_crc(has_crc)
+        self.lora_sdr_add_crc_0_0 = lora_sdr.add_crc(has_crc)
+        self.blocks_throttle_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_throttle_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
+        self.blocks_add_xx_0 = blocks.add_vcc(1)
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_data_source_0_1_0_0, 'trigg'))
+        self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_data_source_0_1_0_0_0, 'trigg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0, 'msg'), (self.lora_sdr_add_crc_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0, 'msg'), (self.lora_sdr_header_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0, 'msg'), (self.lora_sdr_interleaver_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0, 'msg'), (self.lora_sdr_modulate_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0, 'msg'), (self.lora_sdr_whitening_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0_0, 'msg'), (self.lora_sdr_add_crc_0_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0_0, 'msg'), (self.lora_sdr_header_0_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0_0, 'msg'), (self.lora_sdr_interleaver_0_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0_0, 'msg'), (self.lora_sdr_modulate_0_0_0, 'msg'))
+        self.msg_connect((self.lora_sdr_data_source_0_1_0_0_0, 'msg'), (self.lora_sdr_whitening_0_0_0, 'msg'))
         self.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_deinterleaver_0, 'new_frame'))
         self.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_dewhitening_0, 'new_frame'))
         self.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_fft_demod_0, 'new_frame'))
         self.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_hamming_dec_0, 'new_frame'))
         self.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'), (self.lora_sdr_header_decoder_0, 'new_frame'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_0, 'new_frame'), (self.lora_sdr_deinterleaver_0_0, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_0, 'new_frame'), (self.lora_sdr_dewhitening_0_0, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_0, 'new_frame'), (self.lora_sdr_fft_demod_0_0, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_0, 'new_frame'), (self.lora_sdr_hamming_dec_0_0, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_0, 'new_frame'), (self.lora_sdr_header_decoder_0_0, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_1, 'new_frame'), (self.lora_sdr_deinterleaver_0_1, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_1, 'new_frame'), (self.lora_sdr_dewhitening_0_1, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_1, 'new_frame'), (self.lora_sdr_fft_demod_0_1, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_1, 'new_frame'), (self.lora_sdr_hamming_dec_0_1, 'new_frame'))
+        self.msg_connect((self.lora_sdr_frame_sync_0_1, 'new_frame'), (self.lora_sdr_header_decoder_0_1, 'new_frame'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_deinterleaver_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'pay_len'), (self.lora_sdr_crc_verif_0_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CRC'), (self.lora_sdr_crc_verif_0_0, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CR'), (self.lora_sdr_deinterleaver_0_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CRC'), (self.lora_sdr_dewhitening_0_0, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'pay_len'), (self.lora_sdr_dewhitening_0_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CR'), (self.lora_sdr_fft_demod_0_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CRC'), (self.lora_sdr_frame_sync_0_0, 'crc'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'err'), (self.lora_sdr_frame_sync_0_0, 'err'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'pay_len'), (self.lora_sdr_frame_sync_0_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CR'), (self.lora_sdr_frame_sync_0_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_0, 'CR'), (self.lora_sdr_hamming_dec_0_0, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CRC'), (self.lora_sdr_crc_verif_0_1, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'pay_len'), (self.lora_sdr_crc_verif_0_1, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CR'), (self.lora_sdr_deinterleaver_0_1, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CRC'), (self.lora_sdr_dewhitening_0_1, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'pay_len'), (self.lora_sdr_dewhitening_0_1, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CR'), (self.lora_sdr_fft_demod_0_1, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'pay_len'), (self.lora_sdr_frame_sync_0_1, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CRC'), (self.lora_sdr_frame_sync_0_1, 'crc'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'err'), (self.lora_sdr_frame_sync_0_1, 'err'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CR'), (self.lora_sdr_frame_sync_0_1, 'CR'))
+        self.msg_connect((self.lora_sdr_header_decoder_0_1, 'CR'), (self.lora_sdr_hamming_dec_0_1, 'CR'))
+        self.connect((self.blocks_add_xx_0, 0), (self.rational_resampler_xxx_0_1_1_0, 0))
+        self.connect((self.blocks_throttle_1, 0), (self.blocks_add_xx_0, 0))
+        self.connect((self.blocks_throttle_1_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.lora_sdr_add_crc_0_0, 0), (self.lora_sdr_hamming_enc_0_0, 0))
+        self.connect((self.lora_sdr_add_crc_0_0_0, 0), (self.lora_sdr_hamming_enc_0_0_0, 0))
         self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))
+        self.connect((self.lora_sdr_deinterleaver_0_0, 0), (self.lora_sdr_hamming_dec_0_0, 0))
+        self.connect((self.lora_sdr_deinterleaver_0_1, 0), (self.lora_sdr_hamming_dec_0_1, 0))
         self.connect((self.lora_sdr_dewhitening_0, 0), (self.lora_sdr_crc_verif_0, 0))
+        self.connect((self.lora_sdr_dewhitening_0_0, 0), (self.lora_sdr_crc_verif_0_0, 0))
+        self.connect((self.lora_sdr_dewhitening_0_1, 0), (self.lora_sdr_crc_verif_0_1, 0))
         self.connect((self.lora_sdr_fft_demod_0, 0), (self.lora_sdr_gray_enc_0, 0))
+        self.connect((self.lora_sdr_fft_demod_0_0, 0), (self.lora_sdr_gray_enc_0_0, 0))
+        self.connect((self.lora_sdr_fft_demod_0_1, 0), (self.lora_sdr_gray_enc_0_1, 0))
         self.connect((self.lora_sdr_frame_sync_0, 0), (self.lora_sdr_fft_demod_0, 0))
+        self.connect((self.lora_sdr_frame_sync_0_0, 0), (self.lora_sdr_fft_demod_0_0, 0))
+        self.connect((self.lora_sdr_frame_sync_0_1, 0), (self.lora_sdr_fft_demod_0_1, 0))
+        self.connect((self.lora_sdr_gray_decode_0_0, 0), (self.lora_sdr_modulate_0_0, 0))
+        self.connect((self.lora_sdr_gray_decode_0_0_0, 0), (self.lora_sdr_modulate_0_0_0, 0))
         self.connect((self.lora_sdr_gray_enc_0, 0), (self.lora_sdr_deinterleaver_0, 0))
+        self.connect((self.lora_sdr_gray_enc_0_0, 0), (self.lora_sdr_deinterleaver_0_0, 0))
+        self.connect((self.lora_sdr_gray_enc_0_1, 0), (self.lora_sdr_deinterleaver_0_1, 0))
         self.connect((self.lora_sdr_hamming_dec_0, 0), (self.lora_sdr_header_decoder_0, 0))
+        self.connect((self.lora_sdr_hamming_dec_0_0, 0), (self.lora_sdr_header_decoder_0_0, 0))
+        self.connect((self.lora_sdr_hamming_dec_0_1, 0), (self.lora_sdr_header_decoder_0_1, 0))
+        self.connect((self.lora_sdr_hamming_enc_0_0, 0), (self.lora_sdr_interleaver_0_0, 0))
+        self.connect((self.lora_sdr_hamming_enc_0_0_0, 0), (self.lora_sdr_interleaver_0_0_0, 0))
+        self.connect((self.lora_sdr_header_0_0, 0), (self.lora_sdr_add_crc_0_0, 0))
+        self.connect((self.lora_sdr_header_0_0_0, 0), (self.lora_sdr_add_crc_0_0_0, 0))
         self.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
-        self.connect((self, 0), (self.lora_sdr_frame_sync_0, 0))
+        self.connect((self.lora_sdr_header_decoder_0_0, 0), (self.lora_sdr_dewhitening_0_0, 0))
+        self.connect((self.lora_sdr_header_decoder_0_1, 0), (self.lora_sdr_dewhitening_0_1, 0))
+        self.connect((self.lora_sdr_interleaver_0_0, 0), (self.lora_sdr_gray_decode_0_0, 0))
+        self.connect((self.lora_sdr_interleaver_0_0_0, 0), (self.lora_sdr_gray_decode_0_0_0, 0))
+        self.connect((self.lora_sdr_modulate_0_0, 0), (self.blocks_throttle_1, 0))
+        self.connect((self.lora_sdr_modulate_0_0_0, 0), (self.blocks_throttle_1_0, 0))
+        self.connect((self.lora_sdr_whitening_0_0, 0), (self.lora_sdr_header_0_0, 0))
+        self.connect((self.lora_sdr_whitening_0_0_0, 0), (self.lora_sdr_header_0_0_0, 0))
+        self.connect((self.rational_resampler_xxx_0_1_1_0, 0), (self.lora_sdr_frame_sync_0, 0))
+        self.connect((self.rational_resampler_xxx_0_1_1_0, 0), (self.lora_sdr_frame_sync_0_0, 0))
+        self.connect((self.rational_resampler_xxx_0_1_1_0, 0), (self.lora_sdr_frame_sync_0_1, 0))
 
 
     def get_bw(self):
@@ -86,6 +212,24 @@ class test_tx(gr.top_block):
     def set_bw(self, bw):
         self.bw = bw
         self.set_samp_rate(self.bw)
+
+    def get_sf4(self):
+        return self.sf4
+
+    def set_sf4(self, sf4):
+        self.sf4 = sf4
+
+    def get_sf3(self):
+        return self.sf3
+
+    def set_sf3(self, sf3):
+        self.sf3 = sf3
+
+    def get_sf2(self):
+        return self.sf2
+
+    def set_sf2(self, sf2):
+        self.sf2 = sf2
 
     def get_sf(self):
         return self.sf
@@ -98,6 +242,8 @@ class test_tx(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.blocks_throttle_1.set_sample_rate(self.samp_rate)
+        self.blocks_throttle_1_0.set_sample_rate(self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
@@ -134,6 +280,7 @@ class test_tx(gr.top_block):
 
     def set_frame_period(self, frame_period):
         self.frame_period = frame_period
+        self.blocks_message_strobe_random_0_1_0.set_mean(self.frame_period)
 
     def get_cr(self):
         return self.cr
