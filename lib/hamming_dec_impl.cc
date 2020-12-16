@@ -2,6 +2,10 @@
 #include "hamming_dec_impl.h"
 #include <gnuradio/io_signature.h>
 #include <lora_sdr/utilities.h>
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
+
+using namespace boost::placeholders;
 
 namespace gr {
 namespace lora_sdr {

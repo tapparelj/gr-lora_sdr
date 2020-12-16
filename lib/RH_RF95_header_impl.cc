@@ -1,6 +1,9 @@
 #include <gnuradio/io_signature.h>
 #include "RH_RF95_header_impl.h"
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
   namespace lora_sdr {
 

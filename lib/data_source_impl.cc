@@ -2,7 +2,10 @@
 #include "data_source_impl.h"
 #include <gnuradio/block.h>
 #include <gnuradio/io_signature.h>
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 

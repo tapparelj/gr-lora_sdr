@@ -1,6 +1,9 @@
 #include "modulate_impl.h"
 #include "debug_tools.h"
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 

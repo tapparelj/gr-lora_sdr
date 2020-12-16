@@ -1,5 +1,10 @@
 #include "fft_demod_impl.h"
 #include <gnuradio/io_signature.h>
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
+
+using namespace boost::placeholders;
+
 extern "C" {
 #include "kiss_fft.h"
 }

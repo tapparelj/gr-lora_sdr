@@ -19,7 +19,6 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    lora_sdr_lora_sdr.block.yml
     lora_sdr_add_crc.block.yml
     lora_sdr_crc_verif.block.yml
     lora_sdr_dewhitening.block.yml

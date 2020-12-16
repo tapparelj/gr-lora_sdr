@@ -45,6 +45,7 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
+    set( CMAKE_VERBOSE_MAKEFILE on )
 
     add_definitions(-DGRLORA_DEBUG=True)
 
@@ -172,11 +173,6 @@ endif(APPLE)
 ########################################################################
 find_package(Doxygen)
 ##Add Cpp unit Testing
-find_package(CppUnit)
-
-if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile lora_sdr")
-endif()
 
 ########################################################################
 # Setup doxygen option

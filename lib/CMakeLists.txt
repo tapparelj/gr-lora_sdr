@@ -24,7 +24,6 @@
 include(GrPlatform) #define LIB_SUFFIX
 
 list(APPEND lora_sdr_sources
-    lora_sdr_impl.cc
     add_crc_impl.cc
     crc_verif_impl.cc
     dewhitening_impl.cc
