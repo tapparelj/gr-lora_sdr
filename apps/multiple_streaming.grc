@@ -170,6 +170,23 @@ blocks:
     coordinate: [776, 408.0]
     rotation: 0
     state: true
+- name: blocks_message_strobe_0
+  id: blocks_message_strobe
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg: pmt.intern("")
+    period: '200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [168, 556.0]
+    rotation: 0
+    state: true
 - name: blocks_message_strobe_random_0_1_0
   id: blocks_message_strobe_random
   parameters:
@@ -188,7 +205,7 @@ blocks:
     bus_structure: null
     coordinate: [112, 396.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -411,6 +428,8 @@ blocks:
 
 connections:
 - [blocks_add_xx_0, '0', blocks_throttle_0, '0']
+- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0, trigg]
+- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0_0, trigg]
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0, trigg]
 - [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0_0, trigg]
 - [blocks_throttle_0, '0', rational_resampler_xxx_0_1, '0']

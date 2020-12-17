@@ -56,7 +56,7 @@ class sim_mult(gr.top_block):
         self.lora_sdr_hier_rx_0_1_0_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 8, impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hier_rx_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 9, impl_head, cr, pay_len, has_crc)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
+        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern(""), 200)
         self.blocks_add_xx_0 = blocks.add_vcc(1)
 
 
@@ -64,8 +64,8 @@ class sim_mult(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_hier_tx_0, 'trigg'))
-        self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_hier_tx_0_0, 'trigg'))
+        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_hier_tx_0, 'trigg'))
+        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_hier_tx_0_0, 'trigg'))
         self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0_1, 0))
         self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_add_xx_0, 1))
@@ -131,7 +131,6 @@ class sim_mult(gr.top_block):
 
     def set_frame_period(self, frame_period):
         self.frame_period = frame_period
-        self.blocks_message_strobe_random_0_1_0.set_mean(self.frame_period)
 
     def get_cr(self):
         return self.cr

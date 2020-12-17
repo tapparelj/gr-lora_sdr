@@ -33,7 +33,7 @@ namespace gr {
      * \ingroup lora_sdr
      *
      */
-    class LORA_SDR_API data_source : virtual public gr::sync_block
+    class LORA_SDR_API data_source : virtual public gr::block
     {
      public:
       typedef boost::shared_ptr<data_source> sptr;
@@ -53,4 +53,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_DATA_SOURCE_H */
-

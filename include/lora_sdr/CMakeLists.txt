@@ -23,7 +23,6 @@
 ########################################################################
 install(FILES
     api.h
-    lora_sdr.h 
     add_crc.h
     crc_verif.h
     dewhitening.h

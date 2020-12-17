@@ -45,7 +45,8 @@ list(APPEND lora_sdr_sources
     err_measures_impl.cc
     debug_tools.cc
     hier_tx_impl.cc
-    hier_rx_impl.cc )
+    hier_rx_impl.cc
+)
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)
 if(NOT lora_sdr_sources)

@@ -237,7 +237,7 @@ blocks:
     bus_structure: null
     coordinate: [592, 1052.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_throttle_0_0
   id: blocks_throttle
   parameters:
@@ -536,7 +536,7 @@ blocks:
     bus_structure: null
     coordinate: [1096, 1004.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: lora_sdr_hier_rx_0_0
   id: lora_sdr_hier_rx
   parameters:
@@ -582,7 +582,7 @@ blocks:
     bus_structure: null
     coordinate: [328, 988.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: lora_sdr_hier_tx_0_0
   id: lora_sdr_hier_tx
   parameters:
@@ -676,7 +676,7 @@ blocks:
     bus_structure: null
     coordinate: [832, 1028.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: rational_resampler_xxx_0_0
   id: rational_resampler_xxx
   parameters:

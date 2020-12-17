@@ -694,7 +694,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [568, 452.0]
+    coordinate: [560, 444.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_data_source_0_1_0_0_0

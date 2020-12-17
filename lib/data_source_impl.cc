@@ -1,11 +1,14 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "data_source_impl.h"
-#include <gnuradio/block.h>
 #include <gnuradio/io_signature.h>
-//Fix for libboost > 1.75
+#include <lora_sdr/utilities.h>
+// Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
-
 using namespace boost::placeholders;
+
 namespace gr {
 namespace lora_sdr {
 
@@ -15,17 +18,17 @@ data_source::sptr data_source::make(int pay_len, int n_frames,
       new data_source_impl(pay_len, n_frames, string_input));
 }
 
-  /**
-   * @brief Construct a new data source impl object
-   * 
-   * @param pay_len : payload length
-   * @param n_frames : number of frames to generate data for
-   * @param string_input : input string from gnuradio-companian
-   */
+/**
+ * @brief Construct a new data source impl object
+ *
+ * @param pay_len : payload length
+ * @param n_frames : number of frames to generate data for
+ * @param string_input : input string from gnuradio-companian
+ */
 data_source_impl::data_source_impl(int pay_len, int n_frames,
                                    std::string string_input)
-    : gr::sync_block("data_source", gr::io_signature::make(0, 0, 0),
-                     gr::io_signature::make(0, 0, 0)) {
+    : gr::block("data_source", gr::io_signature::make(0, 0, 0),
+                gr::io_signature::make(0, 0, 0)) {
   m_n_frames = n_frames;
   m_pay_len = pay_len;
   frame_cnt = -5; // let some time to the Rx to start listening
@@ -33,8 +36,10 @@ data_source_impl::data_source_impl(int pay_len, int n_frames,
   message_port_register_in(pmt::mp("trigg"));
   set_msg_handler(pmt::mp("trigg"),
                   boost::bind(&data_source_impl::trigg_handler, this, _1));
-
   message_port_register_out(pmt::mp("msg"));
+  // message_port_register_in(pmt::mp("system"));
+  // set_msg_handler(pmt::mp("system"), boost::bind(&block::system_handler,
+  // this, _1));
 }
 
 /**
@@ -61,8 +66,9 @@ std::string data_source_impl::random_string(int Nbytes) {
 }
 
 /**
- * @brief Main function that handles the trigger and dispatches the message making
- * 
+ * @brief Main function that handles the trigger and dispatches the message
+ * making
+ *
  * @param msg : PMT input msg (i.e. trigger from strobe)
  */
 void data_source_impl::trigg_handler(pmt::pmt_t msg) {
@@ -73,15 +79,15 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
 
     // if no string is set generate random string otherwise use set string.
     if (m_string_input.empty()) {
-      //generate random string
+      // generate random string
       str = random_string(m_pay_len);
     } else {
       // take input string
       str = m_string_input;
     }
 #ifdef GRLORA_DEBUG
-    //output data string
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" +str);
+    // output data string
+    GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
 #endif
 
     message_port_pub(pmt::intern("msg"), pmt::mp(str));
@@ -97,22 +103,48 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
   } else if (frame_cnt == m_n_frames) {
     GR_LOG_INFO(this->d_logger, "INFO:Done !, generated : " +
                                     std::to_string(m_n_frames) + " frames");
+    pmt::pmt_t in = message_ports_in();
+    std::cout << in << std::endl;
+    pmt::pmt_t out = message_ports_out();
+    std::cout << out << std::endl;
+    // TODO find out if exiting this thread causes problems down the line
+    // exit(EXIT_SUCCESS);
+    message_port_pub(pmt::intern("msg"), d_pmt_done);
+
+    // gr::basic_block:_post (pmt::intern("msg"), d_pmt_done);
+    message_port_pub(pmt::mp("system"), pmt::intern("done"));
+
+    // d_finished = true;
+    // return d_finished;
     frame_cnt++;
   }
 }
 
 /**
- * @brief Place holder function of data_source that generated random ([a-z A-Z
- * 0-9]) data source to be sent over the network
+ * @brief
  *
  * @param noutput_items
+ * @param ninput_items_required
+ */
+void data_source_impl::forecast(int noutput_items,
+                                gr_vector_int &ninput_items_required) {
+  /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
+}
+
+/**
+ * @brief
+ *
+ * @param noutput_items
+ * @param ninput_items
  * @param input_items
  * @param output_items
  * @return int
  */
-int data_source_impl::work(int noutput_items,
-                           gr_vector_const_void_star &input_items,
-                           gr_vector_void_star &output_items) {
+int data_source_impl::general_work(int noutput_items,
+                                   gr_vector_int &ninput_items,
+                                   gr_vector_const_void_star &input_items,
+                                   gr_vector_void_star &output_items) {
+  // Tell runtime system how many output items we produced.
   return 0;
 }
 

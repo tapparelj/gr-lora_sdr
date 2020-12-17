@@ -25,6 +25,8 @@ whitening_impl::whitening_impl()
   new_message = false;
 
   message_port_register_in(pmt::mp("msg"));
+  message_port_register_in(pmt::mp("system"));
+  set_msg_handler(pmt::mp("system"), boost::bind(&block::system_handler, this, _1));
   set_msg_handler(pmt::mp("msg"), // This is the port identifier
                   boost::bind(&whitening_impl::msg_handler, this, _1));
 }

@@ -53,17 +53,9 @@ class sim_lor(gr.top_block):
                 decimation=1,
                 taps=None,
                 fractional_bw=None)
-        self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
-                interpolation=4,
-                decimation=1,
-                taps=None,
-                fractional_bw=None)
         self.lora_sdr_hier_tx_0_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf2, impl_head,has_crc, samp_rate, bw)
-        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY', cr, sf, impl_head,has_crc, samp_rate, bw)
         self.lora_sdr_hier_rx_0_0 = lora_sdr.hier_rx(samp_rate, bw, sf2, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc)
         self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
 
 
@@ -71,13 +63,9 @@ class sim_lor(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_hier_tx_0, 'trigg'))
         self.msg_connect((self.blocks_message_strobe_random_0_1_0, 'strobe'), (self.lora_sdr_hier_tx_0_0, 'trigg'))
-        self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.blocks_throttle_0_0, 0), (self.rational_resampler_xxx_0_0, 0))
-        self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.lora_sdr_hier_tx_0_0, 0), (self.blocks_throttle_0_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.lora_sdr_hier_rx_0, 0))
         self.connect((self.rational_resampler_xxx_0_0, 0), (self.lora_sdr_hier_rx_0_0, 0))
 
 
@@ -109,7 +97,6 @@ class sim_lor(gr.top_block):
     def set_samp_rate(self, samp_rate):
         with self._lock:
             self.samp_rate = samp_rate
-            self.blocks_throttle_0.set_sample_rate(self.samp_rate)
             self.blocks_throttle_0_0.set_sample_rate(self.samp_rate)
 
     def get_pay_len(self):
