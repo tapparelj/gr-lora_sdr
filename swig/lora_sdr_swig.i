@@ -28,7 +28,6 @@
 #include "lora_sdr/err_measures.h"
 #include "lora_sdr/hier_rx.h"
 #include "lora_sdr/hier_tx.h"
-#include "lora_sdr/hier_rx.h"
 %}
 
 

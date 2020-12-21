@@ -109,10 +109,11 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
     std::cout << out << std::endl;
     // TODO find out if exiting this thread causes problems down the line
     // exit(EXIT_SUCCESS);
-    message_port_pub(pmt::intern("msg"), d_pmt_done);
+    m_work_done = true;
+    // message_port_pub(pmt::intern("msg"), d_pmt_done);
 
     // gr::basic_block:_post (pmt::intern("msg"), d_pmt_done);
-    message_port_pub(pmt::mp("system"), pmt::intern("done"));
+    //message_port_pub(pmt::mp("system"), pmt::intern("done"));
 
     // d_finished = true;
     // return d_finished;

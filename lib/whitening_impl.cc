@@ -4,7 +4,7 @@
 #include "debug_tools.h"
 #include "tables.h"
 #include <gnuradio/io_signature.h>
-//Fix for libboost > 1.75
+// Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
 
 using namespace boost::placeholders;
@@ -26,7 +26,8 @@ whitening_impl::whitening_impl()
 
   message_port_register_in(pmt::mp("msg"));
   message_port_register_in(pmt::mp("system"));
-  set_msg_handler(pmt::mp("system"), boost::bind(&block::system_handler, this, _1));
+  set_msg_handler(pmt::mp("system"),
+                  boost::bind(&block::system_handler, this, _1));
   set_msg_handler(pmt::mp("msg"), // This is the port identifier
                   boost::bind(&whitening_impl::msg_handler, this, _1));
 }
@@ -46,8 +47,11 @@ whitening_impl::~whitening_impl() {}
 void whitening_impl::msg_handler(pmt::pmt_t message) {
   // get pmt message and parse to string
   std::string str = pmt::symbol_to_string(message);
-  // copy string into variable m_payload
-  std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
+  if (str == "done"){
+    m_work_done = true;
+  }
+    // copy string into variable m_payload
+    std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
 #ifdef GRLORA_DEBUG
   // if debugging is turned on debug the input message
   GR_LOG_DEBUG(this->d_logger, "Input Tx:" + str);
@@ -68,20 +72,24 @@ int whitening_impl::work(int noutput_items,
                          gr_vector_void_star &output_items) {
   if (new_message) {
     uint8_t *out = (uint8_t *)output_items[0];
-    //do the actual whitening of the payload data
+    // do the actual whitening of the payload data
     for (uint i = 0; i < m_payload.size(); i++) {
       out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
       out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
-
     }
 
-    //set number of output items and clear payload message
+    // set number of output items and clear payload message
     noutput_items = 2 * m_payload.size();
     m_payload.clear();
     new_message = false;
   } else
     noutput_items = 0;
-  return noutput_items;
+  if (m_work_done == true) {
+    std::cout << "Work done" << std::endl;
+    return WORK_DONE;
+  } else {
+    return noutput_items;
+  }
 }
 
 } // namespace lora_sdr

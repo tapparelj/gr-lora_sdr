@@ -106,7 +106,12 @@ frame_sync_impl::~frame_sync_impl() {}
  */
 void frame_sync_impl::forecast(int noutput_items,
                                gr_vector_int &ninput_items_required) {
+  //TODO fix : for sf=11 and sf=12
   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
+  // if(m_sf <= 10){
+  //   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
+  // }
+  // if()
 }
 
 /**
@@ -477,7 +482,6 @@ int frame_sync_impl::general_work(int noutput_items,
                                   gr_vector_int &ninput_items,
                                   gr_vector_const_void_star &input_items,
                                   gr_vector_void_star &output_items) {
-  // TODO: use : recv_n
   // cast input and output to the right format (i.e. gr_complex)
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
@@ -661,7 +665,7 @@ int frame_sync_impl::general_work(int noutput_items,
 
         message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
       }
-      //
+      //TODO: figure outlogic behind
       else {
         //
         CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);

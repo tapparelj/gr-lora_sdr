@@ -48,6 +48,8 @@ private:
    */
   void trigg_handler(pmt::pmt_t msg);
 
+  bool m_work_done;
+
 public:
   /**
    * @brief Construct a new data source impl object
