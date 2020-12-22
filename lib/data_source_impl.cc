@@ -113,7 +113,7 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
     // message_port_pub(pmt::intern("msg"), d_pmt_done);
 
     // gr::basic_block:_post (pmt::intern("msg"), d_pmt_done);
-    //message_port_pub(pmt::mp("system"), pmt::intern("done"));
+    message_port_pub(pmt::mp("system"), pmt::intern("done"));
 
     // d_finished = true;
     // return d_finished;
