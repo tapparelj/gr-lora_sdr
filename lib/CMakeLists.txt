@@ -46,6 +46,7 @@ list(APPEND lora_sdr_sources
     debug_tools.cc
     hier_tx_impl.cc
     hier_rx_impl.cc
+    data_source_sim_impl.cc
 )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)

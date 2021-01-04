@@ -20,7 +20,7 @@ whitening::sptr whitening::make() {
  *
  */
 whitening_impl::whitening_impl()
-    : gr::sync_block("whitening", gr::io_signature::make(0, 0, 0),
+    : gr::sync_block("whitening", gr::io_signature::make(0, 1, sizeof(uint8_t)),
                      gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   new_message = false;
 
@@ -84,12 +84,9 @@ int whitening_impl::work(int noutput_items,
     new_message = false;
   } else
     noutput_items = 0;
-  if (m_work_done == true) {
-    std::cout << "Work done" << std::endl;
-    return WORK_DONE;
-  } else {
-    return noutput_items;
-  }
+
+  return noutput_items;
+  
 }
 
 } // namespace lora_sdr

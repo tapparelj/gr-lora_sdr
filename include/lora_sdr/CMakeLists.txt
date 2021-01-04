@@ -42,5 +42,6 @@ install(FILES
     deinterleaver.h
     err_measures.h
     hier_rx.h
-    hier_tx.h DESTINATION include/lora_sdr
+    hier_tx.h
+    data_source_sim.h DESTINATION include/lora_sdr
 )
