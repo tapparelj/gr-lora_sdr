@@ -106,12 +106,7 @@ frame_sync_impl::~frame_sync_impl() {}
  */
 void frame_sync_impl::forecast(int noutput_items,
                                gr_vector_int &ninput_items_required) {
-  //TODO fix : for sf=11 and sf=12
   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
-  // if(m_sf <= 10){
-  //   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
-  // }
-  // if()
 }
 
 /**

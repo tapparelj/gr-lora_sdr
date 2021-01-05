@@ -24,6 +24,8 @@ inputs:
 outputs:
 -   domain: message
     id: msg
+-   domain: stream
+    dtype: byte
 
 templates:
     imports: import lora_sdr

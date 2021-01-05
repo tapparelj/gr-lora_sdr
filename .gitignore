@@ -10,5 +10,7 @@ apps/profiling/
 
 cmake-build-debug/
 
+apps/profiling
+
 ##Pycharm
 .idea/
