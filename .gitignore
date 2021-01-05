@@ -4,7 +4,7 @@
 build/
 #ignore test folder
 test/
-
+apps/profiling/
 ### vscode ###
 .vscode/
 

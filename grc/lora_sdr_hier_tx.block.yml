@@ -6,7 +6,7 @@ templates:
   imports: import lora_sdr
   make: lora_sdr.hier_tx(${pay_len}, ${n_frames}, ${src_data},
                         ${cr}, ${sf}, ${impl_head},${has_crc},
-                           ${samp_rate}, ${bw})
+                           ${samp_rate}, ${bw}, ${mean})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -46,10 +46,15 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: mean
+    label: Mean time (ms)
+    dtype: int
+    default : 200
 
 asserts:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
 -   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
+-   ${ mean > 1}
 
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
@@ -60,8 +65,6 @@ asserts:
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
 inputs:
--   domain: message
-    id: trigg
 
 outputs:
 -   domain: stream
@@ -70,8 +73,6 @@ outputs:
 documentation: |-
     Wrapper block that hold the entire Tx chain :
     (data source, whitening, add_header, add_crc, hamming_enc, interleaver, gray mapping, modulate)
-    Input: 
-        trigg : trigger message to start sending the data source
     Output:
         out : stream of complex valued samples
 

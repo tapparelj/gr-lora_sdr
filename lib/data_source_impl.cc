@@ -1,3 +1,13 @@
+/**
+ * @file data_source_impl.cc
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2021-01-05
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -28,7 +38,7 @@ data_source::sptr data_source::make(int pay_len, int n_frames,
 data_source_impl::data_source_impl(int pay_len, int n_frames,
                                    std::string string_input)
     : gr::block("data_source", gr::io_signature::make(0, 0, 0),
-                gr::io_signature::make(0, 0, 0)) {
+                gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   m_n_frames = n_frames;
   m_pay_len = pay_len;
   frame_cnt = -5; // let some time to the Rx to start listening
@@ -103,20 +113,7 @@ void data_source_impl::trigg_handler(pmt::pmt_t msg) {
   } else if (frame_cnt == m_n_frames) {
     GR_LOG_INFO(this->d_logger, "INFO:Done !, generated : " +
                                     std::to_string(m_n_frames) + " frames");
-    pmt::pmt_t in = message_ports_in();
-    std::cout << in << std::endl;
-    pmt::pmt_t out = message_ports_out();
-    std::cout << out << std::endl;
-    // TODO find out if exiting this thread causes problems down the line
-    // exit(EXIT_SUCCESS);
-    m_work_done = true;
-    // message_port_pub(pmt::intern("msg"), d_pmt_done);
-
-    // gr::basic_block:_post (pmt::intern("msg"), d_pmt_done);
-    message_port_pub(pmt::mp("system"), pmt::intern("done"));
-
-    // d_finished = true;
-    // return d_finished;
+    d_finished = true;
     frame_cnt++;
   }
 }
@@ -146,7 +143,14 @@ int data_source_impl::general_work(int noutput_items,
                                    gr_vector_const_void_star &input_items,
                                    gr_vector_void_star &output_items) {
   // Tell runtime system how many output items we produced.
-  return 0;
+
+  if(d_finished == true){
+    std::cout << "Work done" << std::endl;
+    return WORK_DONE;
+  }
+  else{
+    return 0;
+  }
 }
 
 } /* namespace lora_sdr */

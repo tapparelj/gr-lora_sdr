@@ -20,14 +20,11 @@ whitening::sptr whitening::make() {
  *
  */
 whitening_impl::whitening_impl()
-    : gr::sync_block("whitening", gr::io_signature::make(0, 0, 0),
+    : gr::sync_block("whitening", gr::io_signature::make(0, 1, sizeof(uint8_t)),
                      gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   new_message = false;
 
   message_port_register_in(pmt::mp("msg"));
-  message_port_register_in(pmt::mp("system"));
-  set_msg_handler(pmt::mp("system"),
-                  boost::bind(&block::system_handler, this, _1));
   set_msg_handler(pmt::mp("msg"), // This is the port identifier
                   boost::bind(&whitening_impl::msg_handler, this, _1));
 }
@@ -82,14 +79,13 @@ int whitening_impl::work(int noutput_items,
     noutput_items = 2 * m_payload.size();
     m_payload.clear();
     new_message = false;
-  } else
-    noutput_items = 0;
-  if (m_work_done == true) {
-    std::cout << "Work done" << std::endl;
-    return WORK_DONE;
+
   } else {
-    return noutput_items;
+    noutput_items = 0;
   }
+
+  return noutput_items;
+  
 }
 
 } // namespace lora_sdr

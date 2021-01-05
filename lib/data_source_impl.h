@@ -1,3 +1,13 @@
+/**
+ * @file data_source_impl.h
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2021-01-05
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #ifndef INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 #define INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 
@@ -48,7 +58,11 @@ private:
    */
   void trigg_handler(pmt::pmt_t msg);
 
-  bool m_work_done;
+  /**
+   * @brief boolean to tell the main function execution is finished
+   *
+   */
+  bool d_finished;
 
 public:
   /**
@@ -68,9 +82,9 @@ public:
 
   /**
    * @brief Place holder function does not do anything for the data source.
-   * 
-   * @param noutput_items 
-   * @param ninput_items_required 
+   *
+   * @param noutput_items
+   * @param ninput_items_required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
@@ -83,10 +97,9 @@ public:
    * @param output_items
    * @return int
    */
-  int general_work(int noutput_items,
-                                   gr_vector_int &ninput_items,
-                                   gr_vector_const_void_star &input_items,
-                                   gr_vector_void_star &output_items);
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
 };
 
 } // namespace lora_sdr

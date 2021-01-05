@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Simulated multi stream
 # Author: Martyn van Dijke
-# GNU Radio version: 3.8.1.0
+# GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
 import pmt
@@ -22,7 +22,7 @@ from gnuradio import eng_notation
 import lora_sdr
 
 
-class sim_mult(gr.top_block):
+class lora_sim_multi(gr.top_block):
 
     def __init__(self):
         gr.top_block.__init__(self, "Simulated multi stream")
@@ -142,7 +142,7 @@ class sim_mult(gr.top_block):
 
 
 
-def main(top_block_cls=sim_mult, options=None):
+def main(top_block_cls=lora_sim_multi, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):

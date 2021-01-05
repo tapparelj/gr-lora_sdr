@@ -45,7 +45,7 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
-    set( CMAKE_VERBOSE_MAKEFILE on )
+    # set( CMAKE_VERBOSE_MAKEFILE on )
 
     add_definitions(-DGRLORA_DEBUG=True)
 
