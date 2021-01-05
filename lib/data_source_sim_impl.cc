@@ -71,6 +71,7 @@ std::string data_source_sim_impl::random_string(int Nbytes) {
 void data_source_sim_impl::forecast(int noutput_items,
                                     gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
+  ninput_items_required[0] = 0;
 }
 
 /**
@@ -82,7 +83,7 @@ void data_source_sim_impl::forecast(int noutput_items,
  * @param noutput_items : number of output items : 1
  * @param ninput_items : number of input items : 0
  * @param input_items : input item : 0
- * @param output_items : ooutput items :
+ * @param output_items : output items :
  * @return int : work status
  */
 int data_source_sim_impl::general_work(int noutput_items,
@@ -109,12 +110,15 @@ int data_source_sim_impl::general_work(int noutput_items,
 #endif
     // send string over pmt port "msg" to neighboors
     message_port_pub(pmt::intern("msg"), pmt::mp(str));
+    noutput_items = 1;
     // print once in every 50 frames information about the number of frames
     if (!mod(frame_cnt, 50))
       GR_LOG_INFO(this->d_logger,
                   "INFO:Processing frame :" + std::to_string(frame_cnt) + "/" +
                       std::to_string(m_n_frames));
     frame_cnt++;
+      // let this thread sleep for the inputted mean time.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
   }
   // if the number of frames is the same -> all frames are sent
   else if (frame_cnt == m_n_frames) {
@@ -130,13 +134,16 @@ int data_source_sim_impl::general_work(int noutput_items,
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Work done!\nExiting..");
 #endif
+    //return noutput_items;
     return WORK_DONE;
   } else {
-    return 0;
+    return noutput_items;
   }
+  std::cout << "Number of items out data:"+std::to_string(noutput_items) << std::endl;
 
-  // let this thread sleep for the inputted mean time.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
+  consume_each(noutput_items);
+
+
 }
 
 } /* namespace lora_sdr */

@@ -7,8 +7,6 @@ category: '[LoRa]/Tx'
 inputs:
 -   domain: message
     id: msg
--   domain: stream
-    dtype: byte
 
 outputs:
 -   domain: stream

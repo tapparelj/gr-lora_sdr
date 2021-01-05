@@ -170,42 +170,6 @@ blocks:
     coordinate: [776, 408.0]
     rotation: 0
     state: true
-- name: blocks_message_strobe_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.intern("")
-    period: '200'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [168, 556.0]
-    rotation: 0
-    state: true
-- name: blocks_message_strobe_random_0_1_0
-  id: blocks_message_strobe_random
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    dist: blocks.STROBE_UNIFORM
-    maxoutbuf: '0'
-    mean: frame_period
-    minoutbuf: '0'
-    msg: pmt.intern('')
-    std: '5'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 396.0]
-    rotation: 0
-    state: disabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -268,7 +232,7 @@ blocks:
     bus_structure: null
     coordinate: [1328, 892.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_0_1_0_0_0_0_0
   id: lora_sdr_hier_rx
   parameters:
@@ -312,7 +276,7 @@ blocks:
     bus_structure: null
     coordinate: [1328, 748.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_0_1_0_0_1_0
   id: lora_sdr_hier_rx
   parameters:
@@ -368,6 +332,7 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
+    mean: '200'
     minoutbuf: '0'
     n_frames: n_frame
     pay_len: pay_len
@@ -378,7 +343,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 452.0]
+    coordinate: [476, 482]
     rotation: 0
     state: true
 - name: lora_sdr_hier_tx_0_0
@@ -392,11 +357,12 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
+    mean: '200'
     minoutbuf: '0'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
-    sf: '8'
+    sf: '12'
     src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
   states:
     bus_sink: false
@@ -415,23 +381,19 @@ blocks:
     fbw: '0'
     interp: '4'
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: 2**sf*4*2
     taps: ''
     type: ccc
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 396.0]
+    coordinate: [1072, 396]
     rotation: 0
     state: enabled
 
 connections:
 - [blocks_add_xx_0, '0', blocks_throttle_0, '0']
-- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0, trigg]
-- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0_0, trigg]
-- [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0, trigg]
-- [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0_0, trigg]
 - [blocks_throttle_0, '0', rational_resampler_xxx_0_1, '0']
 - [lora_sdr_hier_tx_0, '0', blocks_add_xx_0, '1']
 - [lora_sdr_hier_tx_0_0, '0', blocks_add_xx_0, '0']

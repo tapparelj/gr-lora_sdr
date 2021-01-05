@@ -5,8 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Lora Sim
-# Description: Simulation example LoRa
+# Title: Test
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
@@ -19,22 +18,19 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
-import threading
 
 
-class lora_sim(gr.top_block):
+class loratest(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Lora Sim")
-
-        self._lock = threading.RLock()
+        gr.top_block.__init__(self, "Test")
 
         ##################################################
         # Variables
         ##################################################
         self.bw = bw = 250000
         self.sf2 = sf2 = 8
-        self.sf = sf = 8
+        self.sf = sf = 10
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 8
@@ -66,7 +62,7 @@ class lora_sim(gr.top_block):
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0.set_min_output_buffer(2048)
+        self.interp_fir_filter_xxx_0.set_min_output_buffer(8192)
         self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
 
 
@@ -87,13 +83,13 @@ class lora_sim(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_deinterleaver_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
+        self.msg_connect((self.lora_sdr_header_decoder_0, 'err'), (self.lora_sdr_frame_sync_0, 'err'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
         self.connect((self.blocks_throttle_0_1, 0), (self.interp_fir_filter_xxx_0, 0))
         self.connect((self.interp_fir_filter_xxx_0, 0), (self.lora_sdr_frame_sync_0, 0))
@@ -118,86 +114,75 @@ class lora_sim(gr.top_block):
         return self.bw
 
     def set_bw(self, bw):
-        with self._lock:
-            self.bw = bw
-            self.set_samp_rate(self.bw)
+        self.bw = bw
+        self.set_samp_rate(self.bw)
 
     def get_sf2(self):
         return self.sf2
 
     def set_sf2(self, sf2):
-        with self._lock:
-            self.sf2 = sf2
+        self.sf2 = sf2
 
     def get_sf(self):
         return self.sf
 
     def set_sf(self, sf):
-        with self._lock:
-            self.sf = sf
+        self.sf = sf
 
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
-        with self._lock:
-            self.samp_rate = samp_rate
-            self.blocks_throttle_0_1.set_sample_rate(self.samp_rate)
+        self.samp_rate = samp_rate
+        self.blocks_throttle_0_1.set_sample_rate(self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
 
     def set_pay_len(self, pay_len):
-        with self._lock:
-            self.pay_len = pay_len
+        self.pay_len = pay_len
 
     def get_n_frame(self):
         return self.n_frame
 
     def set_n_frame(self, n_frame):
-        with self._lock:
-            self.n_frame = n_frame
+        self.n_frame = n_frame
 
     def get_mult_const(self):
         return self.mult_const
 
     def set_mult_const(self, mult_const):
-        with self._lock:
-            self.mult_const = mult_const
+        self.mult_const = mult_const
 
     def get_impl_head(self):
         return self.impl_head
 
     def set_impl_head(self, impl_head):
-        with self._lock:
-            self.impl_head = impl_head
+        self.impl_head = impl_head
 
     def get_has_crc(self):
         return self.has_crc
 
     def set_has_crc(self, has_crc):
-        with self._lock:
-            self.has_crc = has_crc
+        self.has_crc = has_crc
 
     def get_frame_period(self):
         return self.frame_period
 
     def set_frame_period(self, frame_period):
-        with self._lock:
-            self.frame_period = frame_period
+        self.frame_period = frame_period
 
     def get_cr(self):
         return self.cr
 
     def set_cr(self, cr):
-        with self._lock:
-            self.cr = cr
+        self.cr = cr
 
 
 
 
 
-def main(top_block_cls=lora_sim, options=None):
+def main(top_block_cls=loratest, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):
@@ -211,6 +196,11 @@ def main(top_block_cls=lora_sim, options=None):
 
     tb.start()
 
+    try:
+        input('Press Enter to quit: ')
+    except EOFError:
+        pass
+    tb.stop()
     tb.wait()
 
 

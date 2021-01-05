@@ -700,10 +700,11 @@ public:
    * @param has_crc : has_crc mode (boolean on/off)
    * @param samp_rate : sampling rate
    * @param bw : bandwith
+   * @param mean : mean time between message intervals
    */
   hier_tx_impl(int pay_len, int n_frames, std::string src_data, uint8_t cr,
                uint8_t sf, bool impl_head, bool has_crc, uint32_t samp_rate,
-               uint32_t bw);
+               uint32_t bw, uint32_t mean);
   ~hier_tx_impl();
 
   // Where all the action really happens
