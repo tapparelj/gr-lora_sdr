@@ -95,7 +95,9 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
   connect(add_crc,0, hamming_enc,0);
   connect(gray_decode,0,modulate,0);
   connect(hamming_enc,0,interleaver,0);
+  connect(header,0,add_crc,0);
   connect(interleaver,0,gray_decode,0);
+  connect(whitening,0,header,0);
   connect(modulate,0,self(),0);
 }
 

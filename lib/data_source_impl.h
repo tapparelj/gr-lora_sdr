@@ -83,8 +83,8 @@ public:
   /**
    * @brief Place holder function does not do anything for the data source.
    *
-   * @param noutput_items : number of output items 
-   * @param ninput_items_required : number of required output items
+   * @param noutput_items
+   * @param ninput_items_required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
@@ -92,10 +92,10 @@ public:
    * @brief Place holder function of data_source that generated random ([a-z A-Z
    * 0-9]) data source to be sent over the network
    *
-   * @param noutput_items : number of output items
-   * @param input_items : input items = 0
-   * @param output_items : output items = 0 
-   * @return int 
+   * @param noutput_items
+   * @param input_items
+   * @param output_items
+   * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,
                    gr_vector_const_void_star &input_items,

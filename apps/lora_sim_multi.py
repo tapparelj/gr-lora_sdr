@@ -10,6 +10,7 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
+import pmt
 from gnuradio import filter
 from gnuradio.filter import firdes
 from gnuradio import gr
@@ -48,16 +49,14 @@ class lora_sim_multi(gr.top_block):
                 decimation=1,
                 taps=None,
                 fractional_bw=None)
-        self.rational_resampler_xxx_0_1.set_min_output_buffer(1024)
-        self.lora_sdr_hier_tx_0_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, 12, impl_head,has_crc, samp_rate, bw, 200)
-        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY', cr, sf, impl_head,has_crc, samp_rate, bw, 200)
+        self.lora_sdr_hier_tx_0_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, 8, impl_head,has_crc, samp_rate, bw)
+        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY', cr, sf, impl_head,has_crc, samp_rate, bw)
         self.lora_sdr_hier_rx_0_2_0 = lora_sdr.hier_rx(samp_rate, bw, 10, impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hier_rx_0_1_0_0_1_0 = lora_sdr.hier_rx(samp_rate, bw, 7, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_1 = lora_sdr.hier_rx(samp_rate, bw, 11, impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hier_rx_0_1_0_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 8, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 12, impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hier_rx_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 9, impl_head, cr, pay_len, has_crc)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern(""), 200)
         self.blocks_add_xx_0 = blocks.add_vcc(1)
 
 
@@ -65,14 +64,14 @@ class lora_sim_multi(gr.top_block):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_hier_tx_0, 'trigg'))
+        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_hier_tx_0_0, 'trigg'))
         self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.rational_resampler_xxx_0_1, 0))
         self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.lora_sdr_hier_tx_0_0, 0), (self.blocks_add_xx_0, 0))
         self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_0_0_0, 0))
-        self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_1_0_0_0_0, 0))
         self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_1_0_0_0_0_0, 0))
-        self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_1_0_0_1, 0))
         self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_1_0_0_1_0, 0))
         self.connect((self.rational_resampler_xxx_0_1, 0), (self.lora_sdr_hier_rx_0_2_0, 0))
 
