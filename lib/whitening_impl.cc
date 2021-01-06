@@ -1,15 +1,13 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+
 
 #include "whitening_impl.h"
-#include <gnuradio/io_signature.h>
+#include "debug_tools.h"
 #include "tables.h"
-
+#include <gnuradio/io_signature.h>
 // Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
-using namespace boost::placeholders;
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -25,6 +23,7 @@ whitening_impl::whitening_impl()
     : gr::sync_block("whitening", gr::io_signature::make(0, 1, sizeof(uint8_t)),
                      gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   new_message = false;
+
   message_port_register_in(pmt::mp("msg"));
   set_msg_handler(pmt::mp("msg"), // This is the port identifier
                   boost::bind(&whitening_impl::msg_handler, this, _1));
@@ -45,8 +44,11 @@ whitening_impl::~whitening_impl() {}
 void whitening_impl::msg_handler(pmt::pmt_t message) {
   // get pmt message and parse to string
   std::string str = pmt::symbol_to_string(message);
-  // copy string into variable m_payload
-  std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
+  if (str == "done"){
+    m_work_done = true;
+  }
+    // copy string into variable m_payload
+    std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
 #ifdef GRLORA_DEBUG
   // if debugging is turned on debug the input message
   GR_LOG_DEBUG(this->d_logger, "Input Tx:" + str);
@@ -54,18 +56,19 @@ void whitening_impl::msg_handler(pmt::pmt_t message) {
   new_message = true;
 }
 
-void whitening_impl::forecast(int noutput_items,
-                              gr_vector_int &ninput_items_required) {
-  /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-  ninput_items_required[0] = 1;
-}
-
-int whitening_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
-                                 gr_vector_const_void_star &input_items,
-                                 gr_vector_void_star &output_items) {
-  const uint8_t *in = (const uint8_t *)input_items[0];
-  uint8_t *out = (uint8_t *)output_items[0];
+/**
+ * @brief General work function, the actual interleaving happens here
+ *
+ * @param noutput_items : number of output items (2 * m_payload.size())
+ * @param input_items : standard input item
+ * @param output_items : output data
+ * @return int
+ */
+int whitening_impl::work(int noutput_items,
+                         gr_vector_const_void_star &input_items,
+                         gr_vector_void_star &output_items) {
   if (new_message) {
+    uint8_t *out = (uint8_t *)output_items[0];
     // do the actual whitening of the payload data
     for (uint i = 0; i < m_payload.size(); i++) {
       out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
@@ -74,7 +77,6 @@ int whitening_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
 
     // set number of output items and clear payload message
     noutput_items = 2 * m_payload.size();
-    std::cout << "Number of items out whit:"+std::to_string(noutput_items) << std::endl;
     m_payload.clear();
     new_message = false;
 
@@ -86,5 +88,5 @@ int whitening_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   
 }
 
-} /* namespace lora_sdr */
+} // namespace lora_sdr
 } /* namespace gr */
