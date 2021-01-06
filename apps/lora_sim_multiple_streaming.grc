@@ -18,7 +18,7 @@ options:
     realtime_scheduling: ''
     run: 'True'
     run_command: '{python} -u {filename}'
-    run_options: prompt
+    run_options: run
     sizing_mode: fixed
     thread_safe_setters: ''
     title: Simulated multi stream
@@ -48,12 +48,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '4'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 12.0]
+    coordinate: [949, 17]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 12.0]
+    coordinate: [1237, 17]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -77,7 +77,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [648, 12.0]
+    coordinate: [1013, 17]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -89,7 +89,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 12.0]
+    coordinate: [869, 17]
     rotation: 0
     state: enabled
 - name: mult_const
@@ -101,7 +101,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [968, 12.0]
+    coordinate: [1333, 17]
     rotation: 0
     state: enabled
 - name: n_frame
@@ -113,7 +113,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [800, 12.0]
+    coordinate: [1165, 17]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -125,7 +125,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 12.0]
+    coordinate: [1093, 17]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -152,6 +152,66 @@ blocks:
     coordinate: [440, 12.0]
     rotation: 0
     state: enabled
+- name: sf2
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [506, 12]
+    rotation: 0
+    state: enabled
+- name: sf3
+  id: variable
+  parameters:
+    comment: ''
+    value: '9'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [573, 13]
+    rotation: 0
+    state: enabled
+- name: sf4
+  id: variable
+  parameters:
+    comment: ''
+    value: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [639, 12]
+    rotation: 0
+    state: enabled
+- name: sf5
+  id: variable
+  parameters:
+    comment: ''
+    value: '11'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [705, 13]
+    rotation: 0
+    state: enabled
+- name: sf6
+  id: variable
+  parameters:
+    comment: ''
+    value: '12'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [771, 14]
+    rotation: 0
+    state: enabled
 - name: blocks_add_xx_0
   id: blocks_add_xx
   parameters:
@@ -167,45 +227,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 408.0]
+    coordinate: [313, 473]
     rotation: 0
-    state: true
-- name: blocks_message_strobe_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.intern("")
-    period: '200'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [168, 556.0]
-    rotation: 0
-    state: true
-- name: blocks_message_strobe_random_0_1_0
-  id: blocks_message_strobe_random
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    dist: blocks.STROBE_UNIFORM
-    maxoutbuf: '0'
-    mean: frame_period
-    minoutbuf: '0'
-    msg: pmt.intern('')
-    std: '5'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 396.0]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -222,9 +246,123 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 420.0]
+    coordinate: [412, 491]
     rotation: 0
     state: true
+- name: interp_fir_filter_xxx_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [649, 272]
+    rotation: 0
+    state: enabled
+- name: interp_fir_filter_xxx_0_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf2*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [641, 422]
+    rotation: 0
+    state: enabled
+- name: interp_fir_filter_xxx_0_0_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf3*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [641, 570]
+    rotation: 0
+    state: enabled
+- name: interp_fir_filter_xxx_0_0_0_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf4*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [647, 705]
+    rotation: 0
+    state: enabled
+- name: interp_fir_filter_xxx_0_0_0_0_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf5*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [647, 864]
+    rotation: 0
+    state: disabled
+- name: interp_fir_filter_xxx_0_0_0_0_0_0_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: 2**sf6*4*2
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [647, 1011]
+    rotation: 0
+    state: disabled
 - name: lora_sdr_hier_rx_0_0_0_0
   id: lora_sdr_hier_rx
   parameters:
@@ -244,7 +382,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 452.0]
+    coordinate: [894, 524]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_0_1_0_0_0_0
@@ -266,7 +404,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 892.0]
+    coordinate: [894, 964]
     rotation: 0
     state: disabled
 - name: lora_sdr_hier_rx_0_1_0_0_0_0_0
@@ -288,7 +426,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 308.0]
+    coordinate: [894, 380]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_0_1_0_0_1
@@ -310,7 +448,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 748.0]
+    coordinate: [894, 820]
     rotation: 0
     state: disabled
 - name: lora_sdr_hier_rx_0_1_0_0_1_0
@@ -332,7 +470,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 164.0]
+    coordinate: [894, 236]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_0_2_0
@@ -354,7 +492,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 596.0]
+    coordinate: [894, 668]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_tx_0
@@ -368,17 +506,18 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
+    mean: '200'
     minoutbuf: '0'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY
+    src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 452.0]
+    coordinate: [15, 343]
     rotation: 0
     state: true
 - name: lora_sdr_hier_tx_0_0
@@ -392,55 +531,137 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
+    mean: '200'
     minoutbuf: '0'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
-    sf: '8'
+    sf: sf2
     src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 196.0]
+    coordinate: [15, 541]
     rotation: 0
     state: enabled
-- name: rational_resampler_xxx_0_1
-  id: rational_resampler_xxx
+- name: lora_sdr_hier_tx_0_0_0
+  id: lora_sdr_hier_tx
   parameters:
     affinity: ''
     alias: ''
+    bw: bw
     comment: ''
-    decim: '1'
-    fbw: '0'
-    interp: '4'
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
     maxoutbuf: '0'
+    mean: '200'
     minoutbuf: '0'
-    taps: ''
-    type: ccc
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf2
+    src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 396.0]
+    coordinate: [21, 951]
     rotation: 0
-    state: enabled
+    state: disabled
+- name: lora_sdr_hier_tx_0_0_0_0
+  id: lora_sdr_hier_tx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    mean: '200'
+    minoutbuf: '0'
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf2
+    src_data: sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 1362]
+    rotation: 0
+    state: disabled
+- name: lora_sdr_hier_tx_0_1
+  id: lora_sdr_hier_tx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    mean: '200'
+    minoutbuf: '0'
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf
+    src_data: DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 749]
+    rotation: 0
+    state: disabled
+- name: lora_sdr_hier_tx_0_1_0
+  id: lora_sdr_hier_tx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    mean: '200'
+    minoutbuf: '0'
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf
+    src_data: DkzTEkJgm4nWmmhHddkGq6BUa7xfto3CdAlyRumnKgshlfxA73xvXnCIRRYefeZY
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [22, 1151]
+    rotation: 0
+    state: disabled
 
 connections:
 - [blocks_add_xx_0, '0', blocks_throttle_0, '0']
-- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0, trigg]
-- [blocks_message_strobe_0, strobe, lora_sdr_hier_tx_0_0, trigg]
-- [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0, trigg]
-- [blocks_message_strobe_random_0_1_0, strobe, lora_sdr_hier_tx_0_0, trigg]
-- [blocks_throttle_0, '0', rational_resampler_xxx_0_1, '0']
-- [lora_sdr_hier_tx_0, '0', blocks_add_xx_0, '1']
-- [lora_sdr_hier_tx_0_0, '0', blocks_add_xx_0, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_0_0_0, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_1_0_0_0_0, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_1_0_0_0_0_0, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_1_0_0_1, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_1_0_0_1_0, '0']
-- [rational_resampler_xxx_0_1, '0', lora_sdr_hier_rx_0_2_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0_0_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0_0_0_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0_0_0_0_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_0_0_0_0_0_0, '0']
+- [interp_fir_filter_xxx_0_0, '0', lora_sdr_hier_rx_0_1_0_0_1_0, '0']
+- [interp_fir_filter_xxx_0_0_0, '0', lora_sdr_hier_rx_0_1_0_0_0_0_0, '0']
+- [interp_fir_filter_xxx_0_0_0_0, '0', lora_sdr_hier_rx_0_0_0_0, '0']
+- [interp_fir_filter_xxx_0_0_0_0_0, '0', lora_sdr_hier_rx_0_2_0, '0']
+- [interp_fir_filter_xxx_0_0_0_0_0_0, '0', lora_sdr_hier_rx_0_1_0_0_1, '0']
+- [interp_fir_filter_xxx_0_0_0_0_0_0_0, '0', lora_sdr_hier_rx_0_1_0_0_0_0, '0']
+- [lora_sdr_hier_tx_0, '0', blocks_add_xx_0, '0']
+- [lora_sdr_hier_tx_0_0, '0', blocks_add_xx_0, '1']
 
 metadata:
   file_format: 1
