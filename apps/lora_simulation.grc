@@ -72,7 +72,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'True'
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -102,6 +102,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [936, 4.0]
+    rotation: 0
+    state: enabled
+- name: multi_control
+  id: variable
+  parameters:
+    comment: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1029, 5]
     rotation: 0
     state: enabled
 - name: n_frame
@@ -344,6 +356,7 @@ blocks:
     maxoutbuf: '0'
     mean: '200'
     minoutbuf: '0'
+    multi_control: multi_control
     n_frames: n_frame
     pay_len: pay_len
     string_input: ''
@@ -351,7 +364,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [297, 99]
+    coordinate: [250, 105]
     rotation: 0
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -580,6 +593,7 @@ blocks:
     maxoutbuf: '0'
     mean: '200'
     minoutbuf: '0'
+    multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
@@ -605,6 +619,7 @@ blocks:
     maxoutbuf: '0'
     mean: '200'
     minoutbuf: '0'
+    multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate

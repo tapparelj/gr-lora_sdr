@@ -34,10 +34,11 @@ public:
    * @param samp_rate : sampling rate
    * @param bw : bandwith
    * @param mean : mean time in ms
+   * @param multi_control : Whetere multi control is enabled (aka should we wait for stopping if more chains are transmitting)
    */
   hier_tx_impl(int pay_len, int n_frames, std::string src_data, uint8_t cr,
                uint8_t sf, bool impl_head, bool has_crc, uint32_t samp_rate,
-               uint32_t bw,uint32_t mean);
+               uint32_t bw,uint32_t mean, bool multi_control);
   ~hier_tx_impl();
 
   // Where all the action really happens

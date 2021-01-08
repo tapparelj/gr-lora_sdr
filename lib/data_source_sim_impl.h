@@ -36,12 +36,6 @@ private:
   int m_pay_len;
 
   /**
-   * @brief boolean to tell the main function execution is finished
-   *
-   */
-  bool d_finished;
-
-  /**
    * @brief Variables that holds the mean time of the uniform distribution
    *
    */
@@ -54,6 +48,25 @@ private:
   std::string m_string_input;
 
   /**
+   * @brief bollean if we have to control multiple tx chains
+   * 
+   */
+  bool m_multi_control;
+
+  /**
+   * @brief 
+   * 
+   */
+  bool m_finished_wait;
+
+  /**
+   * @brief internal state variable to tell system 
+   * if we have received ctrl_in and should send WORK_DONE to the rest of the blocks.
+   * 
+   */
+  bool m_finished;
+
+  /**
    * @brief returns a random string containing [a-z A-Z 0-9] for testing the
    * payload data
    *
@@ -61,6 +74,13 @@ private:
    * @return std::string : the random generated string
    */
   std::string random_string(int nbytes);
+
+  /**
+   * @brief Ctrl input handler, this function will be executed on trigger from the ctrl_in port
+   * 
+   * @param msg : pmt message (should be d_pmt_done)
+   */
+  void ctrl_in_handler(pmt::pmt_t msg);
 
 public:
   /**
@@ -72,7 +92,7 @@ public:
    * @param mean : Mean time for uniform distribution in ms
    */
   data_source_sim_impl(int pay_len, int n_frames, std::string string_input,
-                       uint32_t mean);
+                       uint32_t mean, bool multi_control);
 
   /**
    * @brief Destroy the data source impl object
@@ -96,7 +116,7 @@ public:
    * @param noutput_items : number of output items : 1
    * @param ninput_items : number of input items : 0
    * @param input_items : input item : 0
-   * @param output_items : ooutput items :
+   * @param output_items : output items :
    * @return int : work status
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

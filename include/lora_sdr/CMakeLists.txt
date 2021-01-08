@@ -43,5 +43,6 @@ install(FILES
     err_measures.h
     hier_rx.h
     hier_tx.h
-    data_source_sim.h DESTINATION include/lora_sdr
+    data_source_sim.h
+    multi_control.h DESTINATION include/lora_sdr
 )

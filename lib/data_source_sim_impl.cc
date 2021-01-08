@@ -1,12 +1,11 @@
 /**
  * @file data_source_sim_impl.cc
- * @author your name (you@domain.com)
- * @brief 
+ * @author Martyn van Dijke (martijnvdijke600@gmail.com)
+ * @brief
  * @version 0.1
- * @date 2021-01-05
- * 
- * @copyright Copyright (c) 2021
- * 
+ * @date 2021-01-08
+ *
+ *
  */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -15,6 +14,8 @@
 #include "data_source_sim_impl.h"
 #include <gnuradio/io_signature.h>
 #include <lora_sdr/utilities.h>
+#include <unistd.h>
+
 // Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
 using namespace boost::placeholders;
@@ -24,9 +25,9 @@ namespace lora_sdr {
 
 data_source_sim::sptr data_source_sim::make(int pay_len, int n_frames,
                                             std::string string_input,
-                                            uint32_t mean) {
-  return gnuradio::get_initial_sptr(
-      new data_source_sim_impl(pay_len, n_frames, string_input, mean));
+                                            uint32_t mean, bool multi_control) {
+  return gnuradio::get_initial_sptr(new data_source_sim_impl(
+      pay_len, n_frames, string_input, mean, multi_control));
 }
 
 /**
@@ -38,7 +39,7 @@ data_source_sim::sptr data_source_sim::make(int pay_len, int n_frames,
  */
 data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
                                            std::string string_input,
-                                           uint32_t mean)
+                                           uint32_t mean, bool multi_control)
     : gr::block("data_source", gr::io_signature::make(0, 0, 0),
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   m_n_frames = n_frames;
@@ -46,7 +47,15 @@ data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
   frame_cnt = 0; // let some time to the Rx to start listening
   m_string_input = string_input;
   m_mean = mean;
+  m_multi_control = multi_control;
+  m_finished = false;
+  m_finished_wait = false;
+  message_port_register_in(pmt::mp("ctrl_in"));
+  // set msg handler for the input port to be the ctrl_in_handler
+  set_msg_handler(pmt::mp("ctrl_in"),
+                  [this](pmt::pmt_t msg) { this->ctrl_in_handler(msg); });
   message_port_register_out(pmt::mp("msg"));
+  message_port_register_out(pmt::mp("ctrl_out"));
 }
 
 /**
@@ -70,6 +79,14 @@ std::string data_source_sim_impl::random_string(int Nbytes) {
   result.reserve(Nbytes);
   std::generate_n(std::back_inserter(result), Nbytes, generator);
   return result;
+}
+
+void data_source_sim_impl::ctrl_in_handler(pmt::pmt_t msg) {
+  std::cout << "Got a message from control multi" << std::endl;
+  if (msg == d_pmt_done) {
+    // set internal done state to true
+    m_finished = true;
+  }
 }
 
 /**
@@ -99,49 +116,75 @@ int data_source_sim_impl::general_work(int noutput_items,
                                        gr_vector_int &ninput_items,
                                        gr_vector_const_void_star &input_items,
                                        gr_vector_void_star &output_items) {
-  // if the number of frames send is less then the number of frames that must be
-  // send
-  while (frame_cnt < m_n_frames +1) {
-    // variable to hold string input
-    std::string str;
+  // if we are not finished, generate data frames
+  if (m_finished_wait == false) {
 
-    // if no string is set generate random string otherwise use set string.
-    if (m_string_input.empty()) {
-      // generate random string
-      str = random_string(m_pay_len);
-    } else {
-      // take input string
-      str = m_string_input;
+    // if the number of frames send is less then the number of frames that must
+    // be send
+    while (frame_cnt < m_n_frames + 1) {
+      // variable to hold string input
+      std::string str;
+
+      // if no string is set generate random string otherwise use set string.
+      if (m_string_input.empty()) {
+        // generate random string
+        str = random_string(m_pay_len);
+      } else {
+        // take input string
+        str = m_string_input;
+      }
+      // TODO fix +1 bug ?
+#ifdef GRLORA_DEBUG
+      // output data string
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
+#endif
+      // send string over pmt port "msg" to neighboors
+      message_port_pub(pmt::intern("msg"), pmt::mp(str));
+      // print once in every 50 frames information about the number of frames
+      if (!mod(frame_cnt, 50))
+        GR_LOG_INFO(this->d_logger,
+                    "INFO:Processing frame :" + std::to_string(frame_cnt) +
+                        "/" + std::to_string(m_n_frames));
+      // let this thread sleep for the inputted mean time.
+      boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
+      frame_cnt++;
+      return 2 * m_pay_len;
     }
-    //TODO fix +1 bug ?
-#ifdef GRLORA_DEBUG
-    // output data string
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
-#endif
-    // send string over pmt port "msg" to neighboors
-    message_port_pub(pmt::intern("msg"), pmt::mp(str));
-    // print once in every 50 frames information about the number of frames
-    if (!mod(frame_cnt, 50))
+    // if the number of frames is the same -> all frames are sent
+    if (frame_cnt > m_n_frames) {
       GR_LOG_INFO(this->d_logger,
-                  "INFO:Processing frame :" + std::to_string(frame_cnt) + "/" +
-                      std::to_string(m_n_frames));
-    // let this thread sleep for the inputted mean time.
-    boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
-    frame_cnt++;
-    return 2 * m_pay_len;
-  }
-  // if the number of frames is the same -> all frames are sent
-  if (frame_cnt > m_n_frames) {
-    GR_LOG_INFO(this->d_logger, "INFO:Done with generating data packets!, generated : " +
-                                    std::to_string(m_n_frames) + " frames");
+                  "INFO:Done with generating data packets!, generated : " +
+                      std::to_string(m_n_frames) + " frames");
+
+      boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
+      // if the multi control uses is not used, send done to the rest of the
+      // chain
+      if (m_multi_control == false) {
 #ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Work done!\nNo more new data packets, data packets will be processed and program will exit thereafter...");
+        GR_LOG_DEBUG(this->d_logger,
+                     "DEBUG:Work done!\nNo more new data packets, data packets "
+                     "will be processed and program will exit thereafter...");
 #endif
-    boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
-    return WORK_DONE;
-  } else {
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Something wrong in length");
-    return 0;
+        return WORK_DONE;
+      } else {
+        std::cout << "Sending work_done to control port" << std::endl;
+        // send done signal to the multi controller
+        message_port_pub(pmt::intern("ctrl_out"), d_pmt_done);
+        // set internal sate to done, no more messages should be produced
+        m_finished_wait = true;
+        return 0;
+      }
+    } else {
+      GR_LOG_DEBUG(this->d_logger,
+                   "DEBUG:Something wrong in sending the frames to the blocks");
+      return 0;
+    }
+  } 
+  if (m_finished == true) {
+    std::cout << "Sending work_done to blocks" << std::endl;
+    std::cout << m_finished << std::endl;
+    produce(0,2 * m_pay_len);
+    return WORK_CALLED_PRODUCE;
   }
 }
 

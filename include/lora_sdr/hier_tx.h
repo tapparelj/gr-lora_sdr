@@ -37,7 +37,7 @@ public:
    */
   static sptr make(int pay_len, int n_frames, std::string src_data, uint8_t cr,
                    uint8_t sf, bool impl_head, bool has_crc, uint32_t samp_rate,
-                   uint32_t bw, uint32_t mean);
+                   uint32_t bw, uint32_t mean, bool multi_control);
 };
 
 } // namespace lora_sdr

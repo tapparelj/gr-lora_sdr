@@ -9,7 +9,6 @@
 # Author: Martyn van Dijke
 # GNU Radio version: 3.8.2.0
 
-from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
 from gnuradio import gr
@@ -39,6 +38,7 @@ class lora_sim_multi(gr.top_block):
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 8
+        self.multi_control = multi_control = True
         self.mult_const = mult_const = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -48,43 +48,31 @@ class lora_sim_multi(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_0_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf2, impl_head,has_crc, samp_rate, bw, 200)
-        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf, impl_head,has_crc, samp_rate, bw, 200)
-        self.lora_sdr_hier_rx_0_2_0 = lora_sdr.hier_rx(samp_rate, bw, 10, impl_head, cr, pay_len, has_crc)
+        self.lora_sdr_multi_control_0 = lora_sdr.multi_control(2)
+        self.lora_sdr_hier_tx_0_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf6, impl_head,has_crc, samp_rate, bw, 200, multi_control)
+        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf, impl_head,has_crc, samp_rate, bw, 200, multi_control)
         self.lora_sdr_hier_rx_0_1_0_0_1_0 = lora_sdr.hier_rx(samp_rate, bw, 7, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 8, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 9, impl_head, cr, pay_len, has_crc)
-        self.interp_fir_filter_xxx_0_0_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
-        self.interp_fir_filter_xxx_0_0_0_0_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0_0_0_0_0.set_min_output_buffer(8192)
-        self.interp_fir_filter_xxx_0_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
-        self.interp_fir_filter_xxx_0_0_0_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0_0_0_0.set_min_output_buffer(4096)
-        self.interp_fir_filter_xxx_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
-        self.interp_fir_filter_xxx_0_0_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0_0_0.set_min_output_buffer(2048)
+        self.lora_sdr_hier_rx_0_1_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 12, impl_head, cr, pay_len, has_crc)
+        self.interp_fir_filter_xxx_0_0_0_0_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
+        self.interp_fir_filter_xxx_0_0_0_0_0_0_0.declare_sample_delay(0)
+        self.interp_fir_filter_xxx_0_0_0_0_0_0_0.set_min_output_buffer(32768)
         self.interp_fir_filter_xxx_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
         self.interp_fir_filter_xxx_0_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_0.set_min_output_buffer(1024)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_add_xx_0 = blocks.add_vcc(1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_0_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_0_0_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_0_0_0_0, 0))
+        self.msg_connect((self.lora_sdr_hier_tx_0, 'ctrl_out'), (self.lora_sdr_multi_control_0, 'ctrl_in0'))
+        self.msg_connect((self.lora_sdr_hier_tx_0_0, 'ctrl_out'), (self.lora_sdr_multi_control_0, 'ctrl_in1'))
+        self.msg_connect((self.lora_sdr_multi_control_0, 'ctrl_out0'), (self.lora_sdr_hier_tx_0, 'ctrl_in'))
+        self.msg_connect((self.lora_sdr_multi_control_0, 'ctrl_out1'), (self.lora_sdr_hier_tx_0_0, 'ctrl_in'))
         self.connect((self.interp_fir_filter_xxx_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_1_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_0_0_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_0_0_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_2_0, 0))
-        self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_add_xx_0, 0))
-        self.connect((self.lora_sdr_hier_tx_0_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.interp_fir_filter_xxx_0_0_0_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_0_0, 0))
+        self.connect((self.lora_sdr_hier_tx_0, 0), (self.interp_fir_filter_xxx_0_0, 0))
+        self.connect((self.lora_sdr_hier_tx_0_0, 0), (self.interp_fir_filter_xxx_0_0_0_0_0_0_0, 0))
 
 
     def get_bw(self):
@@ -135,7 +123,6 @@ class lora_sim_multi(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0.set_sample_rate(self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
@@ -148,6 +135,12 @@ class lora_sim_multi(gr.top_block):
 
     def set_n_frame(self, n_frame):
         self.n_frame = n_frame
+
+    def get_multi_control(self):
+        return self.multi_control
+
+    def set_multi_control(self, multi_control):
+        self.multi_control = multi_control
 
     def get_mult_const(self):
         return self.mult_const

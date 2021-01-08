@@ -6,7 +6,7 @@ templates:
   imports: import lora_sdr
   make: lora_sdr.hier_tx(${pay_len}, ${n_frames}, ${src_data},
                         ${cr}, ${sf}, ${impl_head},${has_crc},
-                           ${samp_rate}, ${bw}, ${mean})
+                           ${samp_rate}, ${bw}, ${mean}, ${multi_control})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -50,6 +50,10 @@ parameters:
     label: Mean time (ms)
     dtype: int
     default : 200
+-   id: multi_control
+    label : Multi control mode
+    dtype : bool
+    default : False
 
 asserts:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
@@ -65,14 +69,20 @@ asserts:
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
 inputs:
+-   domain: message
+    id: ctrl_in
+    optional: true
 
 outputs:
 -   domain: stream
     dtype: complex
+-   domain: message
+    id: ctrl_out
+    optional: true
 
 documentation: |-
     Wrapper block that hold the entire Tx chain :
-    (data source, whitening, add_header, add_crc, hamming_enc, interleaver, gray mapping, modulate)
+    (data source, whitening, add_header, add_crc, hamming_enc, interleaver, gray mapping, modulate, multi_control)
     Output:
         out : stream of complex valued samples
 

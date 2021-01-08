@@ -1,20 +1,18 @@
 /**
  * @file hier_tx_impl.cc
  * @author your name (you@domain.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-01-05
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "hier_tx_impl.h"
-#include <gnuradio/io_signature.h>
 #include "add_crc_impl.h"
 #include "data_source_sim_impl.h"
 #include "gray_decode_impl.h"
@@ -25,17 +23,19 @@
 #include "modulate_impl.h"
 #include "whitening_impl.h"
 #include <gnuradio/hier_block2.h>
-
+#include <gnuradio/io_signature.h>
 
 namespace gr {
 namespace lora_sdr {
 
 hier_tx::sptr hier_tx::make(int pay_len, int n_frames, std::string src_data,
                             uint8_t cr, uint8_t sf, bool impl_head,
-                            bool has_crc, uint32_t samp_rate, uint32_t bw,uint32_t mean) {
-  return gnuradio::get_initial_sptr(new hier_tx_impl(pay_len, n_frames, src_data, cr, sf, impl_head, has_crc, samp_rate, bw, mean));
+                            bool has_crc, uint32_t samp_rate, uint32_t bw,
+                            uint32_t mean, bool multi_control) {
+  return gnuradio::get_initial_sptr(
+      new hier_tx_impl(pay_len, n_frames, src_data, cr, sf, impl_head, has_crc,
+                       samp_rate, bw, mean, multi_control));
 }
-
 
 /**
  * @brief Construct a new hier tx impl::hier tx impl object
@@ -53,15 +53,15 @@ hier_tx::sptr hier_tx::make(int pay_len, int n_frames, std::string src_data,
  */
 hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
                            uint8_t cr, uint8_t sf, bool impl_head, bool has_crc,
-                           uint32_t samp_rate, uint32_t bw, uint32_t mean)
-    : gr::hier_block2(
-          "hier_tx",
-          gr::io_signature::make(0, 0, 0),
-          gr::io_signature::make(1, 1, sizeof(gr_complex))) {
+                           uint32_t samp_rate, uint32_t bw, uint32_t mean,
+                           bool multi_control)
+    : gr::hier_block2("hier_tx", gr::io_signature::make(0, 0, 0),
+                      gr::io_signature::make(1, 1, sizeof(gr_complex))) {
 
   // Blocks
   gr::lora_sdr::data_source_sim::sptr data_source_sim(
-      gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data,mean));
+      gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data, mean,
+                                          multi_control));
   // whitening
   gr::lora_sdr::whitening::sptr whitening(gr::lora_sdr::whitening::make());
   // add header
@@ -84,26 +84,30 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
   gr::hier_block2::set_min_output_buffer(10000000);
   // Connections
   // Message connections
+  message_port_register_hier_in(pmt::mp("ctrl_in"));
+  message_port_register_hier_out(pmt::mp("ctrl_out"));
+  msg_connect(self(), "ctrl_in", data_source_sim, "ctrl_in");
   msg_connect(data_source_sim, "msg", whitening, "msg");
   msg_connect(data_source_sim, "msg", header, "msg");
   msg_connect(data_source_sim, "msg", add_crc, "msg");
   msg_connect(data_source_sim, "msg", interleaver, "msg");
   msg_connect(data_source_sim, "msg", modulate, "msg");
-
+  msg_connect(data_source_sim, "ctrl_out", self(), "ctrl_out");
+  //
   // normal connections
-  connect(data_source_sim,0,whitening,0);
-  connect(add_crc,0, hamming_enc,0);
-  connect(gray_decode,0,modulate,0);
-  connect(hamming_enc,0,interleaver,0);
-  connect(header,0,add_crc,0);
-  connect(interleaver,0,gray_decode,0);
-  connect(whitening,0,header,0);
-  connect(modulate,0,self(),0);
+  connect(data_source_sim, 0, whitening, 0);
+  connect(add_crc, 0, hamming_enc, 0);
+  connect(gray_decode, 0, modulate, 0);
+  connect(hamming_enc, 0, interleaver, 0);
+  connect(header, 0, add_crc, 0);
+  connect(interleaver, 0, gray_decode, 0);
+  connect(whitening, 0, header, 0);
+  connect(modulate, 0, self(), 0);
 }
 
 /**
  * @brief Destroy the hier tx impl::hier tx impl object
- * 
+ *
  */
 hier_tx_impl::~hier_tx_impl() {}
 

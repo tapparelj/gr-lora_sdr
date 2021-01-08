@@ -19,9 +19,15 @@ parameters:
     label : Mean time (ms)
     dtype : int
     default : 200
-
+-   id: multi_control
+    label : Multi control mode
+    dtype : bool
+    default : False
 
 inputs:
+-   domain: message
+    id: ctrl_in
+    optional: true
 
 assert:
 -   ${ pay_len > 1 }
@@ -33,11 +39,13 @@ outputs:
     id: msg
 -   domain: stream
     dtype: byte
-
+-   domain: message
+    id: ctrl_out
+    optional: true
 
 templates:
     imports: import lora_sdr
-    make: lora_sdr.data_source_sim(${pay_len}, ${n_frames}, ${string_input}, ${mean})
+    make: lora_sdr.data_source_sim(${pay_len}, ${n_frames}, ${string_input}, ${mean}, ${multi_control})
 
 documentation: |-
     Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)
