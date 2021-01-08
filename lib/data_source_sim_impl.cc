@@ -183,8 +183,7 @@ int data_source_sim_impl::general_work(int noutput_items,
   if (m_finished == true) {
     std::cout << "Sending work_done to blocks" << std::endl;
     std::cout << m_finished << std::endl;
-    produce(0,2 * m_pay_len);
-    return WORK_CALLED_PRODUCE;
+    return WORK_DONE;
   }
 }
 
