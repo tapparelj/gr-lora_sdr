@@ -16,9 +16,6 @@ outputs:
 -   domain: message
     id: msg
     optional: true
--   domain: message
-    id: ctrl_out
-    optional: true
 
 templates:
     imports: import lora_sdr
@@ -32,6 +29,5 @@ documentation: |-
         CRC: Indication of the payload crc presence
       Output:
         (optional) msg: Received payload
-        (optional) ctrl_out: WORK_DONE message;
 
 file_format: 1

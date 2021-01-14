@@ -26,7 +26,6 @@ crc_verif_impl::crc_verif_impl()
   message_port_register_in(pmt::mp("CRC"));
   set_msg_handler(pmt::mp("CRC"),
                   boost::bind(&crc_verif_impl::header_crc_handler, this, _1));
-  message_port_register_out(pmt::mp("ctrl_out"));
 }
 
 /*
@@ -96,18 +95,19 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                  gr_vector_void_star &output_items) {
   uint8_t *in = (uint8_t *)input_items[0];
 
-  //return tag vector
+  // return tag vector
   std::vector<tag_t> return_tag;
-  //get tags from stream
+  // get tags from stream
   get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1);
-  //if we found tags
+  // if we found tags
   if (return_tag.size() > 0) {
-    std::cout << "CRC Verify send d_pmt_done" << std::endl;
-    //message ctrl port we are done
-    message_port_pub(pmt::mp("ctrl_out"),d_pmt_done);
+    GR_LOG_INFO(this->d_logger, "Got a tag 'done', quitting flowgraph..");
+    // message ctrl port we are done
     consume_each(ninput_items[0]);
-    //set internal state to being done
-    return 1;
+    // exit program
+    exit(EXIT_SUCCESS);
+    // set internal state to being done
+    return WORK_DONE;
     // return WORK_DONE;
   }
 

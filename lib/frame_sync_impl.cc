@@ -60,8 +60,6 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   cx_in = new kiss_fft_cpx[m_samples_per_symbol];
   cx_out = new kiss_fft_cpx[m_samples_per_symbol];
 
-  m_finished = false;
-
   // register message ports
   message_port_register_out(pmt::mp("new_frame"));
 
@@ -85,11 +83,6 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   message_port_register_in(pmt::mp("frame_err"));
   set_msg_handler(pmt::mp("frame_err"),
                   boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
-  message_port_register_in(pmt::mp("ctrl_in"));
-  // set msg handler for the input port to be the ctrl_in_handler
-  set_msg_handler(pmt::mp("ctrl_in"),
-                  [this](pmt::pmt_t msg) { this->ctrl_in_handler(msg); });
-  message_port_register_out(pmt::mp("ctrl_out"));
   set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
@@ -98,13 +91,6 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
  *
  */
 frame_sync_impl::~frame_sync_impl() {}
-
-void frame_sync_impl::ctrl_in_handler(pmt::pmt_t msg) {
-  std::cout << "Got a message from ctrl_in frame sync" << std::endl;
-  // set internal done state to true
-  m_finished = true;
-  std::cout << m_finished << std::endl;
-}
 
 /**
  * @brief Standard gnuradio function to tell the system
@@ -479,29 +465,18 @@ int frame_sync_impl::general_work(int noutput_items,
   // cast input and output to the right format (i.e. gr_complex)
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
-  // std::cout << "Finshed gen work"<< std::endl;
-  // std::cout << m_finished << std::endl;
 
-  if (m_finished == true) {
-      std::cout << m_finished << std::endl;
-    std::cout << "Sending work done Rx" << std::endl;
-    consume_each(ninput_items[0]);
-    return 1;
-    // message_port_pub(pmt::mp("ctrl_out"),d_pmt_done);
-    // return WORK_DONE;
-  }
   std::vector<tag_t> return_tag;
   get_tags_in_range(return_tag, 0, 0, nitems_read(0));
-  // std::cout << ninput_items[0] << std::endl;
   if (return_tag.size() > 0) {
-    std::cout << "Frame Sync Done" << std::endl;
+#ifdef GRLORA_DEBUG
+    GR_LOG_DEBUG(this->d_logger, "Frame sync received a tag done");
+#endif
     boost::this_thread::sleep(boost::posix_time::milliseconds(200));
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
     consume_each(ninput_items[0]);
-    m_finished = true;
     return usFactor * m_samples_per_symbol;
-    // return WORK_DONE;
   } else {
 
     // downsampling

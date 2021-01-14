@@ -69,9 +69,6 @@ asserts:
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
 inputs:
--   domain: message
-    id: ctrl_in
-    optional: true
 
 outputs:
 -   domain: stream

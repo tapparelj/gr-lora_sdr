@@ -59,7 +59,6 @@ hier_rx_impl::hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
 
   // Register output port of message
   message_port_register_hier_out(pmt::mp("msg"));
-  message_port_register_hier_out(pmt::mp("ctrl_out"));
   // Connections
   // msg connections
   msg_connect(frame_sync, "new_frame", deinterleaver, "new_frame");
@@ -79,7 +78,6 @@ hier_rx_impl::hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
   msg_connect(header_decoder, "CR", frame_sync, "CR");
   msg_connect(header_decoder, "CR", hamming_dec, "CR");
   msg_connect(crc_verify, "msg", self(), "msg");
-  msg_connect(crc_verify, "ctrl_out", self(), "ctrl_out");
   // normal connections
   connect(deinterleaver, 0, hamming_dec, 0);
   connect(dewhitening, 0, crc_verify, 0);

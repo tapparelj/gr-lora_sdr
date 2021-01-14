@@ -291,15 +291,7 @@ private:
    */
   int net_id_off;
 
-  bool m_finished;
   
-  /**
-   * @brief Ctrl input handler, this function will be executed on trigger from the ctrl_in port
-   * 
-   * @param msg : pmt message (should be d_pmt_done)
-   */
-  void ctrl_in_handler(pmt::pmt_t msg);
-
   /**
    * @brief Function that handles the coding rate
    * 

@@ -66,8 +66,16 @@ private:
    */
   bool m_finished;
 
+  /**
+   * @brief 
+   * 
+   */
   bool m_wait;
 
+  /**
+   * @brief 
+   * 
+   */
   int m_n_send;
 
   /**
@@ -79,12 +87,6 @@ private:
    */
   std::string random_string(int nbytes);
 
-  /**
-   * @brief Ctrl input handler, this function will be executed on trigger from the ctrl_in port
-   * 
-   * @param msg : pmt message (should be d_pmt_done)
-   */
-  void ctrl_in_handler(pmt::pmt_t msg);
 
 public:
   /**

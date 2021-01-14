@@ -25,9 +25,6 @@ parameters:
     default : False
 
 inputs:
--   domain: message
-    id: ctrl_in
-    optional: true
 
 assert:
 -   ${ pay_len > 1 }
@@ -51,8 +48,6 @@ documentation: |-
             N_frames: number of frames to send
             Input string: specific input string to be used, if empty random generated will be used
             mean : 
-        Input:
-            ctrl_in: control signal in
         Output:
             msg: payload data as a string
 

@@ -51,10 +51,7 @@ data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
   m_finished = false;
   m_finished_wait = false;
   m_n_send = 0;
-  message_port_register_in(pmt::mp("ctrl_in"));
-  // set msg handler for the input port to be the ctrl_in_handler
-  set_msg_handler(pmt::mp("ctrl_in"),
-                  [this](pmt::pmt_t msg) { this->ctrl_in_handler(msg); });
+
   message_port_register_out(pmt::mp("msg"));
 }
 
@@ -81,13 +78,6 @@ std::string data_source_sim_impl::random_string(int Nbytes) {
   return result;
 }
 
-void data_source_sim_impl::ctrl_in_handler(pmt::pmt_t msg) {
-  std::cout << "Got a message from ctrl_in datasource" << std::endl;
-  // set internal done state to true
-  m_finished = true;
-  m_wait = false;
-  m_finished_wait = true;
-}
 
 /**
  * @brief Place holder function does not do anything for the data source.
@@ -163,17 +153,11 @@ int data_source_sim_impl::general_work(int noutput_items,
       if (m_multi_control == true) {
         add_item_tag(0, nitems_written(0), pmt::intern("status"),
                      pmt::intern("done"));
-        m_n_send++;
-        if (m_n_send == 10) {
-          m_finished = true;
-          m_wait = false;
-          m_finished_wait = true;
-        }
 
       } else {
         m_wait = true;
       }
-      return 2 * m_pay_len;
+      return 1;
     } else {
       GR_LOG_DEBUG(this->d_logger,
                    "DEBUG:Something wrong in sending the frames to the blocks");
@@ -181,12 +165,10 @@ int data_source_sim_impl::general_work(int noutput_items,
     }
   }
   if (m_wait == true) {
-    return 2 * m_pay_len;
+    return 0;
     // 2 * m_pay_len;
   }
   if (m_finished == true) {
-    std::cout << "Sending work_done to blocks" << std::endl;
-    std::cout << m_finished << std::endl;
     return WORK_DONE;
   }
 }

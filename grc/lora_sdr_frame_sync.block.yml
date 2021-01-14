@@ -32,9 +32,6 @@ inputs:
 -   domain: message
     id: frame_err
     optional: true
--   domain: message
-    id: ctrl_in
-    optional: true
 
 assert:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
@@ -45,9 +42,6 @@ outputs:
     vlen: ${ 2**sf }
 -   domain: message
     id: new_frame
--   domain: message
-    id: ctrl_out
-    optional: true
     
 templates:
     imports: import lora_sdr
