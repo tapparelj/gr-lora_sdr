@@ -14,7 +14,9 @@ gray_enc::sptr gray_enc::make() {
  */
 gray_enc_impl::gray_enc_impl()
     : gr::sync_block("gray_enc", gr::io_signature::make(1, 1, sizeof(uint32_t)),
-                     gr::io_signature::make(1, 1, sizeof(uint32_t))) {}
+                     gr::io_signature::make(1, 1, sizeof(uint32_t))) {
+                       set_tag_propagation_policy(TPP_ALL_TO_ALL);
+                     }
 
 /**
  * @brief Destroy the gray enc impl object

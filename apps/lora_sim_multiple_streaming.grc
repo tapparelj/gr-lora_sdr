@@ -696,7 +696,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [161, 205]
+    coordinate: [561, 185]
     rotation: 0
     state: enabled
 
@@ -714,11 +714,6 @@ connections:
 - [interp_fir_filter_xxx_0_0_0_0_0_0_0, '0', lora_sdr_hier_rx_0_1_0_0_0_0, '0']
 - [lora_sdr_hier_tx_0, '0', blocks_add_xx_0, '0']
 - [lora_sdr_hier_tx_0, '0', interp_fir_filter_xxx_0_0, '0']
-- [lora_sdr_hier_tx_0, ctrl_out, lora_sdr_multi_control_0, ctrl_in0]
-- [lora_sdr_hier_tx_0_0, '0', interp_fir_filter_xxx_0_0_0_0_0_0_0, '0']
-- [lora_sdr_hier_tx_0_0, ctrl_out, lora_sdr_multi_control_0, ctrl_in1]
-- [lora_sdr_multi_control_0, ctrl_out0, lora_sdr_hier_tx_0, ctrl_in]
-- [lora_sdr_multi_control_0, ctrl_out1, lora_sdr_hier_tx_0_0, ctrl_in]
 
 metadata:
   file_format: 1

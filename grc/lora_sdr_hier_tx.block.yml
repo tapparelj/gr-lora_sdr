@@ -76,9 +76,6 @@ inputs:
 outputs:
 -   domain: stream
     dtype: complex
--   domain: message
-    id: ctrl_out
-    optional: true
 
 documentation: |-
     Wrapper block that hold the entire Tx chain :

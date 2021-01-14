@@ -66,6 +66,8 @@ private:
    */
   bool m_finished;
 
+  bool m_wait;
+
   /**
    * @brief returns a random string containing [a-z A-Z 0-9] for testing the
    * payload data

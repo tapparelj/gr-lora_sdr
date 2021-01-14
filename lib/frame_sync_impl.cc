@@ -1,6 +1,6 @@
 #include "frame_sync_impl.h"
 #include <gnuradio/io_signature.h>
-//Fix for libboost > 1.75
+// Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
 
 using namespace boost::placeholders;
@@ -89,6 +89,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   //     // samples_file.open("../matlab/err_symb.txt", std::ios::out |
   //     std::ios::trunc );
   // #endif
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -106,7 +107,7 @@ frame_sync_impl::~frame_sync_impl() {}
  */
 void frame_sync_impl::forecast(int noutput_items,
                                gr_vector_int &ninput_items_required) {
-  //TODO fix : for sf=11 and sf=12
+  // TODO fix : for sf=11 and sf=12
   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
   // if(m_sf <= 10){
   //   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
@@ -486,249 +487,266 @@ int frame_sync_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
-  // downsampling
-  for (int ii = 0; ii < m_number_of_bins; ii++) {
-    in_down[ii] =
-        in[(int)(usFactor - 1 + usFactor * ii - round(lambda_sto * usFactor))];
-  }
+  std::vector<tag_t> return_tag;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1000000000);
+  if (return_tag.size() > 0) {
+    std::cout << "Frame Sync Done" << std::endl;
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+    consume_each(ninput_items[0]);
+    return 10;
+  } else {
 
-  // switch case to distinguish between the possible sync states
-  switch (m_state) {
-  // detect preamble
-  case DETECT: {
-    /**
-     * @brief Detect preamble.
-     * In order to detect preamble we start looking for consecutive symbols
-     * (with a margin of ±1) (The +- 1 margin is needed for the possible fractal
-     * part offset)
-     *
-     */
-    // get value of symbol
-    bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+    // downsampling
+    for (int ii = 0; ii < m_number_of_bins; ii++) {
+      in_down[ii] = in[(int)(usFactor - 1 + usFactor * ii -
+                             round(lambda_sto * usFactor))];
+    }
 
-    // First search for consecutive symbols with symbol {s+1,s,s-1}
-    if (std::abs(bin_idx_new - bin_idx) <= 1) {
-      // we should also add the first symbol value
-      if (symbol_cnt == 1) {
-        k_hat += bin_idx;
-      }
-      // set integer offset to the value of the demoudlated symbol
-      k_hat += bin_idx_new;
-      memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
-             m_samples_per_symbol * sizeof(gr_complex));
-      symbol_cnt++;
-    }
-    // no consecutive symbols found
-    else {
-      memcpy(&preamble_raw[0], &in_down[0],
-             m_samples_per_symbol * sizeof(gr_complex));
-      symbol_cnt = 1;
-      k_hat = 0;
-    }
-    // set index of symbol
-    bin_idx = bin_idx_new;
-    // if the number of consecutive symbols is n_up -1 (number of consecutive
-    // symbols) -1 we have found the preamble
-    if (symbol_cnt == (int)(n_up - 1)) {
-      // preamble synchronisation is done !, set new sync state
-      m_state = SYNC;
-      // clear variables
-      symbol_cnt = 0;
-      cfo_sto_est = false;
-      // set the integer offset
-      k_hat = round(k_hat / (n_up - 1));
-      // perform coarse synchronization, i.e shift the samples inside the buffer
-      items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
-    }
-    // preamble sync not completed
-    else {
-      items_to_consume = usFactor * m_samples_per_symbol;
-    }
-    // set number of output items to be 0, since output is only used for
-    // synchronisation and no output
-    noutput_items = 0;
-    break;
-  }
-  // synchronize integer part CFO and STO
-  case SYNC: {
-    /**
-     * @brief Synchronize integer part STO,CFO
-     * We have preamble detection, now we need part 2 of synchronisation
-     * synchronisation of integer part of STO and CFO
-     */
-    // if there is no estimation of the fractal offset
-    if (!cfo_sto_est) {
-      // preform CFO estimate
-      estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
-      // preform STO estimate
-      estimate_STO();
-      // create CFO correction vector
-      for (int n = 0; n < m_number_of_bins; n++) {
-        CFO_frac_correc[n] =
-            gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
-      }
-      // set estimation of fractal part of offset to be true
-      cfo_sto_est = true;
-    }
-    items_to_consume = usFactor * m_samples_per_symbol;
-    // apply cfo correction
-    volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0],
-                               m_samples_per_symbol);
-
-    bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
-    //
-    switch (symbol_cnt) {
+    // switch case to distinguish between the possible sync states
+    switch (m_state) {
+    // detect preamble
+    case DETECT: {
       /**
-       * @brief
+       * @brief Detect preamble.
+       * In order to detect preamble we start looking for consecutive symbols
+       * (with a margin of ±1) (The +- 1 margin is needed for the possible
+       * fractal part offset)
        *
        */
-    case NET_ID1: {
-      /**
-       * @brief Network identifier 1
-       *
-       */
+      // get value of symbol
+      bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
-      if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
-        // TODO: look for additional upchirps. Won't work if
-        // network identifier 1 equals 2^sf-1, 0 or 1!
+      // First search for consecutive symbols with symbol {s+1,s,s-1}
+      if (std::abs(bin_idx_new - bin_idx) <= 1) {
+        // we should also add the first symbol value
+        if (symbol_cnt == 1) {
+          k_hat += bin_idx;
+        }
+        // set integer offset to the value of the demoudlated symbol
+        k_hat += bin_idx_new;
+        memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
+               m_samples_per_symbol * sizeof(gr_complex));
+        symbol_cnt++;
       }
-      // wrong network identifier
-      else if (labs(bin_idx - net_id_1) > 1) {
-        // start again with detecting the preamble
-        m_state = DETECT;
-        symbol_cnt = 1;
-        noutput_items = 0;
-        k_hat = 0;
-        lambda_sto = 0;
-      }
-      // network identifier 1 correct or off by one
+      // no consecutive symbols found
       else {
-        net_id_off = bin_idx - net_id_1;
-        // try the second network identifier
-        symbol_cnt = NET_ID2;
-      }
-      break;
-    }
-    case NET_ID2: {
-      /**
-       * @brief Network identifier 2
-       *
-       */
-      // we got the wrong network identifier
-      if (labs(bin_idx - net_id_2) > 1) {
-        // start again with detecting the preamble
-        m_state = DETECT;
+        memcpy(&preamble_raw[0], &in_down[0],
+               m_samples_per_symbol * sizeof(gr_complex));
         symbol_cnt = 1;
-        noutput_items = 0;
         k_hat = 0;
-        lambda_sto = 0;
-      } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
-        // correct case off by one net id
-        items_to_consume -= usFactor * net_id_off;
-        symbol_cnt = DOWNCHIRP1;
-      } else {
-        symbol_cnt = DOWNCHIRP1;
       }
+      // set index of symbol
+      bin_idx = bin_idx_new;
+      // if the number of consecutive symbols is n_up -1 (number of consecutive
+      // symbols) -1 we have found the preamble
+      if (symbol_cnt == (int)(n_up - 1)) {
+        // preamble synchronisation is done !, set new sync state
+        m_state = SYNC;
+        // clear variables
+        symbol_cnt = 0;
+        cfo_sto_est = false;
+        // set the integer offset
+        k_hat = round(k_hat / (n_up - 1));
+        // perform coarse synchronization, i.e shift the samples inside the
+        // buffer
+        items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
+      }
+      // preamble sync not completed
+      else {
+        items_to_consume = usFactor * m_samples_per_symbol;
+      }
+      // set number of output items to be 0, since output is only used for
+      // synchronisation and no output
+      noutput_items = 0;
       break;
     }
-    // TODO: find out why this is needed ?
-    case DOWNCHIRP1:
+    // synchronize integer part CFO and STO
+    case SYNC: {
       /**
-       * @brief
-       *
+       * @brief Synchronize integer part STO,CFO
+       * We have preamble detection, now we need part 2 of synchronisation
+       * synchronisation of integer part of STO and CFO
        */
-      symbol_cnt = DOWNCHIRP2;
-      break;
-    case DOWNCHIRP2: {
-      /**
-       * @brief
-       *
-       */
-      // get value of the preamble downchirp
-      down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
-      symbol_cnt = QUARTER_DOWN;
-      break;
-    }
-    case QUARTER_DOWN: {
-      /**
-       * @brief the extra quater downschirp symbol present in the LoRa preamble
-       *
-       */
+      // if there is no estimation of the fractal offset
+      if (!cfo_sto_est) {
+        // preform CFO estimate
+        estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
+        // preform STO estimate
+        estimate_STO();
+        // create CFO correction vector
+        for (int n = 0; n < m_number_of_bins; n++) {
+          CFO_frac_correc[n] =
+              gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
+        }
+        // set estimation of fractal part of offset to be true
+        cfo_sto_est = true;
+      }
+      items_to_consume = usFactor * m_samples_per_symbol;
+      // apply cfo correction
+      volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0],
+                                 &CFO_frac_correc[0], m_samples_per_symbol);
+
+      bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
       //
-      if (down_val < m_number_of_bins / 2) {
-        // get integer part of CFO
-        CFOint = floor(down_val / 2);
+      switch (symbol_cnt) {
+        /**
+         * @brief
+         *
+         */
+      case NET_ID1: {
+        /**
+         * @brief Network identifier 1
+         *
+         */
+
+        if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
+          // TODO: look for additional upchirps. Won't work if
+          // network identifier 1 equals 2^sf-1, 0 or 1!
+        }
+        // wrong network identifier
+        else if (labs(bin_idx - net_id_1) > 1) {
+          // start again with detecting the preamble
+          m_state = DETECT;
+          symbol_cnt = 1;
+          noutput_items = 0;
+          k_hat = 0;
+          lambda_sto = 0;
+        }
+        // network identifier 1 correct or off by one
+        else {
+          net_id_off = bin_idx - net_id_1;
+          // try the second network identifier
+          symbol_cnt = NET_ID2;
+        }
+        break;
+      }
+      case NET_ID2: {
+        /**
+         * @brief Network identifier 2
+         *
+         */
+        // we got the wrong network identifier
+        if (labs(bin_idx - net_id_2) > 1) {
+          // start again with detecting the preamble
+          m_state = DETECT;
+          symbol_cnt = 1;
+          noutput_items = 0;
+          k_hat = 0;
+          lambda_sto = 0;
+        } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
+          // correct case off by one net id
+          items_to_consume -= usFactor * net_id_off;
+          symbol_cnt = DOWNCHIRP1;
+        } else {
+          symbol_cnt = DOWNCHIRP1;
+        }
+        break;
+      }
+      // TODO: find out why this is needed ?
+      case DOWNCHIRP1:
+        /**
+         * @brief
+         *
+         */
+        symbol_cnt = DOWNCHIRP2;
+        break;
+      case DOWNCHIRP2: {
+        /**
+         * @brief
+         *
+         */
+        // get value of the preamble downchirp
+        down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
+        symbol_cnt = QUARTER_DOWN;
+        break;
+      }
+      case QUARTER_DOWN: {
+        /**
+         * @brief the extra quater downschirp symbol present in the LoRa
+         * preamble
+         *
+         */
+        //
+        if (down_val < m_number_of_bins / 2) {
+          // get integer part of CFO
+          CFOint = floor(down_val / 2);
 // set point for new frame
 #ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:CFOint:" + std::to_string(CFOint));
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:CFOint:" + std::to_string(CFOint));
 #endif
 
-        message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
-      }
-      //TODO: figure outlogic behind
-      else {
-        //
-        CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
-        // set point for new frame
-        message_port_pub(
-            pmt::intern("new_frame"),
-            pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
+          message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
+        }
+        // TODO: figure outlogic behind
+        else {
+          //
+          CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
+          // set point for new frame
+          message_port_pub(
+              pmt::intern("new_frame"),
+              pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
 #ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:CFOint:" + std::to_string(((m_number_of_bins + CFOint) % m_number_of_bins)));
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:CFOint:" +
+                           std::to_string(((m_number_of_bins + CFOint) %
+                                           m_number_of_bins)));
 #endif
+        }
+        items_to_consume =
+            usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
+        symbol_cnt = 0;
+        // set new sync state to correct fractal part of CFO i.e. apply with
+        // complex exponential
+        m_state = FRAC_CFO_CORREC;
       }
-      items_to_consume =
-          usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
-      symbol_cnt = 0;
-      // set new sync state to correct fractal part of CFO i.e. apply with
-      // complex exponential
-      m_state = FRAC_CFO_CORREC;
-    }
-      // end case count symb
-    }
-    noutput_items = 0;
-    break;
-    // end case SYNC
-  }
-  case FRAC_CFO_CORREC: {
-    /**
-     * @brief synchronize the fractal part of the CFO
-     *
-     */
-    // transmitt only useful symbols (at least 8 symbol)
-    if (symbol_cnt < symb_numb ||
-        !(received_cr && received_crc && received_pay_len)) {
-      // apply fractional cfo correction
-      volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
-                                 m_samples_per_symbol);
-      //   #ifdef GRLORA_DEBUG
-      // //   if(symbol_cnt<numb_symbol_to_save)
-      // //
-      // memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
-      //   #endif
-      items_to_consume = usFactor * m_samples_per_symbol;
-      noutput_items = 1;
-      symbol_cnt++;
-    }
-    // Error revert to the preamble detecting case
-    else {
-      m_state = DETECT;
-      // clear all variables
-      symbol_cnt = 1;
-      items_to_consume = usFactor * m_samples_per_symbol;
+        // end case count symb
+      }
       noutput_items = 0;
-      k_hat = 0;
-      lambda_sto = 0;
+      break;
+      // end case SYNC
     }
-    break;
+    case FRAC_CFO_CORREC: {
+      /**
+       * @brief synchronize the fractal part of the CFO
+       *
+       */
+      // transmitt only useful symbols (at least 8 symbol)
+      if (symbol_cnt < symb_numb ||
+          !(received_cr && received_crc && received_pay_len)) {
+        // apply fractional cfo correction
+        volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
+                                   m_samples_per_symbol);
+        //   #ifdef GRLORA_DEBUG
+        // //   if(symbol_cnt<numb_symbol_to_save)
+        // //
+        // memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+        //   #endif
+        items_to_consume = usFactor * m_samples_per_symbol;
+        noutput_items = 1;
+        symbol_cnt++;
+      }
+      // Error revert to the preamble detecting case
+      else {
+        m_state = DETECT;
+        // clear all variables
+        symbol_cnt = 1;
+        items_to_consume = usFactor * m_samples_per_symbol;
+        noutput_items = 0;
+        k_hat = 0;
+        lambda_sto = 0;
+      }
+      break;
+    }
+    default: {
+      GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
+      break;
+    }
+    }
+    consume_each(items_to_consume);
+    return noutput_items;
   }
-  default: {
-    GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
-    break;
-  }
-  }
-  consume_each(items_to_consume);
-  return noutput_items;
 }
 } /* namespace lora_sdr */
 } /* namespace gr */

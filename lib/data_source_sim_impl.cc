@@ -55,7 +55,6 @@ data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
   set_msg_handler(pmt::mp("ctrl_in"),
                   [this](pmt::pmt_t msg) { this->ctrl_in_handler(msg); });
   message_port_register_out(pmt::mp("msg"));
-  message_port_register_out(pmt::mp("ctrl_out"));
 }
 
 /**
@@ -83,10 +82,9 @@ std::string data_source_sim_impl::random_string(int Nbytes) {
 
 void data_source_sim_impl::ctrl_in_handler(pmt::pmt_t msg) {
   std::cout << "Got a message from control multi" << std::endl;
-  if (msg == d_pmt_done) {
-    // set internal done state to true
-    m_finished = true;
-  }
+  // set internal done state to true
+  m_finished = true;
+  m_finished_wait = true;
 }
 
 /**
@@ -152,34 +150,31 @@ int data_source_sim_impl::general_work(int noutput_items,
     }
     // if the number of frames is the same -> all frames are sent
     if (frame_cnt > m_n_frames) {
-      GR_LOG_INFO(this->d_logger,
-                  "INFO:Done with generating data packets!, generated : " +
-                      std::to_string(m_n_frames) + " frames");
+      // GR_LOG_INFO(this->d_logger,
+      //             "INFO:Done with generating data packets!, generated : " +
+      //                 std::to_string(m_n_frames) + " frames");
 
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
       // if the multi control uses is not used, send done to the rest of the
       // chain
-      if (m_multi_control == false) {
-#ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger,
-                     "DEBUG:Work done!\nNo more new data packets, data packets "
-                     "will be processed and program will exit thereafter...");
-#endif
-        return WORK_DONE;
+      if (m_multi_control == true) {
+        add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                     pmt::intern("done"));
+        
       } else {
-        std::cout << "Sending work_done to control port" << std::endl;
-        // send done signal to the multi controller
-        message_port_pub(pmt::intern("ctrl_out"), d_pmt_done);
-        // set internal sate to done, no more messages should be produced
-        m_finished_wait = true;
-        return 0;
+        m_wait = true;
       }
+      return 1;
     } else {
       GR_LOG_DEBUG(this->d_logger,
                    "DEBUG:Something wrong in sending the frames to the blocks");
       return 0;
     }
-  } 
+  }
+  if (m_wait == true) {
+    return 1;
+    //2 * m_pay_len;
+  }
   if (m_finished == true) {
     std::cout << "Sending work_done to blocks" << std::endl;
     std::cout << m_finished << std::endl;

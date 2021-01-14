@@ -85,14 +85,12 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
   // Connections
   // Message connections
   message_port_register_hier_in(pmt::mp("ctrl_in"));
-  message_port_register_hier_out(pmt::mp("ctrl_out"));
   msg_connect(self(), "ctrl_in", data_source_sim, "ctrl_in");
   msg_connect(data_source_sim, "msg", whitening, "msg");
   msg_connect(data_source_sim, "msg", header, "msg");
   msg_connect(data_source_sim, "msg", add_crc, "msg");
   msg_connect(data_source_sim, "msg", interleaver, "msg");
   msg_connect(data_source_sim, "msg", modulate, "msg");
-  msg_connect(data_source_sim, "ctrl_out", self(), "ctrl_out");
   //
   // normal connections
   connect(data_source_sim, 0, whitening, 0);
