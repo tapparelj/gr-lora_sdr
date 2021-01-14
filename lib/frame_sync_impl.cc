@@ -495,6 +495,7 @@ int frame_sync_impl::general_work(int noutput_items,
   // std::cout << ninput_items[0] << std::endl;
   if (return_tag.size() > 0) {
     std::cout << "Frame Sync Done" << std::endl;
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
     consume_each(ninput_items[0]);
