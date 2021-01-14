@@ -39,9 +39,6 @@ outputs:
     id: msg
 -   domain: stream
     dtype: byte
--   domain: message
-    id: ctrl_out
-    optional: true
 
 templates:
     imports: import lora_sdr
@@ -55,7 +52,7 @@ documentation: |-
             Input string: specific input string to be used, if empty random generated will be used
             mean : 
         Input:
-            trigg: trigger signal
+            ctrl_in: control signal in
         Output:
             msg: payload data as a string
 

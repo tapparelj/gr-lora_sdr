@@ -93,7 +93,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
     consume_each(ninput_items[0]);
-    return 4;
+    return 8;
     // upsampling factor
     // noutput_items = 4;
   } else {

@@ -32,5 +32,6 @@ documentation: |-
         CRC: Indication of the payload crc presence
       Output:
         (optional) msg: Received payload
+        (optional) ctrl_out: WORK_DONE message;
 
 file_format: 1

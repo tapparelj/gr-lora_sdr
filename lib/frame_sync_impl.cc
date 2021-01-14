@@ -59,6 +59,9 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
 
   cx_in = new kiss_fft_cpx[m_samples_per_symbol];
   cx_out = new kiss_fft_cpx[m_samples_per_symbol];
+
+  m_finished = false;
+
   // register message ports
   message_port_register_out(pmt::mp("new_frame"));
 
@@ -82,13 +85,10 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   message_port_register_in(pmt::mp("frame_err"));
   set_msg_handler(pmt::mp("frame_err"),
                   boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
-  // #ifdef GRLORA_DEBUG
-  //     // numb_symbol_to_save=80;//number of symbol per erroneous frame to
-  //     save
-  //     // last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
-  //     // samples_file.open("../matlab/err_symb.txt", std::ios::out |
-  //     std::ios::trunc );
-  // #endif
+    message_port_register_in(pmt::mp("ctrl_in"));
+  // set msg handler for the input port to be the ctrl_in_handler
+  set_msg_handler(pmt::mp("ctrl_in"),
+                  [this](pmt::pmt_t msg) { this->ctrl_in_handler(msg); });
   set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
@@ -97,6 +97,13 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
  *
  */
 frame_sync_impl::~frame_sync_impl() {}
+
+void frame_sync_impl::ctrl_in_handler(pmt::pmt_t msg) {
+  std::cout << "Got a message from ctrl_in crc verify" << std::endl;
+  // set internal done state to true
+  m_finished = true;
+}
+
 
 /**
  * @brief Standard gnuradio function to tell the system
@@ -107,12 +114,7 @@ frame_sync_impl::~frame_sync_impl() {}
  */
 void frame_sync_impl::forecast(int noutput_items,
                                gr_vector_int &ninput_items_required) {
-  // TODO fix : for sf=11 and sf=12
   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
-  // if(m_sf <= 10){
-  //   ninput_items_required[0] = usFactor * (m_samples_per_symbol + 2);
-  // }
-  // if()
 }
 
 /**
@@ -455,16 +457,6 @@ void frame_sync_impl::header_err_handler(pmt::pmt_t err) {
 void frame_sync_impl::frame_err_handler(pmt::pmt_t err) {
   GR_LOG_INFO(this->d_logger,
               "Error in frame decoding:" + pmt::symbol_to_string(err));
-  // #ifdef GRLORA_DEBUG
-  //   // for(int j=0;j<numb_symbol_to_save;j++){
-  //   //     for(int i=0;i<m_number_of_bins;i++)
-  //   //
-  //   samples_file<<last_frame[i+m_number_of_bins*j].real()<<(last_frame[i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(last_frame[i+m_number_of_bins*j].imag())
-  //   //         <<"i,";
-  //   // samples_file<<std::endl;
-  //   // }
-  //   std::cout << "saved one frame" << '\n';
-  // #endif
 };
 
 /**
@@ -487,14 +479,22 @@ int frame_sync_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
+  if (m_finished == true) {
+    std::cout << "Sending work done Rx" << std::endl;
+    consume_each(ninput_items[0]);
+    return WORK_DONE;
+  }
   std::vector<tag_t> return_tag;
   get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1000000000);
+  // std::cout << ninput_items[0] << std::endl;
   if (return_tag.size() > 0) {
     std::cout << "Frame Sync Done" << std::endl;
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
     consume_each(ninput_items[0]);
-    return 10;
+    m_finished = true;
+    return usFactor * m_samples_per_symbol;
+    // return WORK_DONE;
   } else {
 
     // downsampling
@@ -718,11 +718,6 @@ int frame_sync_impl::general_work(int noutput_items,
         // apply fractional cfo correction
         volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
                                    m_samples_per_symbol);
-        //   #ifdef GRLORA_DEBUG
-        // //   if(symbol_cnt<numb_symbol_to_save)
-        // //
-        // memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
-        //   #endif
         items_to_consume = usFactor * m_samples_per_symbol;
         noutput_items = 1;
         symbol_cnt++;
