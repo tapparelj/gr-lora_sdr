@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '8'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -212,7 +212,7 @@ blocks:
     comment: ''
     interp: '4'
     maxoutbuf: '0'
-    minoutbuf: 2**sf*4*2
+    minoutbuf: 2**sf*4
     samp_delay: '0'
     taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
     type: ccf
@@ -510,6 +510,7 @@ connections:
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_enc_0, '0']
 - [lora_sdr_frame_sync_0, '0', lora_sdr_fft_demod_0, '0']
+- [lora_sdr_frame_sync_0, ctrl_out, lora_sdr_data_source_sim_0, ctrl_in]
 - [lora_sdr_frame_sync_0, new_frame, lora_sdr_deinterleaver_0, new_frame]
 - [lora_sdr_frame_sync_0, new_frame, lora_sdr_dewhitening_0, new_frame]
 - [lora_sdr_frame_sync_0, new_frame, lora_sdr_fft_demod_0, new_frame]

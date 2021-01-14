@@ -84,6 +84,8 @@ void data_source_sim_impl::ctrl_in_handler(pmt::pmt_t msg) {
   std::cout << "Got a message from ctrl_in datasource" << std::endl;
   // set internal done state to true
   m_finished = true;
+  m_wait = false;
+  m_finished_wait = true;
 }
 
 /**
@@ -164,7 +166,7 @@ int data_source_sim_impl::general_work(int noutput_items,
       } else {
         m_wait = true;
       }
-      return 1;
+      return 2 * m_pay_len;
     } else {
       GR_LOG_DEBUG(this->d_logger,
                    "DEBUG:Something wrong in sending the frames to the blocks");
@@ -172,7 +174,7 @@ int data_source_sim_impl::general_work(int noutput_items,
     }
   }
   if (m_wait == true) {
-    return 1;
+    return 2 * m_pay_len;
     //2 * m_pay_len;
   }
   if (m_finished == true) {

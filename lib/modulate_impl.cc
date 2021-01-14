@@ -93,7 +93,11 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
     consume_each(ninput_items[0]);
-    return 8;
+    // m_number_of_bins = (uint32_t)(1u << m_sf);
+    // m_samples_per_symbol = (uint32_t)(m_samp_rate * m_number_of_bins / m_bw);
+    int usFactor = 4;
+    return WORK_DONE;
+    // return usFactor * (m_samples_per_symbol + 2);
     // upsampling factor
     // noutput_items = 4;
   } else {
