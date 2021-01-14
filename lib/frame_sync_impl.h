@@ -291,19 +291,7 @@ private:
    */
   int net_id_off;
 
-// #ifdef GRLORA_MEASUREMENTS
-//   int off_by_one_id; ///< Indicate that the network identifiers where off by one
-//                      ///< and corrected
-//   std::ofstream sync_log; ///< savefile containing the offset estimation and the
-//                           ///< signal strength estimation
-//   int numb_symbol_to_save; ///< number of symbol to save for every erroneous
-//                            ///< frame
-//   std::vector<gr_complex>
-//       last_frame; ///< vector storing samples of the last received frame
-//   std::ofstream
-//       samples_file; ///< savefile containing the samples of the erroneous frames
-// #endif
-
+  
   /**
    * @brief Function that handles the coding rate
    * 

@@ -1,6 +1,6 @@
 #include "add_crc_impl.h"
 #include <gnuradio/io_signature.h>
-//Fix for libboost > 1.75
+// Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
 
 using namespace boost::placeholders;
@@ -24,6 +24,7 @@ add_crc_impl::add_crc_impl(bool has_crc)
   message_port_register_in(pmt::mp("msg"));
   set_msg_handler(pmt::mp("msg"),
                   boost::bind(&add_crc_impl::msg_handler, this, _1));
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**

@@ -61,7 +61,7 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
   // Blocks
   gr::lora_sdr::data_source_sim::sptr data_source_sim(
       gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data, mean,
-                                          multi_control));
+                                          true));
   // whitening
   gr::lora_sdr::whitening::sptr whitening(gr::lora_sdr::whitening::make());
   // add header
@@ -80,19 +80,16 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
       gr::lora_sdr::gray_decode::make(sf));
   // modulate
   gr::lora_sdr::modulate::sptr modulate(
-      gr::lora_sdr::modulate::make(sf, samp_rate, bw));
+      gr::lora_sdr::modulate::make(sf, samp_rate, bw,multi_control));
   gr::hier_block2::set_min_output_buffer(10000000);
   // Connections
   // Message connections
-  message_port_register_hier_in(pmt::mp("ctrl_in"));
-  message_port_register_hier_out(pmt::mp("ctrl_out"));
-  msg_connect(self(), "ctrl_in", data_source_sim, "ctrl_in");
+
   msg_connect(data_source_sim, "msg", whitening, "msg");
   msg_connect(data_source_sim, "msg", header, "msg");
   msg_connect(data_source_sim, "msg", add_crc, "msg");
   msg_connect(data_source_sim, "msg", interleaver, "msg");
   msg_connect(data_source_sim, "msg", modulate, "msg");
-  msg_connect(data_source_sim, "ctrl_out", self(), "ctrl_out");
   //
   // normal connections
   connect(data_source_sim, 0, whitening, 0);

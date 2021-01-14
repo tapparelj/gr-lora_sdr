@@ -42,7 +42,7 @@ outputs:
     vlen: ${ 2**sf }
 -   domain: message
     id: new_frame
-
+    
 templates:
     imports: import lora_sdr
     make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
