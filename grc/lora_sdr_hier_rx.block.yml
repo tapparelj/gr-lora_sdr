@@ -4,7 +4,7 @@ category: '[LoRa]'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.hier_rx(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc})
+  make: lora_sdr.hier_rx(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${exit})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -37,6 +37,10 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: exit
+    label: Exit
+    dtype: bool
+    default: True
 
 asserts:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }

@@ -11,6 +11,12 @@ inputs:
     id: pay_len
 -   domain: message
     id: CRC
+    
+parameters:
+-   id: exit
+    label: Exit
+    dtype: bool
+    default: True
 
 outputs:
 -   domain: message

@@ -7,14 +7,14 @@ using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
-crc_verif::sptr crc_verif::make() {
-  return gnuradio::get_initial_sptr(new crc_verif_impl());
+crc_verif::sptr crc_verif::make(bool exit) {
+  return gnuradio::get_initial_sptr(new crc_verif_impl(exit));
 }
 
 /*
  * The private constructor
  */
-crc_verif_impl::crc_verif_impl()
+crc_verif_impl::crc_verif_impl(bool exit)
     : gr::block("crc_verif", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(0, 0, 0)) {
   message_port_register_out(pmt::mp("msg"));
@@ -26,6 +26,7 @@ crc_verif_impl::crc_verif_impl()
   message_port_register_in(pmt::mp("CRC"));
   set_msg_handler(pmt::mp("CRC"),
                   boost::bind(&crc_verif_impl::header_crc_handler, this, _1));
+  m_exit = exit;
 }
 
 /*
@@ -105,9 +106,14 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     // message ctrl port we are done
     consume_each(ninput_items[0]);
     // exit program
+    if(m_exit == true){
     std::exit(EXIT_SUCCESS);
     // set internal state to being done
     return WORK_DONE;
+    }
+    else{
+      return 1;
+    }
     // return WORK_DONE;
   }
 

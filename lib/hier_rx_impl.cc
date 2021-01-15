@@ -19,9 +19,9 @@ namespace lora_sdr {
 
 hier_rx::sptr hier_rx::make(float samp_rate, uint32_t bandwidth, uint8_t sf,
                             bool impl_head, uint8_t cr, uint32_t pay_len,
-                            bool has_crc) {
+                            bool has_crc, bool exit) {
   return gnuradio::get_initial_sptr(new hier_rx_impl(
-      samp_rate, bandwidth, sf, impl_head, cr, pay_len, has_crc));
+      samp_rate, bandwidth, sf, impl_head, cr, pay_len, has_crc, exit));
 }
 
 /*
@@ -29,7 +29,7 @@ hier_rx::sptr hier_rx::make(float samp_rate, uint32_t bandwidth, uint8_t sf,
  */
 hier_rx_impl::hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                            bool impl_head, uint8_t cr, uint32_t pay_len,
-                           bool has_crc)
+                           bool has_crc, bool exit)
     : gr::hier_block2("hier_rx",
                       gr::io_signature::make(1, 1, sizeof(gr_complex)),
                       gr::io_signature::make(0, 0, 0)) {
@@ -55,7 +55,7 @@ hier_rx_impl::hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
   gr::lora_sdr::dewhitening::sptr dewhitening(
       gr::lora_sdr::dewhitening::make());
   // crc verify
-  gr::lora_sdr::crc_verif::sptr crc_verify(gr::lora_sdr::crc_verif::make());
+  gr::lora_sdr::crc_verif::sptr crc_verify(gr::lora_sdr::crc_verif::make(exit));
 
   // Register output port of message
   message_port_register_hier_out(pmt::mp("msg"));
