@@ -105,7 +105,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     // message ctrl port we are done
     consume_each(ninput_items[0]);
     // exit program
-    exit(EXIT_SUCCESS);
+    std::exit(EXIT_SUCCESS);
     // set internal state to being done
     return WORK_DONE;
     // return WORK_DONE;

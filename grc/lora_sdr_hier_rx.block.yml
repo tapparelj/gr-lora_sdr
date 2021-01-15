@@ -57,9 +57,6 @@ outputs:
 -   domain: message
     id: msg
     optional: true
--   domain: ctrl_out
-    id: msg
-    optional: true 
 
 documentation: |-
     Wrapper block that hold the entire Rx chain :
