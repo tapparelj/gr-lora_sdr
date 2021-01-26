@@ -472,9 +472,10 @@ int frame_sync_impl::general_work(int noutput_items,
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "Frame sync received a tag done");
 #endif
-    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
     add_item_tag(0, nitems_written(0), pmt::intern("status"),
                  pmt::intern("done"));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+    // exit(EXIT_SUCCESS);
     consume_each(ninput_items[0]);
     return usFactor * m_samples_per_symbol;
   } else {
@@ -654,10 +655,10 @@ int frame_sync_impl::general_work(int noutput_items,
           // get integer part of CFO
           CFOint = floor(down_val / 2);
 // set point for new frame
-#ifdef GRLORA_DEBUG
-          GR_LOG_DEBUG(this->d_logger,
-                       "DEBUG:CFOint:" + std::to_string(CFOint));
-#endif
+// #ifdef GRLORA_DEBUG
+//           GR_LOG_DEBUG(this->d_logger,
+//                        "DEBUG:CFOint:" + std::to_string(CFOint));
+// #endif
 
           message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
         }

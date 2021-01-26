@@ -124,10 +124,10 @@ int data_source_sim_impl::general_work(int noutput_items,
         str = m_string_input;
       }
       // TODO fix +1 bug ?
-#ifdef GRLORA_DEBUG
-      // output data string
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
-#endif
+// #ifdef GRLORA_DEBUG
+//       // output data string
+//       GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
+// #endif
       // send string over pmt port "msg" to neighboors
       message_port_pub(pmt::intern("msg"), pmt::mp(str));
       // print once in every 50 frames information about the number of frames

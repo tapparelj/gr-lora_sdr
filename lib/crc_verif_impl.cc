@@ -106,12 +106,11 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     // message ctrl port we are done
     consume_each(ninput_items[0]);
     // exit program
-    if(m_exit == true){
-    std::exit(EXIT_SUCCESS);
-    // set internal state to being done
-    return WORK_DONE;
-    }
-    else{
+    if (m_exit == true) {
+      std::exit(EXIT_SUCCESS);
+      // set internal state to being done
+      return WORK_DONE;
+    } else {
       return 1;
     }
     // return WORK_DONE;
@@ -141,7 +140,8 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         m_char = (char)in_buff[i];
         message_str = message_str + m_char;
       }
-      GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
+      std::cout << "Decode msg is:" + message_str;
+      // GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
       if (!(in_buff[m_payload_len] + (in_buff[m_payload_len + 1] << 8) -
             m_crc)) {
 #ifdef GRLORA_DEBUG
@@ -165,7 +165,9 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       m_char = (char)in_buff[i];
       message_str = message_str + m_char;
     }
-    GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
+    std::cout << "Decode msg is:" + message_str << std::endl;
+
+    // GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     in_buff.clear();
     return 0;
