@@ -29,7 +29,6 @@
 #include "lora_sdr/hier_rx.h"
 #include "lora_sdr/hier_tx.h"
 #include "lora_sdr/data_source_sim.h"
-#include "lora_sdr/multi_control.h"
 %}
 
 
