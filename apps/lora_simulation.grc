@@ -213,7 +213,7 @@ blocks:
     bus_structure: null
     coordinate: [535, 886]
     rotation: 0
-    state: true
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -272,7 +272,7 @@ blocks:
     bus_structure: null
     coordinate: [747, 880]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_add_crc_0
   id: lora_sdr_add_crc
   parameters:
@@ -295,6 +295,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    exit: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
@@ -501,6 +502,7 @@ blocks:
     bw: bw
     comment: ''
     cr: cr
+    exit: 'True'
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
@@ -514,7 +516,7 @@ blocks:
     bus_structure: null
     coordinate: [1030, 840]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_tx_0
   id: lora_sdr_hier_tx
   parameters:
@@ -540,7 +542,7 @@ blocks:
     bus_structure: null
     coordinate: [240, 811]
     rotation: 0
-    state: true
+    state: disabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:

@@ -34,7 +34,7 @@ class lora_sim_multi(gr.top_block):
         self.sf5 = sf5 = 11
         self.sf4 = sf4 = 10
         self.sf3 = sf3 = 9
-        self.sf2 = sf2 = 10
+        self.sf2 = sf2 = 8
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
@@ -51,12 +51,12 @@ class lora_sim_multi(gr.top_block):
         ##################################################
         self.lora_sdr_hier_tx_0_2 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf2, impl_head,has_crc, samp_rate, bw, 200, True)
         self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, 'sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC', cr, sf, impl_head,has_crc, samp_rate, bw, 200, False)
-        self.lora_sdr_hier_rx_0_2_0 = lora_sdr.hier_rx(samp_rate, bw, 10, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_1_0 = lora_sdr.hier_rx(samp_rate, bw, 7, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_1 = lora_sdr.hier_rx(samp_rate, bw, 11, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 8, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_1_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 12, impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hier_rx_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 9, impl_head, cr, pay_len, has_crc)
+        self.lora_sdr_hier_rx_0_2_0 = lora_sdr.hier_rx(samp_rate, bw, 10, impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_hier_rx_0_1_0_0_1_0 = lora_sdr.hier_rx(samp_rate, bw, 7, impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_hier_rx_0_1_0_0_1 = lora_sdr.hier_rx(samp_rate, bw, 11, impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_hier_rx_0_1_0_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 8, impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_hier_rx_0_1_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 12, impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_hier_rx_0_0_0_0 = lora_sdr.hier_rx(samp_rate, bw, 9, impl_head, cr, pay_len, has_crc, True)
         self.interp_fir_filter_xxx_0_0_0_0_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
         self.interp_fir_filter_xxx_0_0_0_0_0_0_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_0_0_0_0_0_0.set_min_output_buffer(32768)
@@ -71,11 +71,13 @@ class lora_sim_multi(gr.top_block):
         self.interp_fir_filter_xxx_0_0_0_0.set_min_output_buffer(4096)
         self.interp_fir_filter_xxx_0_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
         self.interp_fir_filter_xxx_0_0_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0_0_0.set_min_output_buffer(8192)
+        self.interp_fir_filter_xxx_0_0_0.set_min_output_buffer(2048)
         self.interp_fir_filter_xxx_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
         self.interp_fir_filter_xxx_0_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_0.set_min_output_buffer(1024)
         self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_delay_1 = blocks.delay(gr.sizeof_gr_complex*1, 0)
+        self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, 0)
         self.blocks_add_xx_1 = blocks.add_vcc(1)
 
 
@@ -84,6 +86,8 @@ class lora_sim_multi(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.blocks_add_xx_1, 0), (self.blocks_throttle_0_0, 0))
+        self.connect((self.blocks_delay_0, 0), (self.blocks_add_xx_1, 0))
+        self.connect((self.blocks_delay_1, 0), (self.blocks_add_xx_1, 1))
         self.connect((self.blocks_throttle_0_0, 0), (self.interp_fir_filter_xxx_0_0, 0))
         self.connect((self.blocks_throttle_0_0, 0), (self.interp_fir_filter_xxx_0_0_0, 0))
         self.connect((self.blocks_throttle_0_0, 0), (self.interp_fir_filter_xxx_0_0_0_0, 0))
@@ -96,8 +100,8 @@ class lora_sim_multi(gr.top_block):
         self.connect((self.interp_fir_filter_xxx_0_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_2_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_0_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_1, 0))
         self.connect((self.interp_fir_filter_xxx_0_0_0_0_0_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_0_0, 0))
-        self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_add_xx_1, 0))
-        self.connect((self.lora_sdr_hier_tx_0_2, 0), (self.blocks_add_xx_1, 1))
+        self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_delay_0, 0))
+        self.connect((self.lora_sdr_hier_tx_0_2, 0), (self.blocks_delay_1, 0))
 
 
     def get_bw(self):
