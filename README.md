@@ -1,3 +1,4 @@
+# This branch is experimental and is a work in progress
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs.  This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
