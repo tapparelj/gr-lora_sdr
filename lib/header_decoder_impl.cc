@@ -1,7 +1,10 @@
 
 #include "header_decoder_impl.h"
 #include <gnuradio/io_signature.h>
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -40,6 +43,7 @@ header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr,
   message_port_register_out(pmt::mp("pay_len"));
   message_port_register_out(pmt::mp("CRC"));
   message_port_register_out(pmt::mp("err"));
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 /*
  * Our virtual destructor.
@@ -83,6 +87,17 @@ int header_decoder_impl::general_work(int noutput_items,
   const uint8_t *in = (const uint8_t *)input_items[0];
   uint8_t *out = (uint8_t *)output_items[0];
   nout = 0;
+  std::vector<tag_t> return_tag;
+  // std::cout << nitems_read(0) << std::endl;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1000000000);
+  if (return_tag.size() > 0) {
+    // std::cout << "Header decoder Done" << std::endl;
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+    consume_each(ninput_items[0]);
+    return 10;
+  }
+
   if (is_first) {
     if (m_impl_header) { // implicit header, all parameters should have been
                          // provided

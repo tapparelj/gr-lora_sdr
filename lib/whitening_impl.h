@@ -29,6 +29,8 @@ private:
    */
   void msg_handler(pmt::pmt_t message);
 
+  bool m_work_done;
+
 public:
   /**
    * @brief Construct a new whitening impl object

@@ -24,7 +24,6 @@
 include(GrPlatform) #define LIB_SUFFIX
 
 list(APPEND lora_sdr_sources
-    lora_sdr_impl.cc
     add_crc_impl.cc
     crc_verif_impl.cc
     dewhitening_impl.cc
@@ -45,7 +44,10 @@ list(APPEND lora_sdr_sources
     deinterleaver_impl.cc
     err_measures_impl.cc
     debug_tools.cc
-    )
+    hier_tx_impl.cc
+    hier_rx_impl.cc
+    data_source_sim_impl.cc
+)
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)
 if(NOT lora_sdr_sources)

@@ -45,6 +45,7 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
+    # set( CMAKE_VERBOSE_MAKEFILE on )
 
     add_definitions(-DGRLORA_DEBUG=True)
 
@@ -65,7 +66,7 @@ endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # Set the version information here
-set(VERSION_MAJOR 1)
+set(VERSION_MAJOR 2)
 set(VERSION_API   0)
 set(VERSION_ABI   0)
 set(VERSION_PATCH git)
@@ -172,11 +173,6 @@ endif(APPLE)
 ########################################################################
 find_package(Doxygen)
 ##Add Cpp unit Testing
-find_package(CppUnit)
-
-if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile lora_sdr")
-endif()
 
 ########################################################################
 # Setup doxygen option

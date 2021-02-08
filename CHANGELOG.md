@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2
+- Made seperate git modules for test-case-generator and profiler
+- Large improbments and updates of profiler 
+- Revamped system to use gnuradio stream tagging function in order to close simulation mode
+- Added new data_source_sim block for simulation mode
+- Made Tx and Rx block that house all individual components of the receiving and transmitting side.
+- Added new assertions in grc 
 ## v0.1
 
 #### Enhancements:

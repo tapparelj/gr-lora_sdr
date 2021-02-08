@@ -54,14 +54,14 @@ class qa_tx_rx(gr_unittest.TestCase):
         # Input data into the system
         src_data = "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"
         self.bw = bw = 250000
-        self.sf = sf = 9
-        self.samp_rate = samp_rate = 250000
+        self.sf = sf = 10
+        self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 2
-        self.impl_head = impl_head = False
+        self.n_frame = n_frame = 10
+        self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.cr = cr = 0
+        self.cr = cr = 3
 
         ##################################################
         # Blocks
@@ -191,13 +191,23 @@ class qa_tx_rx(gr_unittest.TestCase):
         time.sleep(10)
         self.tb.stop()
         self.tb.wait()
-        # try to get get the message from the store port of the message debug printer and convert to string from pmt message
-        try:
-            msg = pmt.symbol_to_string(
-                self.blocks_message_debug_0.get_message(0))
-        except:
-            # if not possible set message to be None
-            msg = None
+        num_messages = self.blocks_message_debug_0.num_messages()
+        if num_messages > 1:
+            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            try:
+                msg = pmt.symbol_to_string(
+                    self.blocks_message_debug_0.get_message(1))
+            except:
+                # if not possible set message to be None
+                msg = None
+        else:
+            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            try:
+                msg = pmt.symbol_to_string(
+                    self.blocks_message_debug_0.get_message(0))
+            except:
+                # if not possible set message to be None
+                msg = None
 
         # check if message received is the same as the message decoded
         self.assertMultiLineEqual(

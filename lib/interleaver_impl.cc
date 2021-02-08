@@ -1,7 +1,10 @@
 #include "interleaver_impl.h"
 #include <gnuradio/io_signature.h>
 #include <lora_sdr/utilities.h>
+// Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -26,6 +29,7 @@ interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf)
   message_port_register_in(pmt::mp("msg"));
   set_msg_handler(pmt::mp("msg"),
                   boost::bind(&interleaver_impl::msg_handler, this, _1));
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -82,6 +86,15 @@ int interleaver_impl::general_work(int noutput_items,
   std::vector<bool> init_bit(m_sf, 0);
   // Empty interleaved matrix
   std::vector<std::vector<bool>> inter_bin(ppm, init_bit);
+  std::vector<tag_t> return_tag;
+  // std::cout << nitems_read(0) << std::endl;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1);
+  if (return_tag.size() > 0) {
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+    consume_each(ninput_items[0]);
+    return 1;
+  }
 
   // Convert to input codewords to binary vector of vector
   for (int i = 0; i < sf_app; i++) {

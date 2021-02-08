@@ -2,7 +2,7 @@
 
 id: lora_sdr_gray_enc
 label: Gray demap
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 inputs:
 -   domain: stream

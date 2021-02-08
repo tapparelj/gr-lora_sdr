@@ -1,6 +1,9 @@
 #include "frame_sync_impl.h"
 #include <gnuradio/io_signature.h>
+// Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -56,6 +59,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
 
   cx_in = new kiss_fft_cpx[m_samples_per_symbol];
   cx_out = new kiss_fft_cpx[m_samples_per_symbol];
+
   // register message ports
   message_port_register_out(pmt::mp("new_frame"));
 
@@ -79,25 +83,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   message_port_register_in(pmt::mp("frame_err"));
   set_msg_handler(pmt::mp("frame_err"),
                   boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
-  // #ifdef GRLORA_MEASUREMENTS
-  //     int num = 0;//check next file name to use
-  //     while(1){
-  //         std::ifstream
-  //         infile("../matlab/measurements/sync"+std::to_string(num)+".txt");
-  //         if(!infile.good())
-  //             break;
-  //         num++;
-  //     }
-  //     sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt",
-  //     std::ios::out | std::ios::trunc );
-  // #endif
-  // #ifdef GRLORA_DEBUG
-  //     // numb_symbol_to_save=80;//number of symbol per erroneous frame to
-  //     save
-  //     // last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
-  //     // samples_file.open("../matlab/err_symb.txt", std::ios::out |
-  //     std::ios::trunc );
-  // #endif
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -125,21 +111,21 @@ void frame_sync_impl::forecast(int noutput_items,
  * avoid the first symbol since it might be incomplete)
  */
 void frame_sync_impl::estimate_CFO(gr_complex *samples) {
-  //DFt frequency bin index
+  // DFt frequency bin index
   int k0;
   //
   double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
   //< CFO frac correction vector
-  std::vector<gr_complex> CFO_frac_correc_aug(
-      up_symb_to_use * m_number_of_bins); 
-  //dechirped signal
+  std::vector<gr_complex> CFO_frac_correc_aug(up_symb_to_use *
+                                              m_number_of_bins);
+  // dechirped signal
   std::vector<gr_complex> dechirped(up_symb_to_use * m_number_of_bins);
-  //DFT variables
+  // DFT variables
   kiss_fft_cpx *cx_in_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo =
       new kiss_fft_cpx[2 * up_symb_to_use * m_samples_per_symbol];
-  //sqaure of DFT signal
+  // sqaure of DFT signal
   float fft_mag_sq[2 * up_symb_to_use * m_number_of_bins];
   kiss_fft_cfg cfg_cfo =
       kiss_fft_alloc(2 * up_symb_to_use * m_samples_per_symbol, 0, 0, 0);
@@ -159,7 +145,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
     if (i < up_symb_to_use * m_samples_per_symbol) {
       cx_in_cfo[i].r = dechirped[i].real();
       cx_in_cfo[i].i = dechirped[i].imag();
-    } else { 
+    } else {
       // zero add padding to the DFT signal
       cx_in_cfo[i].r = 0;
       cx_in_cfo[i].i = 0;
@@ -169,13 +155,14 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   kiss_fft(cfg_cfo, cx_in_cfo, cx_out_cfo);
   // make the sqaure DFT signal
 
-  //TODO:check optimization possible first find Y_plus, Y_min, Y and then square those only
+  // TODO:check optimization possible first find Y_plus, Y_min, Y and then
+  // square those only
   for (uint32_t i = 0u; i < 2 * up_symb_to_use * m_samples_per_symbol; i++) {
     fft_mag_sq[i] =
         cx_out_cfo[i].r * cx_out_cfo[i].r + cx_out_cfo[i].i * cx_out_cfo[i].i;
   }
   free(cfg_cfo);
-  //get index of maximal frequency bin of DFT
+  // get index of maximal frequency bin of DFT
   k0 = ((std::max_element(fft_mag_sq,
                           fft_mag_sq + 2 * up_symb_to_use * m_number_of_bins) -
          fft_mag_sq));
@@ -187,7 +174,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   // Y+1
   Y_plus = fft_mag_sq[mod(k0 + 1, 2 * up_symb_to_use * m_number_of_bins)];
   // set constant coeff from Cui yang (15)
-  u = 64 * m_number_of_bins / 406.5506497; 
+  u = 64 * m_number_of_bins / 406.5506497;
   v = u * 2.4674;
   // preform RCTSL
   wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
@@ -195,7 +182,7 @@ void frame_sync_impl::estimate_CFO(gr_complex *samples) {
   ka = wa * m_number_of_bins / M_PI;
   //
   k_residual = fmod((k0 + ka) / 2 / up_symb_to_use, 1);
-  //compute actual fractal offset
+  // compute actual fractal offset
   lambda_cfo = k_residual - (k_residual > 0.5 ? 1 : 0);
   // Correct CFO in preamble
   for (int n = 0; n < up_symb_to_use * m_number_of_bins; n++) {
@@ -269,22 +256,22 @@ void frame_sync_impl::estimate_CFO_Bernier() {
  *
  */
 void frame_sync_impl::estimate_STO() {
-  //DFT bin index
+  // DFT bin index
   int k0;
   //
   double Y_min, Y0, Y_plus, u, v, ka, wa, k_residual;
-  //dechirped vector
+  // dechirped vector
   std::vector<gr_complex> dechirped(m_number_of_bins);
-  //DFT variables
+  // DFT variables
   kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
   kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * m_samples_per_symbol];
-  //variable to hold the sqaure of the fft
+  // variable to hold the sqaure of the fft
   float fft_mag_sq[2 * m_number_of_bins];
-  //compute square of fft
+  // compute square of fft
   for (size_t i = 0; i < 2 * m_number_of_bins; i++) {
     fft_mag_sq[i] = 0;
   }
-  //fft memory allocation
+  // fft memory allocation
   kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * m_samples_per_symbol, 0, 0, 0);
 
   for (int i = 0; i < up_symb_to_use; i++) {
@@ -297,7 +284,7 @@ void frame_sync_impl::estimate_STO() {
       if (i < m_samples_per_symbol) {
         cx_in_cfo[i].r = dechirped[i].real();
         cx_in_cfo[i].i = dechirped[i].imag();
-      } else { 
+      } else {
         // zero add padding to DFT
         cx_in_cfo[i].r = 0;
         cx_in_cfo[i].i = 0;
@@ -319,18 +306,18 @@ void frame_sync_impl::estimate_STO() {
 
   // get DFT at k0 - 1
   Y_min = fft_mag_sq[mod(k0 - 1, 2 * m_number_of_bins)];
-  //get DFT at k0
+  // get DFT at k0
   Y0 = fft_mag_sq[k0];
-  //get DFT at k0 + 1 
+  // get DFT at k0 + 1
   Y_plus = fft_mag_sq[mod(k0 + 1, 2 * m_number_of_bins)];
   // set constant coeff from Cui yang (eq.15) to be used in RCTSL
-  u = 64 * m_number_of_bins / 406.5506497; 
+  u = 64 * m_number_of_bins / 406.5506497;
   v = u * 2.4674;
   // RCTSL
   wa = (Y_plus - Y_min) / (u * (Y_plus + Y_min) + v * Y0);
   ka = wa * m_number_of_bins / M_PI;
   k_residual = fmod((k0 + ka) / 2, 1);
-  //compute actual fractal offset of sto
+  // compute actual fractal offset of sto
   lambda_sto = k_residual - (k_residual > 0.5 ? 1 : 0);
 }
 
@@ -390,9 +377,9 @@ float frame_sync_impl::determine_energy(const gr_complex *samples) {
  * @param cr : coding rate
  */
 void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
-  //get coding rate from header decoder
+  // get coding rate from header decoder
   m_cr = pmt::to_long(cr);
-  //set variable that we have an coding rate to true
+  // set variable that we have an coding rate to true
   received_cr = true;
   if (received_cr && received_crc &&
       received_pay_len) // get number of symbol of the frame
@@ -403,7 +390,8 @@ void frame_sync_impl::header_cr_handler(pmt::pmt_t cr) {
 };
 
 /**
- * @brief Function that handles the payload length (i.e. data length) from the header decoder stage
+ * @brief Function that handles the payload length (i.e. data length) from the
+ * header decoder stage
  *
  * @param pay_len :payload length
  */
@@ -456,16 +444,6 @@ void frame_sync_impl::header_err_handler(pmt::pmt_t err) {
 void frame_sync_impl::frame_err_handler(pmt::pmt_t err) {
   GR_LOG_INFO(this->d_logger,
               "Error in frame decoding:" + pmt::symbol_to_string(err));
-  // #ifdef GRLORA_DEBUG
-  //   // for(int j=0;j<numb_symbol_to_save;j++){
-  //   //     for(int i=0;i<m_number_of_bins;i++)
-  //   //
-  //   samples_file<<last_frame[i+m_number_of_bins*j].real()<<(last_frame[i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(last_frame[i+m_number_of_bins*j].imag())
-  //   //         <<"i,";
-  //   // samples_file<<std::endl;
-  //   // }
-  //   std::cout << "saved one frame" << '\n';
-  // #endif
 };
 
 /**
@@ -475,7 +453,7 @@ void frame_sync_impl::frame_err_handler(pmt::pmt_t err) {
  * align them in time and frequency)
  *
  * @param noutput_items : number of output items
- * @param ninput_items : number of input items
+ * @param ninput_items : number of input items, may be larger then 1
  * @param input_items : input items
  * @param output_items : output items (i.e. start of Rx decoding)
  * @return int
@@ -488,258 +466,265 @@ int frame_sync_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
-  // downsampling
-  for (int ii = 0; ii < m_number_of_bins; ii++) {
-    in_down[ii] =
-        in[(int)(usFactor - 1 + usFactor * ii - round(lambda_sto * usFactor))];
-  }
+  std::vector<tag_t> return_tag;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0));
+  if (return_tag.size() > 0) {
+#ifdef GRLORA_DEBUG
+    GR_LOG_DEBUG(this->d_logger, "Frame sync received a tag done");
+#endif
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+    // exit(EXIT_SUCCESS);
+    consume_each(ninput_items[0]);
+    return usFactor * m_samples_per_symbol;
+  } else {
 
-  // switch case to distinguish between the possible sync states
-  switch (m_state) {
-  // detect preamble
-  case DETECT: {
-    /**
-     * @brief Detect preamble.
-     * In order to detect preamble we start looking for consecutive symbols
-     * (with a margin of ±1) (The +- 1 margin is needed for the possible fractal
-     * part offset)
-     *
-     */
-    // get value of symbol
-    bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+    // downsampling
+    for (int ii = 0; ii < m_number_of_bins; ii++) {
+      in_down[ii] = in[(int)(usFactor - 1 + usFactor * ii -
+                             round(lambda_sto * usFactor))];
+    }
 
-    // First search for consecutive symbols with symbol {s+1,s,s-1}
-    if (std::abs(bin_idx_new - bin_idx) <= 1) {
-      // we should also add the first symbol value
-      if (symbol_cnt == 1) {
-        k_hat += bin_idx;
-      }
-      // set integer offset to the value of the demoudlated symbol
-      k_hat += bin_idx_new;
-      memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
-             m_samples_per_symbol * sizeof(gr_complex));
-      symbol_cnt++;
-    }
-    // no consecutive symbols found
-    else {
-      memcpy(&preamble_raw[0], &in_down[0],
-             m_samples_per_symbol * sizeof(gr_complex));
-      symbol_cnt = 1;
-      k_hat = 0;
-    }
-    // set index of symbol
-    bin_idx = bin_idx_new;
-    // if the number of consecutive symbols is n_up -1 (number of consecutive
-    // symbols) -1 we have found the preamble
-    if (symbol_cnt == (int)(n_up - 1)) {
-      // preamble synchronisation is done !, set new sync state
-      m_state = SYNC;
-      // clear variables
-      symbol_cnt = 0;
-      cfo_sto_est = false;
-      // set the integer offset
-      k_hat = round(k_hat / (n_up - 1));
-      // perform coarse synchronization, i.e shift the samples inside the buffer
-      items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
-    }
-    // preamble sync not completed
-    else {
-      items_to_consume = usFactor * m_samples_per_symbol;
-    }
-    // set number of output items to be 0, since output is only used for
-    // synchronisation and no output
-    noutput_items = 0;
-    break;
-  }
-  // synchronize integer part CFO and STO
-  case SYNC: {
-    /**
-     * @brief Synchronize integer part STO,CFO
-     * We have preamble detection, now we need part 2 of synchronisation
-     * synchronisation of integer part of STO and CFO
-     */
-    // if there is no estimation of the fractal offset
-    if (!cfo_sto_est) {
-      // preform CFO estimate
-      estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
-      // preform STO estimate
-      estimate_STO();
-      // create CFO correction vector
-      for (int n = 0; n < m_number_of_bins; n++) {
-        CFO_frac_correc[n] =
-            gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
-      }
-      // set estimation of fractal part of offset to be true
-      cfo_sto_est = true;
-    }
-    items_to_consume = usFactor * m_samples_per_symbol;
-    // apply cfo correction
-    volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0],
-                               m_samples_per_symbol);
-
-    bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
-    //
-    switch (symbol_cnt) {
+    // switch case to distinguish between the possible sync states
+    switch (m_state) {
+    // detect preamble
+    case DETECT: {
       /**
-       * @brief
+       * @brief Detect preamble.
+       * In order to detect preamble we start looking for consecutive symbols
+       * (with a margin of ±1) (The +- 1 margin is needed for the possible
+       * fractal part offset)
        *
        */
-    case NET_ID1: {
-      /**
-       * @brief Network identifier 1
-       *
-       */
+      // get value of symbol
+      bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
-      if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
-        // TODO: look for additional upchirps. Won't work if
-        // network identifier 1 equals 2^sf-1, 0 or 1!
+      // First search for consecutive symbols with symbol {s+1,s,s-1}
+      if (std::abs(bin_idx_new - bin_idx) <= 1) {
+        // we should also add the first symbol value
+        if (symbol_cnt == 1) {
+          k_hat += bin_idx;
+        }
+        // set integer offset to the value of the demoudlated symbol
+        k_hat += bin_idx_new;
+        memcpy(&preamble_raw[m_samples_per_symbol * symbol_cnt], &in_down[0],
+               m_samples_per_symbol * sizeof(gr_complex));
+        symbol_cnt++;
       }
-      // wrong network identifier
-      else if (labs(bin_idx - net_id_1) > 1) {
-        // start again with detecting the preamble
-        m_state = DETECT;
-        symbol_cnt = 1;
-        noutput_items = 0;
-        k_hat = 0;
-        lambda_sto = 0;
-      }
-      // network identifier 1 correct or off by one
+      // no consecutive symbols found
       else {
-        net_id_off = bin_idx - net_id_1;
-        // try the second network identifier
-        symbol_cnt = NET_ID2;
-      }
-      break;
-    }
-    case NET_ID2: {
-      /**
-       * @brief Network identifier 2
-       *
-       */
-      // we got the wrong network identifier
-      if (labs(bin_idx - net_id_2) > 1) {
-        // start again with detecting the preamble
-        m_state = DETECT;
+        memcpy(&preamble_raw[0], &in_down[0],
+               m_samples_per_symbol * sizeof(gr_complex));
         symbol_cnt = 1;
-        noutput_items = 0;
         k_hat = 0;
-        lambda_sto = 0;
-      } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
-        // correct case off by one net id
-        // #ifdef GRLORA_MEASUREMENTS
-        //         off_by_one_id = 1;
-        // #endif
-
-        items_to_consume -= usFactor * net_id_off;
-        symbol_cnt = DOWNCHIRP1;
-      } else {
-        // #ifdef GRLORA_MEASUREMENTS
-        //         off_by_one_id = 0;
-        // #endif
-        symbol_cnt = DOWNCHIRP1;
       }
-      break;
-    }
-    // TODO: find out why this is needed ?
-    case DOWNCHIRP1:
-      /**
-       * @brief
-       *
-       */
-      symbol_cnt = DOWNCHIRP2;
-      break;
-    case DOWNCHIRP2: {
-      /**
-       * @brief
-       *
-       */
-      // get value of the preamble downchirp
-      down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
-      symbol_cnt = QUARTER_DOWN;
-      break;
-    }
-    case QUARTER_DOWN: {
-      /**
-       * @brief the extra quater downschirp symbol present in the LoRa preamble
-       *
-       */
-      //
-      if (down_val < m_number_of_bins / 2) {
-        //get integer part of CFO
-        CFOint = floor(down_val / 2);
-        //set point for new frame
-        message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
+      // set index of symbol
+      bin_idx = bin_idx_new;
+      // if the number of consecutive symbols is n_up -1 (number of consecutive
+      // symbols) -1 we have found the preamble
+      if (symbol_cnt == (int)(n_up - 1)) {
+        // preamble synchronisation is done !, set new sync state
+        m_state = SYNC;
+        // clear variables
+        symbol_cnt = 0;
+        cfo_sto_est = false;
+        // set the integer offset
+        k_hat = round(k_hat / (n_up - 1));
+        // perform coarse synchronization, i.e shift the samples inside the
+        // buffer
+        items_to_consume = usFactor * (m_samples_per_symbol - k_hat);
       }
-      //
+      // preamble sync not completed
       else {
-        //
-        CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
-        //set point for new frame
-        message_port_pub(
-            pmt::intern("new_frame"),
-            pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
+        items_to_consume = usFactor * m_samples_per_symbol;
       }
-      items_to_consume =
-          usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
-      symbol_cnt = 0;
-      //set new sync state to correct fractal part of CFO i.e. apply with complex exponential
-      m_state = FRAC_CFO_CORREC;
-      // #ifdef GRLORA_MEASUREMENTS
-      //       sync_log << std::endl
-      //                << lambda_cfo << ", " << lambda_sto << ", " << CFOint <<
-      //                ","
-      //                << off_by_one_id << "," << lambda_bernier << ",";
-      // #endif
-    }
-    //end case count symb
-    }
-    noutput_items = 0;
-    break;
-    //end case SYNC
-  }
-  case FRAC_CFO_CORREC: {
-    /**
-     * @brief synchronize the fractal part of the CFO
-     *
-     */
-    // transmitt only useful symbols (at least 8 symbol)
-    if (symbol_cnt < symb_numb ||
-        !(received_cr && received_crc && received_pay_len)) {
-      // apply fractional cfo correction
-      volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
-                                 m_samples_per_symbol);
-      // #ifdef GRLORA_MEASUREMENTS
-      //       sync_log << std::fixed << std::setprecision(10)
-      //                << determine_energy(&in_down[0]) << ",";
-      // #endif
-      //   #ifdef GRLORA_DEBUG
-      // //   if(symbol_cnt<numb_symbol_to_save)
-      // //
-      // memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
-      //   #endif
-      items_to_consume = usFactor * m_samples_per_symbol;
-      noutput_items = 1;
-      symbol_cnt++;
-    }
-    // Error revert to the preamble detecting case
-    else {
-      m_state = DETECT;
-      //clear all variables
-      symbol_cnt = 1;
-      items_to_consume = usFactor * m_samples_per_symbol;
+      // set number of output items to be 0, since output is only used for
+      // synchronisation and no output
       noutput_items = 0;
-      k_hat = 0;
-      lambda_sto = 0;
+      break;
     }
-    break;
+    // synchronize integer part CFO and STO
+    case SYNC: {
+      /**
+       * @brief Synchronize integer part STO,CFO
+       * We have preamble detection, now we need part 2 of synchronisation
+       * synchronisation of integer part of STO and CFO
+       */
+      // if there is no estimation of the fractal offset
+      if (!cfo_sto_est) {
+        // preform CFO estimate
+        estimate_CFO(&preamble_raw[m_number_of_bins - k_hat]);
+        // preform STO estimate
+        estimate_STO();
+        // create CFO correction vector
+        for (int n = 0; n < m_number_of_bins; n++) {
+          CFO_frac_correc[n] =
+              gr_expj(-2 * M_PI * lambda_cfo / m_number_of_bins * n);
+        }
+        // set estimation of fractal part of offset to be true
+        cfo_sto_est = true;
+      }
+      items_to_consume = usFactor * m_samples_per_symbol;
+      // apply cfo correction
+      volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0],
+                                 &CFO_frac_correc[0], m_samples_per_symbol);
+
+      bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+      //
+      switch (symbol_cnt) {
+        /**
+         * @brief
+         *
+         */
+      case NET_ID1: {
+        /**
+         * @brief Network identifier 1
+         *
+         */
+
+        if (bin_idx == 0 || bin_idx == 1 || bin_idx == m_number_of_bins - 1) {
+          // TODO: look for additional upchirps. Won't work if
+          // network identifier 1 equals 2^sf-1, 0 or 1!
+        }
+        // wrong network identifier
+        else if (labs(bin_idx - net_id_1) > 1) {
+          // start again with detecting the preamble
+          m_state = DETECT;
+          symbol_cnt = 1;
+          noutput_items = 0;
+          k_hat = 0;
+          lambda_sto = 0;
+        }
+        // network identifier 1 correct or off by one
+        else {
+          net_id_off = bin_idx - net_id_1;
+          // try the second network identifier
+          symbol_cnt = NET_ID2;
+        }
+        break;
+      }
+      case NET_ID2: {
+        /**
+         * @brief Network identifier 2
+         *
+         */
+        // we got the wrong network identifier
+        if (labs(bin_idx - net_id_2) > 1) {
+          // start again with detecting the preamble
+          m_state = DETECT;
+          symbol_cnt = 1;
+          noutput_items = 0;
+          k_hat = 0;
+          lambda_sto = 0;
+        } else if (net_id_off && (bin_idx - net_id_2) == net_id_off) {
+          // correct case off by one net id
+          items_to_consume -= usFactor * net_id_off;
+          symbol_cnt = DOWNCHIRP1;
+        } else {
+          symbol_cnt = DOWNCHIRP1;
+        }
+        break;
+      }
+      // TODO: find out why this is needed ?
+      case DOWNCHIRP1:
+        /**
+         * @brief
+         *
+         */
+        symbol_cnt = DOWNCHIRP2;
+        break;
+      case DOWNCHIRP2: {
+        /**
+         * @brief
+         *
+         */
+        // get value of the preamble downchirp
+        down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
+        symbol_cnt = QUARTER_DOWN;
+        break;
+      }
+      case QUARTER_DOWN: {
+        /**
+         * @brief the extra quater downschirp symbol present in the LoRa
+         * preamble
+         *
+         */
+        //
+        if (down_val < m_number_of_bins / 2) {
+          // get integer part of CFO
+          CFOint = floor(down_val / 2);
+// set point for new frame
+// #ifdef GRLORA_DEBUG
+//           GR_LOG_DEBUG(this->d_logger,
+//                        "DEBUG:CFOint:" + std::to_string(CFOint));
+// #endif
+
+          message_port_pub(pmt::intern("new_frame"), pmt::mp((long)CFOint));
+        }
+        // TODO: figure outlogic behind
+        else {
+          //
+          CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
+          // set point for new frame
+          message_port_pub(
+              pmt::intern("new_frame"),
+              pmt::mp((long)((m_number_of_bins + CFOint) % m_number_of_bins)));
+#ifdef GRLORA_DEBUG
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:CFOint:" +
+                           std::to_string(((m_number_of_bins + CFOint) %
+                                           m_number_of_bins)));
+#endif
+        }
+        items_to_consume =
+            usFactor * m_samples_per_symbol / 4 + usFactor * CFOint;
+        symbol_cnt = 0;
+        // set new sync state to correct fractal part of CFO i.e. apply with
+        // complex exponential
+        m_state = FRAC_CFO_CORREC;
+      }
+        // end case count symb
+      }
+      noutput_items = 0;
+      break;
+      // end case SYNC
+    }
+    case FRAC_CFO_CORREC: {
+      /**
+       * @brief synchronize the fractal part of the CFO
+       *
+       */
+      // transmitt only useful symbols (at least 8 symbol)
+      if (symbol_cnt < symb_numb ||
+          !(received_cr && received_crc && received_pay_len)) {
+        // apply fractional cfo correction
+        volk_32fc_x2_multiply_32fc(out, &in_down[0], &CFO_frac_correc[0],
+                                   m_samples_per_symbol);
+        items_to_consume = usFactor * m_samples_per_symbol;
+        noutput_items = 1;
+        symbol_cnt++;
+      }
+      // Error revert to the preamble detecting case
+      else {
+        m_state = DETECT;
+        // clear all variables
+        symbol_cnt = 1;
+        items_to_consume = usFactor * m_samples_per_symbol;
+        noutput_items = 0;
+        k_hat = 0;
+        lambda_sto = 0;
+      }
+      break;
+    }
+    default: {
+      GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
+      break;
+    }
+    }
+    consume_each(items_to_consume);
+    return noutput_items;
   }
-  default: {
-    GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
-    break;
-  }
-  }
-  consume_each(items_to_consume);
-  return noutput_items;
 }
 } /* namespace lora_sdr */
 } /* namespace gr */

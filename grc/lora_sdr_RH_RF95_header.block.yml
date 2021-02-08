@@ -2,7 +2,7 @@
 
 id: lora_sdr_RH_RF95_header
 label: Rh rf95 header
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: _to

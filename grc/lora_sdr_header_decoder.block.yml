@@ -2,7 +2,7 @@
 
 id: lora_sdr_header_decoder
 label: Header decoder
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 parameters:
 -   id: impl_head
@@ -20,6 +20,9 @@ parameters:
     label: Has_crc
     dtype: bool
     default: 'False'
+
+asserts:
+-   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
 
 inputs:
 -   domain: stream

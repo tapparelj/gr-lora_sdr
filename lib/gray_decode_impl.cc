@@ -18,6 +18,7 @@ gray_decode_impl::gray_decode_impl(uint8_t sf)
                      gr::io_signature::make(1, 1, sizeof(uint32_t)),
                      gr::io_signature::make(1, 1, sizeof(uint32_t))) {
   m_sf = sf;
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -39,6 +40,14 @@ int gray_decode_impl::work(int noutput_items,
                            gr_vector_void_star &output_items) {
   const uint32_t *in = (const uint32_t *)input_items[0];
   uint32_t *out = (uint32_t *)output_items[0];
+  std::vector<tag_t> return_tag;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1);
+  if (return_tag.size() > 0) {
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+                 return 1;
+  }
+
   for (int i = 0; i < noutput_items; i++) {
 #ifdef GRLORA_DEBUG
 // std::cout<<std::hex<<"0x"<<in[i]<<" -->  ";

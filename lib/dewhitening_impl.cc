@@ -1,7 +1,10 @@
 #include "dewhitening_impl.h"
 #include "tables.h"
 #include <gnuradio/io_signature.h>
+// Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -26,6 +29,7 @@ dewhitening_impl::dewhitening_impl()
   message_port_register_in(pmt::mp("CRC"));
   set_msg_handler(pmt::mp("CRC"),
                   boost::bind(&dewhitening_impl::header_crc_handler, this, _1));
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -85,6 +89,16 @@ int dewhitening_impl::general_work(int noutput_items,
                                    gr_vector_void_star &output_items) {
   const uint8_t *in = (const uint8_t *)input_items[0];
   uint8_t *out = (uint8_t *)output_items[0];
+
+  std::vector<tag_t> return_tag;
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 100000);
+  if (return_tag.size() > 0) {
+    // std::cout << "DEwhit Sync Done" << std::endl;
+    add_item_tag(0, nitems_written(0), pmt::intern("status"),
+                 pmt::intern("done"));
+    consume_each(ninput_items[0]);
+    return 1;
+  }
 
   uint8_t low_nib, high_nib;
   for (int i = 0; i < ninput_items[0] / 2; i++) {

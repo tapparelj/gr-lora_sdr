@@ -43,7 +43,10 @@ private:
    * @brief indicate a new frame
    * 
    */
-  bool new_frame;          
+  bool new_frame;      
+
+  
+  bool m_exit;    
 
   /**
    * @brief input buffer containing the data bytes and CRC if any
@@ -81,7 +84,7 @@ public:
    *
    */
 
-  crc_verif_impl();
+  crc_verif_impl(bool exit);
   /**
    * @brief Destroy the crc verif impl object
    *

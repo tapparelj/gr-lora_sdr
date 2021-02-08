@@ -1,6 +1,9 @@
 #include "header_impl.h"
 #include <gnuradio/io_signature.h>
+// Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
@@ -25,6 +28,7 @@ header_impl::header_impl(bool impl_head, bool has_crc, uint8_t cr)
   message_port_register_in(pmt::mp("msg"));
   set_msg_handler(pmt::mp("msg"),
                   boost::bind(&header_impl::msg_handler, this, _1));
+  set_tag_propagation_policy(TPP_ALL_TO_ALL);
 }
 
 /**
@@ -66,13 +70,13 @@ int header_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   uint8_t *out = (uint8_t *)output_items[0];
 
   // no header to add
-  if (m_impl_head){ 
+  if (m_impl_head) {
     // copy input to the output
     memcpy(out, in, ninput_items[0] * sizeof(uint8_t));
     noutput_items = ninput_items[0];
   }
   // add header
-  else { 
+  else {
     // payload length
     out[0] = (m_payload_len >> 4);
     out[1] = (m_payload_len & 0x0F);

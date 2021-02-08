@@ -1,6 +1,9 @@
 #include <gnuradio/io_signature.h>
 #include "RH_RF95_header_impl.h"
+//Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
   namespace lora_sdr {
 
@@ -50,8 +53,6 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      // std::cout<<"there"<<std::endl;
-      //TODO find out print statement?
       // Tell runtime system how many output items we produced.
       return 0;
     }

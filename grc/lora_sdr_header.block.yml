@@ -2,7 +2,7 @@
 
 id: lora_sdr_header
 label: Add header
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: impl_head
@@ -16,6 +16,9 @@ parameters:
     label: Cr
     dtype: int
     default: '3'
+
+asserts:
+-   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
 
 inputs:
 -   domain: stream

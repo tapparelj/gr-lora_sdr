@@ -2,7 +2,7 @@
 
 id: lora_sdr_err_measures
 label: Err measures
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 inputs:
 -   domain: message

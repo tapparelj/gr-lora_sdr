@@ -2,7 +2,7 @@
 
 id: lora_sdr_data_source
 label: Data source
-category: '[LoRa_TX]'
+category: '[LoRa]/Tx'
 
 parameters:
 -   id: pay_len
@@ -14,6 +14,7 @@ parameters:
 -   id: string_input
     label: Input string
     dtype: string
+    default: ''
 
 
 inputs:

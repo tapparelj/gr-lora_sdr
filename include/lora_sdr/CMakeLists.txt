@@ -23,7 +23,6 @@
 ########################################################################
 install(FILES
     api.h
-    lora_sdr.h 
     add_crc.h
     crc_verif.h
     dewhitening.h
@@ -41,5 +40,8 @@ install(FILES
     data_source.h
     frame_sync.h
     deinterleaver.h
-    err_measures.h DESTINATION include/lora_sdr
+    err_measures.h
+    hier_rx.h
+    hier_tx.h
+    data_source_sim.h DESTINATION include/lora_sdr
 )

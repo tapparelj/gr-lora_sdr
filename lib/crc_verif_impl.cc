@@ -1,17 +1,20 @@
 #include "crc_verif_impl.h"
 #include <gnuradio/io_signature.h>
+// Fix for libboost > 1.75
+#include <boost/bind/placeholders.hpp>
 
+using namespace boost::placeholders;
 namespace gr {
 namespace lora_sdr {
 
-crc_verif::sptr crc_verif::make() {
-  return gnuradio::get_initial_sptr(new crc_verif_impl());
+crc_verif::sptr crc_verif::make(bool exit) {
+  return gnuradio::get_initial_sptr(new crc_verif_impl(exit));
 }
 
 /*
  * The private constructor
  */
-crc_verif_impl::crc_verif_impl()
+crc_verif_impl::crc_verif_impl(bool exit)
     : gr::block("crc_verif", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(0, 0, 0)) {
   message_port_register_out(pmt::mp("msg"));
@@ -23,6 +26,7 @@ crc_verif_impl::crc_verif_impl()
   message_port_register_in(pmt::mp("CRC"));
   set_msg_handler(pmt::mp("CRC"),
                   boost::bind(&crc_verif_impl::header_crc_handler, this, _1));
+  m_exit = exit;
 }
 
 /*
@@ -92,6 +96,26 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                  gr_vector_void_star &output_items) {
   uint8_t *in = (uint8_t *)input_items[0];
 
+  // return tag vector
+  std::vector<tag_t> return_tag;
+  // get tags from stream
+  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 1);
+  // if we found tags
+  if (return_tag.size() > 0) {
+    GR_LOG_INFO(this->d_logger, "Got a tag 'done', quitting flowgraph..");
+    // message ctrl port we are done
+    consume_each(ninput_items[0]);
+    // exit program
+    if (m_exit == true) {
+      std::exit(EXIT_SUCCESS);
+      // set internal state to being done
+      return WORK_DONE;
+    } else {
+      return 1;
+    }
+    // return WORK_DONE;
+  }
+
   for (size_t i = 0; i < ninput_items[0]; i++) {
     in_buff.push_back(in[i]);
   }
@@ -109,15 +133,6 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       // XOR the obtained CRC with the last 2 data bytes
       m_crc = m_crc ^ in_buff[m_payload_len - 1] ^
               (in_buff[m_payload_len - 2] << 8);
-      // #ifdef GRLORA_DEBUG
-      //       // for(int i =0;i<in_buff.size();i++)
-      //       // std::cout<< std::hex << (int)in_buff[i]<<std::dec<<std::endl;
-      //       // std::cout<<"Calculated
-      //       "<<std::hex<<m_crc<<std::dec<<std::endl;
-      //       // std::cout<<"Got
-      //       //
-      //       "<<std::hex<<(in_buff[m_payload_len]+(in_buff[m_payload_len+1]<<8))<<std::dec<<std::endl;
-      // #endif
 
       // get payload as string
       message_str.clear();
@@ -125,7 +140,8 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         m_char = (char)in_buff[i];
         message_str = message_str + m_char;
       }
-      GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
+      std::cout << "Decode msg is:" + message_str;
+      // GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
       if (!(in_buff[m_payload_len] + (in_buff[m_payload_len + 1] << 8) -
             m_crc)) {
 #ifdef GRLORA_DEBUG
@@ -149,7 +165,9 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       m_char = (char)in_buff[i];
       message_str = message_str + m_char;
     }
-    GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
+    std::cout << "Decode msg is:" + message_str << std::endl;
+
+    // GR_LOG_INFO(this->d_logger, "Decode msg is:" + message_str);
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     in_buff.clear();
     return 0;

@@ -2,7 +2,7 @@
 
 id: lora_sdr_frame_sync
 label: Frame sync
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 parameters:
 -   id: samp_rate
@@ -33,13 +33,16 @@ inputs:
     id: frame_err
     optional: true
 
+assert:
+-   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+
 outputs:
 -   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
 -   domain: message
     id: new_frame
-
+    
 templates:
     imports: import lora_sdr
     make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
@@ -51,6 +54,7 @@ documentation: |-
             Bandwidth: Bandwidth
             sf: spreading factor
             impl_head: usage of an implicit header (explicit will be used otherwise)
+            num_rscv : Number of Tx signals to receive
         Input:
             in: stream of complex valued sampled
             CR: coding rate

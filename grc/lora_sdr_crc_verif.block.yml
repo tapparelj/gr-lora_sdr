@@ -2,7 +2,7 @@
 
 id: lora_sdr_crc_verif
 label: Crc verif
-category: '[LoRa_RX]'
+category: '[LoRa]/Rx'
 
 inputs:
 -   domain: stream
@@ -11,6 +11,12 @@ inputs:
     id: pay_len
 -   domain: message
     id: CRC
+    
+parameters:
+-   id: exit
+    label: Exit
+    dtype: bool
+    default: True
 
 outputs:
 -   domain: message
