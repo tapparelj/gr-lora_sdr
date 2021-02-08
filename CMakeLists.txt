@@ -66,7 +66,7 @@ endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # Set the version information here
-set(VERSION_MAJOR 1)
+set(VERSION_MAJOR 2)
 set(VERSION_API   0)
 set(VERSION_ABI   0)
 set(VERSION_PATCH git)

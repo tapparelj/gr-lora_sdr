@@ -30,6 +30,9 @@
 ## Summary
 
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. This work has been originally conducted at the Telecommunication Circuits Laboratory, EPFL and later the code has been extended at the Technical University of Eindhoven.
+The extension of this project is to implement a simulated multi-stream gateway, this is currently implemented in an experimental version.
+More information on this extended work is available in the [paper](main.pdf) in this repo.
+
 
 In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose all the parameters of the transmission, such as the spreading factor, the coding rate, the bandwidth, the presence of a header and a CRC, the message to be transmitted, etc.
 
@@ -59,7 +62,7 @@ Which can be found at [arxiv.org/abs/2002.08208](https://arxiv.org/abs/2002.0820
 Both are WIP
 
 ### Installation
-
+There is an Arch Linux package called **_gr-lora_sdr-git_** simply it using your favourite aur helper.
 Similarly to any GNU Radio OOT module, it can be build using Cmake and make.
 
 1. Clone the repo
@@ -85,14 +88,12 @@ Similarly to any GNU Radio OOT module, it can be build using Cmake and make.
    You will need root or sudo access in order to properly install the repo, since it will add module blocks to be used in gnuradio-companian and makes a local python package. Be sure to have the following requirements installed:
 
 ### Requirements
-
     - Gnuradio 3.8
     - python >2.7
     - cmake >3.8
     - swig  >4.0
     - libvolk
     - UHD 
-    - cppunit 
     - doxygen (optional for documentation)
     - log4cpp (optional for logging/debugging)
 ## Changelog
@@ -101,4 +102,4 @@ For changelog checkout [Changelog](CHANGELOG.md)
 For TODO list checkout [TODO](TODO.md)
 ## License
 
-Distributed under the GPL-3.0 License License. See `LICENSE` for more information.
+Distributed under the GPL-3.0 License License. See [LICENSE](LICENSE) for more information.
