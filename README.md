@@ -22,15 +22,26 @@ If you find this implementation useful for your project, please consider citing 
 - The installation path can be set in CMakeLists.txt under #set destination.(default: home/lora_sdr)
     
 - Similarly to any GNU Radio OOT module, it can be build with: (It might require to use sudo depending of the installation destination)  
-	- mkdir build  
+    - mkdir build  
     - cd build  
     - cmake ../  (-DCMAKE_INSTALL_PREFIX=/usr for Arch Linux)
     - make  
-    - sudo make install  
+    - make install  
+    
+- The new blocks can be loaded in gnuradio companion by adding the following lines in home/.gnuradio/config.conf (If this file doesn’t exist you need to create it):  
+    [grc]  
+    local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
+
+## Usage:  
+- The script /gr-lora_sdr/apps/setpaths.sh add the pythonpaths required to run the generated python files  **for the current shell process**. It has to be adapted accordingly to the installation folder, and should be sourced with . setpaths.sh (Be careful not to use ./setpaths.sh since it would change the pythonpaths only for the script itself).
+
 
 ## Usage:    
 - An example of a transmitter and a receiver can be found in gr-lora_sdr/app (both python and grc).  
 - An example of an automated testing script and the corresponding grc and python file can also be found.
+
+## Frequent errors:  
+‘ImportError: No module named lora_sdr’ under other distribution than Redhat7: -This issue comes probably from erroneous PYTHONPATH and LD_LIBRARY_PATH set in the script setpaths.sh. -The paths might need to be changed to: ~/lora_sdr/lib/python2.7/dist-packages ~/lora_sdr/lib
 
 ## Requirements:  
     - Gnuradio 3.8
