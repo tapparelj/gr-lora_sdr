@@ -224,36 +224,65 @@ endfunction(GR_GEN_TARGET_DEPS)
 # Can manually set with -DENABLE_GR_LOG=0|1
 ########################################################################
 function(GR_LOGGING)
-  find_package(Log4cpp)
-
   OPTION(ENABLE_GR_LOG "Use gr_logger" ON)
   if(ENABLE_GR_LOG)
-    # If gr_logger is enabled, make it usable
-    add_definitions( -DENABLE_GR_LOG )
+    if (LOG4CPP_INCLUDE_DIR)
+    # Already in cache, be silent
+      set(LOG4CPP_FIND_QUIETLY TRUE)
+    endif ()
 
-    # also test LOG4CPP; if we have it, use this version of the logger
-    # otherwise, default to the stdout/stderr model.
-    if(LOG4CPP_FOUND)
-      SET(HAVE_LOG4CPP True CACHE INTERNAL "" FORCE)
-      add_definitions( -DHAVE_LOG4CPP )
-    else(not LOG4CPP_FOUND)
-      SET(HAVE_LOG4CPP False CACHE INTERNAL "" FORCE)
-      SET(LOG4CPP_INCLUDE_DIRS "" CACHE INTERNAL "" FORCE)
-      SET(LOG4CPP_LIBRARY_DIRS "" CACHE INTERNAL "" FORCE)
-      SET(LOG4CPP_LIBRARIES "" CACHE INTERNAL "" FORCE)
-    endif(LOG4CPP_FOUND)
+    find_path(LOG4CPP_INCLUDE_DIR log4cpp/Category.hh
+      /usr/include
+      /usr/local/include
+      /opt/local/include
+    )
 
-    SET(ENABLE_GR_LOG ${ENABLE_GR_LOG} CACHE INTERNAL "" FORCE)
+    set(LOG4CPP_NAMES log4cpp)
+    find_library(LOG4CPP_LIBRARY
+      NAMES ${LOG4CPP_NAMES}
+      PATHS /usr/lib /usr/lib64 /usr/local/lib  /usr/local/lib64 /opt/local/lib /opt/local/lib64
+    )
 
-  else(ENABLE_GR_LOG)
-    SET(HAVE_LOG4CPP False CACHE INTERNAL "" FORCE)
-    SET(LOG4CPP_INCLUDE_DIRS "" CACHE INTERNAL "" FORCE)
-    SET(LOG4CPP_LIBRARY_DIRS "" CACHE INTERNAL "" FORCE)
-    SET(LOG4CPP_LIBRARIES "" CACHE INTERNAL "" FORCE)
+
+    if (LOG4CPP_INCLUDE_DIR AND LOG4CPP_LIBRARY)
+      set(LOG4CPP_FOUND TRUE)
+      set(LOG4CPP_LIBRARIES ${LOG4CPP_LIBRARY} CACHE INTERNAL "" FORCE)
+      set(LOG4CPP_INCLUDE_DIRS ${LOG4CPP_INCLUDE_DIR} CACHE INTERNAL "" FORCE)
+    else ()
+      set(LOG4CPP_FOUND FALSE CACHE INTERNAL "" FORCE)
+      set(LOG4CPP_LIBRARY "" CACHE INTERNAL "" FORCE)
+      set(LOG4CPP_LIBRARIES "" CACHE INTERNAL "" FORCE)
+      set(LOG4CPP_INCLUDE_DIR "" CACHE INTERNAL "" FORCE)
+      set(LOG4CPP_INCLUDE_DIRS "" CACHE INTERNAL "" FORCE)
+    endif ()
+
+    if (LOG4CPP_FOUND)
+      if (NOT LOG4CPP_FIND_QUIETLY)
+        message(STATUS "Found LOG4CPP: ${LOG4CPP_LIBRARIES}")
+      endif ()
+    else ()
+      if (LOG4CPP_FIND_REQUIRED)
+        message(STATUS "Looked for LOG4CPP libraries named ${LOG4CPP_NAMES}.")
+        message(FATAL_ERROR "Could NOT find LOG4CPP library")
+      endif ()
+    endif ()
+
+
+    if (LOG4CPP_FOUND AND NOT TARGET Log4Cpp::log4cpp)
+      add_library(Log4Cpp::log4cpp INTERFACE IMPORTED)
+      set_target_properties(Log4Cpp::log4cpp PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${LOG4CPP_INCLUDE_DIRS}"
+        INTERFACE_LINK_LIBRARIES "${LOG4CPP_LIBRARIES}"
+      )
+    endif()
+
+    mark_as_advanced(
+      LOG4CPP_LIBRARIES
+      LOG4CPP_INCLUDE_DIRS
+    )
   endif(ENABLE_GR_LOG)
 
   message(STATUS "ENABLE_GR_LOG set to ${ENABLE_GR_LOG}.")
-  message(STATUS "HAVE_LOG4CPP set to ${HAVE_LOG4CPP}.")
   message(STATUS "LOG4CPP_LIBRARIES set to ${LOG4CPP_LIBRARIES}.")
 
 endfunction(GR_LOGGING)
