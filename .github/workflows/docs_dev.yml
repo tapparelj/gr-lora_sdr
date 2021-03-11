@@ -11,7 +11,7 @@ env:
 
 jobs:  
   docs:
-    runs-on: self-hosted
+    runs-on: runner-gr-lora_sdr
 
     steps:
       - uses: actions/checkout@v2

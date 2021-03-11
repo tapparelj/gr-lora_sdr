@@ -1,0 +1,274 @@
+options:
+  parameters:
+    author: ''
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'Off'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: cpp_export_test
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: run
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Test
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: bw
+  id: variable
+  parameters:
+    comment: ''
+    value: '250000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [313, 18]
+    rotation: 0
+    state: enabled
+- name: cr
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [585, 18]
+    rotation: 0
+    state: enabled
+- name: frame_period
+  id: variable
+  parameters:
+    comment: ''
+    value: '200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [881, 22]
+    rotation: 0
+    state: enabled
+- name: has_crc
+  id: variable
+  parameters:
+    comment: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [649, 18]
+    rotation: 0
+    state: enabled
+- name: impl_head
+  id: variable
+  parameters:
+    comment: ''
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [497, 18]
+    rotation: 0
+    state: enabled
+- name: mean
+  id: variable
+  parameters:
+    comment: ''
+    value: '200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1168, 20]
+    rotation: 0
+    state: enabled
+- name: mult_const
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [977, 22]
+    rotation: 0
+    state: enabled
+- name: multi_control
+  id: variable
+  parameters:
+    comment: ''
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1070, 23]
+    rotation: 0
+    state: enabled
+- name: n_frame
+  id: variable
+  parameters:
+    comment: ''
+    value: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [809, 22]
+    rotation: 0
+    state: enabled
+- name: pay_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '64'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [729, 18]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '250000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [228, 20]
+    rotation: 0
+    state: enabled
+- name: sf
+  id: variable
+  parameters:
+    comment: ''
+    value: '7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [392, 17]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [310, 294]
+    rotation: 0
+    state: true
+- name: interp_fir_filter_xxx_0
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: '4'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872)
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [489, 301]
+    rotation: 0
+    state: disabled
+- name: lora_sdr_hier_rx_0
+  id: lora_sdr_hier_rx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    exit: 'true'
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [765, 233]
+    rotation: 0
+    state: true
+- name: lora_sdr_hier_tx_0
+  id: lora_sdr_hier_tx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    mean: mean
+    minoutbuf: '0'
+    multi_control: 'true'
+    n_frames: n_frame
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf
+    src_data: '"PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [88, 214]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
+- [blocks_throttle_0, '0', lora_sdr_hier_rx_0, '0']
+- [interp_fir_filter_xxx_0, '0', lora_sdr_hier_rx_0, '0']
+- [lora_sdr_hier_tx_0, '0', blocks_throttle_0, '0']
+
+metadata:
+  file_format: 1
