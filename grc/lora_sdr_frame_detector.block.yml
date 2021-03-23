@@ -4,7 +4,7 @@ category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_detector()
+  make: lora_sdr.frame_detector(${samp_rate},${bw},${sf})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -36,6 +36,9 @@ inputs:
 outputs:
 - domain: stream
   dtype: complex
+
+assert:
+-   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

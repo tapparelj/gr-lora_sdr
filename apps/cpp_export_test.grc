@@ -191,7 +191,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [815, 455]
+    coordinate: [1124, 599]
+    rotation: 0
+    state: disabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [754, 297]
     rotation: 0
     state: true
 - name: blocks_throttle_0
@@ -229,9 +246,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [515, 287]
+    coordinate: [801, 478]
     rotation: 0
-    state: enabled
+    state: disabled
+- name: lora_sdr_frame_detector_0
+  id: lora_sdr_frame_detector
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    sf: sf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [548, 277]
+    rotation: 0
+    state: true
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -252,7 +287,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [805, 238]
+    coordinate: [1126, 407]
     rotation: 0
     state: disabled
 - name: lora_sdr_hier_tx_0
@@ -284,8 +319,10 @@ blocks:
 
 connections:
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
+- [blocks_throttle_0, '0', lora_sdr_frame_detector_0, '0']
 - [interp_fir_filter_xxx_0, '0', blocks_file_sink_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_hier_rx_0, '0']
+- [lora_sdr_frame_detector_0, '0', blocks_null_sink_0, '0']
 - [lora_sdr_hier_tx_0, '0', blocks_throttle_0, '0']
 
 metadata:

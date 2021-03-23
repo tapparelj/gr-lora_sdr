@@ -7,7 +7,6 @@
 #include <iostream>
 #include <lora_sdr/frame_sync.h>
 #include "helpers.h"
-#include <volk/volk.h>
 extern "C" {
 #include "kiss_fft.h"
 }
@@ -160,6 +159,7 @@ private:
    *
    */
   int32_t bin_idx_new;
+  
   /**
    * @brief Number of consecutive upchirps in preamble
    *

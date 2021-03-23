@@ -9,9 +9,8 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
-from gnuradio import filter
-from gnuradio.filter import firdes
 from gnuradio import gr
+from gnuradio.filter import firdes
 import sys
 import signal
 from argparse import ArgumentParser
@@ -45,19 +44,17 @@ class zmq_test(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, mean, True)
-        self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_ccc(4, (-0.128616616593872,-0.212206590789194,-0.180063263231421,3.89817183251938e-17,0.300105438719035,0.636619772367581,0.900316316157106,1,0.900316316157106,0.636619772367581,0.300105438719035,3.89817183251938e-17,-0.180063263231421,-0.212206590789194,-0.128616616593872))
-        self.interp_fir_filter_xxx_0.declare_sample_delay(0)
+        self.lora_sdr_frame_detector_0 = lora_sdr.frame_detector(samp_rate,bw,sf)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/martyn/loudify/src/loudify/test/test_frame', False)
-        self.blocks_file_sink_0.set_unbuffered(False)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.lora_sdr_frame_detector_0, 0))
+        self.connect((self.lora_sdr_frame_detector_0, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_throttle_0, 0))
 
 
