@@ -12,7 +12,7 @@
 #define INCLUDED_LORA_SDR_DATA_SOURCE_SIM_IMPL_H
 
 #include <lora_sdr/data_source_sim.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 
 namespace gr {
 namespace lora_sdr {

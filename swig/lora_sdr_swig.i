@@ -29,6 +29,7 @@
 #include "lora_sdr/hier_rx.h"
 #include "lora_sdr/hier_tx.h"
 #include "lora_sdr/data_source_sim.h"
+#include "lora_sdr/frame_detector.h"
 %}
 
 
@@ -74,3 +75,5 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, hier_rx);
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, hier_tx);
 %include "lora_sdr/data_source_sim.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, data_source_sim);
+%include "lora_sdr/frame_detector.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_detector);

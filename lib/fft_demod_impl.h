@@ -8,7 +8,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/fft_demod.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <volk/volk.h>
 namespace gr {
 namespace lora_sdr {

@@ -13,7 +13,7 @@
 
 #include "data_source_sim_impl.h"
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <unistd.h>
 
 // Fix for libboost > 1.75
@@ -123,11 +123,6 @@ int data_source_sim_impl::general_work(int noutput_items,
         // take input string
         str = m_string_input;
       }
-      // TODO fix +1 bug ?
-// #ifdef GRLORA_DEBUG
-//       // output data string
-//       GR_LOG_DEBUG(this->d_logger, "DEBUG:Input string:" + str);
-// #endif
       // send string over pmt port "msg" to neighboors
       message_port_pub(pmt::intern("msg"), pmt::mp(str));
       // print once in every 50 frames information about the number of frames
@@ -143,17 +138,12 @@ int data_source_sim_impl::general_work(int noutput_items,
     }
     // if the number of frames is the same -> all frames are sent
     if (frame_cnt > m_n_frames) {
-      // GR_LOG_INFO(this->d_logger,
-      //             "INFO:Done with generating data packets!, generated : " +
-      //                 std::to_string(m_n_frames) + " frames");
-
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
       // if the multi control uses is not used, send done to the rest of the
       // chain
       if (m_multi_control == true) {
         add_item_tag(0, nitems_written(0), pmt::intern("status"),
                      pmt::intern("done"));
-
       } else {
         m_wait = true;
       }
@@ -170,6 +160,9 @@ int data_source_sim_impl::general_work(int noutput_items,
   }
   if (m_finished == true) {
     return WORK_DONE;
+  }
+  else{
+    return 0;
   }
 }
 

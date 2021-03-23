@@ -6,7 +6,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/frame_sync.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <volk/volk.h>
 extern "C" {
 #include "kiss_fft.h"
@@ -341,22 +341,6 @@ private:
    */
   void estimate_STO();
 
-  /**
-   * @brief Function that gets the symbol from the received samples
-   *
-   * @param samples : the complex samples 
-   * @param ref_chirp The reference chirp to use to dechirp the lora symbol.
-   * @return uint32_t
-   */
-  uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp);
-
-  /**
-   * @brief Determine the energy of a symbol.
-   *
-   * @param samples The complex symbol to analyse.
-   * @return float
-   */
-  float determine_energy(const gr_complex *samples);
 
   /**
    * @brief Handles the error message coming from the header decoding.

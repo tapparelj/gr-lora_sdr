@@ -5,8 +5,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/modulate.h>
-
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 
 namespace gr {
 namespace lora_sdr {

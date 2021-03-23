@@ -1,7 +1,7 @@
 
 #include "hamming_dec_impl.h"
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 //Fix for libboost > 1.75
 #include <boost/bind/placeholders.hpp>
 

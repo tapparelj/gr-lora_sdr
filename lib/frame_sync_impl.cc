@@ -1,3 +1,4 @@
+#include "helpers.h"
 #include "frame_sync_impl.h"
 #include <gnuradio/io_signature.h>
 // Fix for libboost > 1.75
@@ -322,56 +323,6 @@ void frame_sync_impl::estimate_STO() {
 }
 
 /**
- * @brief Function that gets the symbol from the received samples
- *
- * @param samples : the complex samples
- * @param ref_chirp The reference chirp to use to dechirp the lora symbol.
- * @return uint32_t
- */
-uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples,
-                                         gr_complex *ref_chirp) {
-  double sig_en = 0;
-  float fft_mag[m_number_of_bins];
-  std::vector<gr_complex> dechirped(m_number_of_bins);
-
-  kiss_fft_cfg cfg = kiss_fft_alloc(m_samples_per_symbol, 0, 0, 0);
-
-  // Multiply with ideal downchirp
-  volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp,
-                             m_samples_per_symbol);
-
-  for (int i = 0; i < m_samples_per_symbol; i++) {
-    cx_in[i].r = dechirped[i].real();
-    cx_in[i].i = dechirped[i].imag();
-  }
-  // do the FFT
-  kiss_fft(cfg, cx_in, cx_out);
-
-  // Get magnitude
-  for (uint32_t i = 0u; i < m_number_of_bins; i++) {
-    fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-    sig_en += fft_mag[i];
-  }
-  free(cfg);
-  // Return argmax here
-  return ((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag));
-}
-
-/**
- * @brief Determine the energy of a symbol.
- *
- * @param samples the complex symbol to analyse.
- * @return float
- */
-float frame_sync_impl::determine_energy(const gr_complex *samples) {
-  float magsq_chirp[m_samples_per_symbol];
-  float energy_chirp = 0;
-  volk_32fc_magnitude_squared_32f(magsq_chirp, samples, m_samples_per_symbol);
-  volk_32f_accumulator_s32f(&energy_chirp, magsq_chirp, m_samples_per_symbol);
-  return energy_chirp;
-}
-
-/**
  * @brief Function that handles the coding rate from the header decoding stage
  *
  * @param cr : coding rate
@@ -498,7 +449,7 @@ int frame_sync_impl::general_work(int noutput_items,
        *
        */
       // get value of symbol
-      bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+      bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0], m_number_of_bins, m_samples_per_symbol, cx_in, cx_out);
 
       // First search for consecutive symbols with symbol {s+1,s,s-1}
       if (std::abs(bin_idx_new - bin_idx) <= 1) {
@@ -570,7 +521,7 @@ int frame_sync_impl::general_work(int noutput_items,
       volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0],
                                  &CFO_frac_correc[0], m_samples_per_symbol);
 
-      bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+      bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0],m_number_of_bins, m_samples_per_symbol,cx_in,cx_out);
       //
       switch (symbol_cnt) {
         /**
@@ -640,7 +591,7 @@ int frame_sync_impl::general_work(int noutput_items,
          *
          */
         // get value of the preamble downchirp
-        down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
+        down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0],m_number_of_bins, m_samples_per_symbol, cx_in, cx_out);
         symbol_cnt = QUARTER_DOWN;
         break;
       }
