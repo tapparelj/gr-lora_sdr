@@ -135,7 +135,7 @@
 #
 #   The "Corresponding Source" for a work in object code form means all
 # the source code needed to generate, install, and (for an executable
-# work) run the object code and to modify the work, including scripts to
+# work) run the object code and to modify the work, including utils to
 # control those activities.  However, it does not include the work's
 # System Libraries, or general-purpose tools or generally available free
 # programs which are used unmodified in performing those activities but
