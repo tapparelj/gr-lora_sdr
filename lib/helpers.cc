@@ -114,6 +114,7 @@ void build_ref_chirps(gr_complex *upchirp, gr_complex *downchirp, uint8_t sf) {
   double N = (1 << sf);
   for (uint n = 0; n < N; n++) {
     // the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
+    //gr_expj is the phase of the angle of the complex exponential and returns and real and imag part by gr_sincosf(phase, &t_imag, &t_real);
     upchirp[n] = gr_complex(0.9f, 0.0f) *
                  gr_expj(2.0 * M_PI * (n * n / (2 * N) - 0.5 * n));
     downchirp[n] = gr_complex(0.9f, 0.0f) *

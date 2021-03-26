@@ -71,10 +71,10 @@ class zmq_test(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sf = sf = 7
+        self.sf = sf = 9
         self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 100
+        self.n_frame = n_frame = 1
         self.multi_control = multi_control = True
         self.mult_const = mult_const = 1
         self.mean = mean = 200
@@ -105,14 +105,18 @@ class zmq_test(gr.top_block, Qt.QWidget):
 
         self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win)
         self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, mean, True)
+        self.lora_sdr_frame_detector_0 = lora_sdr.frame_detector(samp_rate,bw,sf)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_throttle_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.lora_sdr_frame_detector_0, 0))
+        self.connect((self.lora_sdr_frame_detector_0, 0), (self.blocks_null_sink_0, 0))
+        self.connect((self.lora_sdr_frame_detector_0, 0), (self.qtgui_sink_x_0, 0))
         self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_throttle_0, 0))
 
 

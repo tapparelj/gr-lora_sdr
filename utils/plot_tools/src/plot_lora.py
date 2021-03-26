@@ -1,13 +1,10 @@
-import numpy
-from gnuradio import gr
-
 try:
     from pylab import Button, connect, draw, figure, figtext, get_current_fig_manager, mlab, show, rcParams, ceil
 except ImportError:
     print("Please install Matplotlib to run this script (http://matplotlib.sourceforge.net/)")
     raise SystemExit(1)
 import numpy as np
-
+import numpy
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio.plot_data import datatype_lookup
@@ -19,8 +16,12 @@ class plot_lora(object):
         self.block_length = options.block
         self.start = options.start
         self.sample_rate = options.sample_rate
+        self.bw = options.sample_rate
         self.psdfftsize = options.psd_size
         self.specfftsize = options.spec_size
+        self.sf = options.spreading_factor
+        self.number_of_bins = 1 << self.sf
+        self.samples_per_symbol = self.sample_rate * self.number_of_bins / self.bw
 
         self.datatype = datatype
         if self.datatype is None:
@@ -39,7 +40,7 @@ class plot_lora(object):
         rcParams['xtick.labelsize'] = self.axis_font_size
         rcParams['ytick.labelsize'] = self.axis_font_size
 
-        self.text_file = figtext(0.10, 0.95, ("File: %s" % filename),
+        self.text_file = figtext(0.10, 0.95, ("File: %s" % filename) + (" SF: %s" % self.sf),
                                  weight="heavy", size=self.text_size)
         self.text_file_pos = figtext(0.10, 0.92, "Position: ",
                                      weight="heavy", size=self.text_size)
@@ -77,8 +78,8 @@ class plot_lora(object):
                 tstep = 1.0 / self.sample_rate
                 # self.time = numpy.array([tstep*(self.position + i) for i in range(len(self.iq))])
                 self.time = numpy.array([tstep * (i) for i in range(len(self.iq))])
-
                 self.iq_psd, self.freq = self.dopsd(self.iq)
+                self.downchirped = self.downchrip()
                 return True
             else:
                 print("End of File")
@@ -102,6 +103,8 @@ class plot_lora(object):
         iqdims = [0.075, 0.2, 0.4, 0.6]
         psddims = [0.575, 0.2, 0.4, 0.6]
         specdims = [0.575, 0.2, 0.4, 0.6]
+        # get data set time etc
+        r = self.get_data()
 
         # Subplot for spectrogram plot
         self.sp_spec = self.fig.add_subplot(2, 2, 1)
@@ -111,16 +114,18 @@ class plot_lora(object):
         self.draw_spec(self.time, self.iq)
 
         # Subplot for PSD plot
-        self.sp_psd = self.fig.add_subplot(2, 2, 2)
+        self.sp_psd = self.fig.add_subplot(2, 2, 3)
         self.sp_psd.set_title(("PSD"), fontsize=self.title_font_size, fontweight="bold")
         self.sp_psd.set_xlabel("Frequency (Hz)", fontsize=self.label_font_size, fontweight="bold")
         self.sp_psd.set_ylabel("Power Spectrum (dBm)", fontsize=self.label_font_size, fontweight="bold")
 
-        r = self.get_data()
-
-        # self.plot_iq = self.sp_iq.plot([], 'bo-')  # make plot for reals
-        # self.plot_iq += self.sp_iq.plot([], 'ro-')  # make plot for imags
-        # self.draw_time(self.time, self.iq)         # draw the plot
+        #run dechirped signal
+        self.downchrip()
+        self.sp_spec_dechirped = self.fig.add_subplot(2, 2, 2)
+        self.sp_spec_dechirped.set_title(("Spectrogram demod"), fontsize=self.title_font_size, fontweight="bold")
+        self.sp_spec_dechirped.set_xlabel("Time (s)", fontsize=self.label_font_size, fontweight="bold")
+        self.sp_spec_dechirped.set_ylabel("Frequency (Hz)", fontsize=self.label_font_size, fontweight="bold")
+        self.draw_spec_dechirped(self.time,self.downchirped)
 
         self.plot_psd = self.sp_psd.plot([], 'b')  # make plot for PSD
         self.draw_psd(self.freq, self.iq_psd)  # draw the plot
@@ -129,7 +134,30 @@ class plot_lora(object):
 
         draw()
 
-    def downchrip(self, t):
+    def downchrip(self):
+        N = 1 << self.sf
+        downchirp = np.zeros((2, 1), dtype=np.complex64)
+        N_iq = self.iq.size
+
+        for i in range(0,N_iq,N):
+
+            for n in range(0, N):
+                #calculate phase
+                exp = np.exp(-2 * np.pi * (n * n / (2 * N) - 0.5 * n))
+                #calculate real and imag part
+                r = np.cos(exp)
+                i = np.sin(exp)*1j
+                downchirp = np.vstack([downchirp, (r+i)])
+
+            #delte initial zeros
+            downchirp = numpy.delete(downchirp, (0), axis=0)
+            downchirp = numpy.delete(downchirp, (0), axis=0)
+
+        #to be sure resize vector
+        downchirp = np.resize(downchirp,N_iq)
+        #set downchirped values
+        self.downchirped = np.multiply(downchirp,self.iq)
+        print("test")
 
     def draw_time(self, t, iq):
         self.sp_spec.set_xlim(t.min(), t.max())
@@ -147,6 +175,14 @@ class plot_lora(object):
                               window=lambda d: d * winfunc(self.specfftsize),
                               noverlap=overlap, xextent=[t.min(), t.max()])
 
+    def draw_spec_dechirped(self, t, s):
+        overlap = self.specfftsize / 4
+        winfunc = numpy.blackman
+        self.sp_spec_dechirped.clear()
+        self.sp_spec_dechirped.specgram(s, self.specfftsize, self.sample_rate,
+                              window=lambda d: d * winfunc(self.specfftsize),
+                              noverlap=overlap, xextent=[t.min(), t.max()])
+
     def draw_demod(self, t, s):
         # demod = gr.ex
         overlap = self.specfftsize / 4
@@ -160,6 +196,8 @@ class plot_lora(object):
         self.draw_time(self.time, self.iq)
         self.draw_psd(self.freq, self.iq_psd)
         self.draw_spec(self.time, self.iq)
+        self.downchrip()
+        self.draw_spec_dechirped(self.time,self.downchirped)
         self.xlim = numpy.array(self.sp_spec.get_xlim())  # so zoom doesn't get called
 
         draw()

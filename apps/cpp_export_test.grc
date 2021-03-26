@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '100'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '9'
   states:
     bus_sink: false
     bus_source: false
@@ -208,9 +208,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [754, 297]
+    coordinate: [801, 294]
     rotation: 0
-    state: disabled
+    state: true
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -266,7 +266,7 @@ blocks:
     bus_structure: null
     coordinate: [548, 277]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -342,17 +342,47 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [511, 144]
+    coordinate: [874, 167]
     rotation: 0
-    state: true
+    state: enabled
+- name: qtgui_sink_x_0_0
+  id: qtgui_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: samp_rate
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    plotconst: 'True'
+    plotfreq: 'True'
+    plottime: 'True'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'False'
+    type: complex
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [528, 143]
+    rotation: 0
+    state: disabled
 
 connections:
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
 - [blocks_throttle_0, '0', lora_sdr_frame_detector_0, '0']
-- [blocks_throttle_0, '0', qtgui_sink_x_0, '0']
+- [blocks_throttle_0, '0', qtgui_sink_x_0_0, '0']
 - [interp_fir_filter_xxx_0, '0', blocks_file_sink_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_hier_rx_0, '0']
 - [lora_sdr_frame_detector_0, '0', blocks_null_sink_0, '0']
+- [lora_sdr_frame_detector_0, '0', qtgui_sink_x_0, '0']
 - [lora_sdr_hier_tx_0, '0', blocks_throttle_0, '0']
 
 metadata:

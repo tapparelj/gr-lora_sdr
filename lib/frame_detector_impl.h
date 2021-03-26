@@ -107,10 +107,15 @@ private:
    */
   uint32_t n_up;
 
+  int m_i;
+
 public:
   /**
    * @brief Construct a new frame detector impl object
-   *
+   * 
+   * @param samp_rate : sampling rate
+   * @param bandwidth : bandwith
+   * @param sf : spreading factor
    */
   frame_detector_impl(float samp_rate, uint32_t bandwidth, uint8_t sf);
 

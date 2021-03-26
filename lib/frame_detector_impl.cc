@@ -25,8 +25,11 @@ frame_detector::sptr frame_detector::make(float samp_rate, uint32_t bandwidth,
 }
 
 /**
- * @brief Construct a new frame detector impl::frame detector impl object
+ * @brief Construct a new frame detector impl object
  *
+ * @param samp_rate : sampling rate
+ * @param bandwidth : bandwith
+ * @param sf : spreading factor
  */
 frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
                                          uint8_t sf)
@@ -55,6 +58,7 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   // initialize values of variables
   bin_idx = 0;
   symbol_cnt = 0;
+  m_i = 0;
   // set inital state to find preamble
   m_state = FIND_PREAMBLE;
 }
@@ -93,14 +97,26 @@ int frame_detector_impl::general_work(int noutput_items,
                                       gr_vector_void_star &output_items) {
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
-  switch (m_state) {
-  case FIND_PREAMBLE: 
-    noutput_items = 0;
-    // get value of symbol
+  gr_vector_void_star test;
+  gr_complex *mem = (gr_complex *)&test;
+  int mem_n = 0;
+  // gr_complex zero = gr_complex(0,0);
+  // for (int i = 0; i < noutput_items; i++) {
+  //     if(in[i] == zero){
+  //       continue;
+  //     }
+  //     else{
+  //       mem[m_i] = in[i];
+  //       std::cout << in[i] << std::endl;
+  //       std::cout << mem[m_i] << std::endl;
+  //     }
+
+  // }
+  consume_each(noutput_items);
+  if (m_state == FIND_PREAMBLE) {
     bin_idx_new = get_symbol_val(in, &m_downchirp[0], m_number_of_bins,
                                  m_samples_per_symbol, cx_in, cx_out);
-
-    // calulate diffrence between this value and previous value
+    // calculate difference between this value and previous value
     if ((bin_idx_new - bin_idx) <= 1) {
       // increase the number of symbols counted
       symbol_cnt++;
@@ -110,34 +126,59 @@ int frame_detector_impl::general_work(int noutput_items,
       // set symbol value to be 1
       symbol_cnt = 1;
     }
-
+    int nR_up = (int)(n_up - 1);
     // if we have n_up-1 symbols counted we have found the preamble
-    if (symbol_cnt == (int)(n_up - 1)) {
+    if (symbol_cnt == nR_up) {
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
-      noutput_items = ninput_items[0];
-    } 
-    // m_state = FIND_END_FRAME;
-    break;
-  
-  case FIND_END_FRAME: {
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Going to find end of frame");
-    m_state = FIND_PREAMBLE;
-    break;
-  }
-
-  default: {
+      std::cout << symbol_cnt << std::endl;
+      std::cout << m_number_of_bins << std::endl;
+      std::cout << m_samples_per_symbol << std::endl;
+      std::cout << "TEst3" << std::endl;
+      int out_i = 0;
+      int begin = (int)((n_up - 1)*m_samples_per_symbol);
+      int end = (int)noutput_items;
+      std::cout << begin << std::endl;
+      std::cout << end << std::endl;
+      for (int i = begin; i < end; i++) {
+        std::cout << "in for loop" << std::endl;
+        out[out_i] = in[i];
+        std::cout << in[i] << std::endl;
+        std::cout << out[out_i] << std::endl;
+        out_i++;
+      }
+      // return noutput_items - ((n_up - 1)*m_samples_per_symbol);
+    }
+    
+  } else {
     GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
-    break;
+    return 0;
   }
-  }
+  // switch (m_state) {
+  // case FIND_PREAMBLE:
+  //   // get value of symbol
+
+  //   // m_state = FIND_END_FRAME;
+  //   //   break;
+
+  //   // case FIND_END_FRAME: {
+  //   //   GR_LOG_DEBUG(this->d_logger, "DEBUG:Going to find end of frame");
+  //   //   m_state = FIND_PREAMBLE;
+  //   //   break;
+  //   // }
+
+  // default: {
+  //   GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
+  //   break;
+  // }
+  // }
 
   // Do <+signal processing+>
   // Tell runtime system how many input items we consumed on
   // each input stream.
-  consume_each(noutput_items);
+  
 
   // Tell runtime system how many output items we produced.
-  return noutput_items;
+  // return noutput_items;
 }
 
 } /* namespace lora_sdr */
