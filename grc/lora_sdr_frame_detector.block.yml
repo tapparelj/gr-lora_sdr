@@ -1,10 +1,16 @@
 id: lora_sdr_frame_detector
 label: Frame detector
 category: '[LoRa]/CRAN'
+flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
   make: lora_sdr.frame_detector(${samp_rate},${bw},${sf})
+
+cpp_templates:
+  includes: ['#include <lora_sdr/frame_detector.h>']
+  declarations: 'lora_sdr::frame_detector::sptr ${id};'
+  make: 'this->${id} = lora_sdr::frame_detector::make(${samp_rate},${bw},${sf});'
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -39,6 +45,8 @@ outputs:
 
 assert:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+
+documentation: "Finds and outputs one LoRa frame TESt"
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

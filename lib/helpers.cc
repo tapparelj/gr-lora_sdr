@@ -19,10 +19,14 @@ namespace lora_sdr {
 
 /**
  * @brief Function that gets the symbol from the received samples
- *
+ * 
  * @param samples : the complex samples
- * @param ref_chirp The reference chirp to use to dechirp the lora symbol.
- * @return uint32_t
+ * @param ref_chirp : the reference chirp to use to dechirp the lora symbol.
+ * @param m_number_of_bins : number of bings
+ * @param m_samples_per_symbol : number of samples per LoRa symbol
+ * @param cx_in : fft in
+ * @param cx_out : fft out
+ * @return uint32_t 
  */
 uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
                         uint32_t m_number_of_bins,
@@ -57,9 +61,10 @@ uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
 
 /**
  * @brief Determine the energy of a symbol.
- *
- * @param samples the complex symbol to analyse.
- * @return float
+ * 
+ * @param samples The complex symbol to analyse.
+ * @param m_samples_per_symbol : number of samples per LoRa symbol
+ * @return float 
  */
 float determine_energy(const gr_complex *samples,
                        uint32_t m_samples_per_symbol) {
