@@ -8,11 +8,11 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: no_gui
+    generate_options: qt_gui
     hier_block_src_path: '.:'
     id: zmq_test
     max_nouts: '0'
-    output_language: cpp
+    output_language: python
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
@@ -194,23 +194,6 @@ blocks:
     coordinate: [1429, 598]
     rotation: 0
     state: disabled
-- name: blocks_null_sink_0
-  id: blocks_null_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_sink: '[[0,],]'
-    comment: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [961, 362]
-    rotation: 0
-    state: true
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -256,8 +239,8 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
+    maxoutbuf: '28672'
+    minoutbuf: '28672'
     samp_rate: samp_rate
     sf: sf
   states:
@@ -371,18 +354,17 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [833, 142]
+    coordinate: [892, 170]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
 - [blocks_throttle_0, '0', lora_sdr_frame_detector_0, '0']
-- [blocks_throttle_0, '0', qtgui_sink_x_0_0, '0']
 - [interp_fir_filter_xxx_0, '0', blocks_file_sink_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_hier_rx_0, '0']
-- [lora_sdr_frame_detector_0, '0', blocks_null_sink_0, '0']
 - [lora_sdr_frame_detector_0, '0', qtgui_sink_x_0, '0']
+- [lora_sdr_frame_detector_0, '0', qtgui_sink_x_0_0, '0']
 - [lora_sdr_hier_tx_0, '0', blocks_throttle_0, '0']
 
 metadata:

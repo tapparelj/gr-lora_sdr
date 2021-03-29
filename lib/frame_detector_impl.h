@@ -26,7 +26,7 @@ private:
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, FIND_END_FRAME};
+  enum State { FIND_PREAMBLE, SEND_FRAMES ,FIND_END_FRAME};
 
 
   /**
@@ -107,7 +107,7 @@ private:
    */
   uint32_t n_up;
 
-  int m_i;
+  std::vector<gr_complex> mem_vec;
 
 public:
   /**

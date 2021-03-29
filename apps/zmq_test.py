@@ -87,7 +87,7 @@ class zmq_test(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self.qtgui_sink_x_0 = qtgui.sink_c(
+        self.qtgui_sink_x_0_0 = qtgui.sink_c(
             1024, #fftsize
             firdes.WIN_BLACKMAN_hARRIS, #wintype
             0, #fc
@@ -98,16 +98,17 @@ class zmq_test(gr.top_block, Qt.QWidget):
             True, #plottime
             True #plotconst
         )
-        self.qtgui_sink_x_0.set_update_time(1.0/10)
-        self._qtgui_sink_x_0_win = sip.wrapinstance(self.qtgui_sink_x_0.pyqwidget(), Qt.QWidget)
+        self.qtgui_sink_x_0_0.set_update_time(1.0/10)
+        self._qtgui_sink_x_0_0_win = sip.wrapinstance(self.qtgui_sink_x_0_0.pyqwidget(), Qt.QWidget)
 
-        self.qtgui_sink_x_0.enable_rf_freq(False)
+        self.qtgui_sink_x_0_0.enable_rf_freq(False)
 
-        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_0_win)
         self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, mean, True)
         self.lora_sdr_frame_detector_0 = lora_sdr.frame_detector(samp_rate,bw,sf)
+        self.lora_sdr_frame_detector_0.set_min_output_buffer(28672)
+        self.lora_sdr_frame_detector_0.set_max_output_buffer(28672)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
@@ -115,8 +116,7 @@ class zmq_test(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.blocks_throttle_0, 0), (self.lora_sdr_frame_detector_0, 0))
-        self.connect((self.lora_sdr_frame_detector_0, 0), (self.blocks_null_sink_0, 0))
-        self.connect((self.lora_sdr_frame_detector_0, 0), (self.qtgui_sink_x_0, 0))
+        self.connect((self.lora_sdr_frame_detector_0, 0), (self.qtgui_sink_x_0_0, 0))
         self.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_throttle_0, 0))
 
 
@@ -137,7 +137,7 @@ class zmq_test(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.blocks_throttle_0.set_sample_rate(self.samp_rate)
-        self.qtgui_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.qtgui_sink_x_0_0.set_frequency_range(0, self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
