@@ -3,6 +3,7 @@
 id: lora_sdr_err_measures
 label: Err measures
 category: '[LoRa]/Rx'
+flags: [python, cpp]
 
 inputs:
 -   domain: message
@@ -18,6 +19,11 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.err_measures()
+
+cpp_templates: 
+     includes: ['#include <lora_sdr/err_measures.h>'] 
+     declarations: 'lora_sdr::err_measures::sptr ${id};' 
+     make: 'this->${id} = lora_sdr::err_measures::make();' 
 
 documentation: |-
     Compare two strings and write the number of bit difference to matlab/measurements/errx.txt as well as lost packets.

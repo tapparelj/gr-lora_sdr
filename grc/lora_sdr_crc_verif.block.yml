@@ -3,6 +3,7 @@
 id: lora_sdr_crc_verif
 label: Crc verif
 category: '[LoRa]/Rx'
+flags: [python, cpp]
 
 inputs:
 -   domain: stream
@@ -26,6 +27,11 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.crc_verif()
+
+cpp_templates: 
+     includes: ['#include <lora_sdr/crc_verif.h>'] 
+     declarations: 'lora_sdr::crc_verif::sptr ${id};' 
+     make: 'this->${id} = lora_sdr::crc_verif::make();' 
 
 documentation: |-
     Calculate the CRC of the received data and compare it with the received CRC.

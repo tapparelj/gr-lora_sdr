@@ -3,6 +3,7 @@
 id: lora_sdr_data_source
 label: Data source
 category: '[LoRa]/Tx'
+flags: [python, cpp]
 
 parameters:
 -   id: pay_len
@@ -28,6 +29,13 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.data_source(${pay_len}, ${n_frames}, ${string_input})
+
+cpp_templates: 
+     includes: ['#include <lora_sdr/data_source.h>'] 
+     declarations: 'lora_sdr::data_source::sptr ${id};' 
+     make: 'this->${id} = lora_sdr::data_source::make(${pay_len}, ${n_frames}, ${string_input});' 
+
+
 
 documentation: |-
     Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)
