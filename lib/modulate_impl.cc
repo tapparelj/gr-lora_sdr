@@ -46,6 +46,7 @@ modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
                   boost::bind(&modulate_impl::msg_handler, this, _1));
   message_port_register_in(pmt::mp("ctrl_in"));
   set_tag_propagation_policy(TPP_ALL_TO_ALL);
+  m_samples_send = 0;
 }
 
 /**
@@ -162,6 +163,10 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   //   GR_LOG_DEBUG(this->d_logger,
   //                "Output Tx:" + complex_vector_2_string(&out[0], N));
   // #endif
+
+    m_samples_send = m_samples_send + noutput_items;
+  std::cout << "Samples send:" << std::endl;
+  std::cout << m_samples_send << std::endl;
 
   return (noutput_items);
 }
