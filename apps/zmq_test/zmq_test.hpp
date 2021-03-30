@@ -11,6 +11,7 @@ GNU Radio version: 3.8.2.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
+#include <gnuradio/blocks/add_blk.h>
 #include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/blocks/throttle.h>
 #include <lora_sdr/frame_detector.h>
@@ -27,23 +28,26 @@ class zmq_test {
 private:
 
 
+    lora_sdr::hier_tx::sptr lora_sdr_hier_tx_0_0;
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_0;
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_0;
+    blocks::throttle::sptr blocks_throttle_0_0;
     blocks::throttle::sptr blocks_throttle_0;
     blocks::null_sink::sptr blocks_null_sink_0;
+    blocks::add_cc::sptr blocks_add_xx_0;
 
 
 // Variables:
     int sf = 9;
     int samp_rate = 250000;
     int pay_len = 64;
-    int n_frame = 1;
+    int n_frame = 50;
     bool multi_control = true;
     int mult_const = 1;
-    int mean = 200;
+    int mean = 800;
     bool impl_head = true;
     bool has_crc = false;
-    int frame_period = 200;
+    int frame_period = 800;
     int cr = 4;
     int bw = 250000;
 

@@ -11,6 +11,7 @@
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
 
 #include <lora_sdr/frame_detector.h>
+
 extern "C" {
 #include "kiss_fft.h"
 }
@@ -108,6 +109,9 @@ private:
   uint32_t n_up;
 
   std::vector<gr_complex> mem_vec;
+
+
+  uint32_t m_threshold;
 
 public:
   /**

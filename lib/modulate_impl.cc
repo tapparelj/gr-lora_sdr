@@ -46,7 +46,6 @@ modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
                   boost::bind(&modulate_impl::msg_handler, this, _1));
   message_port_register_in(pmt::mp("ctrl_in"));
   set_tag_propagation_policy(TPP_ALL_TO_ALL);
-  m_samples_send = 0;
 }
 
 /**
@@ -90,21 +89,15 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   // cast input and output to the right data type
   const uint32_t *in = (const uint32_t *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
+  //if we need to create zeros (because we need padding)
   if (m_create_zeros == true) {
     for (int i = 0; i < m_samples_per_symbol; i++) {
       out[i] = gr_complex(0,0);
     }
-    // std::cout << "Adding zeros" << std::endl;
-    // memcpy(&out[0], 0, m_samples_per_symbol * sizeof(gr_complex));
-    // unsigned char val = 0;
-    // int *zero = (int *)val;
-    // memset(&out[0], *zero, m_samples_per_symbol * sizeof(gr_complex));
     noutput_items = m_samples_per_symbol;
     consume_each(ninput_items[0]);
   }
-  // std::cout << "Running modulate" << std::endl;
   std::vector<tag_t> return_tag;
-  // std::cout << nitems_read(0) << std::endl;
   get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 100);
   if (return_tag.size() > 0) {
     consume_each(ninput_items[0]);
@@ -163,11 +156,6 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   //   GR_LOG_DEBUG(this->d_logger,
   //                "Output Tx:" + complex_vector_2_string(&out[0], N));
   // #endif
-
-    m_samples_send = m_samples_send + noutput_items;
-  std::cout << "Samples send:" << std::endl;
-  std::cout << m_samples_send << std::endl;
-
   return (noutput_items);
 }
 

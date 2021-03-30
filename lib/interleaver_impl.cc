@@ -140,7 +140,6 @@ int interleaver_impl::general_work(int noutput_items,
   // // std::cout<<std::endl;
   // #endif
   consume_each(ninput_items[0] > sf_app ? sf_app : ninput_items[0]);
-
   return ppm;
 }
 

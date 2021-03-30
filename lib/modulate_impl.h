@@ -76,7 +76,6 @@ private:
 
   bool m_create_zeros;
 
-  int m_samples_send;
 
   /**
    * @brief Gnuradio function that handles the PMT message

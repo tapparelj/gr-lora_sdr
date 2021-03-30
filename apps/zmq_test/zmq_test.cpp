@@ -18,10 +18,16 @@ zmq_test::zmq_test () {
 
 // Blocks:
     {
+        this->lora_sdr_hier_tx_0_0 = lora_sdr::hier_tx::make(pay_len, n_frame, "sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC", cr, sf, impl_head,has_crc, samp_rate, bw, 200, false);
+    }
+    {
         this->lora_sdr_hier_tx_0 = lora_sdr::hier_tx::make(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, mean, true);
     }
     {
         this->lora_sdr_frame_detector_0 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
+    }
+    {
+        this->blocks_throttle_0_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate, true);
     }
     {
         this->blocks_throttle_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate, true);
@@ -29,11 +35,17 @@ zmq_test::zmq_test () {
     {
         this->blocks_null_sink_0 = blocks::null_sink::make(sizeof(gr_complex)*1);
     }
+    {
+        this->blocks_add_xx_0 = blocks::add_cc::make(1);
+    }
 
 // Connections:
-    this->tb->hier_block2::connect(this->blocks_throttle_0, 0, this->lora_sdr_frame_detector_0, 0);
+    this->tb->hier_block2::connect(this->blocks_add_xx_0, 0, this->lora_sdr_frame_detector_0, 0);
+    this->tb->hier_block2::connect(this->blocks_throttle_0, 0, this->blocks_add_xx_0, 0);
+    this->tb->hier_block2::connect(this->blocks_throttle_0_0, 0, this->blocks_add_xx_0, 1);
     this->tb->hier_block2::connect(this->lora_sdr_frame_detector_0, 0, this->blocks_null_sink_0, 0);
     this->tb->hier_block2::connect(this->lora_sdr_hier_tx_0, 0, this->blocks_throttle_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_0_0, 0, this->blocks_throttle_0_0, 0);
 }
 
 zmq_test::~zmq_test () {
@@ -55,6 +67,7 @@ int zmq_test::get_samp_rate () const {
 void zmq_test::set_samp_rate (int samp_rate) {
     this->samp_rate = samp_rate;
     this->blocks_throttle_0->set_sample_rate(this->samp_rate);
+    this->blocks_throttle_0_0->set_sample_rate(this->samp_rate);
 }
 
 int zmq_test::get_pay_len () const {

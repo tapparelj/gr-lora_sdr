@@ -168,12 +168,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '9'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [426, 3]
+    coordinate: [423, 5]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -213,7 +213,7 @@ blocks:
     bus_structure: null
     coordinate: [535, 886]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -270,9 +270,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [747, 880]
+    coordinate: [962, 885]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_add_crc_0
   id: lora_sdr_add_crc
   parameters:
@@ -375,6 +375,24 @@ blocks:
     coordinate: [1629, 422]
     rotation: 180
     state: disabled
+- name: lora_sdr_frame_detector_0
+  id: lora_sdr_frame_detector
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    sf: sf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 868]
+    rotation: 0
+    state: true
 - name: lora_sdr_frame_sync_0
   id: lora_sdr_frame_sync
   parameters:
@@ -514,9 +532,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1030, 840]
+    coordinate: [1274, 838]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_tx_0
   id: lora_sdr_hier_tx
   parameters:
@@ -542,7 +560,7 @@ blocks:
     bus_structure: null
     coordinate: [240, 811]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -597,7 +615,7 @@ blocks:
 
 connections:
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0, '0']
-- [blocks_throttle_0_0, '0', interp_fir_filter_xxx_0_0, '0']
+- [blocks_throttle_0_0, '0', lora_sdr_frame_detector_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_frame_sync_0, '0']
 - [interp_fir_filter_xxx_0_0, '0', lora_sdr_hier_rx_0_1_0_0_1_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
@@ -610,6 +628,7 @@ connections:
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_enc_0, '0']
+- [lora_sdr_frame_detector_0, '0', interp_fir_filter_xxx_0_0, '0']
 - [lora_sdr_frame_sync_0, '0', lora_sdr_fft_demod_0, '0']
 - [lora_sdr_frame_sync_0, new_frame, lora_sdr_deinterleaver_0, new_frame]
 - [lora_sdr_frame_sync_0, new_frame, lora_sdr_dewhitening_0, new_frame]

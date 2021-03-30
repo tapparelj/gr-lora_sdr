@@ -58,6 +58,7 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   // initialize values of variables
   bin_idx = 0;
   symbol_cnt = 0;
+  m_threshold = 2000;
   // set inital state to find preamble
   m_state = FIND_PREAMBLE;
 }
@@ -99,82 +100,120 @@ int frame_detector_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
-  // zero value gr_complex
-  gr_complex zero = gr_complex(0, 0);
-  // copy input to memory vector for later use.
-  for (int i = 0; i < noutput_items; i++) {
-    gr_complex temp = in[i];
-    // if input is zero do nut copy onto memory vector (limits memory usage)
-    if (temp != zero) {
-      mem_vec.push_back(temp);
-    }
-  }
-  //consume input enteties
+
+  //consume input entities
   consume_each(noutput_items);
   //if we need to find the preamble
-  if (m_state == FIND_PREAMBLE) {
-      //get symbol value of input samples
-    bin_idx_new = get_symbol_val(in, &m_downchirp[0], m_number_of_bins,
-                                 m_samples_per_symbol, cx_in, cx_out);
-    // calculate difference between this value and previous value
-    if ((bin_idx_new - bin_idx) <= 1) {
-      // increase the number of symbols counted
-      symbol_cnt++;
-    }
-    // is symbol value are not close to each other start over
-    else {
-      // set symbol value to be 1
-      symbol_cnt = 1;
-    }
-    //number of preambles needed
-    int nR_up = (int)(n_up - 1);
-    // if we have n_up-1 symbols counted we have found the preamble
-    if (symbol_cnt == nR_up) {
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
-      std::cout << symbol_cnt << std::endl;
-      std::cout << m_number_of_bins << std::endl;
-      std::cout << m_samples_per_symbol << std::endl;
-      std::cout << "TEst3" << std::endl;
-      int out_i = 0;
-      int begin = (int)((n_up - 1) * m_samples_per_symbol);
-      int end = (int)noutput_items;
-      int vector_size = mem_vec.size();
-      int testsz = vector_size/m_samples_per_symbol/m_sf/n_up;
-      std::cout << begin << std::endl;
-      std::cout << end << std::endl;
-      // setting state to send the complex values in chucks
-      m_state = SEND_FRAMES;
-    }
-    return 0;
-  }
-  if (m_state == SEND_FRAMES) {
-    // actual sending of samples in split packets
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
-    int end_vec = mem_vec.size();
-    if (mem_vec.size() > noutput_items) {
-      end_vec = noutput_items;
-    }
-    // output the memory vector
-    for (int i = 0; i < end_vec; i++) {
-      out[i] = mem_vec.at(i);
-    }
-    // clear all vector values that are used
-    mem_vec.erase(mem_vec.begin(), mem_vec.begin() + end_vec);
-    // check if vector is empty
-    if (mem_vec.empty()) {
-      m_state = FIND_END_FRAME;
-      return end_vec;
-    }
-    return noutput_items;
-  }
-  if (m_state == FIND_END_FRAME) {
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:finding end of frame");
-    return 0;
-  } else {
-    GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
-    return 0;
-  }
+  switch(m_state) {
+      case FIND_PREAMBLE: {
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Finding preamble");
+          // zero value gr_complex
+          gr_complex zero = gr_complex(0, 0);
 
+          // copy input to memory vector for later use.
+          //TODO maybe use memcpy for this ?
+          for (int i = 0; i < noutput_items; i++) {
+              gr_complex temp = in[i];
+              // if input is zero do nut copy onto memory vector (limits memory usage)
+//              if (temp != zero) {
+//
+//              }
+              mem_vec.push_back(temp);
+          }
+          //get symbol value of input samples
+          bin_idx_new = get_symbol_val(in, &m_downchirp[0], m_number_of_bins,
+                                       m_samples_per_symbol, cx_in, cx_out);
+          // calculate difference between this value and previous value
+          if ((bin_idx_new - bin_idx) <= 1) {
+              // increase the number of symbols counted
+              symbol_cnt++;
+          }
+              // is symbol value are not close to each other start over
+          else {
+              //clear memory vector
+              mem_vec.clear();
+              // set symbol value to be 1
+              symbol_cnt = 1;
+          }
+          //number of preambles needed
+          int nR_up = (int) (n_up - 1);
+          // if we have n_up-1 symbols counted we have found the preamble
+          if (symbol_cnt == nR_up) {
+              GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
+              //set state to be sending packets
+              m_state = SEND_FRAMES;
+              //set symbol count back to zero
+              symbol_cnt = 0;
+          }
+          return 0;
+      }
+      case SEND_FRAMES: {
+          // actual sending of samples in split packets
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
+          //end of vector
+          int end_vec = mem_vec.size();
+          if (mem_vec.size() > noutput_items) {
+              end_vec = noutput_items;
+          }
+          // loop over the output vector and set output to the right values
+          for (int i = 0; i < end_vec; i++) {
+              out[i] = mem_vec.at(i);
+          }
+          // clear all vector values that have been used
+          mem_vec.erase(mem_vec.begin(), mem_vec.begin() + end_vec);
+
+          //check input on power
+          float power = 0;
+          //calculate power of input vector
+          power = determine_energy(in, (uint32_t) noutput_items);
+
+          //if power is below threshold (current input vector has no LoRa frame)
+          if (power < (float) m_threshold) {
+              // check if vector is empty
+              if (mem_vec.empty()) {
+                  //if vector is empty go to finding the preamble
+                  m_state = FIND_PREAMBLE;
+                  return end_vec;
+              }
+              //if not empty return number of input items
+              return noutput_items;
+          } else {
+              // check if vector is empty
+              if (mem_vec.empty()) {
+                  m_state = FIND_END_FRAME;
+                  return end_vec;
+              }
+              return noutput_items;
+          }
+      }
+      case FIND_END_FRAME: {
+          //check input on power
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:finding end of frame");
+          //check input on power
+          float power = 0;
+          //calculate power of input vector
+          power = determine_energy(in, (uint32_t) noutput_items);
+          if (power > m_threshold) {
+              //set output to be the input
+              memcpy(&out[0], &in[0],
+                     noutput_items * sizeof(gr_complex));
+              //return number of items produced
+              return noutput_items;
+          } else {
+              //power is below threshold go back to finding the preamble.
+              m_state = FIND_PREAMBLE;
+              return 0;
+          }
+          if (noutput_items < 10) {
+              m_state = FIND_PREAMBLE;
+              return 0;
+          }
+      }
+      default: {
+          GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
+          return 0;
+      }
+  }
 }
 
 } /* namespace lora_sdr */
