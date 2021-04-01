@@ -2,8 +2,7 @@
 
 id: lora_sdr_add_crc
 label: Add crc
-category: '[LoRa]/Tx'
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 parameters:
 -   id: has_crc
@@ -14,9 +13,7 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: msg
-    optional: true
+
 
 outputs:
 -   domain: stream
@@ -25,11 +22,6 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.add_crc(${has_crc})
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/add_crc.h>'] 
-     declarations: 'lora_sdr::add_crc::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::add_crc::make(${has_crc});' 
 
 documentation: |-
     Append the payload CRC to the payload.

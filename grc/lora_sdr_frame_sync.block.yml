@@ -2,8 +2,7 @@
 
 id: lora_sdr_frame_sync
 label: Frame sync
-category: '[LoRa]/Rx'
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
 -   id: samp_rate
@@ -18,41 +17,25 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: sync_words
+    label: Sync words
+    dtype: int_vector
+    default: [8,16]
 
 inputs:
 -   domain: stream
     dtype: complex
 -   domain: message
-    id: CR
--   domain: message
-    id: pay_len
--   domain: message
-    id: crc
--   domain: message
-    id: err
--   domain: message
-    id: frame_err
-    optional: true
-
-assert:
--   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+    id: frame_info
 
 outputs:
 -   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
--   domain: message
-    id: new_frame
-    
+
 templates:
     imports: import lora_sdr
-    make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/frame_sync.h>'] 
-     declarations: 'lora_sdr::frame_sync::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::frame_sync::make(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head});' 
-
+    make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_words})
 
 documentation: |-
     Block taking care of the preamble detection, CFO and STO estimation and correction.
@@ -61,7 +44,6 @@ documentation: |-
             Bandwidth: Bandwidth
             sf: spreading factor
             impl_head: usage of an implicit header (explicit will be used otherwise)
-            num_rscv : Number of Tx signals to receive
         Input:
             in: stream of complex valued sampled
             CR: coding rate

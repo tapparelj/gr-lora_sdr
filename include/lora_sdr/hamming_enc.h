@@ -29,9 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Add hamming code to the to be sent playload.
-     * This means extra party bits are added to the payload to be able to recover from bit errors during transmission
-     * For more information about the implementation visit hamming_enc_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */

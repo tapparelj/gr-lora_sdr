@@ -1,163 +1,168 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "modulate_impl.h"
-#include "debug_tools.h"
-// Fix for libboost > 1.75
-#include <boost/bind/placeholders.hpp>
 
-using namespace boost::placeholders;
-namespace gr {
-namespace lora_sdr {
+namespace gr
+{
+    namespace lora_sdr
+    {
 
-modulate::sptr modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw,
-                              bool create_zeros) {
-  return gnuradio::get_initial_sptr(
-      new modulate_impl(sf, samp_rate, bw, create_zeros));
-}
+        modulate::sptr
+        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words)
+        {
+            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words));
+        }
+        /*
+     * The private constructor
+     */
+        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words)
+            : gr::block("modulate",
+                        gr::io_signature::make(1, 1, sizeof(uint32_t)),
+                        gr::io_signature::make(1, 1, sizeof(gr_complex)))
+        {
+            m_sf = sf;
+            m_samp_rate = samp_rate;
+            m_bw = bw;
+            m_sync_words = sync_words;
 
-/**
- * @brief Construct a new modulate impl object
- *
- * @param sf spreading factor
- * @param samp_rate sampling rate
- * @param bw bandwith
- */
-modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
-                             bool create_zeros)
-    : gr::block("modulate", gr::io_signature::make(1, 1, sizeof(uint32_t)),
-                gr::io_signature::make(1, 1, sizeof(gr_complex))) {
+            m_number_of_bins = (uint32_t)(1u << m_sf);
+            m_symbols_per_second = (double)m_bw / m_number_of_bins;
+            m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
 
-  m_sf = sf;
-  m_samp_rate = samp_rate;
-  m_bw = bw;
+            m_inter_frame_padding = 4; // add 4 empty symbols at the end of a frame
 
-  m_number_of_bins = (uint32_t)(1u << m_sf);
-  m_symbols_per_second = (double)m_bw / m_number_of_bins;
-  m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
+            m_downchirp.resize(m_samples_per_symbol);
+            m_upchirp.resize(m_samples_per_symbol);
 
-  m_downchirp.resize(m_samples_per_symbol);
-  m_upchirp.resize(m_samples_per_symbol);
+            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
-  build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
+            n_up = 8;
+            symb_cnt = 0;
+            preamb_symb_cnt = 0;
+            padd_cnt = m_inter_frame_padding;
 
-  n_up = 8;
-  symb_cnt = 0;
-  m_multi_control = create_zeros;
-  message_port_register_in(pmt::mp("msg"));
-  set_msg_handler(pmt::mp("msg"),
-                  boost::bind(&modulate_impl::msg_handler, this, _1));
-  message_port_register_in(pmt::mp("ctrl_in"));
-  set_tag_propagation_policy(TPP_ALL_TO_ALL);
-}
+            set_tag_propagation_policy(TPP_DONT);
+            set_output_multiple(m_number_of_bins);
+        }
 
-/**
- * @brief Destroy the modulate impl object
- *
- */
-modulate_impl::~modulate_impl() {}
+        /*
+     * Our virtual destructor.
+     */
+        modulate_impl::~modulate_impl()
+        {
+        }
 
-/**
- * @brief standard gnuradio forecast function that tells the system that input
- * data is needed before it can continue and compute the actual modulation
- *
- * @param noutput_items : number of output items
- * @param ninput_items_required : number of required input items
- */
-void modulate_impl::forecast(int noutput_items,
-                             gr_vector_int &ninput_items_required) {
-  ninput_items_required[0] = 1;
-}
+        void
+        modulate_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+        {
+            ninput_items_required[0] = 1;
+        }
 
-/**
- * @brief Gnuradio function that handles the PMT message
- *
- * @param message : PMT message (i.e. input data from datasource)
- */
-void modulate_impl::msg_handler(pmt::pmt_t message) { symb_cnt = 0; }
+        int modulate_impl::general_work(int noutput_items,
+                                        gr_vector_int &ninput_items,
+                                        gr_vector_const_void_star &input_items,
+                                        gr_vector_void_star &output_items)
+        {
+            const uint32_t *in = (const uint32_t *)input_items[0];
+            gr_complex *out = (gr_complex *)output_items[0];
+            int nitems_to_process = ninput_items[0];
+            int output_offset = 0;
+            // read tags
+            std::vector<tag_t> tags;
 
-/**
- * @brief Main function where the actual computation is done.
- *
- *
- * @param noutput_items : number of output items
- * @param ninput_items : number of input items
- * @param input_items : input data  (i.e. output of gray mapping stage)
- * @param output_items : output data
- * @return int
- */
-int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
-                                gr_vector_const_void_star &input_items,
-                                gr_vector_void_star &output_items) {
-  // cast input and output to the right data type
-  const uint32_t *in = (const uint32_t *)input_items[0];
-  gr_complex *out = (gr_complex *)output_items[0];
-  //if we need to create zeros (because we need padding)
-  if (m_create_zeros == true) {
-    for (int i = 0; i < m_samples_per_symbol; i++) {
-      out[i] = gr_complex(0,0);
-    }
-    noutput_items = m_samples_per_symbol;
-    consume_each(ninput_items[0]);
-  }
-  std::vector<tag_t> return_tag;
-  get_tags_in_range(return_tag, 0, 0, nitems_read(0) + 100);
-  if (return_tag.size() > 0) {
-    consume_each(ninput_items[0]);
-    if(m_multi_control == true){
-    add_item_tag(0, nitems_written(0), pmt::intern("status"),
-                 pmt::intern("done"));
-    }
-    else{
-      m_create_zeros = true;
-    }
+            get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
+            if (tags.size())
+            {
+                if (tags[0].offset != nitems_read(0))
+                    nitems_to_process = std::min(tags[0].offset - nitems_read(0), (uint64_t)(float)noutput_items / m_samples_per_symbol);
+                else
+                {
+                    if (tags.size() >= 2)
+                        nitems_to_process = std::min(tags[1].offset - tags[0].offset, (uint64_t)(float)noutput_items / m_samples_per_symbol);
+                    if (nitems_to_process && padd_cnt == m_inter_frame_padding)
+                    {
+                        m_frame_len = pmt::to_long(tags[0].value);
+                        tags[0].offset = nitems_written(0);
 
-    
-    // upsampling factor
-    int usFactor = 4;
-    return usFactor * (m_samples_per_symbol + 2);
-  } else {
-    noutput_items = m_samples_per_symbol;
-    uint i = 0;
-    // send preamble
-    if (symb_cnt < n_up + 4.25) {
-      if (symb_cnt == 0) { // offset
-        uint off = 0;
-        // copy to the output
-        memcpy(&out[0], &m_upchirp[0],
-               m_samples_per_symbol * sizeof(gr_complex));
-        noutput_items = m_samples_per_symbol + off;
-      } else if (symb_cnt < n_up) { // upchirps
-        memcpy(&out[0], &m_upchirp[0],
-               m_samples_per_symbol * sizeof(gr_complex));
-      } else if (symb_cnt == n_up) { // network identifier 1
-        build_upchirp(&out[0], 8, m_sf);
-      } else if (symb_cnt == n_up + 1) { // network identifier 2
-        build_upchirp(&out[0], 16, m_sf);
-      } else if (symb_cnt < n_up + 4) { // downchirps
-        memcpy(&out[0], &m_downchirp[0],
-               m_samples_per_symbol * sizeof(gr_complex));
-      } else { // quarter of downchirp
-        memcpy(&out[0], &m_downchirp[0],
-               m_samples_per_symbol / 4 * sizeof(gr_complex));
-        noutput_items = m_samples_per_symbol / 4;
-      }
-    }
-    // payload
-    else {
-      // Returns an modulated upchirp using s_f=bw
-      build_upchirp(&out[0], in[0], m_sf);
-      consume_each(1);
-    }
-    symb_cnt++;
-  }
+                        tags[0].value = pmt::from_long(int((m_frame_len + m_inter_frame_padding+n_up+4.25)*m_samples_per_symbol));
 
-  // #ifdef GRLORA_DEBUG
-  //   // get vector length
-  //   double N = 1 << m_sf;
-  //   // output the modulated signal to the debugger
-  //   GR_LOG_DEBUG(this->d_logger,
-  //                "Output Tx:" + complex_vector_2_string(&out[0], N));
-  // #endif
-  return (noutput_items);
-}
+                        add_item_tag(0, tags[0]);
 
-} // namespace lora_sdr
+                        symb_cnt = 0;
+                        preamb_symb_cnt = 0;
+                        padd_cnt = 0;
+                        
+                    }
+                }
+            }
+
+            if (!symb_cnt) //in preamble
+            {
+                for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
+                {
+                    if (preamb_symb_cnt < n_up + 5) //should output preamble part
+                    {
+                        if (preamb_symb_cnt < n_up)
+                        { //upchirps
+                            memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));
+                        }
+                        else if (preamb_symb_cnt == n_up) //sync words
+                            build_upchirp(&out[output_offset], m_sync_words[0], m_sf);
+                        else if (preamb_symb_cnt == n_up + 1)
+                            build_upchirp(&out[output_offset], m_sync_words[1], m_sf);
+
+                        else if (preamb_symb_cnt < n_up + 4) //2.25 downchirps
+                            memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol * sizeof(gr_complex));
+                        else if (preamb_symb_cnt == n_up + 4)
+                        {
+                            memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol / 4 * sizeof(gr_complex));
+                            //correct offset dur to quarter of downchirp
+                            output_offset -= 3 * m_samples_per_symbol / 4;
+                        }
+                        output_offset += m_samples_per_symbol;
+                        preamb_symb_cnt++;
+                    }
+                }
+            }
+            
+            if (symb_cnt < m_frame_len && preamb_symb_cnt == n_up + 5) //output payload
+            {     
+                nitems_to_process = std::min(nitems_to_process, int((float)(noutput_items - output_offset) / m_samples_per_symbol));
+                nitems_to_process = std::min(nitems_to_process, ninput_items[0]);
+                for (int i = 0; i < nitems_to_process; i++)
+                {
+                    build_upchirp(&out[output_offset], in[i], m_sf);
+                    output_offset += m_samples_per_symbol;
+                    symb_cnt++;
+                }
+            }
+            else
+            {
+                nitems_to_process = 0;
+            }
+            
+            if (symb_cnt >= m_frame_len) //padd frame end with zeros
+            {
+                for (int i = 0; i < (noutput_items - output_offset) / m_samples_per_symbol; i++)
+                {
+                    if (symb_cnt >= m_frame_len && symb_cnt < m_frame_len + m_inter_frame_padding)
+                    {
+                        for (int i = 0; i < m_samples_per_symbol; i++)
+                        {
+                            out[output_offset + i] = gr_complex(0.0, 0.0);
+                        }
+                        output_offset += m_samples_per_symbol;
+                        symb_cnt++;
+                        padd_cnt++;
+                    }
+                }
+            }
+            // std::cout<<nitems_to_process<<" "<<output_offset<<" "<<noutput_items<<std::endl;
+            consume_each(nitems_to_process);
+            return output_offset;
+        }
+
+    } /* namespace lora */
 } /* namespace gr */

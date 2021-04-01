@@ -1,0 +1,42 @@
+<testsuite errors="0" failures="3" name="unittest.suite.TestSuite" tests="5" time="0.127">
+  <testcase classname="__main__.qa_mu_detection" name="test_001_nothing" time="0.0213"></testcase>
+  <testcase classname="__main__.qa_mu_detection" name="test_002_simple_preamble" time="0.0220">
+    <failure type="exceptions.AssertionError">0 != 1
+  File "/usr/lib64/python2.7/unittest/case.py", line 369, in run
+    testMethod()
+  File "/home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/python/qa_mu_detection.py", line 70, in test_002_simple_preamble
+    self.assertEqual(len(detects), 1)
+  File "/usr/lib64/python2.7/unittest/case.py", line 553, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/usr/lib64/python2.7/unittest/case.py", line 546, in _baseAssertEqual
+    raise self.failureException(msg)
+    </failure>
+  </testcase>
+  <testcase classname="__main__.qa_mu_detection" name="test_003_simple_payload" time="0.0379"></testcase>
+  <testcase classname="__main__.qa_mu_detection" name="test_010_sto_int_intrasym" time="0.0209">
+    <failure type="exceptions.AssertionError">0 != 1
+  File "/usr/lib64/python2.7/unittest/case.py", line 369, in run
+    testMethod()
+  File "/home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/python/qa_mu_detection.py", line 91, in test_010_sto_int_intrasym
+    self.assertEqual(len(detects), 1)
+  File "/usr/lib64/python2.7/unittest/case.py", line 553, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/usr/lib64/python2.7/unittest/case.py", line 546, in _baseAssertEqual
+    raise self.failureException(msg)
+    </failure>
+  </testcase>
+  <testcase classname="__main__.qa_mu_detection" name="test_011_sto_int_intersym" time="0.0238">
+    <failure type="exceptions.AssertionError">0 != 1
+  File "/usr/lib64/python2.7/unittest/case.py", line 369, in run
+    testMethod()
+  File "/home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/python/qa_mu_detection.py", line 103, in test_011_sto_int_intersym
+    self.assertEqual(len(detects), 1)
+  File "/usr/lib64/python2.7/unittest/case.py", line 553, in assertEqual
+    assertion_func(first, second, msg=msg)
+  File "/usr/lib64/python2.7/unittest/case.py", line 546, in _baseAssertEqual
+    raise self.failureException(msg)
+    </failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

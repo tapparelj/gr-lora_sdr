@@ -1,9 +1,10 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gnuradio/io_signature.h>
 #include "RH_RF95_header_impl.h"
-//Fix for libboost > 1.75
-#include <boost/bind/placeholders.hpp>
 
-using namespace boost::placeholders;
 namespace gr {
   namespace lora_sdr {
 
@@ -29,7 +30,8 @@ namespace gr {
 
             message_port_register_out(pmt::mp("msg"));
             message_port_register_in(pmt::mp("msg"));
-            set_msg_handler(pmt::mp("msg"), boost::bind(&RH_RF95_header_impl::msg_handler, this, _1));
+            // set_msg_handler(pmt::mp("msg"), boost::bind(&RH_RF95_header_impl::msg_handler, this, _1));
+            set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg) { this->msg_handler(msg); });
       }
   /*
      * Our virtual destructor.
@@ -53,6 +55,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+      std::cout<<"there"<<std::endl;
       // Tell runtime system how many output items we produced.
       return 0;
     }

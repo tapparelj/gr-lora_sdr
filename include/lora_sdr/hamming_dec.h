@@ -29,9 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Hamming decoding stage, decode the received payload. 
-     * If necessary this block will preform error detection and correction using the hamming code parity bits.
-     * For more information about the implementation visit hamming_dec_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */

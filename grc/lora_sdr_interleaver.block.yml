@@ -2,8 +2,7 @@
 
 id: lora_sdr_interleaver
 label: Interleaver
-category: '[LoRa]/Tx'
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 parameters:
 -   id: cr
@@ -16,13 +15,6 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: msg
-
-asserts:
--   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
--   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-
 
 outputs:
 -   domain: stream
@@ -31,12 +23,6 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.interleaver(${cr}, ${sf})
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/interleaver.h>'] 
-     declarations: 'lora_sdr::interleaver::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::interleaver::make(${cr}, ${sf});' 
-
 
 documentation: |-
     Interleaves multiple sf codewords together

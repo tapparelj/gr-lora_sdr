@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Verifies if the included crc is correct or not for more information about the implementation visit crc_verify_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */
@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::crc_verif::make is the public interface for
        * creating new instances.
        */
-      static sptr make(bool exit);
+      static sptr make();
     };
 
   } // namespace lora_sdr

@@ -5,111 +5,45 @@
 #include <lora_sdr/header_decoder.h>
 
 namespace gr {
-namespace lora_sdr {
+  namespace lora_sdr {
 
-class header_decoder_impl : public header_decoder {
-private:
-  /**
-   * @brief size of the header in nibbles
-   *
-   */
-  const uint8_t header_len = 5;
+    class header_decoder_impl : public header_decoder
+    {
+     private:
+        const uint8_t header_len = 5; ///< size of the header in nibbles
 
-  /**
-   * @brief Specify if we use an explicit or implicit header
-   *
-   */
-  bool m_impl_header;
+        bool m_impl_header;///< Specify if we use an explicit or implicit header
+        uint8_t m_payload_len;///< The payload length in bytes
+        bool m_has_crc;///< Specify the usage of a payload CRC
+        uint8_t m_cr;///< Coding rate
 
-  /**
-   * @brief The payload length in bytes
-   *
-   */
-  uint8_t m_payload_len;
+        uint8_t header_chk; ///< The header checksum received in the header
 
-  /**
-   * @brief Specify the usage of a payload CRC
-   *
-   */
-  bool m_has_crc;
+        uint32_t pay_cnt;///< The number of payload nibbles received
+        uint32_t nout;///< The number of data nibbles to output
+        bool is_header ;///< Indicate that we need to decode the header
 
-  /**
-   * @brief Coding rate
-   *
-   */
-  uint8_t m_cr;
+        /**
+         *  \brief  Reset the block variables for a new frame.
+         */
+        void new_frame_handler();
+        /**
+         *  \brief publish decoding information contained in the header or provided to the block   
+         */
+        void publish_frame_info(int cr, int pay_len, int crc, int err);
 
-  /**
-   * @brief The header checksum received in the header
-   *
-   */
-  uint8_t header_chk;
+     public:
+      header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc);
+      ~header_decoder_impl();
 
-  /**
-   * @brief The number of payload nibbles received
-   *
-   */
-  uint32_t pay_cnt;
+      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-  /**
-   * @brief The number of data nibbles to output
-   *
-   */
-  uint32_t nout;
-
-  /**
-   * @brief Indicate that we need to decode the header
-   *
-   */
-  bool is_first;
-
-  /**
-   * @brief Reset the block variables for a new frame.
-   *
-   * @param id
-   */
-  void new_frame_handler(pmt::pmt_t id);
-
-public:
-  /**
-   * @brief Construct a new header decoder impl object
-   *
-   * @param impl_head : boolean if implicit header mode is on or off
-   * @param cr : coding rate
-   * @param pay_len : payload length
-   * @param has_crc : boolean if crc stage is active or not
-   */
-  header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len,
-                      bool has_crc);
-
-  /**
-   * @brief Destroy the header decoder impl object
-   *
-   */
-  ~header_decoder_impl();
-
-  /**
-   * @brief standard gnuradio function to tell the system when to start work
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items_required : number of required input items
-   */
-  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
-
-  /**
-   * @brief Main function where the actual computation resides
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items : number of input items
-   * @param input_items : input data (i.e. hamming decoder stage)
-   * @param output_items : output data
-   * @return int
-   */
-  int general_work(int noutput_items, gr_vector_int &ninput_items,
-                   gr_vector_const_void_star &input_items,
-                   gr_vector_void_star &output_items);
-};
-} // namespace lora_sdr
+      int general_work(int noutput_items,
+           gr_vector_int &ninput_items,
+           gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+    };
+  } // namespace lora
 } // namespace gr
 
 #endif /* INCLUDED_LORA_HEADER_DECODER_IMPL_H */

@@ -2,15 +2,11 @@
 
 id: lora_sdr_whitening
 label: Whitening
-category: '[LoRa]/Tx'
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 inputs:
 -   domain: message
     id: msg
-    optional: true
--   domain: stream
-    dtype: byte
 
 outputs:
 -   domain: stream
@@ -19,12 +15,6 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.whitening()
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/whitening.h>'] 
-     declarations: 'lora_sdr::whitening::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::whitening::make();' 
-
 
 documentation: |-
     Whiten the payload data with a pseudo random sequence

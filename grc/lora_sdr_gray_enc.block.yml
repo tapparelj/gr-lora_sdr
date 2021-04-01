@@ -2,8 +2,7 @@
 
 id: lora_sdr_gray_enc
 label: Gray demap
-category: '[LoRa]/Rx'
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 inputs:
 -   domain: stream
@@ -16,12 +15,6 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.gray_enc()
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/gray_enc.h>'] 
-     declarations: 'lora_sdr::gray_enc::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::gray_enc::make();' 
-
 
 documentation: |-
     Apply the gray demapping operation. (Corresponding to a gray encoding with a shift)

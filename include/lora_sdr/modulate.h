@@ -29,8 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief End block of the sending side that modulates the final to be sent data to the LoRa standard
-     * For more information about the implementation visit modulate_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */
@@ -47,7 +46,7 @@ namespace gr {
        * class. lora_sdr::modulate::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, bool create_zeros);
+      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words);
     };
 
   } // namespace lora_sdr

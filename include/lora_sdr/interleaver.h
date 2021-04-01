@@ -29,8 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Interleaves the to be sent data, in order to gain more resilience against bit transmission errors
-     * For more information about the implementation visit interleaver_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */

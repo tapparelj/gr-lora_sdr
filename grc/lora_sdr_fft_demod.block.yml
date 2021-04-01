@@ -2,8 +2,7 @@
 
 id: lora_sdr_fft_demod
 label: fft_demod
-category: '[LoRa]/Rx'
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
 -   id: samp_rate
@@ -23,13 +22,6 @@ inputs:
 -   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
--   domain: message
-    id: CR
--   domain: message
-    id: new_frame
-    
-assert:
--   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
 
 outputs:
 -   domain: stream
@@ -38,12 +30,6 @@ outputs:
 templates:
     imports: import lora_sdr
     make: lora_sdr.fft_demod(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/fft_demod.h>'] 
-     declarations: 'lora_sdr::fft_demod::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::fft_demod::make(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head});' 
-
 
 documentation: "Recover the value of a lora symbol using argmax(DFT(lora_symbol \u2A00\
     \ ref_downchirp)\n    Parameters:\n        Samp_rate: Sampling rate (should be\

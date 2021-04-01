@@ -2,8 +2,7 @@
 
 id: lora_sdr_header_decoder
 label: Header decoder
-category: '[LoRa]/Rx'
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
 -   id: impl_head
@@ -22,37 +21,19 @@ parameters:
     dtype: bool
     default: 'False'
 
-asserts:
--   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
-
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: new_frame
 
 outputs:
 -   domain: stream
     dtype: byte
 -   domain: message
-    id: CR
--   domain: message
-    id: pay_len
--   domain: message
-    id: CRC
--   domain: message
-    id: err
-    optional: true
+    id: frame_info
 
 templates:
     imports: import lora_sdr
     make: lora_sdr.header_decoder(${impl_head}, ${cr}, ${pay_len}, ${has_crc})
-
-cpp_templates: 
-     includes: ['#include <lora_sdr/header_decoderh>'] 
-     declarations: 'lora_sdr::header_decoder::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${cr}, ${pay_len}, ${has_crc});' 
-
 
 documentation: "Recover information present in the header of a frame and send them\
     \ to the other blocks in the receiver chain.\nIn implicit header mode, the values\

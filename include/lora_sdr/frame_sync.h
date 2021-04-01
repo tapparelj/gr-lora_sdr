@@ -29,9 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief Block that is able to detect the received spectrum and start to find the data such that it can be decoded.
-     * This block is at the heart of the the RX (decoding) side and houses a lot of logic and data manipulation.
-     * For more information about the implementation visit frame_sync_impl
+     * \brief <+description of block+>
      * \ingroup lora_sdr
      *
      */
@@ -48,7 +46,7 @@ namespace gr {
        * class. lora_sdr::frame_sync::make is the public interface for
        * creating new instances.
        */
-      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
+      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word);
     };
 
   } // namespace lora_sdr
