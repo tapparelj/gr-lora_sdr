@@ -102,4 +102,6 @@ For changelog checkout [Changelog](CHANGELOG.md)
 For TODO list checkout [TODO](TODO.md)
 ## License
 
+Small update to test branch
+
 Distributed under the GPL-3.0 License License. See [LICENSE](LICENSE) for more information.
