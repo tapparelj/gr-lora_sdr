@@ -8,12 +8,6 @@ flags: [python, cpp]
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: pay_len
--   domain: message
-    id: new_frame
--   domain: message
-    id: CRC
 
 outputs:
 -   domain: stream
