@@ -37,6 +37,7 @@ outputs:
     vlen: ${ 2**sf }
 -   domain: message
     id: new_frame
+    optional : true
     
 templates:
     imports: import lora_sdr

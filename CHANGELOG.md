@@ -8,7 +8,6 @@
 - Made Tx and Rx block that house all individual components of the receiving and transmitting side.
 - Added new assertions in grc 
 ## v0.1
-
 #### Enhancements:
 
 - Compatible with gnuradio3.8

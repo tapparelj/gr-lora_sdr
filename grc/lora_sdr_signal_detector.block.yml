@@ -2,7 +2,7 @@
 
 id: lora_sdr_signal_detector
 label: Signal detector
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: sf

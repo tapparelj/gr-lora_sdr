@@ -2,7 +2,7 @@
 
 id: lora_sdr_mu_synchro
 label: Mu synchro
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: sf

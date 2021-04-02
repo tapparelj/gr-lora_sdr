@@ -2,7 +2,7 @@
 
 id: lora_sdr_noise_est
 label: Noise est
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: n_samples

@@ -2,7 +2,7 @@
 
 id: lora_sdr_mu_demod
 label: mu_demod
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: sf

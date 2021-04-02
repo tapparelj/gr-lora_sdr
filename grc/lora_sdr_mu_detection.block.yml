@@ -2,7 +2,7 @@
 
 id: lora_sdr_mu_detection
 label: Mu detection
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: sf

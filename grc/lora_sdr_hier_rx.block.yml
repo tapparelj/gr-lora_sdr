@@ -1,5 +1,5 @@
 id: lora_sdr_hier_rx
-label: Rx_chain
+label: Rx
 category: '[LoRa]'
 flags: [python, cpp]
 
