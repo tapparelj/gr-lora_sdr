@@ -24,28 +24,54 @@
 #include <lora_sdr/noise_est.h>
 #include <volk/volk.h>
 
-namespace gr
-{
-  namespace lora_sdr
-  {
-    class noise_est_impl : public noise_est
-    {
-    private:
-      uint32_t m_n_samples; ///< Number of samples used for the noise estimation
-      float m_noise_est;    ///< Noise estimation
-      bool is_first;        ///< Indicate that the noise estimation has not been performed yet
+namespace gr {
+namespace lora_sdr {
+class noise_est_impl : public noise_est {
+private:
+  /**
+   * @brief Number of samples used for the noise estimation
+   * 
+   */
+  uint32_t m_n_samples; 
+  
+  /**
+   * @brief  Noise estimation
+   * 
+   */
+  float m_noise_est;
+  
+  /**
+   * @brief Indicate that the noise estimation has not been performed yet
+   * 
+   */
+  bool is_first; 
 
-    public:
-      noise_est_impl(uint32_t n_samples);
-      ~noise_est_impl();
+public:
+  /**
+   * @brief Construct a new noise est impl object
+   *
+   * @param n_samples
+   */
+  noise_est_impl(uint32_t n_samples);
+  /**
+   * @brief Destroy the noise est impl object
+   *
+   */
+  ~noise_est_impl();
 
-      // Where all the action really happens
-      int work(int noutput_items,
-               gr_vector_const_void_star &input_items,
-               gr_vector_void_star &output_items);
-    };
+  /**
+   * @brief 
+   * 
+   * @param noutput_items 
+   * @param input_items 
+   * @param output_items 
+   * @return int 
+   */
+  int work(int noutput_items, gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+};
 
-  } // namespace lora_sdr
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_NOISE_EST_IMPL_H */

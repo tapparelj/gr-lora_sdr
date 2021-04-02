@@ -15,9 +15,12 @@ namespace gr {
       return gnuradio::get_initial_sptr
         (new gray_decode_impl(sf));
     }
-    /*
-     * The private constructor
-     */
+
+/**
+ * @brief Construct a new gray decode impl::gray decode impl object
+ * 
+ * @param sf 
+ */
     gray_decode_impl::gray_decode_impl(uint8_t sf)
       : gr::sync_block("gray_decode",
               gr::io_signature::make(1, 1, sizeof(uint32_t)),
@@ -27,12 +30,21 @@ namespace gr {
         set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
-    /*
-     * Our virtual destructor.
-     */
+/**
+ * @brief Destroy the gray decode impl::gray decode impl object
+ * 
+ */
     gray_decode_impl::~gray_decode_impl()
     {}
 
+/**
+ * @brief 
+ * 
+ * @param noutput_items 
+ * @param input_items 
+ * @param output_items 
+ * @return int 
+ */
     int
     gray_decode_impl::work(int noutput_items,
         gr_vector_const_void_star &input_items,

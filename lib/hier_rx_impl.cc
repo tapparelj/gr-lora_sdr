@@ -24,8 +24,17 @@ hier_rx::sptr hier_rx::make(float samp_rate, uint32_t bandwidth, uint8_t sf,
       samp_rate, bandwidth, sf, impl_head, cr, pay_len, has_crc, exit));
 }
 
-/*
- * The private constructor
+/**
+ * @brief Construct a new hier rx impl::hier rx impl object
+ * 
+ * @param samp_rate 
+ * @param bandwidth 
+ * @param sf 
+ * @param impl_head 
+ * @param cr 
+ * @param pay_len 
+ * @param has_crc 
+ * @param exit 
  */
 hier_rx_impl::hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                            bool impl_head, uint8_t cr, uint32_t pay_len,

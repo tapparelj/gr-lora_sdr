@@ -17,9 +17,12 @@ namespace gr
       return gnuradio::get_initial_sptr(new hamming_enc_impl(cr, sf));
     }
 
-    /*
-     * The private constructor
-     */
+/**
+ * @brief Construct a new hamming enc impl::hamming enc impl object
+ * 
+ * @param cr 
+ * @param sf 
+ */
     hamming_enc_impl::hamming_enc_impl(uint8_t cr, uint8_t sf)
         : gr::sync_block("hamming_enc",
                          gr::io_signature::make(1, 1, sizeof(uint8_t)),
@@ -30,13 +33,22 @@ namespace gr
       set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
-    /*
-     * Our virtual destructor.
-     */
+/**
+ * @brief Destroy the hamming enc impl::hamming enc impl object
+ * 
+ */
     hamming_enc_impl::~hamming_enc_impl()
     {
     }
 
+/**
+ * @brief 
+ * 
+ * @param noutput_items 
+ * @param input_items 
+ * @param output_items 
+ * @return int 
+ */
     int
     hamming_enc_impl::work(int noutput_items,
                            gr_vector_const_void_star &input_items,

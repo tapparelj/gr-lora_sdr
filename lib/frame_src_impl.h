@@ -25,55 +25,170 @@
 #include <lora_sdr/utilities.h>
 #include <volk/volk.h>
 
-namespace gr
-{
-  namespace lora_sdr
-  {
+namespace gr {
+namespace lora_sdr {
 
-    class frame_src_impl : public frame_src
-    {
-    private:
-      uint8_t m_sf;         ///< Transmission spreading factor
-      uint32_t m_samp_rate; ///< Transmission sampling rate
-      uint32_t m_bw;        ///< Transmission bandwidth (Works only for samp_rate=bw)
-      uint32_t m_N;         ///< number of bin per loar symbol
-      uint8_t m_os_factor;  ///< oversampling factor
-      int m_delay;          ///< number of zeros between two frames
-      int m_pay_len;        ///<number of symbols in a frame payload
-      int m_n_frames;       ///< number of frames to transmit
-      int m_offset;         ///<the number of zeros sent before the first symbol
-      float m_cfo;          ///< the CFO of the user
-      bool m_rand_sto;      ///< indicate to use a random STO, uniformly distributed in [0,2^sf*m_os_factor)
+class frame_src_impl : public frame_src {
+private:
+  /**
+   * @brief Transmission spreading factor
+   *
+   */
+  uint8_t m_sf;
+  /**
+   * @brief Transmission sampling rate
+   *
+   */
+  uint32_t m_samp_rate;
+  /**
+   * @brief Transmission bandwidth (Works only for samp_rate=bw)
+   *
+   */
+  uint32_t m_bw;
+  /**
+   * @brief number of bin per loar symbol
+   *
+   */
+  uint32_t m_N;
+  /**
+   * @brief oversampling factor
+   *
+   */
+  uint8_t m_os_factor;
+  /**
+   * @brief number of zeros between two frames
+   *
+   */
+  int m_delay;
+  /**
+   * @brief number of symbols in a frame payload
+   *
+   */
+  int m_pay_len;
+  /**
+   * @brief number of frames to transmit
+   *
+   */
+  int m_n_frames;
+  /**
+   * @brief the number of zeros sent before the first symbol
+   *
+   */
+  int m_offset;
+  /**
+   * @brief the CFO of the user
+   *
+   */
+  float m_cfo;
+  /**
+   * @brief indicate to use a random STO, uniformly distributed in
+   * [0,2^sf*m_os_factor)
+   *
+   */
+  bool m_rand_sto;
 
-      int m_delay_with_rand_sto;           ///< delay between frame taking a random sto into account
-      int m_sto_val;                       ///< rand_sto val
-      std::vector<gr_complex> m_upchirp;   ///< reference upchirp
-      std::vector<gr_complex> m_downchirp; ///< reference downchirp
+  /**
+   * @brief delay between frame taking a random sto into account
+   *
+   */
+  int m_delay_with_rand_sto;
+  /**
+   * @brief rand_sto val
+   *
+   */
+  int m_sto_val;
+  /**
+   * @brief reference upchirp
+   *
+   */
+  std::vector<gr_complex> m_upchirp;
+  /**
+   * @brief reference downchirp
+   *
+   */
+  std::vector<gr_complex> m_downchirp;
 
-      uint32_t m_frame_length;         ///< frame length in samples
-      std::vector<gr_complex> m_frame; ///< contains the whole frame
+  /**
+   * @brief frame length in samples
+   *
+   */
+  uint32_t m_frame_length;
 
-      bool is_first; ///< variable used to wait before outputing the first frame
+  /**
+   * @brief contains the whole frame
+   *
+   */
+  std::vector<gr_complex> m_frame;
 
-      uint m_n_up;      ///< number of upchirps in the preamble
-      int m_cnt;        ///< sample counter
-      uint m_frame_cnt; ///< frame counter
+  /**
+   * @brief variable used to wait before outputing the first frame
+   *
+   */
+  bool is_first;
 
-      // return true if this block is responsible for the frame of the first user.
-      // this decision is based on the m_offset value as for the first user a value bigger than 2^sf*os_factor should not be used.
-      bool is_first_user();
+  /**
+   * @brief number of upchirps in the preamble
+   *
+   */
+  uint m_n_up;
 
-    public:
-      frame_src_impl(uint8_t sf, int pay_len, int delay, int offset, float cfo, int n_frames, int os_factor, bool rand_sto);
-      ~frame_src_impl();
+  /**
+   * @brief sample counter
+   *
+   */
+  int m_cnt;
 
-      // Where all the action really happens
-      int work(int noutput_items,
-               gr_vector_const_void_star &input_items,
-               gr_vector_void_star &output_items);
-    };
+  /**
+   * @brief frame counter
+   *
+   */
+  uint m_frame_cnt;
 
-  } // namespace lora_sdr
+  /**
+   * @brief   return true if this block is responsible for the frame of the
+   * first user. this decision is based on the m_offset value as for the first
+   * user a value bigger than 2^sf*os_factor should not be used.
+   *
+   * @return true
+   * @return false
+   */
+  bool is_first_user();
+
+public:
+  /**
+   * @brief Construct a new frame src impl object
+   *
+   * @param sf
+   * @param pay_len
+   * @param delay
+   * @param offset
+   * @param cfo
+   * @param n_frames
+   * @param os_factor
+   * @param rand_sto
+   */
+  frame_src_impl(uint8_t sf, int pay_len, int delay, int offset, float cfo,
+                 int n_frames, int os_factor, bool rand_sto);
+
+  /**
+   * @brief Destroy the frame src impl object
+   *
+   */
+  ~frame_src_impl();
+
+  /**
+   * @brief Standard gnuradio function
+   * 
+   * @param noutput_items 
+   * @param input_items 
+   * @param output_items 
+   * @return int 
+   */
+  int work(int noutput_items, gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+};
+
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_FRAME_SRC_IMPL_H */

@@ -71,12 +71,40 @@ namespace gr
 #endif
 
     public:
+    /**
+     * @brief Construct a new signal detector impl object
+     * 
+     * @param sf 
+     * @param os_factor 
+     * @param threshold 
+     * @param margin 
+     * @param fft_symb 
+     * @param transp_len 
+     */
       signal_detector_impl(uint8_t sf, uint8_t os_factor, double threshold, int margin, int fft_symb, int transp_len);
+      /**
+       * @brief Destroy the signal detector impl object
+       * 
+       */
       ~signal_detector_impl();
 
-      // Where all the action really happens
+      /**
+       * @brief 
+       * 
+       * @param noutput_items 
+       * @param ninput_items_required 
+       */
       void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
+      /**
+       * @brief 
+       * 
+       * @param noutput_items 
+       * @param ninput_items 
+       * @param input_items 
+       * @param output_items 
+       * @return int 
+       */
       int general_work(int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,

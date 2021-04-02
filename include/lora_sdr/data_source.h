@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::data_source::make is the public interface for
        * creating new instances.
        */
-      static sptr make(int pay_len,int n_frames);
+      static sptr make(int pay_len,int n_frames, std::string string_input);
     };
 
   } // namespace lora_sdr

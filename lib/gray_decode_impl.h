@@ -10,12 +10,34 @@ namespace gr {
     class gray_decode_impl : public gray_decode
     {
      private:
+     /**
+      * @brief Spreading factor used
+      * 
+      */
       uint8_t m_sf;
 
      public:
+      /**
+       * @brief Construct a new gray decode impl object
+       * 
+       * @param sf Spreading factor used
+       */
       gray_decode_impl(uint8_t sf);
+
+      /**
+       * @brief Destroy the gray decode impl object
+       * 
+       */
       ~gray_decode_impl();
 
+      /**
+       * @brief 
+       * 
+       * @param noutput_items 
+       * @param input_items 
+       * @param output_items 
+       * @return int 
+       */
       int work(
               int noutput_items,
               gr_vector_const_void_star &input_items,

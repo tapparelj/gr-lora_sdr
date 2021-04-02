@@ -18,10 +18,25 @@ namespace gr {
          void msg_handler(pmt::pmt_t message);
 
      public:
+     /**
+      * @brief Construct a new whitening impl object
+      * 
+      */
       whitening_impl();
+      /**
+       * @brief Destroy the whitening impl object
+       * 
+       */
       ~whitening_impl();
 
-      // Where all the action really happens
+      /**
+       * @brief 
+       * 
+       * @param noutput_items 
+       * @param input_items 
+       * @param output_items 
+       * @return int 
+       */
       int work(
               int noutput_items,
               gr_vector_const_void_star &input_items,

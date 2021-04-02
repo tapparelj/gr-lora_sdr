@@ -19,9 +19,10 @@ namespace gr
             return gnuradio::get_initial_sptr(new whitening_impl());
         }
 
-        /*
-     * The private constructor
-     */
+        /**
+         * @brief Construct a new whitening impl::whitening impl object
+         * 
+         */
         whitening_impl::whitening_impl()
             : gr::sync_block("whitening",
                              gr::io_signature::make(0, 0, 0),
@@ -33,13 +34,19 @@ namespace gr
             set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg) { this->msg_handler(msg); });
         }
 
-        /*
-     * Our virtual destructor.
-     */
+        /**
+         * @brief Destroy the whitening impl::whitening impl object
+         * 
+         */
         whitening_impl::~whitening_impl()
         {
         }
         
+        /**
+         * @brief 
+         * 
+         * @param message 
+         */
         void whitening_impl::msg_handler(pmt::pmt_t message)
         {
 
@@ -50,6 +57,14 @@ namespace gr
             new_message = true;
         }
 
+        /**
+         * @brief 
+         * 
+         * @param noutput_items 
+         * @param input_items 
+         * @param output_items 
+         * @return int 
+         */
         int whitening_impl::work(int noutput_items,
                                  gr_vector_const_void_star &input_items,
                                  gr_vector_void_star &output_items)
