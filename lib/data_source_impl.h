@@ -1,18 +1,8 @@
-/**
- * @file data_source_impl.h
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2021-01-05
- * 
- * @copyright Copyright (c) 2021
- * 
- */
 #ifndef INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 #define INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 
 #include <lora_sdr/data_source.h>
-#include "helpers.h"
+#include <lora_sdr/utilities.h>
 
 namespace gr {
 namespace lora_sdr {
@@ -58,12 +48,6 @@ private:
    */
   void trigg_handler(pmt::pmt_t msg);
 
-  /**
-   * @brief boolean to tell the main function execution is finished
-   *
-   */
-  bool d_finished;
-
 public:
   /**
    * @brief Construct a new data source impl object
@@ -73,21 +57,13 @@ public:
    * @param string_input
    */
   data_source_impl(int pay_len, int n_frames, std::string string_input);
-
+  
   /**
    * @brief Destroy the data source impl object
-   *
+   * 
    */
   ~data_source_impl();
-
-  /**
-   * @brief Place holder function does not do anything for the data source.
-   *
-   * @param noutput_items
-   * @param ninput_items_required
-   */
-  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
-
+  
   /**
    * @brief Place holder function of data_source that generated random ([a-z A-Z
    * 0-9]) data source to be sent over the network
@@ -97,11 +73,9 @@ public:
    * @param output_items
    * @return int
    */
-  int general_work(int noutput_items, gr_vector_int &ninput_items,
-                   gr_vector_const_void_star &input_items,
-                   gr_vector_void_star &output_items);
+  int work(int noutput_items, gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
 };
-
 } // namespace lora_sdr
 } // namespace gr
 

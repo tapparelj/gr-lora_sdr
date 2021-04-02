@@ -16,8 +16,6 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: msg
 
 asserts:
 -   ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }

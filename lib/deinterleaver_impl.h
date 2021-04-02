@@ -11,48 +11,34 @@ class deinterleaver_impl : public deinterleaver {
 private:
   /**
    * @brief Transmission Spreading factor
-   * 
+   *
    */
   uint8_t m_sf;
 
   /**
    * @brief Transmission Coding rate
-   * 
+   *
    */
-  uint8_t m_cr;   
+  uint8_t m_cr;
 
   /**
    * @brief Spreading factor to use to deinterleave
-   * 
+   *
    */
-  uint8_t sf_app; 
+  uint8_t sf_app;
 
   /**
    * @brief Length of a codeword
-   * 
+   *
    */
-  uint8_t cw_len; 
+  uint8_t cw_len;
 
   /**
-   * @brief Indicate that we need to deinterleave the first block
-   * 
+   * @brief Indicate that we need to deinterleave the first block with the
+   * default header parameters (cr=4/8, reduced rate)
+   *
    */
-  bool is_first; 
-
-  /**
-   * @brief Reset the block variables when a new lora packet needs to be
-   * decoded.
-   * 
-   * @param id 
-   */
-  void new_frame_handler(pmt::pmt_t id);
-
-  /**
-   * @brief Handles the coding rate received from the header_decoder block.
-   * 
-   * @param cr : coding rate
-   */
-  void header_cr_handler(pmt::pmt_t cr);
+  bool m_is_header;
 
 public:
   /**
@@ -69,7 +55,7 @@ public:
   ~deinterleaver_impl();
 
   /**
-   * @brief Standard gnuradio function to tell the system with 
+   * @brief Standard gnuradio function to tell the system with
    *
    * @param noutput_items : number of output items
    * @param ninput_items_required : number of required output items

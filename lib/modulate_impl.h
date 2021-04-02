@@ -5,7 +5,8 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/modulate.h>
-#include "helpers.h"
+
+#include <lora_sdr/utilities.h>
 
 namespace gr {
 namespace lora_sdr {
@@ -13,11 +14,10 @@ namespace lora_sdr {
 class modulate_impl : public modulate {
 private:
   /**
-   * @brief Transmission spreading factor
+   * @briefTransmission spreading factor
    *
    */
   uint8_t m_sf;
-
   /**
    * @brief Transmission sampling rate
    *
@@ -31,7 +31,7 @@ private:
   uint32_t m_bw;
 
   /**
-   * @brief number of bin per lora symbol
+   * @brief number of bin per loar symbol
    *
    */
   uint32_t m_number_of_bins;
@@ -49,7 +49,25 @@ private:
   uint32_t m_samples_per_symbol;
 
   /**
-   * @brief reference upchirp
+   * @brief sync words (network id)
+   *
+   */
+  std::vector<uint16_t> m_sync_words;
+
+  /**
+   * @brief length in samples of zero append to each frame
+   *
+   */
+  int m_inter_frame_padding;
+
+  /**
+   * @brief length of the frame in number of items
+   *
+   */
+  int m_frame_len;
+
+  /**
+   * @briefreference upchirp
    *
    */
   std::vector<gr_complex> m_upchirp;
@@ -72,35 +90,30 @@ private:
    */
   uint32_t symb_cnt;
 
-  bool m_multi_control;
-
-  bool m_create_zeros;
-
+  /**
+   * @brief  counter of the number of preamble symbols output
+   *
+   */
+  uint32_t preamb_symb_cnt;
 
   /**
-   * @brief Gnuradio function that handles the PMT message
+   * @brief counter of the number of null symbols output after each frame
    *
-   * @param message : PMT message (i.e. input data from datasource)
    */
-  void msg_handler(pmt::pmt_t message);
+  uint32_t padd_cnt;
 
 public:
   /**
    * @brief Construct a new modulate impl object
    *
-   * @param sf spreading factor
-   * @param samp_rate sampling rate
-   * @param bw bandwith
+   * @param sf
+   * @param samp_rate
+   * @param bw
+   * @param sync_words
+   * @param create_zeros
    */
-  modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, bool create_zeros);
-
-  /**
-   * @brief Ctrl input handler, this function will be executed on trigger from
-   * the ctrl_in port
-   *
-   * @param msg : pmt message (should be d_pmt_done)
-   */
-  void ctrl_in_handler(pmt::pmt_t msg);
+  modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
+                std::vector<uint16_t> sync_words, bool create_zeros);
 
   /**
    * @brief Destroy the modulate impl object
@@ -109,22 +122,20 @@ public:
   ~modulate_impl();
 
   /**
-   * @brief standard gnuradio forecast function that tells the system that input
-   * data is needed before it can continue and compute the actual modulation
+   * @brief
    *
-   * @param noutput_items : number of output items
-   * @param ninput_items_required : number of required input items
+   * @param noutput_items
+   * @param ninput_items_required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief Main function where the actual computation is done.
+   * @brief
    *
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items : number of input items
-   * @param input_items : input data  (i.e. output of gray mapping stage)
-   * @param output_items : output data
+   * @param noutput_items
+   * @param ninput_items
+   * @param input_items
+   * @param output_items
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

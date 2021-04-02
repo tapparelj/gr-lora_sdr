@@ -2,7 +2,7 @@
  * @file data_source_sim_impl.cc
  * @author Martyn van Dijke (martijnvdijke600@gmail.com)
  * @brief
- * @version 0.1
+ * @version 0.2
  * @date 2021-01-08
  *
  *
@@ -25,10 +25,11 @@ namespace lora_sdr {
 
 data_source_sim::sptr data_source_sim::make(int pay_len, int n_frames,
                                             std::string string_input,
-                                            uint32_t mean, bool multi_control) {
+                                            uint32_t mean, bool quit_control) {
   return gnuradio::get_initial_sptr(new data_source_sim_impl(
-      pay_len, n_frames, string_input, mean, multi_control));
+      pay_len, n_frames, string_input, mean, quit_control));
 }
+
 
 /**
  * @brief Construct a new data source impl object
@@ -36,10 +37,12 @@ data_source_sim::sptr data_source_sim::make(int pay_len, int n_frames,
  * @param pay_len : payload length
  * @param n_frames : number of frames to generate data for
  * @param string_input : input string from gnuradio-companian
+ * @param mean : time between messages
+ * @param quit_control : if we should send a quit signal or not
  */
 data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
                                            std::string string_input,
-                                           uint32_t mean, bool multi_control)
+                                           uint32_t mean, bool quit_control)
     : gr::block("data_source", gr::io_signature::make(0, 0, 0),
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
   m_n_frames = n_frames;
@@ -47,7 +50,7 @@ data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
   frame_cnt = 0; // let some time to the Rx to start listening
   m_string_input = string_input;
   m_mean = mean;
-  m_multi_control = multi_control;
+  m_multi_control = quit_control;
   m_finished = false;
   m_finished_wait = false;
   m_n_send = 0;
@@ -99,7 +102,7 @@ void data_source_sim_impl::forecast(int noutput_items,
  * @param noutput_items : number of output items : 1
  * @param ninput_items : number of input items : 0
  * @param input_items : input item : 0
- * @param output_items : ooutput items :
+ * @param output_items : output items : 
  * @return int : work status
  */
 int data_source_sim_impl::general_work(int noutput_items,

@@ -10,35 +10,21 @@ class hamming_dec_impl : public hamming_dec {
 private:
   /**
    * @brief Transmission coding rate
-   * 
+   *
    */
-  uint8_t m_cr; 
+  uint8_t m_cr;
 
   /**
    * @brief Coding rate use for the block
-   * 
+   *
    */
   uint8_t cr_app;
 
   /**
    * @brief Indicate that it is the first block
-   * 
+   *
    */
-  bool is_first;
-
-  /**
-   * @brief Handles the coding rate received from the header_decoder block.
-   * 
-   * @param cr : coding rate
-   */
-  void header_cr_handler(pmt::pmt_t cr);
-
-  /**
-   * @brief Reset the block variables for a new frame.
-   * 
-   * @param id 
-   */
-  void new_frame_handler(pmt::pmt_t id);
+  bool is_header;
 
 public:
   /**
@@ -46,13 +32,13 @@ public:
    *
    */
   hamming_dec_impl();
-  
+
   /**
    * @brief Destroy the hamming dec impl object
    *
    */
   ~hamming_dec_impl();
-
+  
   /**
    * @brief Main function where the actual computation resides
    * 

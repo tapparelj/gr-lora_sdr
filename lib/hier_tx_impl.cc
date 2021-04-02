@@ -58,48 +58,48 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
     : gr::hier_block2("hier_tx", gr::io_signature::make(0, 0, 0),
                       gr::io_signature::make(1, 1, sizeof(gr_complex))) {
 
-  // Blocks
-  gr::lora_sdr::data_source_sim::sptr data_source_sim(
-      gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data, mean,
-                                          true));
-  // whitening
-  gr::lora_sdr::whitening::sptr whitening(gr::lora_sdr::whitening::make());
-  // add header
-  gr::lora_sdr::header::sptr header(
-      gr::lora_sdr::header::make(impl_head, has_crc, cr));
-  // add crc
-  gr::lora_sdr::add_crc::sptr add_crc(gr::lora_sdr::add_crc::make(has_crc));
-  // hamming encoding
-  gr::lora_sdr::hamming_enc::sptr hamming_enc(
-      gr::lora_sdr::hamming_enc::make(cr, sf));
-  // interleaving
-  gr::lora_sdr::interleaver::sptr interleaver(
-      gr::lora_sdr::interleaver::make(cr, sf));
-  // gray mapping
-  gr::lora_sdr::gray_decode::sptr gray_decode(
-      gr::lora_sdr::gray_decode::make(sf));
-  // modulate
-  gr::lora_sdr::modulate::sptr modulate(
-      gr::lora_sdr::modulate::make(sf, samp_rate, bw,multi_control));
-  gr::hier_block2::set_min_output_buffer(10000000);
-  // Connections
-  // Message connections
+//   // Blocks
+//   gr::lora_sdr::data_source_sim::sptr data_source_sim(
+//       gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data, mean,
+//                                           true));
+//   // whitening
+//   gr::lora_sdr::whitening::sptr whitening(gr::lora_sdr::whitening::make());
+//   // add header
+//   gr::lora_sdr::header::sptr header(
+//       gr::lora_sdr::header::make(impl_head, has_crc, cr));
+//   // add crc
+//   gr::lora_sdr::add_crc::sptr add_crc(gr::lora_sdr::add_crc::make(has_crc));
+//   // hamming encoding
+//   gr::lora_sdr::hamming_enc::sptr hamming_enc(
+//       gr::lora_sdr::hamming_enc::make(cr, sf));
+//   // interleaving
+//   gr::lora_sdr::interleaver::sptr interleaver(
+//       gr::lora_sdr::interleaver::make(cr, sf));
+//   // gray mapping
+//   gr::lora_sdr::gray_decode::sptr gray_decode(
+//       gr::lora_sdr::gray_decode::make(sf));
+//   // modulate
+//   gr::lora_sdr::modulate::sptr modulate(
+//       gr::lora_sdr::modulate::make(sf, samp_rate, bw,multi_control));
+//   gr::hier_block2::set_min_output_buffer(10000000);
+//   // Connections
+//   // Message connections
 
-  msg_connect(data_source_sim, "msg", whitening, "msg");
-  msg_connect(data_source_sim, "msg", header, "msg");
-  msg_connect(data_source_sim, "msg", add_crc, "msg");
-  msg_connect(data_source_sim, "msg", interleaver, "msg");
-  msg_connect(data_source_sim, "msg", modulate, "msg");
-  //
-  // normal connections
-  connect(data_source_sim, 0, whitening, 0);
-  connect(add_crc, 0, hamming_enc, 0);
-  connect(gray_decode, 0, modulate, 0);
-  connect(hamming_enc, 0, interleaver, 0);
-  connect(header, 0, add_crc, 0);
-  connect(interleaver, 0, gray_decode, 0);
-  connect(whitening, 0, header, 0);
-  connect(modulate, 0, self(), 0);
+//   msg_connect(data_source_sim, "msg", whitening, "msg");
+//   msg_connect(data_source_sim, "msg", header, "msg");
+//   msg_connect(data_source_sim, "msg", add_crc, "msg");
+//   msg_connect(data_source_sim, "msg", interleaver, "msg");
+//   msg_connect(data_source_sim, "msg", modulate, "msg");
+//   //
+//   // normal connections
+//   connect(data_source_sim, 0, whitening, 0);
+//   connect(add_crc, 0, hamming_enc, 0);
+//   connect(gray_decode, 0, modulate, 0);
+//   connect(hamming_enc, 0, interleaver, 0);
+//   connect(header, 0, add_crc, 0);
+//   connect(interleaver, 0, gray_decode, 0);
+//   connect(whitening, 0, header, 0);
+//   connect(modulate, 0, self(), 0);
 }
 
 /**

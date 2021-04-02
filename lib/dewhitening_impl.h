@@ -1,6 +1,7 @@
 #ifndef INCLUDED_LORA_DEWHITENING_IMPL_H
 #define INCLUDED_LORA_DEWHITENING_IMPL_H
 
+// #define GRLORA_DEBUG
 #include <lora_sdr/dewhitening.h>
 
 namespace gr {
@@ -12,23 +13,23 @@ private:
    * @brief Payload length in bytes
    *
    */
-  int m_payload_len;      
+  int m_payload_len;
 
   /**
    * @brief indicate the presence of a CRC
-   * 
+   *
    */
-  int m_crc_presence;     
+  int m_crc_presence;
 
   /**
    * @brief The offset in the whitening table
-   * 
+   *
    */
   int offset = 0;
 
   /**
    * @brief The dewhitened bytes
-   * 
+   *
    */
   std::vector<uint8_t> dewhitened;
 
@@ -59,7 +60,7 @@ public:
    *
    */
   dewhitening_impl();
-  
+
   /**
    * @brief Destroy the dewhitening impl object
    *

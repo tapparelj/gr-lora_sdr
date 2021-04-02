@@ -10,15 +10,21 @@ class hamming_enc_impl : public hamming_enc {
 private:
   /**
    * @brief Transmission coding rate
-   * 
+   *
    */
-  uint8_t m_cr; 
+  uint8_t m_cr;
 
   /**
    * @brief Transmission spreading factor
-   * 
+   *
    */
-  uint8_t m_sf; 
+  uint8_t m_sf;
+
+  /**
+   * @brief count the number of processed items in the current frame
+   *
+   */
+  int m_cnt;
 
 public:
   /**

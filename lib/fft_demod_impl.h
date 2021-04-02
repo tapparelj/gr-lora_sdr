@@ -8,7 +8,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/fft_demod.h>
-#include "helpers.h"
+#include <lora_sdr/utilities.h>
 #include <volk/volk.h>
 namespace gr {
 namespace lora_sdr {
@@ -39,23 +39,10 @@ private:
    */
   uint8_t m_cr;
 
-  /**
-   * @brief Number of bins in each lora Symbol
-   *
-   */
-  uint32_t m_number_of_bins;
-
-  /**
-   * @brief Number of samples received per lora symbols
-   *
-   */
-  uint32_t m_samples_per_symbol;
-
-  /**
-   * @brief integer part of the CFO
-   *
-   */
-  int CFOint;
+  uint32_t m_number_of_bins; ///< Number of bins in each lora Symbol
+  uint32_t
+      m_samples_per_symbol; ///< Number of samples received per lora symbols
+  int CFOint;               ///< integer part of the CFO
 
   // variables used to perform the FFT demodulation
   /**
@@ -92,7 +79,7 @@ private:
    * @brief Indicate that the first block hasn't been fully received
    *
    */
-  bool is_first;
+  bool is_header;
 
   /**
    * @brief The number of lora symbol in one block
@@ -100,29 +87,12 @@ private:
    */
   uint8_t block_size;
 
-  /**
-   * @brief Indicate that the coding rate has been given by the
-  header_decoder block
-   *
-   */
-  bool received_cr;
-
-  /**
-   * @brief Indicate that the crc presence has been given by the
-  header_decoder block
-   *
-   */
-  bool received_crc;
-
-  /**
-   * @brief Indicate that the payload length has been given by the
-   * header_decoder block
-   *
-   */
-  bool received_pay_len;
-// #ifdef GRLORA_MEASUREMENTS
-//   std::ofstream energy_file;
-// #endif
+#ifdef GRLORA_MEASUREMENTS
+  std::ofstream energy_file;
+#endif
+#ifdef GRLORA_DEBUG
+  std::ofstream idx_file;
+#endif
 
   /**
    * @brief Recover the lora symbol value using argmax of the dechirped symbol
@@ -139,7 +109,7 @@ private:
    *
    * @param id
    */
-  void new_frame_handler(pmt::pmt_t id);
+  void new_frame_handler(int cfo_int);
 
   /**
    * @brief Handles the reception of the coding rate received by the
@@ -155,11 +125,12 @@ public:
    *
    * @param samp_rate : sampling rate
    * @param bandwidth : bandwith
-   * @param sf : spreading factor 
+   * @param sf : spreading factor
    * @param impl_head : impl_head mode
    */
   fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                  bool impl_head);
+
   /**
    * @brief Destroy the fft demod impl object
    *
@@ -167,7 +138,8 @@ public:
   ~fft_demod_impl();
 
   /**
-   * @brief Standard gnuradio function to tell the system how many input and output items are needed.
+   * @brief Standard gnuradio function to tell the system how many input and
+   * output items are needed.
    *
    * @param noutput_items : number of output items
    * @param ninput_items_required : number of output items required

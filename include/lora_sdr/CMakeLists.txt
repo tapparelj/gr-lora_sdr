@@ -44,5 +44,11 @@ install(FILES
     hier_rx.h
     hier_tx.h
     data_source_sim.h
+    mu_detection.h
+    mu_synchro.h
+    noise_est.h
+    partial_ml.h
+    frame_src.h
+    signal_detector.h
     frame_detector.h DESTINATION include/lora_sdr
 )

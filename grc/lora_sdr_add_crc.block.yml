@@ -14,9 +14,6 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: msg
-    optional: true
 
 outputs:
 -   domain: stream

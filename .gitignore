@@ -12,3 +12,5 @@ cmake-build-debug/
 
 ##Pycharm
 .idea/
+
+Testing/
