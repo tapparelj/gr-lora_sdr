@@ -21,7 +21,6 @@ namespace gr {
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
 
         uint32_t cnt=0;///< count the number of frame
-
         /**
          *  \brief  Handles the payload length received from the header_decoder block.
          */

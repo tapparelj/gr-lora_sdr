@@ -45,7 +45,7 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
-    # set( CMAKE_VERBOSE_MAKEFILE on )
+
 
     add_definitions(-DGRLORA_DEBUG=True)
 
@@ -61,6 +61,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         VERBATIM
     )
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+##Setting options for meassurment output
+option(GRLORA_MEASUREMENTS "Turn on output meassurments (usefull for debugging purpose)" True)
+if(GRLORA_MEASUREMENTS)
+add_definitions(-DGRLORA_MEASUREMENTS)
+message(STATUS "Found setting GRLORA_MEASUREMENTS=True, setting outputting meassurments on")
+endif()
 
 # Make sure our local CMake Modules path comes first
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)

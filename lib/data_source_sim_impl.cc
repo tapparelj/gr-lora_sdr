@@ -134,7 +134,6 @@ int data_source_sim_impl::general_work(int noutput_items,
                     "INFO:Processing frame :" + std::to_string(frame_cnt) +
                         "/" + std::to_string(m_n_frames));
       // let this thread sleep for the inputted mean time.
-
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
       frame_cnt++;
       return 2 * m_pay_len;
