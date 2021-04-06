@@ -45,12 +45,7 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, including logging...")
     message(STATUS "Build type is  ${CMAKE_BUILD_TYPE}, setting GRLORA_DEBUG=True")
-
-
     add_definitions(-DGRLORA_DEBUG=True)
-
-    # add_definitions(-DGRLORA_MEASUREMENTS=True)
-
     include(cmake/Modules/GrMiscUtils.cmake)
     GR_LOGGING()
     add_custom_target(
@@ -61,12 +56,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         VERBATIM
     )
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-##Setting options for meassurment output
+########################################################################
+# Setting options for meassurment output and debug -v options
+########################################################################
 option(GRLORA_MEASUREMENTS "Turn on output meassurments (usefull for debugging purpose)" True)
 if(GRLORA_MEASUREMENTS)
 add_definitions(-DGRLORA_MEASUREMENTS)
 message(STATUS "Found setting GRLORA_MEASUREMENTS=True, setting outputting meassurments on")
+endif()
+option(DGRLORA_DEBUGV "More verbose debugging" True)
+if(GDGRLORA_DEBUGV)
+    add_definitions(-DGRLORA_DEBUGV)
+    message(STATUS "Found setting DGRLORA_DEBUGV turning on more verbose logging")
 endif()
 
 # Make sure our local CMake Modules path comes first

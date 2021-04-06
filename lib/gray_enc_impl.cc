@@ -43,7 +43,7 @@ int gray_enc_impl::work(int noutput_items,
   uint32_t *out = (uint32_t *)output_items[0];
   for (int i = 0; i < noutput_items; i++) {
     out[i] = (in[i] ^ (in[i] >> 1u));
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << std::hex << "0x" << in[i] << " ---> "
               << "0x" << out[i] << std::dec << std::endl;
 #endif

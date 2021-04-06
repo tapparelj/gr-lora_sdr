@@ -58,7 +58,7 @@ fft_demod_impl::fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
                        ".txt",
                    std::ios::out | std::ios::trunc);
 #endif
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   idx_file.open("../../idx.txt", std::ios::out | std::ios::trunc);
 #endif
 }
@@ -123,7 +123,7 @@ int32_t fft_demod_impl::get_symbol_val(const gr_complex *samples) {
               << m_fft_mag[mod(idx + 1, m_number_of_bins)] << "," << rec_en
               << "," << std::endl;
 #endif
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   idx_file << idx << ", ";
 #endif
   // std::cout<<idx<<", ";
@@ -140,7 +140,7 @@ void fft_demod_impl::new_frame_handler(int cfo_int) {
 #ifdef GRLORA_MEASUREMENTS
   energy_file << "\n";
 #endif
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   idx_file << std::endl;
 #endif
   // std::cout<<std::endl;
@@ -176,7 +176,15 @@ int fft_demod_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                  gr_vector_void_star &output_items) {
   const gr_complex *in = (const gr_complex *)input_items[0];
   uint32_t *out = (uint32_t *)output_items[0];
-
+    //search for work_done tags and if found add them to the stream
+    std::vector<tag_t> work_done_tags;
+    get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                       pmt::string_to_symbol("work_done"));
+    if (work_done_tags.size()) {
+        add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                     pmt::intern("done"));
+        return 1;
+    }
   // std::cout<<"buffer_fft_demod"<<ninput_items[0]<<"/"<<noutput_items<<std::endl;
   int to_output = 0;
   std::vector<tag_t> tags;

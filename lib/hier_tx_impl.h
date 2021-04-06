@@ -32,13 +32,15 @@ public:
    * @param impl_head : impl_head mode (boolean on/off)
    * @param has_crc : has_crc mode (boolean on/off)
    * @param samp_rate : sampling rate
-   * @param bw : bandwith
+   * @param bw : bandwith to use
    * @param mean : mean time in ms
-   * @param multi_control : Whetere multi control is enabled (aka should we wait for stopping if more chains are transmitting)
+   * @param sync_words : sync words to use
+   * @param create_zeros : whether multi control is enabled (aka should we wait for stopping if more chains are transmitting)
    */
-  hier_tx_impl(int pay_len, int n_frames, std::string src_data, uint8_t cr,
-               uint8_t sf, bool impl_head, bool has_crc, uint32_t samp_rate,
-               uint32_t bw,uint32_t mean, bool multi_control);
+  hier_tx_impl(int pay_len, int n_frames, std::string src_data,
+               uint8_t cr, uint8_t sf, bool impl_head, bool has_crc,
+               uint32_t samp_rate, uint32_t bw, uint32_t mean, std::vector<uint16_t> sync_words,
+               bool create_zeros);
   ~hier_tx_impl();
 
   // Where all the action really happens

@@ -54,7 +54,7 @@ data_source_sim_impl::data_source_sim_impl(int pay_len, int n_frames,
   m_finished = false;
   m_finished_wait = false;
   m_n_send = 0;
-
+  //register pmt output port
   message_port_register_out(pmt::mp("msg"));
 }
 
@@ -90,7 +90,8 @@ std::string data_source_sim_impl::random_string(int Nbytes) {
  */
 void data_source_sim_impl::forecast(int noutput_items,
                                     gr_vector_int &ninput_items_required) {
-  /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
+    //we do not need any items we make items
+  ninput_items_required[0] = 0;
 }
 
 /**
@@ -144,8 +145,13 @@ int data_source_sim_impl::general_work(int noutput_items,
       // if the multi control uses is not used, send done to the rest of the
       // chain
       if (m_multi_control == true) {
-        add_item_tag(0, nitems_written(0), pmt::intern("status"),
-                     pmt::intern("done"));
+#ifdef GRLORA_DEBUG
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:done with creating packets, writing done tag");
+#endif
+          //set stream tag that we are done producing items
+        add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                     pmt::intern("done"),pmt::intern("data source"));
       } else {
         m_wait = true;
       }
@@ -158,8 +164,8 @@ int data_source_sim_impl::general_work(int noutput_items,
   }
   if (m_wait == true) {
     return 0;
-    // 2 * m_pay_len;
   }
+  //status currenlty not in use
   if (m_finished == true) {
     return WORK_DONE;
   }

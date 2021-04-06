@@ -5,12 +5,12 @@ flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.hier_rx(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${exit})
+  make: lora_sdr.hier_rx(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${sync_words} , ${exit})
 
 cpp_templates: 
      includes: ['#include <lora_sdr/hier_rx.h>'] 
      declarations: 'lora_sdr::hier_rx::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::hier_rx::make(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${exit});' 
+     make: 'this->${id} = lora_sdr::hier_rx::make(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${sync_words} ,${exit});'
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -43,6 +43,10 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: sync_words
+    label: Sync words
+    dtype: int_vector
+    default: [8,16]
 -   id: exit
     label: Exit
     dtype: bool
@@ -72,7 +76,7 @@ documentation: |-
     Wrapper block that hold the entire Rx chain :
     (frame_sync, fft_demod, gray demap, deinterleaver, hamming dec, header decoder, dewhitening, crc verify)
     Input: 
-        trigg : stream of complex sampled 
+        in : stream of complex samples
     Output:
         out : decoded output message
 

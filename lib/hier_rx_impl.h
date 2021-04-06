@@ -24,17 +24,19 @@ public:
   /**
    * @brief Construct a new hier rx impl object
    *
-   * @param samp_rate
-   * @param bandwidth
-   * @param sf
-   * @param impl_head
-   * @param cr
-   * @param pay_len
-   * @param has_crc
-   * @param exit
+   * @param samp_rate : sampling rate to use
+   * @param bandwidth : bandwith to use
+   * @param sf : spreading factor to use
+   * @param impl_head : impl_head mode (boolean)
+   * @param cr : coding rate
+   * @param pay_len : payload length
+   * @param has_crc : has_crc (boolean)
+   * @param sync_words : syncwords to use
+   * @param exit : boolean to tell system what to do on done signal (exit or not)
    */
-  hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head,
-               uint8_t cr, uint32_t pay_len, bool has_crc, bool exit);
+  hier_rx_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
+               bool impl_head, uint8_t cr, uint32_t pay_len,
+               bool has_crc, std::vector<uint16_t> sync_words, bool exit);
   /**
    * @brief Destroy the hier rx impl object
    *

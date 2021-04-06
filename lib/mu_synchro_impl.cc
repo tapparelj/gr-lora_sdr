@@ -106,7 +106,7 @@ void mu_synchro_impl::add_tag(double power1, double power2, long win_len,
     add_item_tag(0, nitems_written(0) + offset,
                  pmt::string_to_symbol("new_window"), window_tag);
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   std::cout << "[mu_synchro_impl.cc] "
             << "\toffset " << nitems_written(0) << ", power1 " << power1
             << ", power2 " << power2 << ", T_u= " << Tu << ", T_i= " << Ti1
@@ -176,7 +176,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
         pmt::dict_ref(tags[i].value, pmt::string_to_symbol("cfo_frac"), err));
     new_user.power = pmt::to_double(
         pmt::dict_ref(tags[i].value, pmt::string_to_symbol("power"), err));
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "[mu_synchro_impl.cc] "
               << "new user: " << std::to_string(new_user.power) << ", "
               << std::to_string(new_user.cfo_int) << ", "
@@ -196,7 +196,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
       two_users = false;
 
       m_sync_state = SINGLE_USER;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "SINGLE_USER" << std::endl;
 #endif
@@ -223,7 +223,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
         }
       }
       m_sync_state = IDLE;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "IDLE" << std::endl;
 #endif
@@ -263,7 +263,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
         two_users = true;
 
         m_sync_state = REALIGN_TO_NEW;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
         std::cout << "[mu_synchro_impl.cc] "
                   << "REALIGN_TO_NEW" << std::endl;
         std::cout << "[mu_synchro_impl.cc] "
@@ -281,7 +281,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
         }
         two_users = true;
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
         std::cout << "[mu_synchro_impl.cc] "
                   << "MULTI_USER" << std::endl;
 #endif
@@ -336,7 +336,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
     std::swap(user_i, user_u);
     m_sync_state = MULTI_USER;
     realign_to_new = true; // debug variable
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "[mu_synchro_impl.cc] "
               << "MULTI_USER" << std::endl;
 #endif
@@ -360,7 +360,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
     std::swap(user_i, user_u);
 
     m_sync_state = SINGLE_USER;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "[mu_synchro_impl.cc] "
               << "SINGLE_USER" << std::endl;
 #endif
@@ -381,7 +381,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
       else
         m_power2 = 0;
       m_sync_state = REALIGN_TO_PREV;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "REALIGN_TO_PREV" << std::endl;
 #endif
@@ -394,7 +394,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
       else
         m_power1 = 0;
       m_sync_state = SINGLE_USER;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "SINGLE_USER" << std::endl;
 #endif
@@ -407,7 +407,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
               get_type(user_i.cnt + std::ceil(m_tau)), m_tau, delta_cfo,
               offset);
       m_tau = double_mod(m_tau - m_N / 4, m_N);
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "new tau= " << m_tau << std::endl;
 #endif
@@ -423,7 +423,7 @@ mu_synchro_impl::sync_frame(const gr_complex *in, gr_complex *out,
       add_tag(m_power1, m_power2, m_N, get_type(user_u.cnt), DOWNCHIRP,
               get_type(user_i.cnt + std::ceil(m_tau)), m_tau, delta_cfo,
               offset);
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       std::cout << "[mu_synchro_impl.cc] "
                 << "new tau= " << m_tau << std::endl;
 #endif

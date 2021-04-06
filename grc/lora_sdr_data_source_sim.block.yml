@@ -54,7 +54,7 @@ documentation: |-
             Pay_len: length of the payload in bytes
             N_frames: number of frames to send
             Input string: specific input string to be used, if empty random generated will be used
-            mean : 
+            mean : wait time between two messages
         Output:
             msg: payload data as a string
 

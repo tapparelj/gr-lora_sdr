@@ -5,7 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Lora Sim
+# Title: test
+# Author: Martyn
 # Description: Simulation example LoRa
 # GNU Radio version: 3.8.2.0
 
@@ -26,7 +27,7 @@ import threading
 class lora_sim(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Lora Sim")
+        gr.top_block.__init__(self, "test")
 
         self._lock = threading.RLock()
 
@@ -37,7 +38,7 @@ class lora_sim(gr.top_block):
         self.sf = sf = 9
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 10
+        self.n_frame = n_frame = 3
         self.multi_control = multi_control = True
         self.mult_const = mult_const = 1
         self.mean = mean = 200
@@ -63,8 +64,8 @@ class lora_sim(gr.top_block):
         self.lora_sdr_fft_demod_0_0 = lora_sdr.fft_demod(samp_rate, bw, sf, impl_head)
         self.lora_sdr_dewhitening_0_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0_0 = lora_sdr.deinterleaver(sf)
-        self.lora_sdr_data_source_sim_0 = lora_sdr.data_source_sim(64, 5, '', 200, False)
-        self.lora_sdr_crc_verif_0_0 = lora_sdr.crc_verif(True)
+        self.lora_sdr_data_source_sim_0 = lora_sdr.data_source_sim(64, n_frame, '', 200, True)
+        self.lora_sdr_crc_verif_0_0 = lora_sdr.crc_verif(False)
         self.lora_sdr_add_crc_0_0 = lora_sdr.add_crc(has_crc)
         self.interp_fir_filter_xxx_0_1 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1.declare_sample_delay(0)
@@ -75,8 +76,9 @@ class lora_sim(gr.top_block):
             epsilon=1.0,
             taps=[1.0 + 0.0j],
             noise_seed=0,
-            block_tags=True)
+            block_tags=False)
         self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
@@ -85,6 +87,7 @@ class lora_sim(gr.top_block):
         ##################################################
         self.msg_connect((self.lora_sdr_data_source_sim_0, 'msg'), (self.lora_sdr_whitening_0_0, 'msg'))
         self.msg_connect((self.lora_sdr_header_decoder_0_0, 'frame_info'), (self.lora_sdr_frame_sync_0_0, 'frame_info'))
+        self.connect((self.blocks_throttle_0_1, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.channels_channel_model_0_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.interp_fir_filter_xxx_0_1, 0))
         self.connect((self.interp_fir_filter_xxx_0_1, 0), (self.lora_sdr_frame_sync_0_0, 0))
@@ -134,7 +137,6 @@ class lora_sim(gr.top_block):
     def set_pay_len(self, pay_len):
         with self._lock:
             self.pay_len = pay_len
-            self.blocks_head_0.set_length(int(self.pay_len*2*1))
 
     def get_n_frame(self):
         return self.n_frame

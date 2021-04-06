@@ -67,6 +67,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   message_port_register_in(pmt::mp("frame_info"));
   set_msg_handler(pmt::mp("frame_info"),
                   [this](pmt::pmt_t msg) { this->frame_info_handler(msg); });
+  set_tag_propagation_policy(TPP_ONE_TO_ONE);
 
 #ifdef GRLORA_MEASUREMENTS
   int num = 0; // check next file name to use
@@ -80,7 +81,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
   sync_log.open("../../matlab/measurements/sync" + std::to_string(num) + ".txt",
                 std::ios::out | std::ios::trunc);
 #endif
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   numb_symbol_to_save = 80; // number of symbol per erroneous frame to save
   last_frame.resize(m_samples_per_symbol * numb_symbol_to_save);
   samples_file.open("../../matlab/err_symb.txt",
@@ -327,6 +328,7 @@ float frame_sync_impl::determine_energy(const gr_complex *samples) {
   volk_32f_accumulator_s32f(&energy_chirp, magsq_chirp, m_samples_per_symbol);
   return energy_chirp;
 }
+
 void frame_sync_impl::frame_info_handler(pmt::pmt_t frame_info) {
   pmt::pmt_t err = pmt::string_to_symbol("error");
 
@@ -369,7 +371,15 @@ int frame_sync_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
   int items_to_output = 0;
-
+    //search for work_done tags and if found add them to the stream
+    std::vector<tag_t> work_done_tags;
+    get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                       pmt::string_to_symbol("work_done"));
+    if (work_done_tags.size()) {
+        add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                     pmt::intern("done"), pmt::intern("frame_sync"));
+        return 1;
+    }
   // downsampling
   for (int ii = 0; ii < m_number_of_bins; ii++)
     in_down[ii] =
@@ -556,7 +566,7 @@ int frame_sync_impl::general_work(int noutput_items,
       sync_log << std::fixed << std::setprecision(10)
                << determine_energy(&in_down[0]) << ",";
 #endif
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       if (symbol_cnt < numb_symbol_to_save)
         memcpy(&last_frame[symbol_cnt * m_number_of_bins], &in_down[0],
                m_samples_per_symbol * sizeof(gr_complex));

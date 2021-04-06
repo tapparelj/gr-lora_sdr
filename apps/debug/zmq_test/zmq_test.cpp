@@ -1,7 +1,7 @@
 /********************
 GNU Radio C++ Flow Graph Source File
 
-Title: Test
+Title: Not titled yet
 GNU Radio version: 3.8.2.0
 ********************/
 
@@ -12,40 +12,52 @@ using namespace gr;
 zmq_test::zmq_test () {
 
 
-
-    this->tb = gr::make_top_block("Test");
+    std::vector<uint16_t> test {8,16};
+    this->tb = gr::make_top_block("Not titled yet");
 
 
 // Blocks:
     {
-        this->lora_sdr_hier_tx_0_0 = lora_sdr::hier_tx::make(pay_len, n_frame, "sTomvXMuARDzMfJltZ4xSJ0dLGMDueK8PH00maiTXhiew9HzJmZzKNoP4zHkWGRC", cr, sf, impl_head,has_crc, samp_rate, bw, 200, false);
+        this->lora_sdr_whitening_0_0 = lora_sdr::whitening::make();
     }
     {
-        this->lora_sdr_hier_tx_0 = lora_sdr::hier_tx::make(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, mean, true);
+        this->lora_sdr_modulate_0_0 = lora_sdr::modulate::make(sf, samp_rate, bw, test,false);
     }
     {
-        this->lora_sdr_frame_detector_0 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
+        this->lora_sdr_interleaver_0_0 = lora_sdr::interleaver::make(cr, sf);
     }
     {
-        this->blocks_throttle_0_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate, true);
+        this->lora_sdr_header_0_0 = lora_sdr::header::make(impl_head, has_crc, cr);
     }
     {
-        this->blocks_throttle_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate, true);
+        this->lora_sdr_hamming_enc_0_0 = lora_sdr::hamming_enc::make(cr, sf);
+    }
+    {
+        this->lora_sdr_gray_decode_0_0 = lora_sdr::gray_decode::make(sf);
+    }
+    {
+        this->lora_sdr_data_source_sim_0 = lora_sdr::data_source_sim::make(64, n_frame, "ssKTiomvPXMuARfDvU5zzMIoQfJlOtZ4LxNSJ0dmLOGctMDOuzeTbK8PPH0r0NmA", 200, true);
+    }
+    {
+        this->lora_sdr_add_crc_0_0 = lora_sdr::add_crc::make(has_crc);
+    }
+    {
+        this->blocks_throttle_0_1 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
     }
     {
         this->blocks_null_sink_0 = blocks::null_sink::make(sizeof(gr_complex)*1);
     }
-    {
-        this->blocks_add_xx_0 = blocks::add_cc::make(1);
-    }
 
 // Connections:
-    this->tb->hier_block2::connect(this->blocks_add_xx_0, 0, this->lora_sdr_frame_detector_0, 0);
-    this->tb->hier_block2::connect(this->blocks_throttle_0, 0, this->blocks_add_xx_0, 0);
-    this->tb->hier_block2::connect(this->blocks_throttle_0_0, 0, this->blocks_add_xx_0, 1);
-    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_0, 0, this->blocks_null_sink_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_0, 0, this->blocks_throttle_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_0_0, 0, this->blocks_throttle_0_0, 0);
+    this->tb->hier_block2::connect(this->blocks_throttle_0_1, 0, this->blocks_null_sink_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_add_crc_0_0, 0, this->lora_sdr_hamming_enc_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_data_source_sim_0, 0, this->lora_sdr_whitening_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_gray_decode_0_0, 0, this->lora_sdr_modulate_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_hamming_enc_0_0, 0, this->lora_sdr_interleaver_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_header_0_0, 0, this->lora_sdr_add_crc_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_interleaver_0_0, 0, this->lora_sdr_gray_decode_0_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_modulate_0_0, 0, this->blocks_throttle_0_1, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_whitening_0_0, 0, this->lora_sdr_header_0_0, 0);
 }
 
 zmq_test::~zmq_test () {
@@ -66,8 +78,7 @@ int zmq_test::get_samp_rate () const {
 
 void zmq_test::set_samp_rate (int samp_rate) {
     this->samp_rate = samp_rate;
-    this->blocks_throttle_0->set_sample_rate(this->samp_rate);
-    this->blocks_throttle_0_0->set_sample_rate(this->samp_rate);
+    this->blocks_throttle_0_1->set_sample_rate(this->samp_rate*10);
 }
 
 int zmq_test::get_pay_len () const {
@@ -92,14 +103,6 @@ bool zmq_test::get_multi_control () const {
 
 void zmq_test::set_multi_control (bool multi_control) {
     this->multi_control = multi_control;
-}
-
-int zmq_test::get_mult_const () const {
-    return this->mult_const;
-}
-
-void zmq_test::set_mult_const (int mult_const) {
-    this->mult_const = mult_const;
 }
 
 int zmq_test::get_mean () const {

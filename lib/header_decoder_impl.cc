@@ -95,7 +95,15 @@ int header_decoder_impl::general_work(int noutput_items,
                                       gr_vector_void_star &output_items) {
   const uint8_t *in = (const uint8_t *)input_items[0];
   uint8_t *out = (uint8_t *)output_items[0];
-
+        //search for work_done tags and if found add them to the stream
+        std::vector<tag_t> work_done_tags;
+        get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                           pmt::string_to_symbol("work_done"));
+        if (work_done_tags.size()) {
+            add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                         pmt::intern("done"), pmt::intern("header_decoder"));
+            return 1;
+        }
   int nitem_to_process = ninput_items[0];
 
   std::vector<tag_t> tags;
@@ -175,7 +183,7 @@ int header_decoder_impl::general_work(int noutput_items,
         noutput_items = 0;
       } else {
         std::cout << "Header checksum valid!" << std::endl << std::endl;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
         std::cout << "should have " << (int)header_chk << std::endl;
         std::cout << "got: "
                   << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0

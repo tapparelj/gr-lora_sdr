@@ -20,6 +20,12 @@ namespace gr {
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
 
+        /**
+         * @brief Boolean value to tell if we should close the program if "work_done" signal is received
+         * 
+         */
+        bool m_exit;
+
         uint32_t cnt=0;///< count the number of frame
         /**
          *  \brief  Handles the payload length received from the header_decoder block.

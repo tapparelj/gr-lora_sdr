@@ -53,7 +53,7 @@ namespace gr {
       const uint32_t *in = (const uint32_t *) input_items[0];
       uint32_t *out = (uint32_t *) output_items[0];
       for(int i=0;i<noutput_items;i++){
-        #ifdef GRLORA_DEBUG
+        #ifdef GRLORA_DEBUGV
         std::cout<<std::hex<<"0x"<<in[i]<<" -->  ";
         #endif
         out[i]=in[i];
@@ -62,7 +62,7 @@ namespace gr {
         }
         //do the shift of 1
          out[i]=mod(out[i]+1,(1<<m_sf));
-         #ifdef GRLORA_DEBUG
+         #ifdef GRLORA_DEBUGV
          std::cout<<"0x"<<out[i]<<std::dec<<std::endl;
          #endif
       }

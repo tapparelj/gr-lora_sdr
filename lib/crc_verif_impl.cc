@@ -18,6 +18,7 @@ crc_verif::sptr crc_verif::make(bool exit) {
 crc_verif_impl::crc_verif_impl(bool exit)
     : gr::block("crc_verif", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
+    m_exit = exit;
   message_port_register_out(pmt::mp("msg"));
 }
 
@@ -56,6 +57,15 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   if (output_items.size())
     out = (uint8_t *)output_items[0];
   int nitem_to_process = ninput_items[0];
+  if(m_exit) {
+      //search for work_done tags and if found add them to the stream
+      std::vector <tag_t> work_done_tags;
+      get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                         pmt::string_to_symbol("work_done"));
+      if (work_done_tags.size()) {
+          std::exit(EXIT_SUCCESS);
+      }
+  }
 
   std::vector<tag_t> tags;
   get_tags_in_window(tags, 0, 0, ninput_items[0],
@@ -73,9 +83,13 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
           pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
       m_payload_len = pmt::to_long(
           pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err));
-      // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
-      // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc:
-      // "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
+#ifdef GRLORA_DEBUGV
+      std::cout << m_payload_len << " " << nitem_to_process << std::endl;
+      std::cout << "\ncrc_crc " << tags[0].offset
+                << " - crc:
+                   "<<(int)m_crc_presence<<" -
+                       pay_len : "<<(int)m_payload_len<<"\n ";
+#endif
     }
   }
 
@@ -92,7 +106,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
 
       // XOR the obtained CRC with the last 2 data bytes
       m_crc = m_crc ^ in[m_payload_len - 1] ^ (in[m_payload_len - 2] << 8);
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       for (int i = 0; i < (int)m_payload_len + 2; i++)
         std::cout << std::hex << (int)in[i] << std::dec << std::endl;
       std::cout << "Calculated " << std::hex << m_crc << std::dec << std::endl;
@@ -131,7 +145,10 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         out[i] = in[i];
     }
     cnt++;
-    std::cout << "msg " << cnt << ": " << message_str << std::endl;
+#ifdef GRLORA_DEBUG
+    GR_LOG_DEBUG(this->d_logger,
+                 "DEBUG:msg " + std::to_string(cnt) + ":" + message_str);
+#endif
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     consume_each(m_payload_len);
     return m_payload_len;

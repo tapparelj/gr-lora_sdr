@@ -14,7 +14,7 @@ add_crc::sptr add_crc::make(bool has_crc) {
 
 /**
  * @brief Construct a new add crc impl object
- * 
+ *
  * @param has_crc : boolean if crc is turned on or not
  */
 add_crc_impl::add_crc_impl(bool has_crc)
@@ -32,7 +32,7 @@ add_crc_impl::~add_crc_impl() {}
 
   /**
    * @brief Standard gnuradio function for telling the scheduler how many input items are needed
-   * 
+   *
    * @param noutput_items number of input items
    * @param ninput_items_required minimum items required
    */
@@ -80,7 +80,15 @@ int add_crc_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   int nitems_to_output = 0;
   noutput_items = std::max(0, noutput_items - 4); // take margin to output CRC
   int nitems_to_process = std::min(ninput_items[0], noutput_items);
-
+    //search for work_done tags and if found add them to the stream
+    std::vector<tag_t> work_done_tags;
+    get_tags_in_window(work_done_tags, 0, 0, nitems_read(0) + 10,
+                       pmt::string_to_symbol("work_done"));
+    if (work_done_tags.size()) {
+        add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                     pmt::intern("done"),pmt::intern("add crc"));
+        noutput_items = 1;
+    }
   // read tags
   std::vector<tag_t> tags;
   get_tags_in_window(tags, 0, 0, noutput_items,

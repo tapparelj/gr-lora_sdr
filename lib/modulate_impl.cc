@@ -86,6 +86,17 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   gr_complex *out = (gr_complex *)output_items[0];
   int nitems_to_process = ninput_items[0];
   int output_offset = 0;
+
+  //search for work_done tags and if found add them to the stream
+  std::vector<tag_t> work_done_tags;
+  get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                     pmt::string_to_symbol("work_done"));
+  if (work_done_tags.size()) {
+    add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                 pmt::intern("done"));
+    return 1;
+  }
+
   // read tags
   std::vector<tag_t> tags;
 
@@ -109,7 +120,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
             int((m_frame_len + m_inter_frame_padding + n_up + 4.25) *
                 m_samples_per_symbol));
 
-        add_item_tag(0, tags[0]);
+//        add_item_tag(0, tags[0]);
 
         symb_cnt = 0;
         preamb_symb_cnt = 0;

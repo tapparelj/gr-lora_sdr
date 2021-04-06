@@ -73,7 +73,7 @@ mu_detection_impl::mu_detection_impl(uint8_t sf, uint8_t os_factor,
   m_dfts_mag.resize(m_n_up - 1, std::vector<float>(m_N, 0));
   m_dft_mag_prod.resize(m_N, 0);
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   out_file.open("../../matlab/debug/detect.txt",
                 std::ios::out | std::ios::trunc);
   m_matched_filter_en = 0;
@@ -323,7 +323,7 @@ int mu_detection_impl::general_work(int noutput_items,
         m_mf_conv_out_abs[i][j] = std::abs(m_mf_conv_out[j]);
       }
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       for (size_t j = 0; j < m_mf_conv_out.size(); j++) {
         out_file << m_mf_conv_out[j].real()
                  << (m_mf_conv_out[j].imag() < 0 ? "-" : "+")
@@ -452,7 +452,7 @@ int mu_detection_impl::general_work(int noutput_items,
       }
     } else if (m_ignore_next)
       m_ignore_next = false;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     if (m_matched_filter_en) {
       m_matched_filter_en--;
 

@@ -58,7 +58,15 @@ int deinterleaver_impl::general_work(int noutput_items,
                                      gr_vector_void_star &output_items) {
   const uint32_t *in = (uint32_t *)input_items[0];
   uint8_t *out = (uint8_t *)output_items[0];
-
+        //search for work_done tags and if found add them to the stream
+        std::vector<tag_t> work_done_tags;
+        get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                           pmt::string_to_symbol("work_done"));
+        if (work_done_tags.size()) {
+            add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                         pmt::intern("done"), pmt::intern("deinterleaver"));
+            return 1;
+        }
   std::vector<tag_t> tags;
   get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("frame_info"));
   if (tags.size()) {
@@ -92,7 +100,7 @@ int deinterleaver_impl::general_work(int noutput_items,
     for (int i = 0; i < cw_len; i++) {
       inter_bin[i] = int2bool(in[i], sf_app);
     }
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "interleaved----" << std::endl;
     for (uint32_t i = 0u; i < cw_len; i++) {
       for (int j = 0; j < int(sf_app); j++) {
@@ -113,7 +121,7 @@ int deinterleaver_impl::general_work(int noutput_items,
       out[i] = bool2int(deinter_bin[i]);
     }
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "codewords----" << std::endl;
     for (uint32_t i = 0u; i < sf_app; i++) {
       for (int j = 0; j < int(cw_len); j++) {

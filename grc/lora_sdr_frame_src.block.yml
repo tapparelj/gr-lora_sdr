@@ -2,7 +2,7 @@
 
 id: lora_sdr_frame_src
 label: Frame src
-category: '[LoRa_mu]'
+category: '[LoRa]/mu'
 
 parameters:
 -   id: sf

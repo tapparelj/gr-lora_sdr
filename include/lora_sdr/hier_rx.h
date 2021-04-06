@@ -37,7 +37,8 @@ public:
    * creating new instances.
    */
   static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf,
-                   bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool exit);
+                   bool impl_head, uint8_t cr, uint32_t pay_len,
+                   bool has_crc, std::vector<uint16_t> sync_words, bool exit);
 };
 
 } // namespace lora_sdr

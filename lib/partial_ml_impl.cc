@@ -80,7 +80,7 @@ partial_ml_impl::partial_ml_impl(uint8_t sf, uint8_t id)
   Mu = 0;
   SNR_est = 0.0;
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   if (!m_id)
     out_file.open("../../matlab/debug/partial_debug.txt",
                   std::ios::out | std::ios::trunc);

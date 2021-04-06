@@ -35,15 +35,15 @@ header_impl::header_impl(bool impl_head, bool has_crc, uint8_t cr)
 
 /**
  * @brief Destroy the header impl::header impl object
- * 
+ *
  */
 header_impl::~header_impl() {}
 
 /**
- * @brief 
- * 
- * @param noutput_items 
- * @param ninput_items_required 
+ * @brief
+ *
+ * @param noutput_items
+ * @param ninput_items_required
  */
 void header_impl::forecast(int noutput_items,
                            gr_vector_int &ninput_items_required) {
@@ -51,13 +51,13 @@ void header_impl::forecast(int noutput_items,
 }
 
 /**
- * @brief 
- * 
- * @param noutput_items 
- * @param ninput_items 
- * @param input_items 
- * @param output_items 
- * @return int 
+ * @brief
+ *
+ * @param noutput_items
+ * @param ninput_items
+ * @param input_items
+ * @param output_items
+ * @return int
  */
 int header_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                               gr_vector_const_void_star &input_items,
@@ -66,6 +66,15 @@ int header_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   uint8_t *out = (uint8_t *)output_items[0];
   int nitems_to_process = std::min(ninput_items[0], noutput_items);
   int out_offset = 0;
+
+  //search for work_done tags and if found add them to the stream
+  std::vector<tag_t> work_done_tags;
+  get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                     pmt::string_to_symbol("work_done"));
+  if (work_done_tags.size() > 1) {
+    add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                 pmt::intern("done"));
+  }
 
   // read tags
   std::vector<tag_t> tags;

@@ -64,6 +64,17 @@ int interleaver_impl::general_work(int noutput_items,
   uint32_t *out = (uint32_t *)output_items[0];
   int nitems_to_process = ninput_items[0];
 
+
+  //search for work_done tags and if found add them to the stream
+  std::vector<tag_t> work_done_tags;
+  get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                     pmt::string_to_symbol("work_done"));
+  if (work_done_tags.size()) {
+    add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
+                 pmt::intern("done"),pmt::intern("interleaver"));
+    return 1;
+  }
+
   // read tags
   std::vector<tag_t> tags;
   get_tags_in_window(tags, 0, 0, ninput_items[0],
@@ -115,7 +126,7 @@ int interleaver_impl::general_work(int noutput_items,
       cw_cnt++;
     }
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     std::cout << "codewords---- " << std::endl;
     for (uint32_t i = 0u; i < sf_app; i++) {
       for (int j = 0; j < int(cw_len); j++) {
@@ -139,8 +150,7 @@ int interleaver_impl::general_work(int noutput_items,
       out[i] = bool2int(inter_bin[i]);
     }
 
-#ifdef GRLORA_DEBUG
-    std::cout << "interleaved------" << std::endl;
+#ifdef GRLORA_DEBUGV    std::cout << "interleaved------" << std::endl;
     for (uint32_t i = 0u; i < cw_len; i++) {
       for (int j = 0; j < int(m_sf); j++) {
         std::cout << inter_bin[i][j];

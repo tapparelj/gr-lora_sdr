@@ -15,14 +15,14 @@ parameters:
 -   id: bw
     label: Bw
     dtype: int
--   id: create_zeros
-    label : Create zero padding
-    dtype : bool
-    default : False
 -   id: sync_words
     label: Sync words
     dtype: int_vector
     default: [8,16]
+-   id: create_zeros
+    label : Create zero padding
+    dtype : bool
+    default : False
 
 asserts:
 -   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
