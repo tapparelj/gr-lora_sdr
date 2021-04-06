@@ -114,4 +114,4 @@ GR_ADD_TEST(qa_frame_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/q
 # GR_ADD_TEST(qa_partial_ml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_partial_ml.py)
 # GR_ADD_TEST(qa_mu_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_demod.py)
 # GR_ADD_TEST(qa_noise_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_noise_est.py)
-GR_ADD_TEST(qa_frame_src ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_src.py)
+# GR_ADD_TEST(qa_frame_src ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_src.py)
