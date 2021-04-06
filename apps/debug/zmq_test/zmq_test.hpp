@@ -12,16 +12,9 @@ GNU Radio version: 3.8.2.0
 ********************/
 #include <gnuradio/top_block.h>
 #include <gnuradio/blocks/null_sink.h>
-#include <gnuradio/blocks/tag_debug.h>
 #include <gnuradio/blocks/throttle.h>
-#include <lora_sdr/add_crc.h>
-#include <lora_sdr/data_source_sim.h>
-#include <lora_sdr/gray_decode.h>
-#include <lora_sdr/hamming_enc.h>
-#include <lora_sdr/header.h>
-#include <lora_sdr/interleaver.h>
-#include <lora_sdr/modulate.h>
-#include <lora_sdr/whitening.h>
+#include <lora_sdr/frame_detector.h>
+#include <lora_sdr/hier_tx.h>
 
 
 
@@ -34,16 +27,9 @@ class zmq_test {
 private:
 
 
-    lora_sdr::whitening::sptr lora_sdr_whitening_0_0;
-    lora_sdr::modulate::sptr lora_sdr_modulate_0_0;
-    lora_sdr::interleaver::sptr lora_sdr_interleaver_0_0;
-    lora_sdr::header::sptr lora_sdr_header_0_0;
-    lora_sdr::hamming_enc::sptr lora_sdr_hamming_enc_0_0;
-    lora_sdr::gray_decode::sptr lora_sdr_gray_decode_0_0;
-    lora_sdr::data_source_sim::sptr lora_sdr_data_source_sim_0;
-    lora_sdr::add_crc::sptr lora_sdr_add_crc_0_0;
-    blocks::throttle::sptr blocks_throttle_0_1;
-    blocks::tag_debug::sptr blocks_tag_debug_1_0_0_0_0;
+    lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
+    lora_sdr::frame_detector::sptr lora_sdr_frame_detector_2;
+    blocks::throttle::sptr blocks_throttle_0_1_0;
     blocks::null_sink::sptr blocks_null_sink_0;
 
 

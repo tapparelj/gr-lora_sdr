@@ -74,7 +74,7 @@ signal_detector_impl::signal_detector_impl(uint8_t sf, uint8_t os_factor,
     m_downchirp[n] = gr_expj(-2.0 * M_PI * (pow(n, 2) / (2 * m_N) - 0.5 * n));
   }
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
   out_file.open("../../matlab/debug/sig_detect.txt",
                 std::ios::out | std::ios::trunc);
 #endif
@@ -164,9 +164,11 @@ int signal_detector_impl::general_work(int noutput_items,
     // do the FFT
     kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
              (kiss_fft_cpx *)&cx_out[0]);
+    //get abs value of each fft value
     for (int i = 0; i < m_N * m_fft_symb; i++) {
       m_dfts_mag[i] = std::abs(cx_out[i]);
     }
+    //get the maximum element from the fft values
     m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
     int argmax = std::distance(m_dfts_mag.begin(), m_max_it);
 
@@ -174,11 +176,12 @@ int signal_detector_impl::general_work(int noutput_items,
     sig = 0;
     median = 0;
     int n_bin = 3;
+    //get power around peak +-1 symbol
     for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
       sig += m_dfts_mag[mod(argmax + j, m_N * m_fft_symb)];
     }
 
-    // get median
+    // get median value of entire fft
     std::vector<float> dft_mag(m_N * m_fft_symb);
     memcpy(&dft_mag[0], &m_dfts_mag[0], m_N * m_fft_symb * sizeof(float));
     nth_element(dft_mag.begin(), dft_mag.begin() + (m_N * m_fft_symb / 2),
@@ -188,7 +191,7 @@ int signal_detector_impl::general_work(int noutput_items,
 
     if (sig / median > m_threshold) {
 
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
 // std::cout <<"[signal_detector.cc] "<< "match filter enabled sig: "<<sig<<"
 // median "<<median<<" "<<sig/median<<"/"<<m_threshold<< std::endl;
 #endif
@@ -203,7 +206,7 @@ int signal_detector_impl::general_work(int noutput_items,
            n_symb_to_process * m_samples_per_symbol * sizeof(gr_complex));
 
     transp_duration -= n_symb_to_process * m_samples_per_symbol;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     for (size_t ii = 0; ii < n_symb_to_process; ii++) {
       out_file << sig / median << ","
                << "1," << std::endl;
@@ -212,7 +215,7 @@ int signal_detector_impl::general_work(int noutput_items,
     // Tell runtime system how many output items we produced.
     return m_samples_per_symbol * n_symb_to_process;
   } else {
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     for (size_t ii = 0; ii < n_symb_to_process; ii++) {
       out_file << sig / median << ","
                << "0," << std::endl;

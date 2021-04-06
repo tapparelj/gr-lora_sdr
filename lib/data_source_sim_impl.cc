@@ -146,8 +146,8 @@ int data_source_sim_impl::general_work(int noutput_items,
       // chain
       if (m_multi_control == true) {
 #ifdef GRLORA_DEBUG
-          GR_LOG_DEBUG(this->d_logger,
-                       "DEBUG:done with creating packets, writing done tag");
+//          GR_LOG_DEBUG(this->d_logger,
+//                       "DEBUG:done with creating packets, writing done tag");
 #endif
           //set stream tag that we are done producing items
         add_item_tag(0, nitems_written(0), pmt::intern("work_done"),

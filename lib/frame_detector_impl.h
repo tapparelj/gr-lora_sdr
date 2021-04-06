@@ -21,14 +21,12 @@ namespace lora_sdr {
 
 class frame_detector_impl : public frame_detector {
 private:
-
   /**
    * @brief State the frame finder can be in
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, SEND_FRAMES ,FIND_END_FRAME};
-
+  enum State { FIND_PREAMBLE, SEND_FRAMES, FIND_END_FRAME };
 
   /**
    * @brief Current state of the frame finder
@@ -58,7 +56,7 @@ private:
    * @brief Number of bins in each lora Symbol
    *
    */
-  uint32_t m_number_of_bins;
+  uint32_t m_N;
 
   /**
    * @brief Number of samples received per lora symbols
@@ -67,22 +65,45 @@ private:
   uint32_t m_samples_per_symbol;
 
   /**
-   * @brief Reference downchirp
+   * @brief reference downchirp
    *
    */
   std::vector<gr_complex> m_downchirp;
 
   /**
-   * @brief input of the FFT
+   * @brief the dechirped symbols on which we need to perform the FF
    *
    */
-  kiss_fft_cpx *cx_in;
+  std::vector<gr_complex> m_dechirped;
 
   /**
-   * @brief output of the FFT
+   * @brief the output of the FFT
    *
    */
-  kiss_fft_cpx *cx_out;
+  std::vector<gr_complex> cx_out;
+
+  /**
+   * @brief the configuration of the FFT
+   *
+   */
+  kiss_fft_cfg fft_cfg;
+  /**
+   * @brief decimated input
+   *
+   */
+  std::vector<gr_complex> m_input_decim;
+
+  /**
+   * @brief iterator used to find max and argmax of FFT
+   *
+   */
+  std::vector<float>::iterator m_max_it;
+
+  /**
+   * @brief vector containing the magnitude of the FFT.
+   *
+   */
+  std::vector<float> m_dfts_mag;
 
   /**
    * @brief Number of symbols already received
@@ -108,15 +129,46 @@ private:
    */
   uint32_t n_up;
 
+  /**
+   * @brief Temproary memory vector to hold samples values
+   *
+   */
   std::vector<gr_complex> mem_vec;
 
+  /**
+   * @brief Treshold value to compare to
+   *
+   */
+  float m_threshold;
 
-  uint32_t m_threshold;
+  /**
+   * @brief Upsampling factor to use
+   *
+   */
+  uint8_t m_os_factor;
+
+  /**
+   * @brief Current power
+   *
+   */
+  float m_power;
+
+  /**
+   * @brief Number of samples to take as margin
+   *
+   */
+  float m_margin;
+
+  /**
+   * @brief number of symbols on which the fft will be made
+   *
+   */
+  int m_fft_symb;
 
 public:
   /**
    * @brief Construct a new frame detector impl object
-   * 
+   *
    * @param samp_rate : sampling rate
    * @param bandwidth : bandwith
    * @param sf : spreading factor
@@ -130,7 +182,8 @@ public:
   ~frame_detector_impl();
 
   /**
-   * @brief
+   * @brief Standard gnuradio function to forecast the number of items needed in
+   * order for the file to function
    *
    * @param noutput_items : number of output items
    * @param ninput_items_required : required input items (how many items must we

@@ -12,52 +12,28 @@ using namespace gr;
 zmq_test::zmq_test () {
 
 
-    std::vector<uint16_t> test {8,16};
-    this->tb = gr::make_top_block("Not titled yet");
 
+    this->tb = gr::make_top_block("Not titled yet");
+    std::vector<uint16_t> sync_words {8,16};
 
 // Blocks:
     {
-        this->lora_sdr_whitening_0_0 = lora_sdr::whitening::make();
+        this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, mean,sync_words,true);
     }
     {
-        this->lora_sdr_modulate_0_0 = lora_sdr::modulate::make(sf, samp_rate, bw, test,false);
+        this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
     }
     {
-        this->lora_sdr_interleaver_0_0 = lora_sdr::interleaver::make(cr, sf);
-    }
-    {
-        this->lora_sdr_header_0_0 = lora_sdr::header::make(impl_head, has_crc, cr);
-    }
-    {
-        this->lora_sdr_hamming_enc_0_0 = lora_sdr::hamming_enc::make(cr, sf);
-    }
-    {
-        this->lora_sdr_gray_decode_0_0 = lora_sdr::gray_decode::make(sf);
-    }
-    {
-        this->lora_sdr_data_source_sim_0 = lora_sdr::data_source_sim::make(64, n_frame, "ssKTiomvPXMuARfDvU5zzMIoQfJlOtZ4LxNSJ0dmLOGctMDOuzeTbK8PPH0r0NmA", 200, true);
-    }
-    {
-        this->lora_sdr_add_crc_0_0 = lora_sdr::add_crc::make(has_crc);
-    }
-    {
-        this->blocks_throttle_0_1 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
+        this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
     }
     {
         this->blocks_null_sink_0 = blocks::null_sink::make(sizeof(gr_complex)*1);
     }
 
 // Connections:
-    this->tb->hier_block2::connect(this->blocks_throttle_0_1, 0, this->blocks_null_sink_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_add_crc_0_0, 0, this->lora_sdr_hamming_enc_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_data_source_sim_0, 0, this->lora_sdr_whitening_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_gray_decode_0_0, 0, this->lora_sdr_modulate_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_hamming_enc_0_0, 0, this->lora_sdr_interleaver_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_header_0_0, 0, this->lora_sdr_add_crc_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_interleaver_0_0, 0, this->lora_sdr_gray_decode_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_modulate_0_0, 0, this->blocks_throttle_0_1, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_whitening_0_0, 0, this->lora_sdr_header_0_0, 0);
+    this->tb->hier_block2::connect(this->blocks_throttle_0_1_0, 0, this->lora_sdr_frame_detector_2, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_2, 0, this->blocks_null_sink_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_1, 0, this->blocks_throttle_0_1_0, 0);
 }
 
 zmq_test::~zmq_test () {
@@ -78,7 +54,7 @@ int zmq_test::get_samp_rate () const {
 
 void zmq_test::set_samp_rate (int samp_rate) {
     this->samp_rate = samp_rate;
-    this->blocks_throttle_0_1->set_sample_rate(this->samp_rate*10);
+    this->blocks_throttle_0_1_0->set_sample_rate(this->samp_rate*10);
 }
 
 int zmq_test::get_pay_len () const {

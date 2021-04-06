@@ -42,8 +42,8 @@ templates:
 
 cpp_templates: 
      includes: ['#include <lora_sdr/modulate.h>'] 
-     declarations: 'lora_sdr::modulate::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::modulate::make(${sf}, ${samp_rate}, ${bw}, ${sync_words},${create_zeros});' 
+     declarations: 'lora_sdr::modulate::sptr ${id};std::vector<uint16_t> sync_words {8,16};'
+     make: 'this->${id} = lora_sdr::modulate::make(${sf}, ${samp_rate}, ${bw}, sync_words,${create_zeros});'
 
 
 documentation: |-
