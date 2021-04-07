@@ -37,39 +37,114 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
   // set internal variables
-  m_bw = bandwidth;
-  m_samp_rate = samp_rate;
   m_sf = sf;
-  // set to default values for now
   m_os_factor = 1;
+  m_threshold = 200;
   m_margin = 0;
-  m_fft_symb = 4;
-  m_threshold = 2000;
-
-  // calculate deducted variables.
+  m_fft_symb = 6;
   m_N = (uint32_t)(1u << m_sf);
-  m_samples_per_symbol = (uint32_t)(m_samp_rate * m_N / m_bw);
+  m_samples_per_symbol = m_N * m_os_factor;
 
+  // initialise all vector values and make sure they have the same length
   fft_cfg = kiss_fft_alloc(m_N * m_fft_symb, 0, NULL, NULL);
   cx_out.resize(m_N * m_fft_symb, 0.0);
+  m_input_downsampled.resize(m_N, 0);
   m_dfts_mag.resize(m_N * m_fft_symb, 0);
   m_dechirped.resize(m_N * m_fft_symb, 0);
-  m_input_decim.resize(m_N, 0);
+  // set downchrip and generate downchirp
   m_downchirp.resize(m_N);
-  // generate reference downchirp
   for (uint n = 0; n < m_N; n++) {
     m_downchirp[n] = gr_expj(-2.0 * M_PI * (pow(n, 2) / (2 * m_N) - 0.5 * n));
   }
-
   // number of consecutive up chrips a preamble has
   n_up = 8;
-
   // initialize values of variables
   bin_idx = 0;
   symbol_cnt = 0;
-
-  // set initial state to find preamble
+  m_power = 0;
+  // set inital state to find preamble
   m_state = FIND_PREAMBLE;
+}
+
+/**
+ * @brief Get the symbol object value (aka decoded LoRa symbol value)
+ *
+ * @param input : complex samples
+ * @return int32_t : LoRa symbol value
+ */
+int32_t frame_detector_impl::get_symbol(const gr_complex *input){
+    // dechirp the new potential symbol
+    volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N],
+                               input, &m_downchirp[0], m_N);
+    // do the FFT
+    kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
+             (kiss_fft_cpx *)&cx_out[0]);
+    // get abs value of each fft value
+    for (int i = 0; i < m_N * m_fft_symb; i++) {
+        m_dfts_mag[i] = std::abs(cx_out[i]);
+    }
+    // get the maximum element from the fft values
+    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
+    int32_t arg_max = std::distance(m_dfts_mag.begin(), m_max_it);
+    return arg_max;
+}
+
+/**
+ * @brief Checks if current samples have the right
+ *
+ * @param input
+ * @return true : we are in a LoRa frame
+ * @return false : we are not in a LoRa frame
+ */
+bool frame_detector_impl::check_in_frame(const gr_complex *input){
+    //temporary variables
+    //current power of frame
+    float current_power = 0;
+    //compare power to compare against
+    float compare_power = 0;
+    //get current power
+    current_power = frame_detector_impl::calc_power(input);
+    //TODO find out how to compare ?
+    compare_power = current_power*m_threshold;
+
+    //if current power higher or the current power we are still in a frame
+    if(compare_power >= m_power){
+        return true;
+    }else{
+        //we are not inside safe margin of threshold (not in a LoRa frame)
+        return false;
+    }
+}
+
+/**
+ * @brief Calculates the LoRa frame peak power
+ *
+ * @param input : input samples
+ * @return float : peak power
+ */
+float frame_detector_impl::calc_power(const gr_complex *input){
+    //temporary variables
+    float signal_power = 0;
+    //number of bins to check around (3 for +-1)
+    int n_bin = 3;
+    //get maximum argument
+    int32_t arg_max = get_symbol(input);
+    //calculate power around peak +-1 symbol
+    for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
+        signal_power  += m_dfts_mag[mod(arg_max + j, m_N * m_fft_symb)];
+    }
+    //TODO just absolute power or as ratio of noise ?
+    //return the maximum power
+    return signal_power;
+}
+
+/**
+ * @brief Set the current LoRa frame power
+ *
+ * @param input : complex samples
+ */
+void frame_detector_impl::set_power(const gr_complex *input){
+    m_power = calc_power(input);
 }
 
 /**
@@ -89,7 +164,7 @@ void frame_detector_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
   // we need at least the preamble symbols to start working
-  ninput_items_required[0] = n_up * m_samples_per_symbol;
+  ninput_items_required[0] = m_samples_per_symbol* (m_margin + m_fft_symb);
 }
 
 /**
@@ -109,120 +184,84 @@ int frame_detector_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
-  // consume input entities
-  consume_each(noutput_items);
-  // if we need to find the preamble
+
+  // downsample input (if needed)
+  for (int i = 0; i < m_N; i++) {
+      m_input_downsampled[i] = in[(int)(m_os_factor - 1 + m_os_factor * i)];
+  }
+
   switch (m_state) {
   case FIND_PREAMBLE: {
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Finding preamble");
-
     // copy input to memory vector for later use.
     // TODO maybe use memcpy for this ?
     for (int i = 0; i < noutput_items; i++) {
       mem_vec.push_back(in[i]);
     }
-    // get symbol value of input samples
-    //    //TODO solve problem using the right amount of symbols (currenbtly
-    //    only the first symb is checked)
-    //    // dechirp the input samples
-    //    volk_32fc_x2_multiply_32fc(&m_dechirped[0], &in[0], &m_downchirp[0],
-    //    noutput_items);
-    //    // do the fft
-    //    kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
-    //             (kiss_fft_cpx *)&cx_out[0]);
-    //
-    //    // get abs value of each fft value
-    //    for (int i = 0; i < m_N; i++) {
-    //      m_dfts_mag[i] = std::abs(cx_out[i]);
-    //    }
-    //    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-    //    int test = std::distance(m_dfts_mag.begin(), m_max_it);
-    ////    m_max
-    ////    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-    ////    bin_idx_new = std::distance(m_dfts_mag.begin(), m_max_it);
-    //      bin_idx_new =test;
+
     int n_symb_to_process =
-              std::min(std::floor(ninput_items[0] / m_samples_per_symbol) -(int)m_margin -
-                       m_fft_symb + 1,
-                       std::floor(noutput_items / m_samples_per_symbol));
-    for(int n =0; n < n_symb_to_process; n++) {
+        std::min(std::floor(ninput_items[0] / m_samples_per_symbol) - m_margin -
+                     m_fft_symb + 1,
+                 std::floor(noutput_items / m_samples_per_symbol));
 
-        for (int i = 0; i < m_N; i++) {
-            m_input_decim[i] =
-                    in[(n + (int)m_margin + m_fft_symb - 1) * m_samples_per_symbol +
-                       m_os_factor * i];
-        }
+      consume_each(m_samples_per_symbol * n_symb_to_process);
+    for (int n = 0; n < n_symb_to_process; n++) {
+      // down sample the new symbol with a stride of m_os_factor
+      for (int i = 0; i < m_N; i++) {
+        m_input_downsampled[i] =
+            in[(n + m_margin + m_fft_symb - 1) * m_samples_per_symbol +
+               m_os_factor * i];
+      }
+      // shift left
+      std::rotate(m_dechirped.begin(), m_dechirped.begin() + m_N,
+                  m_dechirped.end());
 
-        std::rotate(m_dechirped.begin(), m_dechirped.begin() + m_N,
-                    m_dechirped.end());
+      // dechirp the new potential symbol
+      volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N],
+                                 &m_input_downsampled[0], &m_downchirp[0], m_N);
 
-        // dechirp the input samples
-        volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N], &m_input_decim[0], &m_downchirp[0],
-                                   m_N);
-        // do the FFT
-        kiss_fft(fft_cfg, (kiss_fft_cpx *) &m_dechirped[0],
-                 (kiss_fft_cpx *) &cx_out[0]);
-
-
-        // get abs value of each fft value
-        for (int i = 0; i < m_N * m_fft_symb; i++) {
-            m_dfts_mag[i] = std::abs(cx_out[i]);
-        }
-
-        //get the maximum element from the fft values
-        m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-        int argmax = std::distance(m_dfts_mag.begin(), m_max_it);
-
-//        // estimate signal
-//        float sig = 0;
-//        float median = 0;
-//        int n_bin = 3;
-//        //get power around peak +-1 symbol
-//        for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
-//            sig += m_dfts_mag[mod(argmax + j, m_N * m_fft_symb)];
-//        }
-
-        bin_idx_new = argmax;
-        // calculate difference between this value and previous value
-        if ((bin_idx_new - bin_idx) <= 1) {
-            // increase the number of symbols counted
-            symbol_cnt++;
-        }
-        // is symbol value are not close to each other start over
-        else {
-            // clear memory vector
-            mem_vec.clear();
-            // set symbol value to be 1
-            symbol_cnt = 1;
-        }
-        // number of preambles needed
-        int nR_up = (int)(n_up - 1);
-        // if we have n_up-1 symbols counted we have found the preamble
-        if (symbol_cnt == nR_up) {
-            GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
-            // set state to be sending packets
-            m_state = SEND_FRAMES;
-            // dechirp the new potential symbol
-            //            volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) *
-            //            m_N],
-            //                                       &m_input_decim[0],
-            //                                       &m_downchirp[0], m_N);
-            // set symbol count back to zero
-            symbol_cnt = 0;
-        }
-        //    }
-        return 0;
+      // do the FFT
+      kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
+               (kiss_fft_cpx *)&cx_out[0]);
+      // get abs value of each fft value
+      for (int i = 0; i < m_N * m_fft_symb; i++) {
+        m_dfts_mag[i] = std::abs(cx_out[i]);
+      }
+      // get the maximum element from the fft values
+      m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
+      bin_idx_new = std::distance(m_dfts_mag.begin(), m_max_it);
+      // calculate difference between this value and previous value
+      if ((bin_idx_new - bin_idx) <= 1) {
+        // increase the number of symbols counted
+        symbol_cnt++;
+      }
+      // is symbol value are not close to each other start over
+      else {
+        // clear memory vector
+        mem_vec.clear();
+        // set symbol value to be 1
+        symbol_cnt = 1;
+      }
+      // number of preambles needed
+      int nR_up = (int)(n_up - 1);
+      // if we have n_up-1 symbols counted we have found the preamble
+      if (symbol_cnt == nR_up) {
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
+        // set state to be sending packets
+        m_state = SEND_FRAMES;
+        // set symbol count back to zero
+        symbol_cnt = 0;
+      }
     }
-
-
+    return 0;
   }
   case SEND_FRAMES: {
     // actual sending of samples in split packets
     GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
     // end of vector
     int end_vec = mem_vec.size();
-    if (mem_vec.size() > 4 * noutput_items) {
-      end_vec = 4 * noutput_items;
+    if (mem_vec.size() > noutput_items) {
+      end_vec = noutput_items;
     }
     // loop over the output vector and set output to the right values
     for (int i = 0; i < end_vec; i++) {
@@ -233,12 +272,11 @@ int frame_detector_impl::general_work(int noutput_items,
 
     // check input on power
     float power = 0;
-
     // calculate power of input vector
     power = determine_energy(in, (uint32_t)noutput_items);
-    // TODO do something meanigfull with current input
+
+    // if power is below threshold (current input vector has no LoRaframe)
     if (power < (float)m_threshold) {
-      // current input does not matter we can continue sending frames
       // check if vector is empty
       if (mem_vec.empty()) {
         // if vector is empty go to finding the preamble
@@ -246,14 +284,14 @@ int frame_detector_impl::general_work(int noutput_items,
         return end_vec;
       }
       // if not empty return number of input items
-      return end_vec;
+      return noutput_items;
     } else {
-      // current input is a LoRa frame we need to do something with this
-      for (int i = 0; i < noutput_items; i++) {
-        gr_complex temp = in[i];
-        mem_vec.push_back(temp);
+      // check if vector is empty
+      if (mem_vec.empty()) {
+        m_state = FIND_END_FRAME;
+        return end_vec;
       }
-      return end_vec;
+      return noutput_items;
     }
   }
   default: {

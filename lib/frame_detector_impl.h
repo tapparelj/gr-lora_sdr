@@ -35,43 +35,56 @@ private:
   uint8_t m_state;
 
   /**
-   * @brief Bandwith
-   *
-   */
-  uint32_t m_bw;
-
-  /**
-   * @brief Sampling rate
-   *
-   */
-  uint32_t m_samp_rate;
-
-  /**
    * @brief Spreading factor
    *
    */
   uint8_t m_sf;
 
   /**
-   * @brief Number of bins in each lora Symbol
-   *
-   */
-  uint32_t m_N;
-
-  /**
-   * @brief Number of samples received per lora symbols
+   * @brief Number of samples per LoRa symbol
    *
    */
   uint32_t m_samples_per_symbol;
 
   /**
-   * @brief reference downchirp
+   * @brief 2^sf
+   *
+   */
+  uint32_t m_N;
+
+  /**
+   * @brief oversampling factor
+   *
+   */
+  uint8_t m_os_factor;
+
+  /**
+   * @brief detection threshold
+   *
+   */
+  double m_threshold;
+
+  /**
+   * @brief number of symbols on which the fft will be made
+   *
+   */
+  int32_t m_fft_symb;
+
+  /**
+   * @brief margin in the input buffer that will be output when a detection
+   * occurs [number of symbols]
+   *
+   */
+  int32_t m_margin;
+
+  /**
+   * @brief the reference downchirp
    *
    */
   std::vector<gr_complex> m_downchirp;
 
   /**
-   * @brief the dechirped symbols on which we need to perform the FF
+   * @brief the dechirped symbols on which we need to perform the FFT.
    *
    */
   std::vector<gr_complex> m_dechirped;
@@ -87,14 +100,15 @@ private:
    *
    */
   kiss_fft_cfg fft_cfg;
-  /**
-   * @brief decimated input
-   *
-   */
-  std::vector<gr_complex> m_input_decim;
 
   /**
-   * @brief iterator used to find max and argmax of FFT
+   * @brief downsampled input
+   *
+   */
+  std::vector<gr_complex> m_input_downsampled;
+
+  /**
+   * @briefiterator used to find max and argmax of FFT
    *
    */
   std::vector<float>::iterator m_max_it;
@@ -106,13 +120,7 @@ private:
   std::vector<float> m_dfts_mag;
 
   /**
-   * @brief Number of symbols already received
-   *
-   */
-  int32_t symbol_cnt;
-
-  /**
-   * @brief value of previous lora symbol
+   * @brief value of previous lora demodulated symbol
    *
    */
   int32_t bin_idx;
@@ -130,42 +138,54 @@ private:
   uint32_t n_up;
 
   /**
-   * @brief Temproary memory vector to hold samples values
+   * @brief Temporary
    *
    */
   std::vector<gr_complex> mem_vec;
 
   /**
-   * @brief Treshold value to compare to
+   * @brief  LoRa symbol count
    *
    */
-  float m_threshold;
+  uint16_t symbol_cnt;
 
   /**
-   * @brief Upsampling factor to use
-   *
-   */
-  uint8_t m_os_factor;
-
-  /**
-   * @brief Current power
+   * @brief Power of a detected LoRa preamble to compare against
    *
    */
   float m_power;
 
-  /**
-   * @brief Number of samples to take as margin
-   *
-   */
-  float m_margin;
+/**
+ * @brief Get the symbol object value (aka decoded LoRa symbol value)
+ * 
+ * @param input : complex samples
+ * @return int32_t : LoRa symbol value
+ */
+  int32_t get_symbol(const gr_complex *input);
 
-  /**
-   * @brief number of symbols on which the fft will be made
-   *
-   */
-  int m_fft_symb;
+/**
+ * @brief Checks if current samples have the right 
+ * 
+ * @param input 
+ * @return true : we are in a LoRa frame
+ * @return false : we are not in a LoRa frame
+ */
+  bool check_in_frame(const gr_complex *input);
 
+/**
+ * @brief Calculates the LoRa frame peak power
+ * 
+ * @param input : input samples
+ * @return float : peak power
+ */
+  float calc_power(const gr_complex *input);
 
+/**
+ * @brief Set the current LoRa frame power
+ *
+ * @param input : complex samples
+ */
+  void set_power(const gr_complex *input);
 
 public:
   /**
@@ -184,8 +204,7 @@ public:
   ~frame_detector_impl();
 
   /**
-   * @brief Standard gnuradio function to forecast the number of items needed in
-   * order for the file to function
+   * @brief
    *
    * @param noutput_items : number of output items
    * @param ninput_items_required : required input items (how many items must we

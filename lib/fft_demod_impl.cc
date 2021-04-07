@@ -90,7 +90,6 @@ void fft_demod_impl::forecast(int noutput_items,
  */
 int32_t fft_demod_impl::get_symbol_val(const gr_complex *samples) {
   float m_fft_mag[m_number_of_bins];
-  float rec_en = 0;
   kiss_fft_cfg cfg = kiss_fft_alloc(m_samples_per_symbol, 0, 0, 0);
   kiss_fft_cpx *cx_in = new kiss_fft_cpx[m_samples_per_symbol];
   kiss_fft_cpx *cx_out = new kiss_fft_cpx[m_samples_per_symbol];
@@ -107,7 +106,6 @@ int32_t fft_demod_impl::get_symbol_val(const gr_complex *samples) {
   // Get magnitude
   for (uint32_t i = 0u; i < m_number_of_bins; i++) {
     m_fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-    rec_en += m_fft_mag[i];
   }
 
   free(cfg);
@@ -118,16 +116,17 @@ int32_t fft_demod_impl::get_symbol_val(const gr_complex *samples) {
   int idx =
       std::max_element(m_fft_mag, m_fft_mag + m_number_of_bins) - m_fft_mag;
 #ifdef GRLORA_MEASUREMENTS
-  energy_file << std::fixed << std::setprecision(10) << m_fft_mag[idx] << ","
-              << m_fft_mag[mod(idx - 1, m_number_of_bins)] << ","
-              << m_fft_mag[mod(idx + 1, m_number_of_bins)] << "," << rec_en
-              << "," << std::endl;
+//  energy_file << std::fixed << std::setprecision(10) << m_fft_mag[idx] << ","
+//              << m_fft_mag[mod(idx - 1, m_N)] << ","
+//              << m_fft_mag[mod(idx + 1, m_N)] << "," << rec_en
+//              << "," << std::endl;
 #endif
 #ifdef GRLORA_DEBUGV
   idx_file << idx << ", ";
 #endif
   // std::cout<<idx<<", ";
   return (idx);
+  return 0;
 }
 
 /**

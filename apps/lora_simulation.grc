@@ -266,7 +266,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 436.0]
+    coordinate: [432, 556.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0_0
@@ -352,9 +352,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 820.0]
+    coordinate: [640, 628.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_add_crc_0_0
   id: lora_sdr_add_crc
   parameters:
@@ -386,7 +386,7 @@ blocks:
     bus_structure: null
     coordinate: [22, 434]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_data_source_sim_0
   id: lora_sdr_data_source_sim
   parameters:
@@ -422,7 +422,7 @@ blocks:
     bus_structure: null
     coordinate: [744, 374]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_dewhitening_0_0
   id: lora_sdr_dewhitening
   parameters:
@@ -437,7 +437,7 @@ blocks:
     bus_structure: null
     coordinate: [184, 421]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_fft_demod_0_0
   id: lora_sdr_fft_demod
   parameters:
@@ -456,7 +456,7 @@ blocks:
     bus_structure: null
     coordinate: [1071, 363]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_detector_0
   id: lora_sdr_frame_detector
   parameters:
@@ -475,24 +475,6 @@ blocks:
     coordinate: [968, 492.0]
     rotation: 0
     state: disabled
-- name: lora_sdr_frame_detector_1
-  id: lora_sdr_frame_detector
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: bw
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    sf: sf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [656, 420.0]
-    rotation: 0
-    state: true
 - name: lora_sdr_frame_sync_0_0
   id: lora_sdr_frame_sync
   parameters:
@@ -510,9 +492,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1244, 453]
+    coordinate: [480, 700.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_decode_0_0
   id: lora_sdr_gray_decode
   parameters:
@@ -543,7 +525,7 @@ blocks:
     bus_structure: null
     coordinate: [889, 372]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_dec_0_0
   id: lora_sdr_hamming_dec
   parameters:
@@ -558,7 +540,7 @@ blocks:
     bus_structure: null
     coordinate: [537, 374]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_enc_0_0
   id: lora_sdr_hamming_enc
   parameters:
@@ -612,7 +594,7 @@ blocks:
     bus_structure: null
     coordinate: [384, 379]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -661,7 +643,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [216, 348.0]
+    coordinate: [128, 532.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0_0
@@ -721,12 +703,11 @@ connections:
 - [blocks_throttle_0_1, '0', blocks_null_sink_0, '0']
 - [blocks_throttle_0_1, '0', blocks_tag_debug_1_0, '0']
 - [blocks_throttle_0_1, '0', channels_channel_model_0_0, '0']
+- [blocks_throttle_0_1_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_0, '0']
-- [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
 - [channels_channel_model_0_0, '0', interp_fir_filter_xxx_0_1, '0']
-- [channels_channel_model_0_0_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [interp_fir_filter_xxx_0_1, '0', lora_sdr_frame_sync_0_0, '0']
-- [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_0, '0']
+- [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_frame_sync_0_0, '0']
 - [lora_sdr_add_crc_0_0, '0', lora_sdr_hamming_enc_0_0, '0']
 - [lora_sdr_data_source_sim_0, '0', lora_sdr_whitening_0_0, '0']
 - [lora_sdr_data_source_sim_0, msg, lora_sdr_whitening_0_0, msg]

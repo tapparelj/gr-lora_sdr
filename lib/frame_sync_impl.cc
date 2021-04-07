@@ -387,6 +387,7 @@ int frame_sync_impl::general_work(int noutput_items,
   switch (m_state) {
   case DETECT: {
     bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+//    std::cout << bin_idx_new << std::endl;
 
     if (std::abs(bin_idx_new - bin_idx) <= 1 &&
         bin_idx_new != -1) { // look for consecutive reference upchirps(with a
@@ -409,7 +410,8 @@ int frame_sync_impl::general_work(int noutput_items,
       m_state = SYNC;
       symbol_cnt = 0;
       cfo_sto_est = false;
-
+//      std::cout << "Found preamble" << std::endl;
+        std::cout << bin_idx_new << std::endl;
       k_hat = round(k_hat / (n_up - 1));
 
       // perform the coarse synchronization
@@ -494,17 +496,17 @@ int frame_sync_impl::general_work(int noutput_items,
 #ifdef GRLORA_SAVE_PRE_DATA
       // save preamble
       for (int j = 0; j < 7; j++) {
-        for (int i = 0; i < m_number_of_bins; i++)
-          preamb_file << preamble_raw[m_number_of_bins - k_hat + i +
-                                      m_number_of_bins * j]
+        for (int i = 0; i < m_N; i++)
+          preamb_file << preamble_raw[m_N - k_hat + i +
+                                      m_N * j]
                              .real()
-                      << (preamble_raw[m_number_of_bins - k_hat + i +
-                                       m_number_of_bins * j]
+                      << (preamble_raw[m_N - k_hat + i +
+                                       m_N * j]
                                       .imag() < 0
                               ? "-"
                               : "+")
-                      << std::abs(preamble_raw[m_number_of_bins - k_hat + i +
-                                               m_number_of_bins * j]
+                      << std::abs(preamble_raw[m_N - k_hat + i +
+                                               m_N * j]
                                       .imag())
                       << "i,";
         preamb_file << std::endl;
@@ -519,7 +521,7 @@ int frame_sync_impl::general_work(int noutput_items,
         CFOint = ceil(double(down_val - (int)m_number_of_bins) / 2);
 
         CFOint = (m_number_of_bins + CFOint) % m_number_of_bins;
-        // message_port_pub(pmt::intern("new_frame"),pmt::mp((long)((m_number_of_bins+CFOint)%m_number_of_bins)));
+        // message_port_pub(pmt::intern("new_frame"),pmt::mp((long)((m_N+CFOint)%m_N)));
       }
 
       pmt::pmt_t frame_info = pmt::make_dict();
@@ -554,7 +556,7 @@ int frame_sync_impl::general_work(int noutput_items,
     if (symbol_cnt < 8 || (symbol_cnt < m_symb_numb && m_received_head)) {
 #ifdef GRLORA_SAVE_PRE_DATA
       // write data
-      for (int i = 0; i < m_number_of_bins; i++)
+      for (int i = 0; i < m_N; i++)
         payload_file << in_down[i].real() << (in_down[i].imag() < 0 ? "-" : "+")
                      << std::abs(in_down[i].imag()) << "i,";
       payload_file << std::endl;
@@ -568,7 +570,7 @@ int frame_sync_impl::general_work(int noutput_items,
 #endif
 #ifdef GRLORA_DEBUGV
       if (symbol_cnt < numb_symbol_to_save)
-        memcpy(&last_frame[symbol_cnt * m_number_of_bins], &in_down[0],
+        memcpy(&last_frame[symbol_cnt * m_N], &in_down[0],
                m_samples_per_symbol * sizeof(gr_complex));
 #endif
       items_to_consume = usFactor * m_samples_per_symbol;
