@@ -42,7 +42,7 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   m_sf = sf;
   // set to default values for now
   m_os_factor = 1;
-  m_margin = 1;
+  m_margin = 0;
   m_fft_symb = 4;
   m_threshold = 2000;
 
@@ -52,10 +52,9 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
 
   fft_cfg = kiss_fft_alloc(m_N * m_fft_symb, 0, NULL, NULL);
   cx_out.resize(m_N * m_fft_symb, 0.0);
-  m_input_decim.resize(m_N, 0);
   m_dfts_mag.resize(m_N * m_fft_symb, 0);
   m_dechirped.resize(m_N * m_fft_symb, 0);
-
+  m_input_decim.resize(m_N, 0);
   m_downchirp.resize(m_N);
   // generate reference downchirp
   for (uint n = 0; n < m_N; n++) {
@@ -93,37 +92,6 @@ void frame_detector_impl::forecast(int noutput_items,
   ninput_items_required[0] = n_up * m_samples_per_symbol;
 }
 
-//uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
-//                        uint32_t m_number_of_bins,
-//                        uint32_t m_samples_per_symbol, kiss_fft_cpx *cx_in,
-//                        kiss_fft_cpx *cx_out) {
-//  double sig_en = 0;
-//  float fft_mag[m_number_of_bins];
-//  std::vector<gr_complex> dechirped(m_number_of_bins);
-//
-//  kiss_fft_cfg cfg = kiss_fft_alloc(m_samples_per_symbol, 0, 0, 0);
-//
-//  // Multiply with ideal downchirp
-//  volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp,
-//                             m_samples_per_symbol);
-//
-//  for (int i = 0; i < m_samples_per_symbol; i++) {
-//    cx_in[i].r = dechirped[i].real();
-//    cx_in[i].i = dechirped[i].imag();
-//  }
-//  // do the FFT
-//  kiss_fft(cfg, cx_in, cx_out);
-//
-//  // Get magnitude
-//  for (uint32_t i = 0u; i < m_number_of_bins; i++) {
-//    fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-//    sig_en += fft_mag[i];
-//  }
-//  free(cfg);
-//  // Return argmax here
-//  return ((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag));
-//}
-
 /**
  * @brief General work function.
  * Main gnuradio function that does the heavy lifting
@@ -154,49 +122,99 @@ int frame_detector_impl::general_work(int noutput_items,
       mem_vec.push_back(in[i]);
     }
     // get symbol value of input samples
-    //TODO solve problem using the right amount of symbols (currenbtly only the first symb is checked)
-    // dechirp the input samples
-    volk_32fc_x2_multiply_32fc(&m_dechirped[0], &in[0], &m_downchirp[0], noutput_items);
-    // do the fft
-    kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
-             (kiss_fft_cpx *)&cx_out[0]);
+    //    //TODO solve problem using the right amount of symbols (currenbtly
+    //    only the first symb is checked)
+    //    // dechirp the input samples
+    //    volk_32fc_x2_multiply_32fc(&m_dechirped[0], &in[0], &m_downchirp[0],
+    //    noutput_items);
+    //    // do the fft
+    //    kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
+    //             (kiss_fft_cpx *)&cx_out[0]);
+    //
+    //    // get abs value of each fft value
+    //    for (int i = 0; i < m_N; i++) {
+    //      m_dfts_mag[i] = std::abs(cx_out[i]);
+    //    }
+    //    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
+    //    int test = std::distance(m_dfts_mag.begin(), m_max_it);
+    ////    m_max
+    ////    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
+    ////    bin_idx_new = std::distance(m_dfts_mag.begin(), m_max_it);
+    //      bin_idx_new =test;
+    int n_symb_to_process =
+              std::min(std::floor(ninput_items[0] / m_samples_per_symbol) -(int)m_margin -
+                       m_fft_symb + 1,
+                       std::floor(noutput_items / m_samples_per_symbol));
+    for(int n =0; n < n_symb_to_process; n++) {
 
-    // get abs value of each fft value
-    for (int i = 0; i < m_N; i++) {
-      m_dfts_mag[i] = std::abs(cx_out[i]);
+        for (int i = 0; i < m_N; i++) {
+            m_input_decim[i] =
+                    in[(n + (int)m_margin + m_fft_symb - 1) * m_samples_per_symbol +
+                       m_os_factor * i];
+        }
+
+        std::rotate(m_dechirped.begin(), m_dechirped.begin() + m_N,
+                    m_dechirped.end());
+
+        // dechirp the input samples
+        volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N], &m_input_decim[0], &m_downchirp[0],
+                                   m_N);
+        // do the FFT
+        kiss_fft(fft_cfg, (kiss_fft_cpx *) &m_dechirped[0],
+                 (kiss_fft_cpx *) &cx_out[0]);
+
+
+        // get abs value of each fft value
+        for (int i = 0; i < m_N * m_fft_symb; i++) {
+            m_dfts_mag[i] = std::abs(cx_out[i]);
+        }
+
+        //get the maximum element from the fft values
+        m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
+        int argmax = std::distance(m_dfts_mag.begin(), m_max_it);
+
+//        // estimate signal
+//        float sig = 0;
+//        float median = 0;
+//        int n_bin = 3;
+//        //get power around peak +-1 symbol
+//        for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
+//            sig += m_dfts_mag[mod(argmax + j, m_N * m_fft_symb)];
+//        }
+
+        bin_idx_new = argmax;
+        // calculate difference between this value and previous value
+        if ((bin_idx_new - bin_idx) <= 1) {
+            // increase the number of symbols counted
+            symbol_cnt++;
+        }
+        // is symbol value are not close to each other start over
+        else {
+            // clear memory vector
+            mem_vec.clear();
+            // set symbol value to be 1
+            symbol_cnt = 1;
+        }
+        // number of preambles needed
+        int nR_up = (int)(n_up - 1);
+        // if we have n_up-1 symbols counted we have found the preamble
+        if (symbol_cnt == nR_up) {
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
+            // set state to be sending packets
+            m_state = SEND_FRAMES;
+            // dechirp the new potential symbol
+            //            volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) *
+            //            m_N],
+            //                                       &m_input_decim[0],
+            //                                       &m_downchirp[0], m_N);
+            // set symbol count back to zero
+            symbol_cnt = 0;
+        }
+        //    }
+        return 0;
     }
-    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-    int test = std::distance(m_dfts_mag.begin(), m_max_it);
-//    m_max
-//    m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-//    bin_idx_new = std::distance(m_dfts_mag.begin(), m_max_it);
-      bin_idx_new =test;
-      // calculate difference between this value and previous value
-    if ((bin_idx_new - bin_idx) <= 1) {
-      // increase the number of symbols counted
-      symbol_cnt++;
-    }
-    // is symbol value are not close to each other start over
-    else {
-      // clear memory vector
-      mem_vec.clear();
-      // set symbol value to be 1
-      symbol_cnt = 1;
-    }
-    // number of preambles needed
-    int nR_up = (int)(n_up - 1);
-    // if we have n_up-1 symbols counted we have found the preamble
-    if (symbol_cnt == nR_up) {
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
-      // set state to be sending packets
-      m_state = SEND_FRAMES;
-      // dechirp the new potential symbol
-      volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N],
-                                 &m_input_decim[0], &m_downchirp[0], m_N);
-      // set symbol count back to zero
-      symbol_cnt = 0;
-    }
-    return 0;
+
+
   }
   case SEND_FRAMES: {
     // actual sending of samples in split packets

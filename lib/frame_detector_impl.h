@@ -165,6 +165,8 @@ private:
    */
   int m_fft_symb;
 
+
+
 public:
   /**
    * @brief Construct a new frame detector impl object
