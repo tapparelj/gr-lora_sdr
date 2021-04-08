@@ -18,6 +18,30 @@
 namespace gr {
 namespace lora_sdr {
 
+    void Temporary_buffer::push_value(gr_complex input) {
+        temp_mem_vec.push_back(input);
+    }
+
+    int Temporary_buffer::get_size() {
+        return temp_mem_vec.size();
+    }
+
+    void Temporary_buffer::clear() {
+        temp_mem_vec.clear();
+    }
+
+    void Temporary_buffer::erase(int end) {
+        temp_mem_vec.erase(temp_mem_vec.begin(),temp_mem_vec.begin()+end);
+    }
+
+    bool Temporary_buffer::empty() {
+        return temp_mem_vec.empty();
+    }
+
+    gr_complex Temporary_buffer::get_value(int i) {
+        return temp_mem_vec.at(i);
+    }
+
 frame_detector::sptr frame_detector::make(float samp_rate, uint32_t bandwidth,
                                           uint8_t sf) {
   return gnuradio::get_initial_sptr(
@@ -41,10 +65,13 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   m_os_factor = 1;
   m_threshold = 200;
   m_margin = 0;
-  m_fft_symb = 6;
+  m_fft_symb = 4;
+  m_mul_out = 4;
+
   m_N = (uint32_t)(1u << m_sf);
   m_samples_per_symbol = m_N * m_os_factor;
 
+  //  mem_vec.reserve(m_N * m_fft_symb*10);
   // initialise all vector values and make sure they have the same length
   fft_cfg = kiss_fft_alloc(m_N * m_fft_symb, 0, NULL, NULL);
   cx_out.resize(m_N * m_fft_symb, 0.0);
@@ -64,6 +91,8 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   m_power = 0;
   // set inital state to find preamble
   m_state = FIND_PREAMBLE;
+
+        set_tag_propagation_policy(TPP_ONE_TO_ONE);
 }
 
 /**
@@ -72,7 +101,7 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
  * @param input : complex samples
  * @return int32_t : LoRa symbol value
  */
-int32_t frame_detector_impl::get_symbol(const gr_complex *input){
+int32_t frame_detector_impl::get_symbol(gr_complex *input){
     // dechirp the new potential symbol
     volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N],
                                input, &m_downchirp[0], m_N);
@@ -96,7 +125,7 @@ int32_t frame_detector_impl::get_symbol(const gr_complex *input){
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-bool frame_detector_impl::check_in_frame(const gr_complex *input){
+bool frame_detector_impl::check_in_frame(gr_complex *input){
     //temporary variables
     //current power of frame
     float current_power = 0;
@@ -122,8 +151,9 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input){
  * @param input : input samples
  * @return float : peak power
  */
-float frame_detector_impl::calc_power(const gr_complex *input){
+float frame_detector_impl::calc_power(gr_complex *input){
     //temporary variables
+    //variable to hold the signal power
     float signal_power = 0;
     //number of bins to check around (3 for +-1)
     int n_bin = 3;
@@ -143,7 +173,7 @@ float frame_detector_impl::calc_power(const gr_complex *input){
  *
  * @param input : complex samples
  */
-void frame_detector_impl::set_power(const gr_complex *input){
+void frame_detector_impl::set_power(gr_complex *input){
     m_power = calc_power(input);
 }
 
@@ -192,13 +222,15 @@ int frame_detector_impl::general_work(int noutput_items,
 
   switch (m_state) {
   case FIND_PREAMBLE: {
+#ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Finding preamble");
+#endif
     // copy input to memory vector for later use.
-    // TODO maybe use memcpy for this ?
-    for (int i = 0; i < noutput_items; i++) {
-      mem_vec.push_back(in[i]);
+    for (int i = 0; i < ninput_items[0]; i++) {
+        mem_vec.push_value(m_input_downsampled[i]);
     }
-
+    //calculate symbols to process
+    //TODO find out how to stream line this
     int n_symb_to_process =
         std::min(std::floor(ninput_items[0] / m_samples_per_symbol) - m_margin -
                      m_fft_symb + 1,
@@ -215,22 +247,9 @@ int frame_detector_impl::general_work(int noutput_items,
       // shift left
       std::rotate(m_dechirped.begin(), m_dechirped.begin() + m_N,
                   m_dechirped.end());
-
-      // dechirp the new potential symbol
-      volk_32fc_x2_multiply_32fc(&m_dechirped[(m_fft_symb - 1) * m_N],
-                                 &m_input_downsampled[0], &m_downchirp[0], m_N);
-
-      // do the FFT
-      kiss_fft(fft_cfg, (kiss_fft_cpx *)&m_dechirped[0],
-               (kiss_fft_cpx *)&cx_out[0]);
-      // get abs value of each fft value
-      for (int i = 0; i < m_N * m_fft_symb; i++) {
-        m_dfts_mag[i] = std::abs(cx_out[i]);
-      }
-      // get the maximum element from the fft values
-      m_max_it = std::max_element(m_dfts_mag.begin(), m_dfts_mag.end());
-      bin_idx_new = std::distance(m_dfts_mag.begin(), m_max_it);
-      // calculate difference between this value and previous value
+      //get symbol value of input
+      bin_idx_new = get_symbol(&m_input_downsampled[0]);
+      // calculate difference between this value and previous symbol value
       if ((bin_idx_new - bin_idx) <= 1) {
         // increase the number of symbols counted
         symbol_cnt++;
@@ -246,53 +265,58 @@ int frame_detector_impl::general_work(int noutput_items,
       int nR_up = (int)(n_up - 1);
       // if we have n_up-1 symbols counted we have found the preamble
       if (symbol_cnt == nR_up) {
+#ifdef GRLORA_DEBUG
         GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
-        // set state to be sending packets
+#endif
+        //store the current power level in m_power
+        set_power(&m_input_downsampled[0]);
+        // set state to be sending LoRa frame packets
         m_state = SEND_FRAMES;
         // set symbol count back to zero
         symbol_cnt = 0;
+        break;
       }
     }
     return 0;
   }
   case SEND_FRAMES: {
-    // actual sending of samples in split packets
+    // actual sending of samples in split packets (due to gnuradio scheduler)
+#ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
-    // end of vector
-    int end_vec = mem_vec.size();
-    if (mem_vec.size() > noutput_items) {
-      end_vec = noutput_items;
+#endif
+     consume_each(ninput_items[0]);
+
+    //the end of the vector to be eqaul to the vector size (number of elements in vector)
+    int end_vec = mem_vec.get_size();
+    //if the current vector size is less then number of output items times multiplier
+    if (mem_vec.get_size() > m_mul_out*noutput_items) {
+        //set the number of elements
+      end_vec = m_mul_out*noutput_items;
     }
-    // loop over the output vector and set output to the right values
+    //loop over the output vector and set output to the right values
     for (int i = 0; i < end_vec; i++) {
-      out[i] = mem_vec.at(i);
+      out[i] = mem_vec.get_value(i);
     }
-    // clear all vector values that have been used
-    mem_vec.erase(mem_vec.begin(), mem_vec.begin() + end_vec);
+     //clear all vector values that have been used
+      mem_vec.erase(end_vec);
 
-    // check input on power
-    float power = 0;
-    // calculate power of input vector
-    power = determine_energy(in, (uint32_t)noutput_items);
-
-    // if power is below threshold (current input vector has no LoRaframe)
-    if (power < (float)m_threshold) {
-      // check if vector is empty
-      if (mem_vec.empty()) {
-        // if vector is empty go to finding the preamble
-        m_state = FIND_PREAMBLE;
-        return end_vec;
-      }
-      // if not empty return number of input items
-      return noutput_items;
-    } else {
-      // check if vector is empty
-      if (mem_vec.empty()) {
-        m_state = FIND_END_FRAME;
-        return end_vec;
-      }
-      return noutput_items;
+    //check with the current input if we are still in a LoRa frame
+    bool in_frame = check_in_frame(&m_input_downsampled[0]);
+    //if we are still in a frame
+    if(in_frame == true){
+        //append input to the memory vector
+        for (int i = 0; i < ninput_items[0]; i++) {
+            mem_vec.push_value(m_input_downsampled[i]);
+        }
+    }else{
+        //if the memory vector is empty (all stored items have been send)
+        if (mem_vec.empty()) {
+            //go to finding the preamble
+            m_state = FIND_PREAMBLE;
+        }
     }
+      //return the number of items produced by the system
+      return end_vec;
   }
   default: {
     GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");

@@ -11,9 +11,10 @@ GNU Radio version: 3.8.2.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
-#include <gnuradio/blocks/null_sink.h>
 #include <gnuradio/blocks/throttle.h>
+#include <gnuradio/filter/interp_fir_filter.h>
 #include <lora_sdr/frame_detector.h>
+#include <lora_sdr/hier_rx.h>
 #include <lora_sdr/hier_tx.h>
 
 
@@ -28,9 +29,10 @@ private:
 
 
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
+    lora_sdr::hier_rx::sptr lora_sdr_hier_rx_1;
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_2;
+    filter::interp_fir_filter_ccf::sptr interp_fir_filter_xxx_0_1_0_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
-    blocks::null_sink::sptr blocks_null_sink_0;
 
 
 // Variables:

@@ -15,24 +15,30 @@ zmq_test::zmq_test () {
 
     this->tb = gr::make_top_block("Not titled yet");
     std::vector<uint16_t> sync_words {8,16};
+    std::vector<float> taps {8.0,16.0};
 
 // Blocks:
     {
-        this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, mean,sync_words,true);
+
+         this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, mean,sync_words,true);
+    }
+    {
+        this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,true);
     }
     {
         this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
     }
     {
-        this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
+        this->interp_fir_filter_xxx_0_1_0_0 = filter::interp_fir_filter_ccf::make(4, taps);
     }
     {
-        this->blocks_null_sink_0 = blocks::null_sink::make(sizeof(gr_complex)*1);
+        this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
     }
 
 // Connections:
     this->tb->hier_block2::connect(this->blocks_throttle_0_1_0, 0, this->lora_sdr_frame_detector_2, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_2, 0, this->blocks_null_sink_0, 0);
+    this->tb->hier_block2::connect(this->interp_fir_filter_xxx_0_1_0_0, 0, this->lora_sdr_hier_rx_1, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_2, 0, this->interp_fir_filter_xxx_0_1_0_0, 0);
     this->tb->hier_block2::connect(this->lora_sdr_hier_tx_1, 0, this->blocks_throttle_0_1_0, 0);
 }
 

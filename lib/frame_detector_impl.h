@@ -11,13 +11,26 @@
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
 
 #include <lora_sdr/frame_detector.h>
-
+#include <gnuradio/io_signature.h>
 extern "C" {
 #include "kiss_fft.h"
 }
 
 namespace gr {
 namespace lora_sdr {
+
+    class Temporary_buffer{
+        std::vector<gr_complex> temp_mem_vec;
+    public:
+        void push_value(gr_complex);
+        void clear();
+        void erase(int);
+        bool empty();
+        int get_size();
+        gr_complex get_value(int);
+        void set_reserve();
+    } temp_mem;
+
 
 class frame_detector_impl : public frame_detector {
 private:
@@ -26,7 +39,8 @@ private:
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, SEND_FRAMES, FIND_END_FRAME };
+  enum State { FIND_PREAMBLE, SEND_FRAMES};
+
 
   /**
    * @brief Current state of the frame finder
@@ -138,10 +152,10 @@ private:
   uint32_t n_up;
 
   /**
-   * @brief Temporary
+   * @brief Temporary memory vector
    *
    */
-  std::vector<gr_complex> mem_vec;
+  Temporary_buffer mem_vec;
 
   /**
    * @brief  LoRa symbol count
@@ -156,12 +170,19 @@ private:
   float m_power;
 
 /**
+ * @brief multiplier for the output how many times the input needs to be send (ideally >>1)
+ *
+ *
+ */
+  int m_mul_out;
+
+/**
  * @brief Get the symbol object value (aka decoded LoRa symbol value)
  * 
  * @param input : complex samples
  * @return int32_t : LoRa symbol value
  */
-  int32_t get_symbol(const gr_complex *input);
+  int32_t get_symbol(gr_complex *input);
 
 /**
  * @brief Checks if current samples have the right 
@@ -170,7 +191,7 @@ private:
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-  bool check_in_frame(const gr_complex *input);
+  bool check_in_frame(gr_complex *input);
 
 /**
  * @brief Calculates the LoRa frame peak power
@@ -178,14 +199,14 @@ private:
  * @param input : input samples
  * @return float : peak power
  */
-  float calc_power(const gr_complex *input);
+  float calc_power(gr_complex *input);
 
 /**
  * @brief Set the current LoRa frame power
  *
  * @param input : complex samples
  */
-  void set_power(const gr_complex *input);
+  void set_power(gr_complex *input);
 
 public:
   /**

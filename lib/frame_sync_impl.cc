@@ -387,7 +387,6 @@ int frame_sync_impl::general_work(int noutput_items,
   switch (m_state) {
   case DETECT: {
     bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
-//    std::cout << bin_idx_new << std::endl;
 
     if (std::abs(bin_idx_new - bin_idx) <= 1 &&
         bin_idx_new != -1) { // look for consecutive reference upchirps(with a
@@ -410,8 +409,7 @@ int frame_sync_impl::general_work(int noutput_items,
       m_state = SYNC;
       symbol_cnt = 0;
       cfo_sto_est = false;
-//      std::cout << "Found preamble" << std::endl;
-        std::cout << bin_idx_new << std::endl;
+      std::cout << bin_idx_new << std::endl;
       k_hat = round(k_hat / (n_up - 1));
 
       // perform the coarse synchronization
