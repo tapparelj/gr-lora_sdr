@@ -50,7 +50,12 @@ cpp_templates:
   includes : ['#include <gnuradio/filter/interp_fir_filter.h>']
   declarations: 'filter::interp_fir_filter_${type}::sptr ${id};'
   make: |-
-        this->${id} = filter::interp_fir_filter_${type}::make(${interp}, ${taps})
+        % if str(type.taps) == "complex_vector":
+        std::vector<gr_complex> taps = {${str(taps)[1:-1]}};
+        % else:
+        std::vector<int> taps = {${str(taps)[1:-1]}};
+        % endif
+        this->${id} = filter::interp_fir_filter_${type}::make(${interp}, taps);
   link: ['gnuradio-filter']
   callbacks:
     - set_taps(${taps})

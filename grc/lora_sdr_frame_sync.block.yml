@@ -47,7 +47,7 @@ cpp_templates:
      includes: ['#include <lora_sdr/frame_sync.h>'] 
      declarations: 'lora_sdr::frame_sync::sptr ${id};' 
      make: 'this->${id} = lora_sdr::frame_sync::make(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head});' 
-
+     link: ['gnuradio-lora_sdr']
 
 documentation: |-
     Block taking care of the preamble detection, CFO and STO estimation and correction.

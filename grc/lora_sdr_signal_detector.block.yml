@@ -42,5 +42,5 @@ cpp_templates:
     declarations: 'lora_sdr::signal_detector::sptr ${id};'
     make: 'this->${id} = lora_sdr::signal_detector::make(${sf}, ${os_factor}, ${threshold}, ${margin}, ${fft_symb},
                                                           ${transp_len});'
-
+    link: ['gnuradio-lora_sdr']
 file_format: 1

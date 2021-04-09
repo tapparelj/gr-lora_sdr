@@ -14,22 +14,25 @@ zmq_test::zmq_test () {
 
 
     this->tb = gr::make_top_block("Not titled yet");
-    std::vector<uint16_t> sync_words {8,16};
-    std::vector<float> taps {8.0,16.0};
+
 
 // Blocks:
     {
-
-         this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, mean,sync_words,true);
+        std::vector<uint16_t> sync_words = {8, 16};
+        this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9",
+                            cr, sf, impl_head,has_crc,
+                            samp_rate, bw, mean,sync_words,true);
     }
     {
+        std::vector<uint16_t> sync_words = {8, 16};
         this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,true);
     }
     {
         this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
     }
     {
-        this->interp_fir_filter_xxx_0_1_0_0 = filter::interp_fir_filter_ccf::make(4, taps);
+        std::vector<gr_complex> taps = {-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872};
+        this->interp_fir_filter_xxx_0_1_0_0 = filter::interp_fir_filter_ccc::make(4, taps);
     }
     {
         this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);

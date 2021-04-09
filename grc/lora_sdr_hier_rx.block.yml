@@ -10,8 +10,10 @@ templates:
 cpp_templates: 
      includes: ['#include <lora_sdr/hier_rx.h>'] 
      declarations: 'lora_sdr::hier_rx::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::hier_rx::make(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, sync_words ,${exit});'
-
+     make: |-
+        std::vector<uint16_t> sync_words = {${str(sync_words)[1:-1]}};
+        this->${id} = lora_sdr::hier_rx::make(${samp_rate}, ${bw}, ${sf}, ${impl_head}, ${cr}, ${pay_len}, ${has_crc}, sync_words ,${exit});
+     link: ['gnuradio-lora_sdr']
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
 #     * id (makes the value accessible as \$keyname, e.g. in the make entry)

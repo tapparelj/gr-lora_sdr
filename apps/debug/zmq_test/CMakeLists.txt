@@ -21,8 +21,9 @@ set(GR_LIBRARIES
     gnuradio-blocks
     gnuradio-runtime
     gnuradio-pmt
-    gnuradio-lora_sdr
     log4cpp
+    gnuradio-lora_sdr
+    gnuradio-filter
 )
 
 add_executable(zmq_test zmq_test.cpp)

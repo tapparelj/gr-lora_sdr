@@ -34,7 +34,7 @@ cpp_templates:
      includes: ['#include <lora_sdr/hamming_enc.h>'] 
      declarations: 'lora_sdr::hamming_enc::sptr ${id};' 
      make: 'this->${id} = lora_sdr::hamming_enc::make(${cr}, ${sf});' 
-
+     link: ['gnuradio-lora_sdr']
 
 documentation: |-
     Append the parity bits to a nibble in accordance to the coding rate.

@@ -46,7 +46,7 @@ cpp_templates:
      includes: ['#include <lora_sdr/data_source_sim.h>'] 
      declarations: 'lora_sdr::data_source_sim::sptr ${id};' 
      make: 'this->${id} = lora_sdr::data_source_sim::make(${pay_len}, ${n_frames}, ${string_input}, ${mean}, ${multi_control});' 
-
+     link: ['gnuradio-lora_sdr']
 
 documentation: |-
     Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)

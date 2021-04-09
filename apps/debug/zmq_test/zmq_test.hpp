@@ -31,7 +31,7 @@ private:
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
     lora_sdr::hier_rx::sptr lora_sdr_hier_rx_1;
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_2;
-    filter::interp_fir_filter_ccf::sptr interp_fir_filter_xxx_0_1_0_0;
+    filter::interp_fir_filter_ccc::sptr interp_fir_filter_xxx_0_1_0_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
 
 

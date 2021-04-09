@@ -27,7 +27,8 @@ cpp_templates:
      includes: ['#include <lora_sdr/add_crc.h>'] 
      declarations: 'lora_sdr::add_crc::sptr ${id};' 
      make: 'this->${id} = lora_sdr::add_crc::make(${has_crc});' 
-
+     link: ['gnuradio-lora_sdr']
+     
 documentation: |-
     Append the payload CRC to the payload.
           Parameters:
