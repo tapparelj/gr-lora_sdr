@@ -10,6 +10,15 @@ copyright_owner:
   - Copyright Owner 1
 stable_release: master
 license: GPL
+dependencies:
+  - gnuradio (>= 3.8.0)
+  - python (>= 3.8)
+  - cmake (>= 3.8)
+  - swig (>= 4.0)
+  - libvolk
+  - uhd
+  - doxygen
+  - log4cpp
 gr_supported_version: 3.8.0,3.8.1,3.8.2
 repo: https://github.com/martynvdijke/gr-lora_sdr
 website: https://martynvdijke.github.io/gr-lora_sdr/html/index.html

@@ -9,26 +9,66 @@
  */
 #ifndef INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
-
 #include <lora_sdr/frame_detector.h>
 #include <gnuradio/io_signature.h>
 extern "C" {
 #include "kiss_fft.h"
 }
+//#define GRLORA_log
 
 namespace gr {
 namespace lora_sdr {
 
+    /**
+     * @brief Simple data holder class for memory vec
+     * 
+     */
     class Temporary_buffer{
+        /**
+         * @brief Temporary vector containting data elements
+         * 
+         */
         std::vector<gr_complex> temp_mem_vec;
     public:
+        /**
+         * @brief Wrapper around the push_back function
+         * 
+         */
         void push_value(gr_complex);
+        /**
+         * @brief Wrapper function for the clear function
+         * 
+         */
         void clear();
+        /**
+         * @brief Wrapper for the erase functoin
+         * 
+         */
         void erase(int);
+        /**
+         * @brief Wrapper for the empty function
+         * 
+         * @return true : memory is empty
+         * @return false : memory is not empty
+         */
         bool empty();
+        /**
+         * @brief Wrapper of the size function
+         * 
+         * @return int 
+         */
         int get_size();
+        /**
+         * @brief Get the value of vector at point int
+         * 
+         * @return gr_complex 
+         */
         gr_complex get_value(int);
-        void set_reserve();
+        /**
+         * @brief Set the reserve object
+         * 
+         */
+        void set_reserve(int);
     } temp_mem;
 
 
@@ -169,6 +209,12 @@ private:
    */
   float m_power;
 
+  bool m_exit;
+
+#ifdef GRLORA_log
+  std::ofstream output_log_before;
+  std::ofstream output_log_after;
+#endif
 /**
  * @brief multiplier for the output how many times the input needs to be send (ideally >>1)
  *

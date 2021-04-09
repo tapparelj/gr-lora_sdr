@@ -104,23 +104,11 @@ blocks:
     coordinate: [1200, 8.0]
     rotation: 0
     state: enabled
-- name: multi_control
-  id: variable
-  parameters:
-    comment: ''
-    value: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1104, 8.0]
-    rotation: 0
-    state: enabled
 - name: n_frame
   id: variable
   parameters:
     comment: ''
-    value: '3'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -298,9 +286,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 412.0]
+    coordinate: [754, 410]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -333,7 +321,7 @@ blocks:
     bw: bw
     comment: ''
     cr: cr
-    exit: 'true'
+    exit: 'false'
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
@@ -346,7 +334,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1249, 352]
+    coordinate: [1244, 370]
     rotation: 0
     state: true
 - name: lora_sdr_hier_tx_1
@@ -362,7 +350,7 @@ blocks:
     maxoutbuf: '0'
     mean: mean
     minoutbuf: '0'
-    multi_control: 'true'
+    multi_control: 'false'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate

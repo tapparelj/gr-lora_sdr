@@ -4,7 +4,7 @@
 // #define GRLORA_DEBUG
 // #define GRLORA_SAVE_PRE_DATA //it will save every sample of the packets
 // (preamble + payload)
-#define GRLORA_MEASUREMENTS
+// #define GRLORA_MEASUREMENTS
 
 #include <fstream>
 #include <gnuradio/io_signature.h>

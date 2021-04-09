@@ -21,11 +21,11 @@ zmq_test::zmq_test () {
         std::vector<uint16_t> sync_words = {8, 16};
         this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9",
                             cr, sf, impl_head,has_crc,
-                            samp_rate, bw, mean,sync_words,true);
+                            samp_rate, bw, mean,sync_words,false);
     }
     {
         std::vector<uint16_t> sync_words = {8, 16};
-        this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,true);
+        this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,false);
     }
     {
         this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
@@ -80,14 +80,6 @@ int zmq_test::get_n_frame () const {
 
 void zmq_test::set_n_frame (int n_frame) {
     this->n_frame = n_frame;
-}
-
-bool zmq_test::get_multi_control () const {
-    return this->multi_control;
-}
-
-void zmq_test::set_multi_control (bool multi_control) {
-    this->multi_control = multi_control;
 }
 
 int zmq_test::get_mean () const {

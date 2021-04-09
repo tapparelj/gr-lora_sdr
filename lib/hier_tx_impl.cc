@@ -61,7 +61,7 @@ hier_tx_impl::hier_tx_impl(int pay_len, int n_frames, std::string src_data,
    // Blocks
    gr::lora_sdr::data_source_sim::sptr data_source_sim(
        gr::lora_sdr::data_source_sim::make(pay_len, n_frames, src_data, mean,
-                                           true));
+                                           create_zeros));
    // whitening
    gr::lora_sdr::whitening::sptr whitening(gr::lora_sdr::whitening::make());
    // add header

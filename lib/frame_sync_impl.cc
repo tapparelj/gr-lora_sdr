@@ -381,9 +381,10 @@ int frame_sync_impl::general_work(int noutput_items,
         return 1;
     }
   // downsampling
-  for (int ii = 0; ii < m_number_of_bins; ii++)
-    in_down[ii] =
-        in[(int)(usFactor - 1 + usFactor * ii - round(lambda_sto * usFactor))];
+  for (int ii = 0; ii < m_number_of_bins; ii++) {
+      in_down[ii] =
+              in[(int) (usFactor - 1 + usFactor * ii - round(lambda_sto * usFactor))];
+  }
   switch (m_state) {
   case DETECT: {
     bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
@@ -409,7 +410,7 @@ int frame_sync_impl::general_work(int noutput_items,
       m_state = SYNC;
       symbol_cnt = 0;
       cfo_sto_est = false;
-      std::cout << bin_idx_new << std::endl;
+//      std::cout << bin_idx_new << std::endl;
       k_hat = round(k_hat / (n_up - 1));
 
       // perform the coarse synchronization

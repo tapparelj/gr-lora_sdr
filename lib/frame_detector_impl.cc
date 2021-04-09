@@ -42,6 +42,11 @@ namespace lora_sdr {
         return temp_mem_vec.at(i);
     }
 
+    void Temporary_buffer::set_reserve(int i) {
+        temp_mem_vec.reserve(i);
+    }
+    
+
 frame_detector::sptr frame_detector::make(float samp_rate, uint32_t bandwidth,
                                           uint8_t sf) {
   return gnuradio::get_initial_sptr(
@@ -66,10 +71,12 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   m_threshold = 200;
   m_margin = 0;
   m_fft_symb = 4;
-  m_mul_out = 4;
+  m_mul_out = 1;
+  m_exit = false;
 
   m_N = (uint32_t)(1u << m_sf);
   m_samples_per_symbol = m_N * m_os_factor;
+  mem_vec.set_reserve(32768);
 
   //  mem_vec.reserve(m_N * m_fft_symb*10);
   // initialise all vector values and make sure they have the same length
@@ -91,8 +98,12 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   m_power = 0;
   // set inital state to find preamble
   m_state = FIND_PREAMBLE;
-
-        set_tag_propagation_policy(TPP_ONE_TO_ONE);
+  //set tag propagation
+  set_tag_propagation_policy(TPP_ONE_TO_ONE);
+  #ifdef GRLORA_log
+  output_log_before.open("before.txt", std::ios::out | std::ios::trunc);
+  output_log_after.open("after.txt", std::ios::out | std::ios::trunc);
+#endif
 }
 
 /**
@@ -134,10 +145,11 @@ bool frame_detector_impl::check_in_frame(gr_complex *input){
     //get current power
     current_power = frame_detector_impl::calc_power(input);
     //TODO find out how to compare ?
-    compare_power = current_power*m_threshold;
+    compare_power = current_power;
+            //*(1/m_threshold);
 
     //if current power higher or the current power we are still in a frame
-    if(compare_power >= m_power){
+    if( compare_power > m_power){
         return true;
     }else{
         //we are not inside safe margin of threshold (not in a LoRa frame)
@@ -213,12 +225,20 @@ int frame_detector_impl::general_work(int noutput_items,
                                       gr_vector_void_star &output_items) {
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
-
-
-  // downsample input (if needed)
-  for (int i = 0; i < m_N; i++) {
-      m_input_downsampled[i] = in[(int)(m_os_factor - 1 + m_os_factor * i)];
-  }
+    if(m_exit) {
+        std::vector <tag_t> work_done_tags;
+        get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                           pmt::string_to_symbol("work_done"));
+        if (work_done_tags.size()) {
+            std::exit(EXIT_SUCCESS);
+        }
+    }
+    //TODO figure out why it only works if we have this ?
+#ifdef GRLORA_log
+        for (int i = 0; i < ninput_items[0]; i++) {
+            output_log_before << in[i] << std::endl;
+        }
+#endif
 
   switch (m_state) {
   case FIND_PREAMBLE: {
@@ -227,22 +247,16 @@ int frame_detector_impl::general_work(int noutput_items,
 #endif
     // copy input to memory vector for later use.
     for (int i = 0; i < ninput_items[0]; i++) {
-        mem_vec.push_value(m_input_downsampled[i]);
+        mem_vec.push_value(in[i]);
     }
     //calculate symbols to process
     //TODO find out how to stream line this
-    int n_symb_to_process =
-        std::min(std::floor(ninput_items[0] / m_samples_per_symbol) - m_margin -
-                     m_fft_symb + 1,
-                 std::floor(noutput_items / m_samples_per_symbol));
-
+    int n_symb_to_process =ninput_items[0] / m_samples_per_symbol;
       consume_each(m_samples_per_symbol * n_symb_to_process);
     for (int n = 0; n < n_symb_to_process; n++) {
       // down sample the new symbol with a stride of m_os_factor
       for (int i = 0; i < m_N; i++) {
-        m_input_downsampled[i] =
-            in[(n + m_margin + m_fft_symb - 1) * m_samples_per_symbol +
-               m_os_factor * i];
+        m_input_downsampled[i] = in[n*m_samples_per_symbol+i];
       }
       // shift left
       std::rotate(m_dechirped.begin(), m_dechirped.begin() + m_N,
@@ -281,32 +295,48 @@ int frame_detector_impl::general_work(int noutput_items,
   }
   case SEND_FRAMES: {
     // actual sending of samples in split packets (due to gnuradio scheduler)
-#ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
-#endif
+//#ifdef GRLORA_DEBUG
+//    GR_LOG_DEBUG(this->d_logger, "DEBUG:sending packets!");
+//#endif
      consume_each(ninput_items[0]);
 
     //the end of the vector to be eqaul to the vector size (number of elements in vector)
     int end_vec = mem_vec.get_size();
     //if the current vector size is less then number of output items times multiplier
-    if (mem_vec.get_size() > m_mul_out*noutput_items) {
+    if (end_vec > m_mul_out*ninput_items[0]) {
         //set the number of elements
-      end_vec = m_mul_out*noutput_items;
+      end_vec = m_mul_out*ninput_items[0];
     }
+
+#ifdef GRLORA_log
+      for (int i = 0; i < end_vec; i++) {
+        out[i] = mem_vec.get_value(i);
+        output_log_after<< out[i] << std::endl;
+    }
+#endif
+
     //loop over the output vector and set output to the right values
-    for (int i = 0; i < end_vec; i++) {
-      out[i] = mem_vec.get_value(i);
-    }
+      for (int i = 0; i < end_vec; i++) {
+          out[i] = mem_vec.get_value(i);
+//          std::cout << out[i] << std::endl;
+      }
+
      //clear all vector values that have been used
       mem_vec.erase(end_vec);
-
+      std::vector<gr_complex> test;
+      test.resize(ninput_items[0]);
+      test[0] = in[0];
     //check with the current input if we are still in a LoRa frame
-    bool in_frame = check_in_frame(&m_input_downsampled[0]);
+    bool in_frame = check_in_frame(&test[0]);
     //if we are still in a frame
     if(in_frame == true){
         //append input to the memory vector
         for (int i = 0; i < ninput_items[0]; i++) {
-            mem_vec.push_value(m_input_downsampled[i]);
+            mem_vec.push_value(in[i]);
+        }
+        if (mem_vec.empty()) {
+            //go to finding the preamble
+            m_state = FIND_PREAMBLE;
         }
     }else{
         //if the memory vector is empty (all stored items have been send)

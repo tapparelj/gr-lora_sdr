@@ -39,8 +39,7 @@ private:
     int sf = 9;
     int samp_rate = 250000;
     int pay_len = 64;
-    int n_frame = 3;
-    bool multi_control = true;
+    int n_frame = 10;
     int mean = 200;
     bool impl_head = true;
     bool has_crc = false;
@@ -61,8 +60,6 @@ public:
     void set_pay_len(int pay_len);
     int get_n_frame () const;
     void set_n_frame(int n_frame);
-    bool get_multi_control () const;
-    void set_multi_control(bool multi_control);
     int get_mean () const;
     void set_mean(int mean);
     bool get_impl_head () const;

@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="lora_test_py" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="true" WORKING_DIR="file://$PROJECT_DIR$/apps" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_PATH="$PROJECT_DIR$/apps/lora_sim.py" EXPLICIT_BUILD_TARGET_NAME="all">
-    <method v="2">
-      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_bash scripts" />
-    </method>
-  </configuration>
-</component>
