@@ -206,7 +206,8 @@ void frame_detector_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
   // we need at least the preamble symbols to start working
-  ninput_items_required[0] = m_samples_per_symbol* (m_margin + m_fft_symb);
+//   ninput_items_required[0] = (m_samples_per_symbol + 2);
+  ninput_items_required[0] = m_samples_per_symbol +2;
 }
 
 /**
@@ -303,9 +304,9 @@ int frame_detector_impl::general_work(int noutput_items,
     //the end of the vector to be eqaul to the vector size (number of elements in vector)
     int end_vec = mem_vec.get_size();
     //if the current vector size is less then number of output items times multiplier
-    if (end_vec > m_mul_out*ninput_items[0]) {
+    if (end_vec > noutput_items) {
         //set the number of elements
-      end_vec = m_mul_out*ninput_items[0];
+      end_vec = noutput_items;
     }
 
 #ifdef GRLORA_log

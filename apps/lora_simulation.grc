@@ -8,7 +8,7 @@ options:
     description: Simulation example LoRa
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: lora_sim
     max_nouts: '0'
@@ -435,7 +435,7 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
-    maxoutbuf: '0'
+    maxoutbuf: ''
     minoutbuf: '20000'
     samp_rate: samp_rate
     sf: sf
@@ -569,7 +569,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [136, 212.0]
+    coordinate: [139, 212]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0_0
@@ -650,7 +650,7 @@ blocks:
     bus_structure: null
     coordinate: [968, 331]
     rotation: 0
-    state: true
+    state: disabled
 
 connections:
 - [blocks_throttle_0_1, '0', blocks_null_sink_0, '0']
