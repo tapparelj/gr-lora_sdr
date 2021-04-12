@@ -146,82 +146,6 @@ blocks:
     coordinate: [0, 380.0]
     rotation: 180
     state: enabled
-- name: blocks_file_sink_0_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/tmp1.txt
-    type: byte
-    unbuffered: 'True'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [816, 292.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_0_0_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/tmp2.txt
-    type: int
-    unbuffered: 'True'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1072, 268.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_1_2_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/tmp.txt
-    type: complex
-    unbuffered: 'True'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1040, 508.0]
-    rotation: 180
-    state: disabled
-- name: blocks_file_source_0
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/msg_sf12_cr3_crc_expl.txt
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'True'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1224, 44.0]
-    rotation: 0
-    state: disabled
 - name: blocks_file_source_0_0
   id: blocks_file_source
   parameters:
@@ -244,43 +168,6 @@ blocks:
     coordinate: [48, 132.0]
     rotation: 0
     state: enabled
-- name: blocks_message_strobe_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.intern("One morning, when Gregor Samsa woke from troubled dreams, he
-      found himself transformed in his bed into a horrible vermin. He lay on his armour-like
-      back, and if he lifted his head a little he could see his brown belly, slightly
-      domed and divided by arches")
-    period: frame_period
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 308.0]
-    rotation: 0
-    state: disabled
-- name: blocks_message_strobe_0_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.intern("Hello123")
-    period: frame_period
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [48, 236.0]
-    rotation: 0
-    state: disabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -595,10 +482,7 @@ blocks:
     state: enabled
 
 connections:
-- [blocks_file_source_0, '0', blocks_throttle_0, '0']
 - [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
-- [blocks_message_strobe_0, strobe, lora_sdr_whitening_0, msg]
-- [blocks_message_strobe_0_0, strobe, lora_sdr_whitening_0, msg]
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', interp_fir_filter_xxx_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_frame_sync_0, '0']
@@ -608,17 +492,14 @@ connections:
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_enc_0, '0']
 - [lora_sdr_frame_sync_0, '0', lora_sdr_fft_demod_0, '0']
-- [lora_sdr_gray_decode_0, '0', blocks_file_sink_0_0_0, '0']
 - [lora_sdr_gray_decode_0, '0', lora_sdr_modulate_0, '0']
 - [lora_sdr_gray_enc_0, '0', lora_sdr_deinterleaver_0, '0']
 - [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
-- [lora_sdr_hamming_enc_0, '0', blocks_file_sink_0_0, '0']
 - [lora_sdr_hamming_enc_0, '0', lora_sdr_interleaver_0, '0']
 - [lora_sdr_header_0, '0', lora_sdr_add_crc_0, '0']
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_decode_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_file_sink_1_2_0, '0']
 - [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 

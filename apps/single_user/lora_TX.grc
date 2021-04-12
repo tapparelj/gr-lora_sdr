@@ -140,28 +140,6 @@ blocks:
     coordinate: [352, 4]
     rotation: 0
     state: enabled
-- name: blocks_file_source_0
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/pay_tmp.bin
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'True'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [0, 108.0]
-    rotation: 0
-    state: disabled
 - name: blocks_message_strobe_0
   id: blocks_message_strobe
   parameters:
@@ -176,46 +154,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [0, 220.0]
-    rotation: 0
-    state: enabled
-- name: blocks_message_strobe_0_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.intern("One morning, when Gregor Samsa woke from troubled dreams, he
-      found himself transformed in his bed into a horrible vermin. He lay on his armour-like
-      back, and if he lifted his head a little he could see his brown belly, slightly
-      domed and divided by arches")
-    period: frame_period
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [-16, 300.0]
-    rotation: 0
-    state: disabled
-- name: blocks_tag_debug_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1040, 476.0]
+    coordinate: [0, 164.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_add_crc_0
@@ -334,60 +273,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [184, 144.0]
-    rotation: 0
-    state: enabled
-- name: soapy_sink_0
-  id: soapy_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    amp_gain0: '0'
-    ant0: Auto
-    ant1: TX
-    args: ''
-    balance0: '0'
-    balance1: '0'
-    bw0: '0'
-    bw1: '0'
-    center_freq0: center_freq
-    center_freq1: 100.0e6
-    clock_rate: '0'
-    clock_source: ''
-    comment: ''
-    correction0: '0'
-    correction1: '0'
-    dc_offset0: '0'
-    dc_offset1: '0'
-    dc_offset_auto_mode0: 'False'
-    dc_offset_auto_mode1: 'False'
-    dev: driver=lime_sdr
-    devname: lime
-    gain_auto_mode0: 'False'
-    gain_auto_mode1: 'False'
-    iamp_gain0: '10'
-    iamp_gain1: '0'
-    length_tag_name: ''
-    manual_gain0: 'True'
-    manual_gain1: 'True'
-    nchan: '1'
-    nco_freq0: '0'
-    nco_freq1: '0'
-    overall_gain0: '10'
-    overall_gain1: '0'
-    pad_gain0: '20'
-    pad_gain1: '0'
-    pga_gain0: '24'
-    pga_gain1: '0'
-    samp_rate: samp_rate
-    txvga1_gain: '-35'
-    txvga2_gain: '0'
-    type: fc32
-    vga_gain0: '10'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1056, 260.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0
@@ -665,19 +550,15 @@ blocks:
     bus_structure: null
     coordinate: [1056, 76.0]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
-- [blocks_file_source_0, '0', lora_sdr_whitening_0, '0']
 - [blocks_message_strobe_0, strobe, lora_sdr_whitening_0, msg]
-- [blocks_message_strobe_0_0, strobe, lora_sdr_whitening_0, msg]
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
 - [lora_sdr_gray_decode_0, '0', lora_sdr_modulate_0, '0']
 - [lora_sdr_hamming_enc_0, '0', lora_sdr_interleaver_0, '0']
 - [lora_sdr_header_0, '0', lora_sdr_add_crc_0, '0']
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_decode_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_tag_debug_0, '0']
-- [lora_sdr_modulate_0, '0', soapy_sink_0, '0']
 - [lora_sdr_modulate_0, '0', uhd_usrp_sink_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 

@@ -128,24 +128,6 @@ blocks:
     coordinate: [360, 4]
     rotation: 0
     state: enabled
-- name: blocks_file_sink_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/tmp.txt
-    type: complex
-    unbuffered: 'True'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 292.0]
-    rotation: 0
-    state: disabled
 - name: interp_fir_filter_xxx_0
   id: interp_fir_filter_xxx
   parameters:
@@ -300,75 +282,6 @@ blocks:
     coordinate: [1168, 148.0]
     rotation: 0
     state: enabled
-- name: soapy_source_0
-  id: soapy_source
-  parameters:
-    affinity: ''
-    agc0: 'False'
-    agc1: 'False'
-    alias: ''
-    amp_gain0: '0'
-    ant0: Auto
-    ant1: RX2
-    args: ''
-    balance0: '0'
-    balance1: '0'
-    bw0: '0'
-    bw1: '0'
-    center_freq0: center_freq
-    center_freq1: '0'
-    clock_rate: '0'
-    clock_source: ''
-    comment: ''
-    correction0: '0'
-    correction1: '0'
-    dc_offset0: '0'
-    dc_offset1: '0'
-    dc_removal0: 'True'
-    dc_removal1: 'True'
-    dev: driver=rtlsdr
-    devname: lime
-    gain_mode0: Overall
-    gain_mode1: Overall
-    ifgr_gain: '59'
-    lna_gain0: '10'
-    lna_gain1: '10'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    mix_gain0: '10'
-    nchan: '1'
-    nco_freq0: '0'
-    nco_freq1: '0'
-    overall_gain0: '40'
-    overall_gain1: '10'
-    pga_gain0: '24'
-    pga_gain1: '24'
-    rfgr_gain: '9'
-    rxvga1_gain: '5'
-    rxvga2_gain: '0'
-    samp_rate: samp_rate
-    sdrplay_agc_setpoint: '-30'
-    sdrplay_biastee: 'False'
-    sdrplay_dabnotch: 'False'
-    sdrplay_if_mode: Zero-IF
-    sdrplay_rfnotch: 'False'
-    settings0: ''
-    settings1: ''
-    stream_args: ''
-    tia_gain0: '0'
-    tia_gain1: '0'
-    tune_args0: ''
-    tune_args1: ''
-    tuner_gain0: '10'
-    type: fc32
-    vga_gain0: '10'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [0, 276.0]
-    rotation: 0
-    state: disabled
 - name: uhd_usrp_source_0
   id: uhd_usrp_source
   parameters:
@@ -751,9 +664,6 @@ connections:
 - [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
-- [soapy_source_0, '0', blocks_file_sink_0, '0']
-- [soapy_source_0, '0', interp_fir_filter_xxx_0, '0']
-- [uhd_usrp_source_0, '0', blocks_file_sink_0, '0']
 - [uhd_usrp_source_0, '0', interp_fir_filter_xxx_0, '0']
 
 metadata:
