@@ -36,6 +36,8 @@ Single user Functionalities:
 		- This issue comes probably from missing PYTHONPATH and LD_LIBRARY_PATH                             
 		- Refer to https://wiki.gnuradio.org/index.php/ModuleNotFoundError to modify those variables. If you set a prefix during the "cmake" call, skip directly to point C.(Verifying that the paths exist in your folders might help.)
 
+-Conda environment:
+	The file environment.yml describes the conda environment used to develop the OOT module on gnuradio 3.8.2.0
 
 -Requirements:
 	Gnuradio 3.8.2
@@ -45,7 +47,7 @@ Single user Functionalities:
 	libvolk
 	Boost
 	UHD
-	gccs
+	gcc
 	gxx
 
 
