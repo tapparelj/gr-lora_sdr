@@ -14,32 +14,6 @@ Single user Functionalities:
 
 -An example of a transmitter and a receiver can be found in gr-lora_sdr/app/single_user (both python and grc).
 
-
-Two users functionnalities:
-
-	This is the GNU Radio software-defined radio (SDR) implementation of a two-user, same SF interference system with all the necessary receiver components to demodulate LoRa symbols correctly even at very low SNRs.
-	In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose the transmission conditions of each user, such as STO, CFO, and power.
-
-	-In the Tx chain, the implementation contains all the blocks necessary to transmit colliding LoRa frames composed of a preamble and a payload. Each user being subject to an individual CFO, time offset and transmit power.
-
-	-The receiver side is composed of:
-		-A signal detection block discriminating noise from a actual LoRa transmission.
-		-A user detection block responsible of detecting and estimating new user STO, CFO, and power.
-		-A synchronization block which realign the samples to the strongest user for STO correction and apply the required CFO correction.
-		-A demodulation block which recover the symbols values of the users present using a maximum-likelihood-based demodulation method.
-	
-	-The implementation can be used for experimental performance evaluation of a LoRa SDR receiver at low SNRs under same SF interference.
-
-- The custom blocks necessary for the multi-user transceiver can be found under the LoRa_mu section in GRC. 
-
-	- An example of a two interfering user flowgraph can be found in the gr-lora_sdr/apps/two_users/ .
-	- Set the measurement_folder variable in GRC to a desired location. (Default: gr-lora_sdr/matlab/measurement).
-	- Generate the python script corresponding to the flowgraph in GRC.
-	- In a terminal navigate to gr-lora_sdr/apps/two_users/
-	- Execute the generated script using: ./mu_tx_rx_(simulation).py 
-	- A matlab script interpreting the results can be found in: gr-lora_sdr/matlab. This script compare the demodulated symbols with the reference ones, based on a frame ID in the beginning of each payload. 
-
-
 -Installation:
 	-Download the zip archive and extract it
 	-Similarly to any GNU Radio OOT module, it can be build with:
@@ -71,7 +45,7 @@ Two users functionnalities:
 	libvolk
 	Boost
 	UHD
-	gcc
+	gccs
 	gxx
 
 
