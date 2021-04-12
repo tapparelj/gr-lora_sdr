@@ -67,13 +67,15 @@ int header_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   int nitems_to_process = std::min(ninput_items[0], noutput_items);
   int out_offset = 0;
 
-  //search for work_done tags and if found add them to the stream
+  // search for work_done tags and if found add them to the stream
   std::vector<tag_t> work_done_tags;
   get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
                      pmt::string_to_symbol("work_done"));
   if (work_done_tags.size() > 1) {
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
                  pmt::intern("done"));
+    consume_each(ninput_items[0]);
+    return 1;
   }
 
   // read tags

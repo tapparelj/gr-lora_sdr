@@ -264,6 +264,7 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     sf: sf
+    threshold: '200'
   states:
     bus_sink: false
     bus_source: false
@@ -279,9 +280,10 @@ blocks:
     bw: bw
     comment: ''
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: '20000'
     samp_rate: samp_rate
     sf: sf
+    threshold: '200'
   states:
     bus_sink: false
     bus_source: false
@@ -321,7 +323,7 @@ blocks:
     bw: bw
     comment: ''
     cr: cr
-    exit: 'false'
+    exit: 'true'
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
@@ -350,7 +352,7 @@ blocks:
     maxoutbuf: '0'
     mean: mean
     minoutbuf: '0'
-    multi_control: 'false'
+    multi_control: 'true'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate

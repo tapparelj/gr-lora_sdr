@@ -72,6 +72,7 @@ int interleaver_impl::general_work(int noutput_items,
   if (work_done_tags.size()) {
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
                  pmt::intern("done"),pmt::intern("interleaver"));
+                 consume_each(ninput_items[0]);
     return 1;
   }
 

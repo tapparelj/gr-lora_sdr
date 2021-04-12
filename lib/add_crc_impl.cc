@@ -87,7 +87,8 @@ int add_crc_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     if (work_done_tags.size()) {
         add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
                      pmt::intern("done"),pmt::intern("add crc"));
-        noutput_items = 1;
+                     consume_each(ninput_items[0]);
+                     return 1;
     }
   // read tags
   std::vector<tag_t> tags;

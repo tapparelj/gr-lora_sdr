@@ -93,7 +93,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                      pmt::string_to_symbol("work_done"));
   if (work_done_tags.size()) {
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
-                 pmt::intern("done"));
+                 pmt::intern("done"), pmt::intern("modulate"));
     return 1;
   }
 

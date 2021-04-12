@@ -55,7 +55,7 @@ namespace lora_sdr {
         /**
          * @brief Wrapper of the size function
          * 
-         * @return int 
+         * @return int : number of elements in the vector
          */
         int get_size();
         /**
@@ -209,18 +209,11 @@ private:
    */
   float m_power;
 
-  bool m_exit;
 
 #ifdef GRLORA_log
   std::ofstream output_log_before;
   std::ofstream output_log_after;
 #endif
-/**
- * @brief multiplier for the output how many times the input needs to be send (ideally >>1)
- *
- *
- */
-  int m_mul_out;
 
 /**
  * @brief Get the symbol object value (aka decoded LoRa symbol value)
@@ -261,8 +254,9 @@ public:
    * @param samp_rate : sampling rate
    * @param bandwidth : bandwith
    * @param sf : spreading factor
+   * @param threshold : threshold value to use
    */
-  frame_detector_impl(float samp_rate, uint32_t bandwidth, uint8_t sf);
+  frame_detector_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,uint32_t threshold);
 
   /**
    * @brief Destroy the frame detector impl object

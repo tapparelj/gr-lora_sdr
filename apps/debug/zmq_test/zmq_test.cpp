@@ -21,14 +21,14 @@ zmq_test::zmq_test () {
         std::vector<uint16_t> sync_words = {8, 16};
         this->lora_sdr_hier_tx_1 = lora_sdr::hier_tx::make(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9",
                             cr, sf, impl_head,has_crc,
-                            samp_rate, bw, mean,sync_words,false);
+                            samp_rate, bw, mean,sync_words,true);
     }
     {
         std::vector<uint16_t> sync_words = {8, 16};
-        this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,false);
+        this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,true);
     }
     {
-        this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf);
+        this->lora_sdr_frame_detector_2 = lora_sdr::frame_detector::make(samp_rate,bw,sf,200);
     }
     {
         std::vector<gr_complex> taps = {-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872};
