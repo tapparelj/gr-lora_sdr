@@ -21,12 +21,16 @@ namespace gr {
 
         uint32_t pay_cnt;///< The number of payload nibbles received
         uint32_t nout;///< The number of data nibbles to output
-        bool is_first ;///< Indicate that we need to decode the header
+        bool is_header ;///< Indicate that we need to decode the header
 
         /**
          *  \brief  Reset the block variables for a new frame.
          */
-        void new_frame_handler(pmt::pmt_t id);
+        void new_frame_handler();
+        /**
+         *  \brief publish decoding information contained in the header or provided to the block   
+         */
+        void publish_frame_info(int cr, int pay_len, int crc, int err);
 
      public:
       header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc);

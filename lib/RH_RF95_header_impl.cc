@@ -30,7 +30,8 @@ namespace gr {
 
             message_port_register_out(pmt::mp("msg"));
             message_port_register_in(pmt::mp("msg"));
-            set_msg_handler(pmt::mp("msg"), boost::bind(&RH_RF95_header_impl::msg_handler, this, _1));
+            // set_msg_handler(pmt::mp("msg"), boost::bind(&RH_RF95_header_impl::msg_handler, this, _1));
+            set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg) { this->msg_handler(msg); });
       }
   /*
      * Our virtual destructor.

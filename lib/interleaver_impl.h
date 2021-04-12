@@ -14,8 +14,7 @@ namespace gr {
         uint8_t m_sf; ///< Transmission spreading factor
 
         uint32_t cw_cnt; ///< count the number of codewords
-
-        void msg_handler(pmt::pmt_t message);
+        int m_frame_len; ///<length of the frame in number of items
 
      public:
       interleaver_impl(uint8_t cr, uint8_t sf);

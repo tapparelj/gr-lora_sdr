@@ -24,12 +24,9 @@ namespace gr {
             gr::io_signature::make(1, 1, sizeof(uint32_t)),
             gr::io_signature::make(1, 1, sizeof(uint8_t)))
     {
-        is_first=true;
-        m_sf=sf;
-        message_port_register_in(pmt::mp("CR"));
-        set_msg_handler(pmt::mp("CR"),boost::bind(&deinterleaver_impl::header_cr_handler, this, _1));
-        message_port_register_in(pmt::mp("new_frame"));
-        set_msg_handler(pmt::mp("new_frame"),boost::bind(&deinterleaver_impl::new_frame_handler, this, _1));
+        // is_first = true;
+        m_sf = sf;
+        set_tag_propagation_policy(TPP_DONT);
     }
 
     /*
@@ -42,13 +39,7 @@ namespace gr {
     {
         ninput_items_required[0] = 4;
     }
-
-    void deinterleaver_impl::new_frame_handler(pmt::pmt_t id){
-        is_first = true;
-    }
-    void deinterleaver_impl::header_cr_handler(pmt::pmt_t cr){
-        m_cr = pmt::to_long(cr);
-    };
+    
 
     int deinterleaver_impl::general_work (int noutput_items,
                     gr_vector_int &ninput_items,
@@ -57,8 +48,30 @@ namespace gr {
     {
         const uint32_t *in = (uint32_t *) input_items[0];
         uint8_t *out = (uint8_t *) output_items[0];
-        sf_app = is_first?m_sf-2:m_sf;//Use reduced rate for the first block
-        cw_len = is_first?8:m_cr+4;
+        
+        std::vector<tag_t> tags;
+        get_tags_in_window(tags,0,0,1,pmt::string_to_symbol("frame_info"));
+        if(tags.size()){
+            pmt::pmt_t err = pmt::string_to_symbol("error");
+             m_is_header = pmt::to_bool (pmt::dict_ref(tags[0].value,pmt::string_to_symbol("is_header"),err));
+            if(m_is_header){
+            //   std::cout<<"deinterleaver_header "<<tags[0].offset<<std::endl;
+                // is_first = true;
+            }
+            else{
+                // is_first=false;
+                m_cr = pmt::to_long (pmt::dict_ref(tags[0].value,pmt::string_to_symbol("cr"),err));
+            
+                // std::cout<<"\ndeinter_cr "<<tags[0].offset<<" - cr: "<<(int)m_cr<<"\n";
+                
+            }
+            tags[0].offset = nitems_written(0);
+            add_item_tag(0, tags[0]); 
+        }    
+     
+
+        sf_app = m_is_header?m_sf-2:m_sf;//Use reduced rate for the first block
+        cw_len = m_is_header?8:m_cr+4;
         if(ninput_items[0]>=cw_len){//wait for a full block to deinterleave
             //Create the empty matrices
             std::vector<std::vector<bool>> inter_bin(cw_len);
@@ -100,11 +113,15 @@ namespace gr {
             }
             std::cout<<std::endl;
             #endif
-
-            consume_each(is_first?8:m_cr+4);
-            is_first=false;
+            // if(is_first)
+            //     add_item_tag(0, nitems_written(0), pmt::string_to_symbol("header_len"), pmt::mp((long)sf_app));//sf_app is the header part size
+            consume_each(cw_len);
+            
+            if(noutput_items<sf_app)
+                std::cout<<RED<<"wow1! "<<noutput_items<<"/"<<sf_app<<std::endl;
             return sf_app;
         }
+        return 0;
     }
   } /* namespace lora */
 } /* namespace gr */

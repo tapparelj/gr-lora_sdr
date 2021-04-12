@@ -5,141 +5,191 @@
 
 #include <gnuradio/io_signature.h>
 #include "header_decoder_impl.h"
+#include <lora_sdr/utilities.h>
 
-namespace gr {
-  namespace lora_sdr {
-
-    header_decoder::sptr
-    header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
+namespace gr
+{
+    namespace lora_sdr
     {
-      return gnuradio::get_initial_sptr
-        (new header_decoder_impl(impl_head, cr, pay_len, has_crc));
-    }
 
-    /*
+        header_decoder::sptr
+        header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
+        {
+            return gnuradio::get_initial_sptr(new header_decoder_impl(impl_head, cr, pay_len, has_crc));
+        }
+
+        /*
      * The private constructor
      */
-    header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
-      : gr::block("header_decoder",
-              gr::io_signature::make(1, 1, sizeof(uint8_t)),
-              gr::io_signature::make(1, 1, sizeof(uint8_t)))
-    {
-        m_impl_header = impl_head;
-        m_cr = cr;
-        m_payload_len = pay_len;
-        m_has_crc = has_crc;
+        header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
+            : gr::block("header_decoder",
+                        gr::io_signature::make(1, 1, sizeof(uint8_t)),
+                        gr::io_signature::make(1, 1, sizeof(uint8_t)))
+        {
+            m_impl_header = impl_head;
+            m_cr = cr;
+            m_payload_len = pay_len;
+            m_has_crc = has_crc;
 
-        is_first = true;
-        pay_cnt = 0;
+            pay_cnt = 0;
 
-        message_port_register_in(pmt::mp("new_frame"));
-        set_msg_handler(pmt::mp("new_frame"),boost::bind(&header_decoder_impl::new_frame_handler, this, _1));
+            set_tag_propagation_policy(TPP_DONT);
+            message_port_register_out(pmt::mp("frame_info"));
 
-        message_port_register_out(pmt::mp("CR"));
-        message_port_register_out(pmt::mp("pay_len"));
-        message_port_register_out(pmt::mp("CRC"));
-        message_port_register_out(pmt::mp("err"));
-    }
-    /*
+            // message_port_register_out(pmt::mp("CR"));
+            // message_port_register_out(pmt::mp("pay_len"));
+            // message_port_register_out(pmt::mp("CRC"));
+            // message_port_register_out(pmt::mp("err"));
+        }
+        /*
      * Our virtual destructor.
      */
-    header_decoder_impl::~header_decoder_impl()
-    {
-    }
+        header_decoder_impl::~header_decoder_impl()
+        {
+        }
 
-    void
-    header_decoder_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
-    {
-      ninput_items_required[0] = noutput_items;
-    }
-    void header_decoder_impl::new_frame_handler(pmt::pmt_t id){
-        is_first = true;
-        pay_cnt = 0;
-    }
+        void
+        header_decoder_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+        {
+            ninput_items_required[0] = noutput_items;
+        }
 
-    int header_decoder_impl::general_work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
-    {
-      const uint8_t *in = (const uint8_t *) input_items[0];
-      uint8_t *out = (uint8_t *) output_items[0];
-      nout = 0;
-      if(is_first){
-        if(m_impl_header){//implicit header, all parameters should have been provided
-            message_port_pub(pmt::intern("CR"),pmt::mp(m_cr));
-            message_port_pub(pmt::intern("CRC"),pmt::mp(m_has_crc));
-            message_port_pub(pmt::intern("pay_len"),pmt::mp(m_payload_len));
+        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, int err)
+        {
 
-            for(int i=0;i<ninput_items[0];i++){
-                //only output payload or CRC
-                if(pay_cnt<m_payload_len*2+(m_has_crc?4:0)){
-                    out[i]=in[i];
-                    pay_cnt++;
+            pmt::pmt_t header_content = pmt::make_dict();
+
+            header_content = pmt::dict_add(header_content, pmt::intern("cr"), pmt::from_long(cr));
+            header_content = pmt::dict_add(header_content, pmt::intern("pay_len"), pmt::from_long(pay_len));
+            header_content = pmt::dict_add(header_content, pmt::intern("crc"), pmt::from_long(crc));
+            header_content = pmt::dict_add(header_content, pmt::intern("err"), pmt::from_long(err));
+            message_port_pub(pmt::intern("frame_info"), header_content);
+            if(!err) //don't propagate downstream that a frame was detected
+                add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), header_content);
+        }
+
+        int header_decoder_impl::general_work(int noutput_items,
+                                              gr_vector_int &ninput_items,
+                                              gr_vector_const_void_star &input_items,
+                                              gr_vector_void_star &output_items)
+        {
+            const uint8_t *in = (const uint8_t *)input_items[0];
+            uint8_t *out = (uint8_t *)output_items[0];
+           
+            int nitem_to_process = ninput_items[0];
+
+            std::vector<tag_t> tags;
+            get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_info"));
+            if (tags.size())
+            {
+                if (tags[0].offset != nitems_read(0))
+                {
+
+                    nitem_to_process = tags[0].offset - nitems_read(0);
+                }
+                else
+                {
+                    if (tags.size() >= 2)
+                    {
+                        nitem_to_process = tags[1].offset - tags[0].offset;
+                    }
+                    else
+                    {
+                        nitem_to_process = ninput_items[0];
+                    }
+                    pmt::pmt_t err = pmt::string_to_symbol("error");
+                    is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));
+                    if (is_header)
+                    {
+                        pay_cnt = 0;
+                    }
                 }
             }
-            is_first=false;
-            consume_each (ninput_items[0]);
-            return pay_cnt;
+            if (is_header && nitem_to_process < 5) //ensure to have a full PHY header to process
+                nitem_to_process = 0;
+            if (is_header)
+            {
+                if (m_impl_header)
+                { //implicit header, all parameters should have been provided
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, 0);
+
+                    for (int i = 0; i < nitem_to_process; i++)
+                    {
+                        //only output payload or CRC
+                        if (pay_cnt < m_payload_len * 2 + (m_has_crc ? 4 : 0))
+                        {
+                            out[i] = in[i];
+                            pay_cnt++;
+                        }
+                    }
+                    consume_each(nitem_to_process);
+                    return pay_cnt;
+                }
+                else
+                { //explicit header to decode
+                    std::cout << "\n--------Header--------" << std::endl;
+
+                    m_payload_len = (in[0] << 4) + in[1];
+                    
+                    m_has_crc = in[2] & 1;
+                    m_cr = in[2] >> 1;
+
+                    header_chk = ((in[3] & 1) << 4) + in[4];
+
+                    //check header Checksum
+                    bool c4 = (in[0] & 0b1000) >> 3 ^ (in[0] & 0b0100) >> 2 ^ (in[0] & 0b0010) >> 1 ^ (in[0] & 0b0001);
+                    bool c3 = (in[0] & 0b1000) >> 3 ^ (in[1] & 0b1000) >> 3 ^ (in[1] & 0b0100) >> 2 ^ (in[1] & 0b0010) >> 1 ^ (in[2] & 0b0001);
+                    bool c2 = (in[0] & 0b0100) >> 2 ^ (in[1] & 0b1000) >> 3 ^ (in[1] & 0b0001) ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0010) >> 1;
+                    bool c1 = (in[0] & 0b0010) >> 1 ^ (in[1] & 0b0100) >> 2 ^ (in[1] & 0b0001) ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
+                    bool c0 = (in[0] & 0b0001) ^ (in[1] & 0b0010) >> 1 ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
+
+                    std::cout << "Payload length: " << (int)m_payload_len << std::endl;
+                    std::cout << "CRC presence: " << (int)m_has_crc << std::endl;
+                    std::cout << "Coding rate: " << (int)m_cr << std::endl;
+                    int head_err = 0;
+                    if (header_chk - ((int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0))
+                    {
+                        std::cout <<RED<< "Header checksum invalid!" <<RESET<< std::endl<< std::endl;
+                        // message_port_pub(pmt::intern("err"),pmt::mp(true));
+                        head_err = 1;
+                        noutput_items = 0;
+                    }
+                    else
+                    {
+                        std::cout << "Header checksum valid!" << std::endl
+                                  << std::endl;
+#ifdef GRLORA_DEBUG
+                        std::cout << "should have " << (int)header_chk << std::endl;
+                        std::cout << "got: " << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0 << std::endl;
+#endif
+                        noutput_items = nitem_to_process - header_len;
+                    }
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, head_err);
+                    for (int i = header_len, j = 0; i < nitem_to_process; i++, j++)
+                    {
+                        out[j] = in[i];
+                        pay_cnt++;
+                    }
+                    consume_each(nitem_to_process);
+                    return noutput_items;
+                }
+            }
+            else
+            { // no header to decode
+                nout = 0;
+                for (int i = 0; i < nitem_to_process; i++)
+                {
+                    if (pay_cnt < m_payload_len * 2 + (m_has_crc ? 4 : 0))
+                    { //only output usefull value (payload and CRC if any)
+                        nout++;
+                        pay_cnt++;
+                        out[i] = in[i];
+                    }
+                }
+                consume_each(nitem_to_process);
+                return nout;
+            }
+            return 0;
         }
-        else{//explicit header to decode
-            std::cout<<"--------Header--------"<<std::endl;
-            m_payload_len=(in[0]<<4)+in[1];
-            m_has_crc=in[2] & 1;
-            m_cr = in[2]>>1;
-
-            header_chk= ((in[3] & 1)<<4) + in[4];
-
-            //check header Checksum
-            bool c4=(in[0] & 0b1000)>>3 ^(in[0] & 0b0100)>>2^(in[0] & 0b0010)>>1^(in[0] & 0b0001);
-            bool c3=(in[0] & 0b1000)>>3 ^(in[1] & 0b1000)>>3^(in[1] & 0b0100)>>2^(in[1] & 0b0010)>>1^(in[2] & 0b0001);
-            bool c2=(in[0] & 0b0100)>>2 ^(in[1] & 0b1000)>>3^(in[1] & 0b0001)^(in[2] & 0b1000)>>3^(in[2] & 0b0010)>>1;
-            bool c1=(in[0] & 0b0010)>>1 ^(in[1] & 0b0100)>>2^(in[1] & 0b0001)^(in[2] & 0b0100)>>2^(in[2] & 0b0010)>>1^(in[2] & 0b0001);
-            bool c0=(in[0] & 0b0001) ^(in[1] & 0b0010)>>1^(in[2] & 0b1000)>>3^(in[2] & 0b0100)>>2^(in[2] & 0b0010)>>1^(in[2] & 0b0001);
-
-            std::cout<<"Payload length: "<<(int)m_payload_len<<std::endl;
-            std::cout<<"CRC presence: "<<(int)m_has_crc<<std::endl;
-            std::cout<<"Coding rate: "<<(int)m_cr<<std::endl;
-
-            if(header_chk-((int)(c4<<4)+(c3<<3)+(c2<<2)+(c1<<1)+c0)){
-                std::cout<<"Header checksum invalid!"<<std::endl<<std::endl;
-                message_port_pub(pmt::intern("err"),pmt::mp(true));
-                noutput_items = 0;
-            }
-            else{
-                std::cout<<"Header checksum valid!"<<std::endl<<std::endl;
-                #ifdef GRLORA_DEBUG
-                std::cout<<"should have "<<(int)header_chk<<std::endl;
-                std::cout<<"got: "<<(int)(c4<<4)+(c3<<3)+(c2<<2)+(c1<<1)+c0<<std::endl;
-                #endif
-                message_port_pub(pmt::intern("CR"),pmt::mp(m_cr));
-                message_port_pub(pmt::intern("CRC"),pmt::mp(m_has_crc));
-                message_port_pub(pmt::intern("pay_len"),pmt::mp(m_payload_len));
-                noutput_items = ninput_items[0]-header_len;
-
-            }
-            for(int i=header_len , j=0;i<ninput_items[0];i++,j++){
-                out[j]=in[i];
-                pay_cnt++;
-            }
-            is_first=false;
-
-            consume_each (ninput_items[0]);
-            return noutput_items;
-        }
-      }
-      else{// no header to decode
-         for(int i=0;i<ninput_items[0];i++){
-             if(pay_cnt<m_payload_len*2+(m_has_crc?4:0)){//only output usefull value (payload and CRC if any)
-                nout++;
-                pay_cnt++;
-                out[i] = in[i];
-             }
-         }
-         consume_each (ninput_items[0]);
-         return nout;
-      }
-      return 0;
-    }
-  } /* namespace lora */
+    } /* namespace lora */
 } /* namespace gr */

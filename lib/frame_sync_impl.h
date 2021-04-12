@@ -1,6 +1,10 @@
 
 #ifndef INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
 #define INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
+// #define GRLORA_DEBUG
+// #define GRLORA_SAVE_PRE_DATA //it will save every sample of the packets (preamble + payload)
+#define GRLORA_MEASUREMENTS
+
 
 #include <lora_sdr/frame_sync.h>
 #include <iostream>
@@ -38,16 +42,16 @@ namespace gr {
          uint8_t m_cr;           ///< Coding rate
          uint32_t m_pay_len;     ///< payload length
          uint8_t m_has_crc;      ///< CRC presence
+         uint8_t m_invalid_header;///< invalid header checksum
          bool m_impl_head;       ///< use implicit header mode
-
-         bool received_cr;               ///< Indicate that the coding rate has been given by the header_decoder block
-         bool received_crc;              ///< Indicate that the crc presence has been given by the header_decoder block
-         bool received_pay_len;          ///< Indicate that the payload length has been given by the header_decoder block
+         std::vector<uint16_t> m_sync_words; ///< vector containing the two sync words (network identifiers)
+         
 
 
          uint32_t m_number_of_bins;      ///< Number of bins in each lora Symbol
          uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
-         uint32_t symb_numb;             ///<number of payload loar symbols
+         uint32_t m_symb_numb;             ///<number of payload lora symbols
+         bool m_received_head;          ///< indicate that the header has be decoded and received by this block
 
          std::vector<gr_complex> in_down; ///< downsampled input
          std::vector<gr_complex> m_downchirp; ///< Reference downchirp
@@ -59,8 +63,6 @@ namespace gr {
 
          uint32_t n_up;              ///< Number of consecutive upchirps in preamble
          uint8_t symbols_to_skip;    ///< Number of integer symbol to skip after consecutive upchirps
-         uint32_t net_id_1;          ///< network identifier 1
-         uint32_t net_id_2;          ///<network identifier 2
 
          kiss_fft_cpx *cx_in;        ///<input of the FFT
          kiss_fft_cpx *cx_out;       ///<output of the FFT
@@ -72,9 +74,9 @@ namespace gr {
 
          int up_symb_to_use; ///<number of upchirp symbols to use for CFO and STO frac estimation
          int k_hat;          ///<integer part of CFO+STO
-         double lambda_cfo;  ///<fractional part of CFO
-         double lambda_bernier; ///<fractional part of CFO using Berniers algo
-         double lambda_sto;  ///<fractional part of CFO
+         float lambda_cfo;  ///<fractional part of CFO
+         float lambda_bernier; ///<fractional part of CFO using Berniers algo
+         float lambda_sto;  ///<fractional part of CFO
          bool cfo_sto_est; ///< indicate that the estimation of lambda_cfo/sto has been performed
          int usFactor;       ///<upsampling factor used by the FIR interpolator
          std::vector<gr_complex> CFO_frac_correc; ///<cfo frac correction vector
@@ -93,13 +95,13 @@ namespace gr {
          int numb_symbol_to_save;///< number of symbol to save for every erroneous frame
          std::vector<gr_complex> last_frame;///< vector storing samples of the last received frame
          std::ofstream samples_file;///< savefile containing the samples of the erroneous frames
+         std::ofstream preamb_file;
+         std::ofstream payload_file;
          #endif
-
-         void header_cr_handler(pmt::pmt_t cr);
-         void header_pay_len_handler(pmt::pmt_t pay_len);
-         void header_crc_handler(pmt::pmt_t crc);
-         void frame_err_handler(pmt::pmt_t err);
-
+        /**
+         *   \brief  Handle the reception of the explicit header information, received from the header_decoder block 
+         */
+         void frame_info_handler(pmt::pmt_t frame_info);
 
          /**
           *  \brief  Estimate the value of fractional part of the CFO using RCTSL
@@ -117,7 +119,7 @@ namespace gr {
           **/
          void estimate_STO();
          /**
-          *  \brief  Recover the lora symbol value using argmax of the dechirped symbol FFT.
+          *  \brief  Recover the lora symbol value using argmax of the dechirped symbol FFT. Returns -1 in case of an fft window containing no energy to handle noiseless simulations.
           *
           *  \param  samples
           *          The pointer to the symbol beginning.
@@ -140,7 +142,7 @@ namespace gr {
          void header_err_handler(pmt::pmt_t payload_len);
 
      public:
-      frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
+      frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word);
       ~frame_sync_impl();
 
       // Where all the action really happens

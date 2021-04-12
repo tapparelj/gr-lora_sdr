@@ -11,6 +11,7 @@ namespace gr {
      private:
         uint8_t m_cr; ///< Transmission coding rate
         uint8_t m_sf; ///< Transmission spreading factor
+        int m_cnt; ///< count the number of processed items in the current frame
 
      public:
       hamming_enc_impl(uint8_t cr, uint8_t sf);

@@ -25,19 +25,21 @@ namespace gr {
         {
         drop = 0;
         message_port_register_in(pmt::mp("msg"));
-        set_msg_handler(pmt::mp("msg"), boost::bind(&err_measures_impl::msg_handler, this, _1));
+        // set_msg_handler(pmt::mp("msg"), boost::bind(&err_measures_impl::msg_handler, this, _1));
+        set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg) { this->msg_handler(msg); });
         message_port_register_in(pmt::mp("ref"));
-        set_msg_handler(pmt::mp("ref"), boost::bind(&err_measures_impl::ref_handler, this, _1));
+        // set_msg_handler(pmt::mp("ref"), boost::bind(&err_measures_impl::ref_handler, this, _1));
+        set_msg_handler(pmt::mp("ref"), [this](pmt::pmt_t msg) { this->ref_handler(msg); });
         message_port_register_out(pmt::mp("err"));
         #ifdef GRLORA_MEASUREMENTS
         int num = 0;//check next file name to use
         while(1){
-            std::ifstream infile("../matlab/measurements/err"+std::to_string(num)+".txt");
+            std::ifstream infile("../../matlab/measurements/err"+std::to_string(num)+".txt");
              if(!infile.good())
                 break;
             num++;
         }
-        err_outfile.open("../matlab/measurements/err"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
+        err_outfile.open("../../matlab/measurements/err"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
         #endif
         }
     /*
@@ -63,9 +65,10 @@ namespace gr {
           BE += countSetBits((m_corr_payload[i]^m_payload[i]));
       }
       #ifdef GRLORA_MEASUREMENTS
+      std::cout << "Error count= "<<BE << '\n';
       err_outfile<<BE<<",";
       #endif
-      std::cout << "Error count= "<<BE << '\n';
+
       if(BE>0)
           message_port_pub(pmt::intern("err"),pmt::mp(true));
       drop=0;

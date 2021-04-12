@@ -11,17 +11,7 @@ namespace gr {
      private:
         uint8_t m_cr;   ///< Transmission coding rate
         uint8_t cr_app; ///< Coding rate use for the block
-        bool is_first;  ///< Indicate that it is the first block
-
-        /**
-         *  \brief  Handles the coding rate received from the header_decoder block.
-         */
-        void header_cr_handler(pmt::pmt_t cr);
-
-        /**
-         *  \brief  Reset the block variables for a new frame.
-         */
-        void new_frame_handler(pmt::pmt_t id);
+        bool is_header;  ///< Indicate that it is the first block
 
      public:
       hamming_dec_impl( );

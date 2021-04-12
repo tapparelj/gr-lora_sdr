@@ -2,6 +2,9 @@
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
 #include <lora_sdr/crc_verif.h>
+#include <lora_sdr/utilities.h>
+
+// #define GRLORA_DEBUG
 
 namespace gr {
   namespace lora_sdr {
@@ -16,6 +19,8 @@ namespace gr {
         char m_char;///< A new char of the payload
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
+
+        uint32_t cnt=0;///< count the number of frame
 
         /**
          *  \brief  Handles the payload length received from the header_decoder block.

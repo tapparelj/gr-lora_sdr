@@ -13,8 +13,7 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: msg
+
 
 outputs:
 -   domain: stream

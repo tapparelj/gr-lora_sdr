@@ -22,7 +22,9 @@ namespace gr {
       : gr::sync_block("gray_enc",
             gr::io_signature::make(1, 1, sizeof(uint32_t)),
             gr::io_signature::make(1, 1, sizeof(uint32_t)))
-    {}
+    {
+      set_tag_propagation_policy(TPP_ONE_TO_ONE);
+    }
 
     /*
      * Our virtual destructor.

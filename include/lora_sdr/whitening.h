@@ -23,7 +23,7 @@
 #define INCLUDED_LORA_SDR_WHITENING_H
 
 #include <lora_sdr/api.h>
-#include <gnuradio/sync_block.h>
+#include <gnuradio/sync_interpolator.h>
 
 namespace gr {
   namespace lora_sdr {
@@ -33,7 +33,7 @@ namespace gr {
      * \ingroup lora_sdr
      *
      */
-    class LORA_SDR_API whitening : virtual public gr::sync_block
+    class LORA_SDR_API whitening : virtual public gr::sync_interpolator
     {
      public:
       typedef boost::shared_ptr<whitening> sptr;

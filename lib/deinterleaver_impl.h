@@ -14,17 +14,7 @@ namespace gr {
       uint8_t m_cr;     ///< Transmission Coding rate
       uint8_t sf_app;   ///< Spreading factor to use to deinterleave
       uint8_t cw_len;   ///< Length of a codeword
-      bool is_first;    ///< Indicate that we need to deinterleave the first block
-
-      /**
-       *  \brief  Reset the block variables when a new lora packet needs to be decoded.
-      */
-      void new_frame_handler(pmt::pmt_t id);
-      /**
-       *  \brief  Handles the coding rate received from the header_decoder block.
-       */
-      void header_cr_handler(pmt::pmt_t cr);
-
+      bool m_is_header;    ///< Indicate that we need to deinterleave the first block with the default header parameters (cr=4/8, reduced rate)
 
      public:
       deinterleaver_impl(uint8_t sf);

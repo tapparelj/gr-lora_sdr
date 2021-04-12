@@ -24,6 +24,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(uint32_t)))
     {
         m_sf=sf;
+        set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
     /*

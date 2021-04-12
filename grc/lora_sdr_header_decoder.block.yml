@@ -24,21 +24,12 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: new_frame
 
 outputs:
 -   domain: stream
     dtype: byte
 -   domain: message
-    id: CR
--   domain: message
-    id: pay_len
--   domain: message
-    id: CRC
--   domain: message
-    id: err
-    optional: true
+    id: frame_info
 
 templates:
     imports: import lora_sdr

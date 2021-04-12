@@ -12,10 +12,6 @@ parameters:
 inputs:
 -   domain: stream
     dtype: int
--   domain: message
-    id: new_frame
--   domain: message
-    id: CR
 
 outputs:
 -   domain: stream

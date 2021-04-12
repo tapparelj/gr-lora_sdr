@@ -1,7 +1,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "config.h"
+
 #include <gnuradio/io_signature.h>
 #include "frame_sync_impl.h"
 
@@ -9,16 +9,16 @@ namespace gr {
   namespace lora_sdr {
 
     frame_sync::sptr
-    frame_sync::make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head)
+    frame_sync::make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word)
     {
       return gnuradio::get_initial_sptr
-        (new frame_sync_impl(samp_rate, bandwidth, sf, impl_head));
+        (new frame_sync_impl(samp_rate, bandwidth, sf, impl_head, sync_word));
     }
 
     /*
      * The private constructor
      */
-    frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head)
+    frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word)
       : gr::block("frame_sync",
       gr::io_signature::make(1, 1, sizeof(gr_complex)),
       gr::io_signature::make(0, 1, (1u << sf)*sizeof(gr_complex)))
@@ -27,10 +27,10 @@ namespace gr {
         m_bw                = bandwidth;
         m_samp_rate         = samp_rate;
         m_sf                = sf;
+        m_sync_words        = sync_word;
         symbols_to_skip     = 4;
         n_up                = 8;
-        net_id_1            = 8; // should be different from 2^sf-1, 0 and 1
-        net_id_2            = 16;
+        
         up_symb_to_use      = 6;
 
         usFactor = 4;
@@ -58,36 +58,27 @@ namespace gr {
         cx_in = new kiss_fft_cpx[m_samples_per_symbol];
         cx_out = new kiss_fft_cpx[m_samples_per_symbol];
         //register message ports
-        message_port_register_out(pmt::mp("new_frame"));
+        message_port_register_in(pmt::mp("frame_info"));
+        set_msg_handler(pmt::mp("frame_info"), [this](pmt::pmt_t msg) { this->frame_info_handler(msg); });
 
-        message_port_register_in(pmt::mp("CR"));
-        set_msg_handler(pmt::mp("CR"),boost::bind(&frame_sync_impl::header_cr_handler, this, _1));
-
-        message_port_register_in(pmt::mp("pay_len"));
-        set_msg_handler(pmt::mp("pay_len"),boost::bind(&frame_sync_impl::header_pay_len_handler, this, _1));
-
-        message_port_register_in(pmt::mp("crc"));
-        set_msg_handler(pmt::mp("crc"),boost::bind(&frame_sync_impl::header_crc_handler, this, _1));
-
-        message_port_register_in(pmt::mp("err"));
-        set_msg_handler(pmt::mp("err"),boost::bind(&frame_sync_impl::header_err_handler, this, _1));
-
-        message_port_register_in(pmt::mp("frame_err"));
-        set_msg_handler(pmt::mp("frame_err"),boost::bind(&frame_sync_impl::frame_err_handler, this, _1));
         #ifdef GRLORA_MEASUREMENTS
-            int num = 0;//check next file name to use
-            while(1){
-                std::ifstream infile("../matlab/measurements/sync"+std::to_string(num)+".txt");
-                if(!infile.good())
-                    break;
-                num++;
-            }
-            sync_log.open("../matlab/measurements/sync"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
+        int num = 0;//check next file name to use
+        while(1){
+            std::ifstream infile("../../matlab/measurements/sync"+std::to_string(num)+".txt");
+             if(!infile.good())
+                break;
+            num++;
+        }
+        sync_log.open("../../matlab/measurements/sync"+std::to_string(num)+".txt", std::ios::out | std::ios::trunc );
         #endif
         #ifdef GRLORA_DEBUG
-            numb_symbol_to_save=80;//number of symbol per erroneous frame to save
-            last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
-            samples_file.open("../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
+        numb_symbol_to_save=80;//number of symbol per erroneous frame to save
+        last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
+        samples_file.open("../../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
+        #endif
+        #ifdef GRLORA_SAVE_PRE_DATA
+        preamb_file.open("../../matlab/preambles/preamb.txt", std::ios::out | std::ios::trunc );
+        payload_file.open("../../matlab/data/data.txt", std::ios::out | std::ios::trunc );
         #endif
     }
 
@@ -98,7 +89,7 @@ namespace gr {
     {}
 
     void frame_sync_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required){
-        ninput_items_required[0] = usFactor*(m_samples_per_symbol+2);
+            ninput_items_required[0] = usFactor*(m_samples_per_symbol+2);
     }
 
     void frame_sync_impl::estimate_CFO(gr_complex* samples){
@@ -137,6 +128,8 @@ namespace gr {
             fft_mag_sq[i] = cx_out_cfo[i].r*cx_out_cfo[i].r+cx_out_cfo[i].i*cx_out_cfo[i].i;
         }
         free(cfg_cfo);
+        delete[] cx_in_cfo;
+        delete[] cx_out_cfo;
         // get argmax here
         k0 = ((std::max_element(fft_mag_sq, fft_mag_sq + 2*up_symb_to_use*m_number_of_bins) - fft_mag_sq));
 
@@ -193,6 +186,8 @@ namespace gr {
             k0_mag[i] = fft_mag_sq[k0[i]];
         }
         free(cfg_cfo);
+        delete[] cx_in_cfo;
+        delete[] cx_out_cfo;
         // get argmax
         int idx_max = k0[std::max_element(k0_mag, k0_mag + m_number_of_bins) - k0_mag];
 
@@ -208,37 +203,41 @@ namespace gr {
         double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
 
         std::vector<gr_complex> dechirped(m_number_of_bins);
-        kiss_fft_cpx* cx_in_cfo = new kiss_fft_cpx[2*m_samples_per_symbol];
-        kiss_fft_cpx* cx_out_cfo = new kiss_fft_cpx[2*m_samples_per_symbol];
+        kiss_fft_cpx* cx_in_sto = new kiss_fft_cpx[2*m_samples_per_symbol];
+        kiss_fft_cpx* cx_out_sto = new kiss_fft_cpx[2*m_samples_per_symbol];
 
         float fft_mag_sq[2*m_number_of_bins];
         for (size_t i = 0; i < 2*m_number_of_bins; i++) {
             fft_mag_sq[i] = 0;
         }
-        kiss_fft_cfg cfg_cfo =  kiss_fft_alloc(2*m_samples_per_symbol,0,0,0);
+        kiss_fft_cfg cfg_sto =  kiss_fft_alloc(2*m_samples_per_symbol,0,0,0);
 
         for (int i = 0; i < up_symb_to_use; i++) {
             //Dechirping
             volk_32fc_x2_multiply_32fc(&dechirped[0],&preamble_up[m_number_of_bins*i],&m_downchirp[0],m_samples_per_symbol);
+            
             //prepare FFT
             for (int i = 0; i < 2*m_samples_per_symbol; i++) {
                 if(i<m_samples_per_symbol){
-                    cx_in_cfo[i].r = dechirped[i].real();
-                    cx_in_cfo[i].i = dechirped[i].imag();
+                    cx_in_sto[i].r = dechirped[i].real();
+                    cx_in_sto[i].i = dechirped[i].imag();
                 }
                 else{//add padding
-                    cx_in_cfo[i].r = 0;
-                    cx_in_cfo[i].i = 0;
+                    cx_in_sto[i].r = 0;
+                    cx_in_sto[i].i = 0;
                 }
             }
             //do the FFT
-            kiss_fft(cfg_cfo,cx_in_cfo,cx_out_cfo);
+            kiss_fft(cfg_sto,cx_in_sto,cx_out_sto);
             // Get magnitude
             for (uint32_t i = 0u; i < 2*m_samples_per_symbol; i++) {
-                fft_mag_sq[i] += cx_out_cfo[i].r*cx_out_cfo[i].r+cx_out_cfo[i].i*cx_out_cfo[i].i;
+                
+                fft_mag_sq[i] = cx_out_sto[i].r*cx_out_sto[i].r+cx_out_sto[i].i*cx_out_sto[i].i;
             }
         }
-        free(cfg_cfo);
+        free(cfg_sto);
+        delete[] cx_in_sto;
+        delete[] cx_out_sto;
 
         // get argmax here
         k0 = std::max_element(fft_mag_sq, fft_mag_sq + 2*m_number_of_bins) - fft_mag_sq;
@@ -255,6 +254,7 @@ namespace gr {
         ka = wa*m_number_of_bins/M_PI;
         k_residual = fmod((k0+ka)/2,1);
         lambda_sto = k_residual - (k_residual>0.5?1:0);
+
     }
 
     uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp) {
@@ -281,7 +281,7 @@ namespace gr {
         }
         free(cfg);
         // Return argmax here
-        return ((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag));
+        return sig_en?((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag)):-1;
     }
 
     float frame_sync_impl::determine_energy(const gr_complex *samples) {
@@ -291,38 +291,30 @@ namespace gr {
             volk_32f_accumulator_s32f(&energy_chirp, magsq_chirp, m_samples_per_symbol);
             return energy_chirp;
         }
-    void frame_sync_impl::header_cr_handler(pmt::pmt_t cr){
-        m_cr = pmt::to_long(cr);
-        received_cr = true;
-        if(received_cr&&received_crc&&received_pay_len)//get number of symbol of the frame
-            symb_numb = 8 + ceil((double)(2*m_pay_len-m_sf+2+!m_impl_head*5+m_has_crc*4)/m_sf)*(4+m_cr);
-    };
-    void frame_sync_impl::header_pay_len_handler(pmt::pmt_t pay_len){
-        m_pay_len = pmt::to_long(pay_len);
-        received_pay_len = true;
-        if(received_cr&&received_crc&&received_pay_len)//get number of symbol of the frame
-            symb_numb = 8 + ceil((double)(2*m_pay_len-m_sf+2+!m_impl_head*5+m_has_crc*4)/m_sf)*(4+m_cr);
-    };
-    void frame_sync_impl::header_crc_handler(pmt::pmt_t crc){
-        m_has_crc = pmt::to_long(crc);
-        received_crc = true;
-        if(received_cr&&received_crc&&received_pay_len)//get number of symbol of the frame
-            symb_numb = 8 + ceil((double)(2*m_pay_len-m_sf+2+!m_impl_head*5+m_has_crc*4)/m_sf)*(4+m_cr);
-    };
-    void frame_sync_impl::header_err_handler(pmt::pmt_t err){
-        m_state = DETECT;
-        symbol_cnt = 1;
-    };
-    void frame_sync_impl::frame_err_handler(pmt::pmt_t err){
-        #ifdef GRLORA_DEBUG
-        for(int j=0;j<numb_symbol_to_save;j++){
-            for(int i=0;i<m_number_of_bins;i++)
-                samples_file<<last_frame[i+m_number_of_bins*j].real()<<(last_frame[i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(last_frame[i+m_number_of_bins*j].imag()) <<"i,";
-        samples_file<<std::endl;
+    void frame_sync_impl::frame_info_handler(pmt::pmt_t frame_info){
+        pmt::pmt_t err = pmt::string_to_symbol("error");
+
+        m_cr = pmt::to_long (pmt::dict_ref(frame_info,pmt::string_to_symbol("cr"),err));
+        m_pay_len = pmt::to_double(pmt::dict_ref(frame_info,pmt::string_to_symbol("pay_len"),err));
+        m_has_crc = pmt::to_long (pmt::dict_ref(frame_info,pmt::string_to_symbol("crc"),err));
+        m_invalid_header = pmt::to_double(pmt::dict_ref(frame_info,pmt::string_to_symbol("err"),err));
+
+        if(m_invalid_header){
+            m_state = DETECT;
+            symbol_cnt = 1;
+            k_hat = 0;
+            lambda_sto = 0;
         }
-        std::cout << "saved one frame" << '\n';
-        #endif
-    };
+        else{
+
+            m_symb_numb = 8 + ceil((double)(2*m_pay_len-m_sf+2+!m_impl_head*5+m_has_crc*4)/m_sf)*(4+m_cr);
+
+            // std::cout<<"received_head_info: cr= "<<(int)m_cr<<" pay_len = "<<(int)m_pay_len<<" crc = "<<(int)m_has_crc<< " err= "<<(int)m_invalid_header<<" m_symb_numb = "<<(int)m_symb_numb<<std::endl;
+            m_received_head = true;
+            frame_info = pmt::dict_add(frame_info,pmt::intern("is_header"), pmt::from_bool(false));
+            add_item_tag(0, nitems_written(0) ,pmt::string_to_symbol("frame_info"),frame_info);
+        }  
+    }
 
     int
     frame_sync_impl::general_work (int noutput_items,
@@ -332,6 +324,7 @@ namespace gr {
     {
         const gr_complex *in = (const gr_complex *) input_items[0];
         gr_complex *out = (gr_complex *) output_items[0];
+        int items_to_output=0;
 
         //downsampling
         for (int ii=0;ii<m_number_of_bins;ii++)
@@ -340,7 +333,7 @@ namespace gr {
           case DETECT: {
               bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
-              if(std::abs(bin_idx_new-bin_idx)<=1){//look for consecutive reference upchirps(with a margin of ±1)
+              if(std::abs(bin_idx_new-bin_idx)<=1 && bin_idx_new!=-1){//look for consecutive reference upchirps(with a margin of ±1)
                   if(symbol_cnt==1)//we should also add the first symbol value
                       k_hat+=bin_idx;
 
@@ -366,7 +359,7 @@ namespace gr {
               }
               else
                   items_to_consume = usFactor*m_samples_per_symbol;
-              noutput_items = 0;
+              items_to_output = 0;
               break;
           }
           case SYNC:{
@@ -384,33 +377,34 @@ namespace gr {
               volk_32fc_x2_multiply_32fc(&symb_corr[0],&in_down[0],&CFO_frac_correc[0],m_samples_per_symbol);
 
               bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
-
               switch (symbol_cnt) {
+                  
                   case NET_ID1:{
+                        
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
-                        else if (labs(bin_idx-net_id_1)>1){ //wrong network identifier
+                        else if (abs(bin_idx-(int32_t)m_sync_words[0])>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
-                            noutput_items = 0;
+                            items_to_output = 0;
                             k_hat = 0;
                             lambda_sto = 0;
                         }
                         else { //network identifier 1 correct or off by one
-                            net_id_off=bin_idx-net_id_1;
+                            net_id_off=bin_idx-(int32_t)m_sync_words[0];
                             symbol_cnt = NET_ID2;
                         }
                         break;
                     }
-                    case NET_ID2:{
-                        if (labs(bin_idx-net_id_2)>1){ //wrong network identifier
+                    case NET_ID2:{                        
+                        if (abs(bin_idx-(int32_t)m_sync_words[1])>1){ //wrong network identifier
                             m_state = DETECT;
                             symbol_cnt = 1;
-                            noutput_items = 0;
+                            items_to_output = 0;
                             k_hat = 0;
                             lambda_sto = 0;
                         }
-                        else if(net_id_off && (bin_idx-net_id_2)==net_id_off){//correct case off by one net id
+                        else if(net_id_off && (bin_idx-(int32_t)m_sync_words[1])==net_id_off){//correct case off by one net id
                             #ifdef GRLORA_MEASUREMENTS
                             off_by_one_id=1;
                             #endif
@@ -435,28 +429,58 @@ namespace gr {
                         break;
                     }
                     case QUARTER_DOWN:{
+                        #ifdef GRLORA_SAVE_PRE_DATA
+                        //save preamble
+                        for(int j=0;j<7;j++){
+                            for(int i=0;i<m_number_of_bins;i++)
+                                preamb_file<<preamble_raw[m_number_of_bins-k_hat+i+m_number_of_bins*j].real()<<(preamble_raw[m_number_of_bins-k_hat+i+m_number_of_bins*j].imag()<0?"-":"+")<<std::abs(preamble_raw[m_number_of_bins-k_hat+i+m_number_of_bins*j].imag()) <<"i,";
+                        preamb_file<<std::endl;
+                        }
+                        std::cout << "saved one frame" << '\n';
+                        #endif
                         if (down_val<m_number_of_bins/2){
                             CFOint = floor(down_val/2);
-                            message_port_pub(pmt::intern("new_frame"),pmt::mp((long)CFOint));
+                            //message_port_pub(pmt::intern("new_frame"),pmt::mp((long)CFOint));
+                            
                         }
                         else{
-                            CFOint = ceil(double(down_val-(int)m_number_of_bins)/2);
-                            message_port_pub(pmt::intern("new_frame"),pmt::mp((long)((m_number_of_bins+CFOint)%m_number_of_bins)));
+                            CFOint = floor(double(down_val-(int)m_number_of_bins)/2);
+
+                            // CFOint = (m_number_of_bins+CFOint)%m_number_of_bins;
+                            //message_port_pub(pmt::intern("new_frame"),pmt::mp((long)((m_number_of_bins+CFOint)%m_number_of_bins)));
+                            
                         }
+
+                        pmt::pmt_t frame_info = pmt::make_dict();
+                        frame_info = pmt::dict_add(frame_info,pmt::intern("is_header"), pmt::from_bool(true));
+                        frame_info = pmt::dict_add(frame_info,pmt::intern("cfo_int"), pmt::mp((long)CFOint));
+                        
+                        add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"),frame_info);
+
+                        m_received_head = false;
                         items_to_consume = usFactor*m_samples_per_symbol/4+usFactor*CFOint;
                         symbol_cnt = 0;
+                        
                         m_state = FRAC_CFO_CORREC;
+                        // std::cout<<"Frame offsets: CFO = "<<lambda_cfo+CFOint<<", lambda STO = "<<lambda_sto<<std::endl;
                         #ifdef GRLORA_MEASUREMENTS
                         sync_log<<std::endl<<lambda_cfo<<", "<<lambda_sto<<", "<<CFOint<<","<<off_by_one_id<<","<<lambda_bernier<<",";
                         #endif
                     }
                 }
-              noutput_items = 0;
+              items_to_output = 0;
               break;
           }
           case FRAC_CFO_CORREC:{
-              //transmitt only useful symbols (at least 8 symbol)
-              if(symbol_cnt<symb_numb||!(received_cr&&received_crc&&received_pay_len)){
+              //transmitt only useful symbols (at least 8 symbol for PHY header)
+              
+              if(symbol_cnt<8 || (symbol_cnt<m_symb_numb && m_received_head)){
+                  #ifdef GRLORA_SAVE_PRE_DATA
+                  //write data
+                  for(int i=0;i<m_number_of_bins;i++)
+                      payload_file<<in_down[i].real()<<(in_down[i].imag()<0?"-":"+")<<std::abs(in_down[i].imag()) <<"i,";
+                  payload_file<<std::endl;
+                  #endif
                   //apply fractional cfo correction
                   volk_32fc_x2_multiply_32fc(out,&in_down[0],&CFO_frac_correc[0],m_samples_per_symbol);
                   #ifdef GRLORA_MEASUREMENTS
@@ -467,14 +491,18 @@ namespace gr {
                     memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
                   #endif
                   items_to_consume = usFactor*m_samples_per_symbol;
-                  noutput_items = 1;
+                  items_to_output = 1;
                   symbol_cnt++;
+              }
+              else if(!m_received_head){//Wait for the header to be decoded
+                  items_to_consume = 0;
+                  items_to_output = 0;  
               }
               else{
                       m_state = DETECT;
                       symbol_cnt = 1;
                       items_to_consume = usFactor*m_samples_per_symbol;
-                      noutput_items = 0;
+                      items_to_output = 0;
                       k_hat = 0;
                       lambda_sto = 0;
               }
@@ -486,7 +514,8 @@ namespace gr {
           }
         }
         consume_each(items_to_consume);
-        return noutput_items;
+        // std::cout<<" items_to_consume "<<items_to_consume<<", noutput_items "<<noutput_items<<", items_to_output "<<items_to_output<<std::endl;
+        return items_to_output;
       }
   } /* namespace lora_sdr */
 } /* namespace gr */

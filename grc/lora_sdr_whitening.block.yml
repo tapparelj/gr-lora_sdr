@@ -5,8 +5,12 @@ label: Whitening
 category: '[LoRa_TX]'
 
 inputs:
+-   domain: stream
+    dtype: byte
+    optional: true
 -   domain: message
     id: msg
+    optional: true
 
 outputs:
 -   domain: stream

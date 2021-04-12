@@ -5,12 +5,6 @@ label: fft_demod
 category: '[LoRa_RX]'
 
 parameters:
--   id: samp_rate
-    label: Samp_rate
-    dtype: float
--   id: bandwidth
-    label: Bandwidth
-    dtype: int
 -   id: sf
     label: Sf
     dtype: int
@@ -22,10 +16,6 @@ inputs:
 -   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
--   domain: message
-    id: CR
--   domain: message
-    id: new_frame
 
 outputs:
 -   domain: stream
@@ -33,11 +23,11 @@ outputs:
 
 templates:
     imports: import lora_sdr
-    make: lora_sdr.fft_demod(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
+    make: lora_sdr.fft_demod( ${sf}, ${impl_head})
 
 documentation: "Recover the value of a lora symbol using argmax(DFT(lora_symbol \u2A00\
-    \ ref_downchirp)\n    Parameters:\n        Samp_rate: Sampling rate (should be\
-    \ equal to the bandwidth in the current implementation)\n        Bandwidth: Bandwidth\n\
+    \ ref_downchirp)\n    Parameters:\n 
+    
     \        sf: spreading factor\n        impl_head: usage of an implicit header\
     \ (explicit will be used otherwise)\n    Input:\n        in: vector of 2^sf complex\
     \ samples\n        CR: coding rate\n        new_frame: indicate beginning of a\

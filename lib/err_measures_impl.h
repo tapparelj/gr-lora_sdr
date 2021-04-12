@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_SDR_ERR_MEASURES_IMPL_H
 #define INCLUDED_LORA_SDR_ERR_MEASURES_IMPL_H
 
-// #define GRLORA_MEASUREMENTS
+#define GRLORA_MEASUREMENTS
 
 #include <lora_sdr/err_measures.h>
 #include <iostream>

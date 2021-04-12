@@ -18,12 +18,9 @@ namespace gr {
     class fft_demod_impl : public fft_demod
     {
     private:
-      uint32_t m_bw;          ///< Bandwidth
-      uint32_t m_samp_rate;   ///< Sampling rate
       uint8_t m_sf;           ///< Spreading factor
       uint8_t m_cr;           ///< Coding rate
 
-      uint32_t m_number_of_bins;      ///< Number of bins in each lora Symbol
       uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
       int CFOint; ///< integer part of the CFO
 
@@ -35,11 +32,9 @@ namespace gr {
 
 
       std::vector<uint32_t> output;   ///< Stores the value to be outputted once a full bloc has been received
-      bool is_first;                  ///< Indicate that the first block hasn't been fully received
+      bool is_header;                  ///< Indicate that the first block hasn't been fully received
       uint8_t block_size;             ///< The number of lora symbol in one block
-      bool received_cr;               ///< Indicate that the coding rate has been given by the header_decoder block
-      bool received_crc;              ///< Indicate that the crc presence has been given by the header_decoder block
-      bool received_pay_len;          ///< Indicate that the payload length has been given by the header_decoder block
+     
       #ifdef GRLORA_MEASUREMENTS
       std::ofstream energy_file;
       #endif
@@ -58,7 +53,7 @@ namespace gr {
       /**
        *  \brief  Reset the block variables when a new lora packet needs to be decoded.
        */
-      void new_frame_handler(pmt::pmt_t id);
+      void new_frame_handler(int cfo_int);
 
       /**
        *  \brief  Handles the reception of the coding rate received by the header_decoder block.
@@ -66,7 +61,7 @@ namespace gr {
       void header_cr_handler(pmt::pmt_t cr);
 
      public:
-      fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
+      fft_demod_impl( uint8_t sf, bool impl_head);
       ~fft_demod_impl();
 
       // Where all the action really happens

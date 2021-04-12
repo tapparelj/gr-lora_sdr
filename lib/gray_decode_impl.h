@@ -1,6 +1,7 @@
 #ifndef INCLUDED_LORA_GRAY_DECODE_IMPL_H
 #define INCLUDED_LORA_GRAY_DECODE_IMPL_H
 
+
 #include <lora_sdr/gray_decode.h>
 
 namespace gr {

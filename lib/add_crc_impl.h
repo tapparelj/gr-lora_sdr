@@ -1,8 +1,9 @@
 #ifndef INCLUDED_LORA_ADD_CRC_IMPL_H
 #define INCLUDED_LORA_ADD_CRC_IMPL_H
 
-#include <lora_sdr/add_crc.h>
 
+#include <lora_sdr/add_crc.h>
+#include <lora_sdr/utilities.h>
 namespace gr {
   namespace lora_sdr {
 
@@ -12,8 +13,9 @@ namespace gr {
         bool m_has_crc; ///<indicate the presence of a payload CRC
         std::vector<uint8_t> m_payload; ///< payload data
         uint8_t m_payload_len; ///< length of the payload in Bytes
+        int m_frame_len; ///< length of the frame in number of gnuradio items
+        int m_cnt; ///< counter of the number of symbol in frame
 
-        void msg_handler(pmt::pmt_t message);
         unsigned int crc16(unsigned int crcValue, unsigned char newByte);
 
      public:

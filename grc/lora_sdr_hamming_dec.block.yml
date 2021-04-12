@@ -7,10 +7,6 @@ category: '[LoRa_RX]'
 inputs:
 -   domain: stream
     dtype: byte
--   domain: message
-    id: CR
--   domain: message
-    id: new_frame
 
 outputs:
 -   domain: stream

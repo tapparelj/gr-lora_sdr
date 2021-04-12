@@ -29,7 +29,8 @@ namespace gr {
         m_pay_len = pay_len;
         frame_cnt = -5;// let some time to the Rx to start listening
         message_port_register_in(pmt::mp("trigg"));
-        set_msg_handler(pmt::mp("trigg"),boost::bind(&data_source_impl::trigg_handler, this, _1));
+        // set_msg_handler(pmt::mp("trigg"),boost::bind(&data_source_impl::trigg_handler, this, _1));
+        set_msg_handler(pmt::mp("trigg"), [this](pmt::pmt_t msg) { this->trigg_handler(msg); });
 
         message_port_register_out(pmt::mp("msg"));
     }

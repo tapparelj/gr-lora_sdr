@@ -1,0 +1,88 @@
+*This branch aims to upgrade to gnuradio 3.8.2*
+
+Single user Functionalities:
+
+	Sending and receiving LoRa packets between USRP-USRP and USRP-commercial LoRa transceiver (tested for Adafruit Feather 32u4 RFM95).
+
+	Spreading factors: 7-12 (without reduce rate mode)
+	Coding rates: 0-4
+	Implicit and explicit header mode
+	Payload length: 1-255 (payload length<sf might cause issue in certain situations)
+
+	Verification of payload CRC
+	Verification of explicit header checksum
+
+-An example of a transmitter and a receiver can be found in gr-lora_sdr/app/single_user (both python and grc).
+
+
+Two users functionnalities:
+
+	This is the GNU Radio software-defined radio (SDR) implementation of a two-user, same SF interference system with all the necessary receiver components to demodulate LoRa symbols correctly even at very low SNRs.
+	In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose the transmission conditions of each user, such as STO, CFO, and power.
+
+	-In the Tx chain, the implementation contains all the blocks necessary to transmit colliding LoRa frames composed of a preamble and a payload. Each user being subject to an individual CFO, time offset and transmit power.
+
+	-The receiver side is composed of:
+		-A signal detection block discriminating noise from a actual LoRa transmission.
+		-A user detection block responsible of detecting and estimating new user STO, CFO, and power.
+		-A synchronization block which realign the samples to the strongest user for STO correction and apply the required CFO correction.
+		-A demodulation block which recover the symbols values of the users present using a maximum-likelihood-based demodulation method.
+	
+	-The implementation can be used for experimental performance evaluation of a LoRa SDR receiver at low SNRs under same SF interference.
+
+- The custom blocks necessary for the multi-user transceiver can be found under the LoRa_mu section in GRC. 
+
+	- An example of a two interfering user flowgraph can be found in the gr-lora_sdr/apps/two_users/ .
+	- Set the measurement_folder variable in GRC to a desired location. (Default: gr-lora_sdr/matlab/measurement).
+	- Generate the python script corresponding to the flowgraph in GRC.
+	- In a terminal navigate to gr-lora_sdr/apps/two_users/
+	- Execute the generated script using: ./mu_tx_rx_(simulation).py 
+	- A matlab script interpreting the results can be found in: gr-lora_sdr/matlab. This script compare the demodulated symbols with the reference ones, based on a frame ID in the beginning of each payload. 
+
+
+-Installation:
+	-Download the zip archive and extract it
+	-Similarly to any GNU Radio OOT module, it can be build with:
+		cd [path to gr-lora_sdr]
+		mkdir build
+		cd build
+		cmake ..  (-DCMAKE_INSTALL_PREFIX={your prefix} can be used to select a specific installation prefix)
+		make
+		(sudo) make install
+		sudo ldconfig (if installing as root user)
+
+
+-Frequent errors:
+	The OOT blocks doesn't appear in gnuradio-companion:	
+		-The new blocks can be loaded in gnuradio-companion by adding the following lines in home/.gnuradio/config.conf (If this file doesn't exist you need to create it):
+			[grc]
+			local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
+
+  	"ImportError: No module named lora_sdr":
+		- This issue comes probably from missing PYTHONPATH and LD_LIBRARY_PATH                             
+		- Refer to https://wiki.gnuradio.org/index.php/ModuleNotFoundError to modify those variables. If you set a prefix during the "cmake" call, skip directly to point C.(Verifying that the paths exist in your folders might help.)
+
+
+-Requirements:
+	Gnuradio 3.8.2
+	python 3
+	cmake
+	swig
+	libvolk
+	Boost
+	UHD
+	gcc
+	gxx
+
+
+
+
+
+
+
+
+
+
+
+
+

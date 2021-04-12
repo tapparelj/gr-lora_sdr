@@ -8,6 +8,7 @@ parameters:
 -   id: samp_rate
     label: Samp_rate
     dtype: float
+    hide: all
 -   id: bandwidth
     label: Bandwidth
     dtype: int
@@ -17,33 +18,26 @@ parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: sync_words
+    label: Sync words
+    dtype: int_vector
+    default: [8,16]
+    hide: part
 
 inputs:
 -   domain: stream
     dtype: complex
 -   domain: message
-    id: CR
--   domain: message
-    id: pay_len
--   domain: message
-    id: crc
--   domain: message
-    id: err
-    optional: true
--   domain: message
-    id: frame_err
-    optional: true
+    id: frame_info
 
 outputs:
 -   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
--   domain: message
-    id: new_frame
 
 templates:
     imports: import lora_sdr
-    make: lora_sdr.frame_sync(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
+    make: lora_sdr.frame_sync(${bandwidth}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_words})
 
 documentation: |-
     Block taking care of the preamble detection, CFO and STO estimation and correction.
