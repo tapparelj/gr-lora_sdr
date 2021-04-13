@@ -39,7 +39,6 @@ install(FILES
     data_source.h
     frame_sync.h
     deinterleaver.h
-    err_measures.h
     mu_detection.h
     mu_synchro.h
     partial_ml.h

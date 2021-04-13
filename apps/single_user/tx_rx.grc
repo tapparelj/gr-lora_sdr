@@ -5,8 +5,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: example of a configuration that send and receives frames for BER
-      measurement (here the two USRPs are linked by a MIMO cable)
+    description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui
@@ -191,7 +190,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 204.0]
+    coordinate: [32, 196.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -325,7 +324,7 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     sf: sf
-    sync_words: '[8,16]'
+    sync_word: '18'
   states:
     bus_sink: false
     bus_source: false
@@ -461,7 +460,7 @@ blocks:
     minoutbuf: '10000000'
     samp_rate: samp_rate
     sf: sf
-    sync_words: '[8,16]'
+    sync_words: '0x12'
   states:
     bus_sink: false
     bus_source: false

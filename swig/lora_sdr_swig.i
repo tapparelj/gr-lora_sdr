@@ -25,7 +25,6 @@
 #include "lora_sdr/data_source.h"
 #include "lora_sdr/frame_sync.h"
 #include "lora_sdr/deinterleaver.h"
-#include "lora_sdr/err_measures.h"
 #include "lora_sdr/mu_detection.h"
 #include "lora_sdr/mu_synchro.h"
 #include "lora_sdr/partial_ml.h"
@@ -75,8 +74,7 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_sync);
 
 %include "lora_sdr/deinterleaver.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, deinterleaver);
-%include "lora_sdr/err_measures.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, err_measures);
+
 
 %include "lora_sdr/mu_detection.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, mu_detection);

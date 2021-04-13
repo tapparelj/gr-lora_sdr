@@ -42,7 +42,7 @@ class lora_RX(gr.top_block):
         # Blocks
         ##################################################
         self.uhd_usrp_source_0 = uhd.usrp_source(
-            ",".join(("addr=192.168.10.5", '')),
+            ",".join(("addr=192.168.10.4", '')),
             uhd.stream_args(
                 cpu_format="fc32",
                 args='',
@@ -57,7 +57,7 @@ class lora_RX(gr.top_block):
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
         self.lora_sdr_gray_enc_0 = lora_sdr.gray_enc()
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(bw, bw, sf, impl_head, [8,16])
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(bw, bw, sf, impl_head, [18])
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)

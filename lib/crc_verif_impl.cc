@@ -136,7 +136,7 @@ namespace gr
                         std::cout << "CRC valid!" << std::endl
                                   << std::endl;
                     else
-                        std::cout << RED << "CRC invalid" << "RESET" << std::endl
+                        std::cout << RED << "CRC invalid" << RESET << std::endl
                                   << std::endl;
                     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
                     consume_each(m_payload_len+2);

@@ -21,8 +21,6 @@ documentation: |-
     (As implemented now, we can detect errors with coding rates 4/6 and 4/5 but don't do anything with this information.)
         Input:
             in: Stream of bytes containing each a codeword
-            CR: coding rate
-            new_frame: indication that a new frame has started
         Output:
             out: stream of bytes containing ones nibble of payload each
 

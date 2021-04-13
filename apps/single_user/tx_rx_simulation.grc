@@ -18,7 +18,7 @@ options:
     realtime_scheduling: ''
     run: 'True'
     run_command: '{python} -u {filename}'
-    run_options: run
+    run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
     title: ''
@@ -128,44 +128,21 @@ blocks:
     coordinate: [992, 20.0]
     rotation: 0
     state: enabled
-- name: blocks_file_sink_0
-  id: blocks_file_sink
+- name: blocks_message_strobe_0_0
+  id: blocks_message_strobe
   parameters:
     affinity: ''
     alias: ''
-    append: 'False'
     comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/rec_pay
-    type: byte
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [0, 380.0]
-    rotation: 180
-    state: enabled
-- name: blocks_file_source_0_0
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/jtappare/Documents/lora_gnu_radio_prototype/gr-lora_sdr/matlab/pay_tmp.bin
-    length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
-    offset: '0'
-    repeat: 'False'
-    type: byte
-    vlen: '1'
+    msg: pmt.intern("Hello world")
+    period: frame_period
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 132.0]
+    coordinate: [56, 188.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -205,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1348.0, 256]
+    coordinate: [1356.0, 248]
     rotation: 270
     state: enabled
 - name: interp_fir_filter_xxx_0
@@ -321,7 +298,7 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     sf: sf
-    sync_words: '[8, 16]'
+    sync_word: '18'
   states:
     bus_sink: false
     bus_source: false
@@ -457,7 +434,7 @@ blocks:
     minoutbuf: '10000000'
     samp_rate: samp_rate*4
     sf: sf
-    sync_words: '[8, 16]'
+    sync_words: '0x12'
   states:
     bus_sink: false
     bus_source: false
@@ -477,17 +454,16 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 168.0]
+    coordinate: [288, 168.0]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
+- [blocks_message_strobe_0_0, strobe, lora_sdr_whitening_0, msg]
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', interp_fir_filter_xxx_0, '0']
 - [interp_fir_filter_xxx_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
-- [lora_sdr_crc_verif_0, '0', blocks_file_sink_0, '0']
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_enc_0, '0']

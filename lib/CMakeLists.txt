@@ -43,7 +43,6 @@ list(APPEND lora_sdr_sources
     data_source_impl.cc
     frame_sync_impl.cc
     deinterleaver_impl.cc
-    err_measures_impl.cc
     mu_detection_impl.cc
     mu_synchro_impl.cc
     partial_ml_impl.cc

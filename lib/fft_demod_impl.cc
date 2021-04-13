@@ -99,6 +99,8 @@ namespace gr {
         #ifdef GRLORA_MEASUREMENTS
         energy_file<<std::fixed<<std::setprecision(10)<<m_fft_mag[idx]<<","<<m_fft_mag[mod(idx-1,m_samples_per_symbol)]<<","<<m_fft_mag[mod(idx+1,m_samples_per_symbol)]<<","<<rec_en<<","<<std::endl;
         #endif
+        // std::cout<<"SNR est = "<<m_fft_mag[idx]<<","<<rec_en<<","<<10*log10(m_fft_mag[idx]/(rec_en-m_fft_mag[idx]))<<std::endl;
+       
         #ifdef GRLORA_DEBUG
             idx_file<<idx<<", ";
         #endif

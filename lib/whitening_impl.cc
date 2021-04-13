@@ -42,7 +42,7 @@ namespace gr
         void whitening_impl::msg_handler(pmt::pmt_t message)
         {
             if(m_file_source){
-                std::cout<<RED<<"Whitening can't have both input used simultaneously"<<RESET<<std::endl;
+                std::cout<<RED<<"Whitening don't support both input used simultaneously"<<RESET<<std::endl;
             }
             //  payload_str.push_back(random_string(rand()%253+2));
             // payload_str.push_back(rand()%2?"12345":"abcdefghijklmnop");

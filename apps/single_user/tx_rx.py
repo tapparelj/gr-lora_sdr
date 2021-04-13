@@ -6,7 +6,6 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Tx Rx
-# Description: example of a configuration that send and receives frames for BER measurement (here the two USRPs are linked by a MIMO cable)
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
@@ -79,7 +78,7 @@ class tx_rx(gr.top_block):
         self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
         # No synchronization enforced.
         self.lora_sdr_whitening_0 = lora_sdr.whitening()
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, bw, bw, [8,16])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, bw, bw, [0x12])
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc)
@@ -88,7 +87,7 @@ class tx_rx(gr.top_block):
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
         self.lora_sdr_gray_enc_0 = lora_sdr.gray_enc()
         self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(bw, bw, sf, impl_head, [8,16])
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(bw, bw, sf, impl_head, [18])
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)

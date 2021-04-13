@@ -36,7 +36,7 @@ class lora_TX(gr.top_block):
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
         self.frame_period = frame_period = 1000
-        self.cr = cr = 4
+        self.cr = cr = 3
         self.center_freq = center_freq = 868.1e6
         self.TX_gain = TX_gain = 0
 

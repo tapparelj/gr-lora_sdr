@@ -38,6 +38,14 @@ namespace gr
 
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf,m_os_factor);
 
+            //Convert given sync word into the two modulated values in preamble
+            if(m_sync_words.size()==1){
+                uint16_t tmp = m_sync_words[0];
+                m_sync_words.resize(2,0);
+                m_sync_words[0] = ((tmp&0xF0)>>4)<<3;
+                m_sync_words[1] = (tmp&0x0F)<<3;
+            }
+
             n_up = 8;
             symb_cnt = -1;
             preamb_symb_cnt = 0;

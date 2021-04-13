@@ -38,6 +38,14 @@ namespace gr {
 
         m_impl_head = impl_head;
 
+        //Convert given sync word into the two modulated values in preamble
+        if(m_sync_words.size()==1){
+            uint16_t tmp = m_sync_words[0];
+            m_sync_words.resize(2,0);
+            m_sync_words[0] = ((tmp&0xF0)>>4)<<3;
+            m_sync_words[1] = (tmp&0x0F)<<3;
+        }
+
         m_number_of_bins     = (uint32_t)(1u << m_sf);
         m_samples_per_symbol = (uint32_t)(m_samp_rate * m_number_of_bins/ m_bw);
 
@@ -384,6 +392,7 @@ namespace gr {
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
                         else if (abs(bin_idx-(int32_t)m_sync_words[0])>1){ //wrong network identifier
+                            std::cout<<"NETID 1: "<<bin_idx<<std::endl;
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;
@@ -398,6 +407,7 @@ namespace gr {
                     }
                     case NET_ID2:{                        
                         if (abs(bin_idx-(int32_t)m_sync_words[1])>1){ //wrong network identifier
+                        std::cout<<"NETID 2: "<<bin_idx<<std::endl;
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;

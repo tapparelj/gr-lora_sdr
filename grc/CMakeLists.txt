@@ -34,7 +34,6 @@ install(FILES
     lora_sdr_data_source.block.yml
     lora_sdr_frame_sync.block.yml
     lora_sdr_deinterleaver.block.yml
-    lora_sdr_err_measures.block.yml
     lora_sdr_mu_detection.block.yml
     lora_sdr_mu_synchro.block.yml
     lora_sdr_partial_ml.block.yml
