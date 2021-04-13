@@ -161,7 +161,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1192, 180.0]
+    coordinate: [1072, 180.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -182,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1356.0, 248]
+    coordinate: [1212.0, 248]
     rotation: 270
     state: enabled
 - name: interp_fir_filter_xxx_0
@@ -204,7 +204,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 404.0]
+    coordinate: [1008, 404.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_add_crc_0
@@ -220,7 +220,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [640, 180.0]
+    coordinate: [520, 180.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_crc_verif_0
@@ -235,7 +235,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 400.0]
+    coordinate: [48, 400.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -251,7 +251,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [648, 428.0]
+    coordinate: [512, 428.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -266,7 +266,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 416.0]
+    coordinate: [136, 416.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -283,7 +283,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 420.0]
+    coordinate: [744, 420.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -303,7 +303,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 412.0]
+    coordinate: [872, 412.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_decode_0
@@ -319,7 +319,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [976, 180.0]
+    coordinate: [856, 180.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_enc_0
@@ -334,7 +334,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 432.0]
+    coordinate: [632, 432.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_hamming_dec_0
@@ -349,7 +349,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 432.0]
+    coordinate: [392, 432.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -366,7 +366,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 172.0]
+    coordinate: [632, 172.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_0
@@ -384,7 +384,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [512, 164.0]
+    coordinate: [392, 164.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -403,7 +403,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [392, 404.0]
+    coordinate: [256, 404.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -420,7 +420,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 172.0]
+    coordinate: [752, 172.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -439,7 +439,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1096, 172.0]
+    coordinate: [976, 172.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_whitening_0

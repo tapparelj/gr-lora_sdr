@@ -392,7 +392,7 @@ namespace gr {
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
                         else if (abs(bin_idx-(int32_t)m_sync_words[0])>1){ //wrong network identifier
-                            std::cout<<"NETID 1: "<<bin_idx<<std::endl;
+
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;
@@ -407,7 +407,7 @@ namespace gr {
                     }
                     case NET_ID2:{                        
                         if (abs(bin_idx-(int32_t)m_sync_words[1])>1){ //wrong network identifier
-                        std::cout<<"NETID 2: "<<bin_idx<<std::endl;
+
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;

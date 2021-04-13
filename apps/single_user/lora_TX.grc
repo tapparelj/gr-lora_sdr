@@ -154,7 +154,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [0, 164.0]
+    coordinate: [8, 164.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_add_crc_0
@@ -548,7 +548,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 76.0]
+    coordinate: [960, 76.0]
     rotation: 0
     state: enabled
 
