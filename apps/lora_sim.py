@@ -10,6 +10,7 @@
 # Description: Simulation example LoRa
 # GNU Radio version: 3.8.2.0
 
+from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -34,13 +35,15 @@ class lora_sim(gr.top_block):
         # Variables
         ##################################################
         self.bw = bw = 250000
-        self.sf = sf = 9
+        self.time_wait = time_wait = 200
+        self.thresshold = thresshold = 100
+        self.sf = sf = 10
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
+        self.noise = noise = 10
         self.n_frame = n_frame = 5
         self.multi_control = multi_control = True
         self.mult_const = mult_const = 1
-        self.mean = mean = 200
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
@@ -49,25 +52,29 @@ class lora_sim(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, mean, [8, 16],True)
+        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(10000000)
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_detector_1 = lora_sdr.frame_detector(samp_rate, bw, sf,200)
+        self.lora_sdr_frame_detector_1 = lora_sdr.frame_detector(samp_rate, bw, sf,thresshold)
         self.lora_sdr_frame_detector_1.set_min_output_buffer(20000)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(20000)
         self.blocks_throttle_0_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        self.blocks_add_xx_0 = blocks.add_vcc(1)
+        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_UNIFORM, noise, 0)
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0_1_0, 0))
         self.connect((self.blocks_throttle_0_1_0, 0), (self.lora_sdr_frame_detector_1, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
         self.connect((self.lora_sdr_frame_detector_1, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
-        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0, 0))
+        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_add_xx_0, 0))
 
 
     def get_bw(self):
@@ -77,6 +84,20 @@ class lora_sim(gr.top_block):
         with self._lock:
             self.bw = bw
             self.set_samp_rate(self.bw)
+
+    def get_time_wait(self):
+        return self.time_wait
+
+    def set_time_wait(self, time_wait):
+        with self._lock:
+            self.time_wait = time_wait
+
+    def get_thresshold(self):
+        return self.thresshold
+
+    def set_thresshold(self, thresshold):
+        with self._lock:
+            self.thresshold = thresshold
 
     def get_sf(self):
         return self.sf
@@ -100,6 +121,14 @@ class lora_sim(gr.top_block):
         with self._lock:
             self.pay_len = pay_len
 
+    def get_noise(self):
+        return self.noise
+
+    def set_noise(self, noise):
+        with self._lock:
+            self.noise = noise
+            self.analog_noise_source_x_0.set_amplitude(self.noise)
+
     def get_n_frame(self):
         return self.n_frame
 
@@ -120,13 +149,6 @@ class lora_sim(gr.top_block):
     def set_mult_const(self, mult_const):
         with self._lock:
             self.mult_const = mult_const
-
-    def get_mean(self):
-        return self.mean
-
-    def set_mean(self, mean):
-        with self._lock:
-            self.mean = mean
 
     def get_impl_head(self):
         return self.impl_head

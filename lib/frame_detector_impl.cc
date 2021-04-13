@@ -204,6 +204,30 @@ float frame_detector_impl::calc_power(gr_complex *input) {
   for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
     signal_power += m_dfts_mag[mod(arg_max + j, m_N * m_fft_symb)];
   }
+  //divide by three
+  signal_power = signal_power/3;
+
+
+
+//  const std::vector<float> temp;
+//  temp = &m_dfts_mag;
+//  volk_32f_accumulator_s32f(&out,&temp,m_N * m_fft_symb);
+
+#ifdef GRLORA_DEBUG
+        //TODO cloud use volk_accumalator to speed things up
+          float out =0;
+          for(int i=0; i<m_N*m_fft_symb; i++){
+              out += m_dfts_mag[i];
+          }
+          out = out/(m_N*m_fft_symb);
+
+          float snr =0;
+          snr = log10(signal_power/out);
+
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:signal power: "+std::to_string(signal_power));
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: "+std::to_string(out));
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: "+std::to_string(snr));
+#endif
   // TODO just absolute power or as ratio of noise ?
   // return the maximum power
   return signal_power;

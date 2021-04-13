@@ -92,18 +92,6 @@ blocks:
     coordinate: [531, 4]
     rotation: 0
     state: enabled
-- name: mean
-  id: variable
-  parameters:
-    comment: ''
-    value: '200'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1202, 6]
-    rotation: 0
-    state: enabled
 - name: mult_const
   id: variable
   parameters:
@@ -140,6 +128,18 @@ blocks:
     coordinate: [843, 8]
     rotation: 0
     state: enabled
+- name: noise
+  id: variable
+  parameters:
+    comment: ''
+    value: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [371, 78]
+    rotation: 0
+    state: enabled
 - name: pay_len
   id: variable
   parameters:
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '9'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -176,6 +176,67 @@ blocks:
     coordinate: [423, 5]
     rotation: 0
     state: enabled
+- name: threshold
+  id: variable
+  parameters:
+    comment: ''
+    value: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1279, 6]
+    rotation: 0
+    state: enabled
+- name: time_wait
+  id: variable
+  parameters:
+    comment: ''
+    value: '200'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1201, 6]
+    rotation: 0
+    state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_UNIFORM
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [213, 416]
+    rotation: 0
+    state: true
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [284, 327]
+    rotation: 0
+    state: true
 - name: blocks_null_sink_0
   id: blocks_null_sink
   parameters:
@@ -191,44 +252,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1461, 113]
-    rotation: 0
-    state: disabled
-- name: blocks_tag_debug_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [649, 255]
-    rotation: 0
-    state: disabled
-- name: blocks_tag_debug_1
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: before
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [600, 408.0]
     rotation: 0
     state: disabled
 - name: blocks_tag_debug_1_0
@@ -267,25 +290,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1324, 312]
-    rotation: 0
-    state: disabled
-- name: blocks_tag_debug_2
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: after
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [936, 432.0]
     rotation: 0
     state: disabled
 - name: blocks_throttle_0_1
@@ -345,27 +349,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1662, 301]
-    rotation: 270
-    state: disabled
-- name: channels_channel_model_0_0_0
-  id: channels_channel_model
-  parameters:
-    affinity: ''
-    alias: ''
-    block_tags: 'False'
-    comment: ''
-    epsilon: '1.0'
-    freq_offset: '0.0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    noise_voltage: '0.0'
-    seed: '0'
-    taps: 1.0 + 0.0j
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1020.0, 672]
     rotation: 270
     state: disabled
 - name: interp_fir_filter_xxx_0_1
@@ -459,7 +442,7 @@ blocks:
     minoutbuf: '20000'
     samp_rate: samp_rate
     sf: sf
-    threshold: '200'
+    threshold: threshold
   states:
     bus_sink: false
     bus_source: false
@@ -563,7 +546,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [160, 460.0]
+    coordinate: [89, 458]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -577,7 +560,7 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
-    mean: mean
+    mean: time_wait
     minoutbuf: '10000000'
     multi_control: 'True'
     n_frames: n_frame
@@ -590,7 +573,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [139, 212]
+    coordinate: [60, 220]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0_0
@@ -617,12 +600,10 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
-    create_zeros: 'False'
     maxoutbuf: '0'
     minoutbuf: '10000000'
     samp_rate: samp_rate
     sf: sf
-    sync_words: '[8, 16]'
   states:
     bus_sink: false
     bus_source: false
@@ -647,18 +628,17 @@ blocks:
     state: disabled
 
 connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
+- [blocks_add_xx_0, '0', blocks_throttle_0_1_0, '0']
 - [blocks_throttle_0_1, '0', blocks_null_sink_0, '0']
 - [blocks_throttle_0_1, '0', blocks_tag_debug_1_0, '0']
 - [blocks_throttle_0_1, '0', channels_channel_model_0_0, '0']
-- [blocks_throttle_0_1_0, '0', blocks_tag_debug_0, '0']
-- [blocks_throttle_0_1_0, '0', blocks_tag_debug_1, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
 - [channels_channel_model_0_0, '0', interp_fir_filter_xxx_0_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_add_crc_0_0, '0', lora_sdr_hamming_enc_0_0, '0']
-- [lora_sdr_frame_detector_1, '0', blocks_tag_debug_2, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', blocks_add_xx_0, '0']
 
 metadata:
   file_format: 1

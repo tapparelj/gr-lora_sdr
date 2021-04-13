@@ -147,7 +147,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     cnt++;
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG:msg " + std::to_string(cnt) + ":" + message_str);
+                 "DEBUG:msg :" + message_str);
 #endif
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     consume_each(m_payload_len);

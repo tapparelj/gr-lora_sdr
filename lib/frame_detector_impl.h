@@ -11,6 +11,7 @@
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
 #include <lora_sdr/frame_detector.h>
 #include <gnuradio/io_signature.h>
+#include <math.h>
 extern "C" {
 #include "kiss_fft.h"
 }
