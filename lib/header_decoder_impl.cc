@@ -145,8 +145,9 @@ int header_decoder_impl::general_work(int noutput_items,
       consume_each(nitem_to_process);
       return pay_cnt;
     } else { // explicit header to decode
+#ifdef GRLORA_DEBUGV
       std::cout << "\n--------Header--------" << std::endl;
-
+#endif
       m_payload_len = (in[0] << 4) + in[1];
 
       m_has_crc = in[2] & 1;
@@ -169,10 +170,11 @@ int header_decoder_impl::general_work(int noutput_items,
       bool c0 = (in[0] & 0b0001) ^ (in[1] & 0b0010) >> 1 ^
                 (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0100) >> 2 ^
                 (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
-
+#ifdef GRLORA_DEBUGV
       std::cout << "Payload length: " << (int)m_payload_len << std::endl;
       std::cout << "CRC presence: " << (int)m_has_crc << std::endl;
       std::cout << "Coding rate: " << (int)m_cr << std::endl;
+#endif
       int head_err = 0;
       if (header_chk -
           ((int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0)) {
@@ -182,8 +184,9 @@ int header_decoder_impl::general_work(int noutput_items,
         head_err = 1;
         noutput_items = 0;
       } else {
-        std::cout << "Header checksum valid!" << std::endl << std::endl;
 #ifdef GRLORA_DEBUGV
+        std::cout << "Header checksum valid!" << std::endl << std::endl;
+
         std::cout << "should have " << (int)header_chk << std::endl;
         std::cout << "got: "
                   << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0

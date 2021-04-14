@@ -123,7 +123,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         if (output_items.size())
           out[i] = in[i];
       }
-
+#ifdef GRLORA_DEBUGV
       cnt++;
       std::cout << "msg " << cnt << ": " << message_str << std::endl
                 << std::endl;
@@ -131,6 +131,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         std::cout << "CRC valid!" << std::endl << std::endl;
       else
         std::cout << RED << "CRC invalid" << RESET << std::endl << std::endl;
+#endif
       message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
       consume_each(m_payload_len + 2);
       return m_payload_len;
@@ -147,7 +148,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     cnt++;
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG:msg :" + message_str);
+                 "DEBUG:msg:" + message_str);
 #endif
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     consume_each(m_payload_len);
