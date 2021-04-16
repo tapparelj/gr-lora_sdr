@@ -37,12 +37,20 @@ zmq_test::zmq_test () {
     {
         this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
     }
+    {
+        this->blocks_add_xx_0 = blocks::add_cc::make(1);
+    }
+    {
+        this->noise_source_x_0 = analog::noise_source_c::make(analog::GR_UNIFORM, noise, 0);
+    }
 
 // Connections:
+    this->tb->hier_block2::connect(this->analog_noise_source_x_0, 0, this->blocks_add_xx_0, 1);
+    this->tb->hier_block2::connect(this->blocks_add_xx_0, 0, this->blocks_throttle_0_1_0, 0);
     this->tb->hier_block2::connect(this->blocks_throttle_0_1_0, 0, this->lora_sdr_frame_detector_2, 0);
     this->tb->hier_block2::connect(this->interp_fir_filter_xxx_0_1_0_0, 0, this->lora_sdr_hier_rx_1, 0);
     this->tb->hier_block2::connect(this->lora_sdr_frame_detector_2, 0, this->interp_fir_filter_xxx_0_1_0_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_1, 0, this->blocks_throttle_0_1_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_hier_tx_1, 0, this->blocks_add_xx_0, 0);
 }
 
 zmq_test::~zmq_test () {
@@ -72,6 +80,15 @@ int zmq_test::get_pay_len () const {
 
 void zmq_test::set_pay_len (int pay_len) {
     this->pay_len = pay_len;
+}
+
+int zmq_test::get_noise () const {
+    return this->noise;
+}
+
+void zmq_test::set_noise (int noise) {
+    this->noise = noise;
+    this->analog_noise_source_x_0->set_amplitude(this->noise);
 }
 
 int zmq_test::get_n_frame () const {

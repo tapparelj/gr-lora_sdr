@@ -23,6 +23,7 @@ set(GR_LIBRARIES
     gnuradio-pmt
     log4cpp
     gnuradio-lora_sdr
+    gnuradio-analog
     gnuradio-filter
 )
 

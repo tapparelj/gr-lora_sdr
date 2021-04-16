@@ -40,7 +40,7 @@ int Temporary_buffer::get_size() { return temp_mem_vec.size(); }
 void Temporary_buffer::clear() { temp_mem_vec.clear(); }
 
 /**
- * @brief Wrapper for the erase functoin
+ * @brief Wrapper for the erase function
  *
  */
 void Temporary_buffer::erase(int end) {
@@ -122,6 +122,7 @@ frame_detector_impl::frame_detector_impl(float samp_rate, uint32_t bandwidth,
   bin_idx = 0;
   symbol_cnt = 0;
   m_power = 0;
+  m_signal_power_decim = 2;
   // set inital state to find preamble
   m_state = FIND_PREAMBLE;
   // set tag propagation
@@ -170,16 +171,16 @@ bool frame_detector_impl::check_in_frame(gr_complex *input) {
   float compare_power = 0;
   // get current power
   current_power = frame_detector_impl::calc_power(input);
-  // TODO find out how to compare ?
-  compare_power = current_power;
-  //*(1/m_threshold);
+  compare_power = m_power - m_threshold;
 
-  // if current power higher or the current power we are still in a frame
-  if (compare_power > m_power) {
+  // if current power is higher then the set power - threshold we are in the
+  // LoRa frame
+  if (current_power > compare_power) {
     return true;
   } else {
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Outside LoRa frame");
+    GR_LOG_DEBUG(this->d_logger, "DEBUG:Outside LoRa frame");
+    GR_LOG_DEBUG(this->d_logger, "DEBUG: current power:"+std::to_string(current_power)+"compare power:"+std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
     return false;
@@ -204,33 +205,38 @@ float frame_detector_impl::calc_power(gr_complex *input) {
   for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
     signal_power += std::abs(m_dfts_mag[mod(arg_max + j, m_N * m_fft_symb)]);
   }
-#ifdef GRLORA_DEBUG
+
   float peak_power = 0;
   peak_power = signal_power;
-#endif
+  // divide by three to compensate for the +-1 bins
+  signal_power = signal_power / 3;
 
-  //divide by three
-  signal_power = signal_power/3;
+  // loop over the entire dft spectrum and sum the power of all noise
+  float noise_level = 0;
+
+  unsigned int alignment = volk_get_alignment();
+  float *out = (float *)volk_malloc(sizeof(float), m_N * m_fft_symb);
+  volk_32f_accumulator_s32f(out, &m_dfts_mag[0], m_N * m_fft_symb);
+  // disregard the power of the peak signal and divide by the length
+  noise_level = (*out - peak_power) / ((float)(m_N * m_fft_symb - n_bin));
 
 #ifdef GRLORA_DEBUG
-        //TODO cloud use volk_accumalator to speed things up
-        //loop over the entire dft spectrum and sum the power of all noise
-        float noise_level =0;
-          for(int i=0; i<m_N*m_fft_symb; i++){
-              noise_level += std::abs(m_dfts_mag[i]);
-          }
-        //disregard the power of the peak signal and divide by the length
-        noise_level= (noise_level-peak_power)/((float)(m_N*m_fft_symb-3));
-        //calculate snr value
-        float snr =0;
-        snr = 10*log10(signal_power/noise_level);
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:signal power: "+std::to_string(signal_power));
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: "+std::to_string(noise_level));
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: "+std::to_string(snr));
+  // calculate snr value
+  float snr = 0;
+  snr = 10 * log10(signal_power / noise_level );
+  GR_LOG_DEBUG(this->d_logger,
+               "DEBUG:signal power: " + std::to_string(signal_power));
+  GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: " + std::to_string(noise_level ));
+  GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: " + std::to_string(snr));
 #endif
 
-  // TODO just absolute power or as ratio of noise ?
-  // return the maximum power
+  if (noise_level > 1) {
+    signal_power = signal_power / noise_level;
+  } else {
+    signal_power = signal_power / m_signal_power_decim;
+  }
+
+  volk_free(out);
   return signal_power;
 }
 

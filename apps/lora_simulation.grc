@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '8'
+    value: '15'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 276.0]
+    coordinate: [406, 297]
     rotation: 0
     state: true
 - name: blocks_add_xx_0
@@ -234,7 +234,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [632, 256.0]
+    coordinate: [645, 156]
     rotation: 0
     state: true
 - name: blocks_throttle_0_1_0
@@ -296,7 +296,7 @@ blocks:
     bus_structure: null
     coordinate: [936, 300.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -376,6 +376,7 @@ blocks:
 connections:
 - [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
 - [blocks_add_xx_0, '0', blocks_throttle_0_1_0, '0']
+- [blocks_throttle_0_1_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']

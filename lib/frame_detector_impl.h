@@ -210,6 +210,11 @@ private:
    */
   float m_power;
 
+  /**
+   * @brief Value to devide by when there is no noise in the system (recommended value 2)
+   *
+   */
+  uint16_t m_signal_power_decim;
 
 #ifdef GRLORA_log
   std::ofstream output_log_before;

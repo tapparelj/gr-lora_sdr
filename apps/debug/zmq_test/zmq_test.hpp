@@ -11,6 +11,8 @@ GNU Radio version: 3.8.2.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
+#include <gnuradio/analog/noise_source.h>
+#include <gnuradio/blocks/add_blk.h>
 #include <gnuradio/blocks/throttle.h>
 #include <gnuradio/filter/interp_fir_filter.h>
 #include <lora_sdr/frame_detector.h>
@@ -33,12 +35,14 @@ private:
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_2;
     filter::interp_fir_filter_ccc::sptr interp_fir_filter_xxx_0_1_0_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
+    blocks::add_cc::sptr blocks_add_xx_0;
 
 
 // Variables:
     int sf = 9;
     int samp_rate = 250000;
     int pay_len = 64;
+    int noise = 15;
     int n_frame = 10;
     int mean = 200;
     bool impl_head = true;
@@ -58,6 +62,8 @@ public:
     void set_samp_rate(int samp_rate);
     int get_pay_len () const;
     void set_pay_len(int pay_len);
+    int get_noise () const;
+    void set_noise(int noise);
     int get_n_frame () const;
     void set_n_frame(int n_frame);
     int get_mean () const;

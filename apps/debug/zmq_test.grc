@@ -116,6 +116,18 @@ blocks:
     coordinate: [840, 8.0]
     rotation: 0
     state: enabled
+- name: noise
+  id: variable
+  parameters:
+    comment: ''
+    value: '15'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [497, 348]
+    rotation: 0
+    state: enabled
 - name: pay_len
   id: variable
   parameters:
@@ -152,6 +164,43 @@ blocks:
     coordinate: [424, -4.0]
     rotation: 0
     state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_UNIFORM
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [225, 579]
+    rotation: 0
+    state: true
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [457, 559]
+    rotation: 0
+    state: true
 - name: blocks_null_sink_0_0
   id: blocks_null_sink
   parameters:
@@ -363,7 +412,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 344.0]
+    coordinate: [93, 364]
     rotation: 0
     state: enabled
 - name: lora_sdr_signal_detector_0
@@ -389,6 +438,8 @@ blocks:
     state: disabled
 
 connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
+- [blocks_add_xx_0, '0', blocks_throttle_0_1_0, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_0, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_2, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_signal_detector_0, '0']
@@ -397,7 +448,7 @@ connections:
 - [interp_fir_filter_xxx_0_1_0_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_0, '0', channels_channel_model_0_0_0, '0']
 - [lora_sdr_frame_detector_2, '0', interp_fir_filter_xxx_0_1_0_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', blocks_add_xx_0, '0']
 - [lora_sdr_signal_detector_0, '0', blocks_null_sink_0_0, '0']
 
 metadata:
