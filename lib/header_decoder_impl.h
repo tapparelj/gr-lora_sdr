@@ -10,11 +10,10 @@ namespace lora_sdr {
 class header_decoder_impl : public header_decoder {
 private:
   /**
-   * @brief size of the header in nibbles
+   * @brief ize of the header in nibbles
    *
    */
   const uint8_t header_len = 5;
-
   /**
    * @brief Specify if we use an explicit or implicit header
    *
@@ -26,7 +25,6 @@ private:
    *
    */
   uint8_t m_payload_len;
-
   /**
    * @brief Specify the usage of a payload CRC
    *
@@ -40,48 +38,56 @@ private:
   uint8_t m_cr;
 
   /**
-   * @brief The header checksum received in the header
+   * @brief
    *
    */
-  uint8_t header_chk;
+  uint8_t header_chk; ///< The header checksum received in the header
 
   /**
-   * @brief The number of payload nibbles received
+   * @brief
    *
    */
-  uint32_t pay_cnt;
+  uint32_t pay_cnt; ///< The number of payload nibbles received
 
   /**
-   * @brief The number of data nibbles to output
+   * @brief
    *
    */
-  uint32_t nout;
-
+  uint32_t nout; ///< The number of data nibbles to output
   /**
-   * @brief Indicate that we need to decode the header
+   * @brief
    *
    */
-  bool is_first;
+  bool is_header; ///< Indicate that we need to decode the header
 
   /**
    * @brief Reset the block variables for a new frame.
    *
-   * @param id
    */
-  void new_frame_handler(pmt::pmt_t id);
+  void new_frame_handler();
+
+  /**
+   * @brief publish decoding information contained in the header or provided to
+   * the block
+   *
+   * @param cr
+   * @param pay_len
+   * @param crc
+   * @param err
+   */
+  void publish_frame_info(int cr, int pay_len, int crc, int err);
 
 public:
   /**
    * @brief Construct a new header decoder impl object
    *
-   * @param impl_head : boolean if implicit header mode is on or off
-   * @param cr : coding rate
-   * @param pay_len : payload length
-   * @param has_crc : boolean if crc stage is active or not
+   * @param impl_head
+   * @param cr
+   * @param pay_len
+   * @param has_crc
    */
   header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len,
                       bool has_crc);
-
   /**
    * @brief Destroy the header decoder impl object
    *
@@ -89,20 +95,20 @@ public:
   ~header_decoder_impl();
 
   /**
-   * @brief standard gnuradio function to tell the system when to start work
+   * @brief
    *
-   * @param noutput_items : number of output items
-   * @param ninput_items_required : number of required input items
+   * @param noutput_items
+   * @param ninput_items_required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief Main function where the actual computation resides
+   * @brief
    *
-   * @param noutput_items : number of output items
-   * @param ninput_items : number of input items
-   * @param input_items : input data (i.e. hamming decoder stage)
-   * @param output_items : output data
+   * @param noutput_items
+   * @param ninput_items
+   * @param input_items
+   * @param output_items
    * @return int
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,

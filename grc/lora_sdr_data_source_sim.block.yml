@@ -1,6 +1,7 @@
 id: lora_sdr_data_source_sim
 label: Data source sim
 category: '[LoRa]/Tx'
+flags: [python, cpp]
 
 parameters:
 -   id: pay_len
@@ -41,13 +42,19 @@ templates:
     imports: import lora_sdr
     make: lora_sdr.data_source_sim(${pay_len}, ${n_frames}, ${string_input}, ${mean}, ${multi_control})
 
+cpp_templates: 
+     includes: ['#include <lora_sdr/data_source_sim.h>'] 
+     declarations: 'lora_sdr::data_source_sim::sptr ${id};' 
+     make: 'this->${id} = lora_sdr::data_source_sim::make(${pay_len}, ${n_frames}, ${string_input}, ${mean}, ${multi_control});' 
+     link: ['gnuradio-lora_sdr']
+
 documentation: |-
     Generate a new random payload string every trigger.(Random string formed from characters: a-z, A-Z, 0-9)
         Parameters:
             Pay_len: length of the payload in bytes
             N_frames: number of frames to send
             Input string: specific input string to be used, if empty random generated will be used
-            mean : 
+            mean : wait time between two messages
         Output:
             msg: payload data as a string
 

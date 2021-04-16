@@ -10,62 +10,62 @@ class RH_RF95_header_impl : public RH_RF95_header {
 private:
   /**
    * @brief radiohead specific header field "to"
-   * 
+   *
    */
   char m_to;
 
   /**
    * @brief radiohead specific header field "from"
-   * 
+   *
    */
-  char m_from; 
+  char m_from;
 
   /**
    * @brief radiohead specific header field "id"
-   * 
+   *
    */
   char m_id;
 
   /**
    * @brief radiohead specific header field "flags"
-   * 
+   *
    */
   char m_flags;
 
   /**
    * @brief <payload bytes
-   * 
+   *
    */
   std::vector<uint8_t> m_payload;
 
   /**
-   * @brief 
-   * 
-   * @param message 
+   * @brief
+   *
+   * @param message
    */
   void msg_handler(pmt::pmt_t message);
 
 public:
   /**
    * @brief Construct a new rh rf95 header impl object
-   * 
-   * @param _to 
-   * @param _from 
-   * @param _id 
-   * @param _flags 
+   *
+   * @param _to
+   * @param _from
+   * @param _id
+   * @param _flags
    */
   RH_RF95_header_impl(uint8_t _to, uint8_t _from, uint8_t _id, uint8_t _flags);
   /**
    * @brief Destroy the rh rf95 header impl object
-   * 
+   *
    */
   ~RH_RF95_header_impl();
 
   /**
-   * @brief 
-   * 
-   * @param noutput_items 
-   * @param ninput_items_required 
+   * @brief
+   *
+   * @param noutput_items
+   * @param ninput_items_required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 

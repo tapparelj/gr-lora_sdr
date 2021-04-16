@@ -29,8 +29,13 @@
 #include "lora_sdr/hier_rx.h"
 #include "lora_sdr/hier_tx.h"
 #include "lora_sdr/data_source_sim.h"
-%}
-
+#include "lora_sdr/frame_detector.h"
+#include "lora_sdr/signal_detector.h"
+#include "lora_sdr/frame_src.h"
+#include "lora_sdr/noise_est.h"
+#include "lora_sdr/partial_ml.h"
+#include "lora_sdr/mu_synchro.h"
+#include "lora_sdr/mu_detection.h" %}
 
 %include "lora_sdr/add_crc.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, add_crc);
@@ -74,3 +79,17 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, hier_rx);
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, hier_tx);
 %include "lora_sdr/data_source_sim.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, data_source_sim);
+%include "lora_sdr/frame_detector.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_detector);
+%include "lora_sdr/mu_detection.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, mu_detection);
+%include "lora_sdr/mu_synchro.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, mu_synchro);
+%include "lora_sdr/partial_ml.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, partial_ml);
+%include "lora_sdr/noise_est.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, noise_est);
+%include "lora_sdr/frame_src.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_src);
+%include "lora_sdr/signal_detector.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, signal_detector);

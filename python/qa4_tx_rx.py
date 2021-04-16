@@ -21,6 +21,7 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
+from gnuradio import channels
 import lora_sdr_swig as lora_sdr
 import pmt
 import time
@@ -57,7 +58,7 @@ class qa_tx_rx(gr_unittest.TestCase):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 10
+        self.n_frame = n_frame = 1
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
@@ -66,130 +67,118 @@ class qa_tx_rx(gr_unittest.TestCase):
         ##################################################
         # Blocks
         ##################################################
-        # Tx side
-        self.lora_sdr_whitening_0 = lora_sdr.whitening()
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw)
-        self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
-        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
-        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
-        self.lora_sdr_gray_decode_0 = lora_sdr.gray_decode(sf)
-        self.lora_sdr_data_source_0_1_0 = lora_sdr.data_source(
-            pay_len, n_frame, src_data)
-        self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
-        self.blocks_message_strobe_random_0_1_0 = blocks.message_strobe_random(
-            pmt.intern(''), blocks.STROBE_UNIFORM, frame_period, 5)
-        # Rx side
-        self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
-            interpolation=4,
-            decimation=1,
-            taps=None,
-            fractional_bw=None)
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(
-            impl_head, cr, pay_len, has_crc)
-        self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec()
-        self.lora_sdr_gray_enc_0 = lora_sdr.gray_enc()
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(
-            samp_rate, bw, sf, impl_head)
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod(
-            samp_rate, bw, sf, impl_head)
-        self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif()
+        self.lora_sdr_hier_tx_0 = lora_sdr.hier_tx(pay_len, n_frame,src_data
+                                                   , cr, sf,
+                                                   impl_head, has_crc, samp_rate, bw, 200, [8, 16] , True)
+        self.lora_sdr_hier_rx_0_1_0_0_1_0 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
+        self.interp_fir_filter_xxx_0_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
+        self.interp_fir_filter_xxx_0_0.declare_sample_delay(0)
+        self.interp_fir_filter_xxx_0_0.set_min_output_buffer(20000)
+        self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        #get the output
         self.blocks_message_debug_0 = blocks.message_debug()
-        self.blocks_throttle_0 = blocks.throttle(
-            gr.sizeof_gr_complex*1, samp_rate, True)
+
 
         ##################################################
         # Connections
         ##################################################
-        # Tx side
-        self.tb.msg_connect((self.blocks_message_strobe_random_0_1_0,
-                             'strobe'), (self.lora_sdr_data_source_0_1_0, 'trigg'))
-        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                             'msg'), (self.lora_sdr_add_crc_0, 'msg'))
-        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                             'msg'), (self.lora_sdr_header_0, 'msg'))
-        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                             'msg'), (self.lora_sdr_interleaver_0, 'msg'))
-        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                             'msg'), (self.lora_sdr_modulate_0, 'msg'))
-        self.tb.msg_connect((self.lora_sdr_data_source_0_1_0,
-                             'msg'), (self.lora_sdr_whitening_0, 'msg'))
-        self.tb.connect((self.lora_sdr_add_crc_0, 0),
-                        (self.lora_sdr_hamming_enc_0, 0))
-        self.tb.connect((self.lora_sdr_gray_decode_0, 0),
-                        (self.lora_sdr_modulate_0, 0))
-        self.tb.connect((self.lora_sdr_hamming_enc_0, 0),
-                        (self.lora_sdr_interleaver_0, 0))
-        self.tb.connect((self.lora_sdr_header_0, 0),
-                        (self.lora_sdr_add_crc_0, 0))
-        self.tb.connect((self.lora_sdr_interleaver_0, 0),
-                        (self.lora_sdr_gray_decode_0, 0))
-        self.tb.connect((self.lora_sdr_whitening_0, 0),
-                        (self.lora_sdr_header_0, 0))
-        self.tb.connect((self.lora_sdr_modulate_0, 0),
-                        (self.blocks_throttle_0, 0))
-        # Rx side
-
-        self.tb.connect((self.blocks_throttle_0, 0),
-                        (self.rational_resampler_xxx_0, 0))
-        self.tb.msg_connect((self.lora_sdr_crc_verif_0, 'msg'),
+        self.tb.connect((self.blocks_throttle_0_0, 0), (self.interp_fir_filter_xxx_0_0, 0))
+        self.tb.connect((self.interp_fir_filter_xxx_0_0, 0), (self.lora_sdr_hier_rx_0_1_0_0_1_0, 0))
+        self.tb.connect((self.lora_sdr_hier_tx_0, 0), (self.blocks_throttle_0_0, 0))
+        #output msg connection
+        self.tb.msg_connect((self.lora_sdr_hier_rx_0_1_0_0_1_0, 'msg'),
                             (self.blocks_message_debug_0, 'store'))
-        self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
-                            (self.lora_sdr_deinterleaver_0, 'new_frame'))
-        self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
-                            (self.lora_sdr_dewhitening_0, 'new_frame'))
-        self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
-                            (self.lora_sdr_fft_demod_0, 'new_frame'))
-        self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
-                            (self.lora_sdr_hamming_dec_0, 'new_frame'))
-        self.tb.msg_connect((self.lora_sdr_frame_sync_0, 'new_frame'),
-                            (self.lora_sdr_header_decoder_0, 'new_frame'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'pay_len'), (self.lora_sdr_crc_verif_0, 'pay_len'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CRC'), (self.lora_sdr_crc_verif_0, 'CRC'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0, 'CR'),
-                            (self.lora_sdr_deinterleaver_0, 'CR'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'pay_len'), (self.lora_sdr_dewhitening_0, 'pay_len'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CRC'), (self.lora_sdr_dewhitening_0, 'CRC'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CR'), (self.lora_sdr_fft_demod_0, 'CR'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CR'), (self.lora_sdr_frame_sync_0, 'CR'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'err'), (self.lora_sdr_frame_sync_0, 'err'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CRC'), (self.lora_sdr_frame_sync_0, 'crc'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'pay_len'), (self.lora_sdr_frame_sync_0, 'pay_len'))
-        self.tb.msg_connect((self.lora_sdr_header_decoder_0,
-                             'CR'), (self.lora_sdr_hamming_dec_0, 'CR'))
-        self.tb.connect((self.lora_sdr_deinterleaver_0, 0),
-                        (self.lora_sdr_hamming_dec_0, 0))
-        self.tb.connect((self.lora_sdr_dewhitening_0, 0),
-                        (self.lora_sdr_crc_verif_0, 0))
-        self.tb.connect((self.lora_sdr_fft_demod_0, 0),
-                        (self.lora_sdr_gray_enc_0, 0))
-        self.tb.connect((self.lora_sdr_frame_sync_0, 0),
-                        (self.lora_sdr_fft_demod_0, 0))
-        self.tb.connect((self.lora_sdr_gray_enc_0, 0),
-                        (self.lora_sdr_deinterleaver_0, 0))
-        self.tb.connect((self.lora_sdr_hamming_dec_0, 0),
-                        (self.lora_sdr_header_decoder_0, 0))
-        self.tb.connect((self.lora_sdr_header_decoder_0, 0),
-                        (self.lora_sdr_dewhitening_0, 0))
-        self.tb.connect((self.rational_resampler_xxx_0, 0),
-                        (self.lora_sdr_frame_sync_0, 0))
+
+        def get_bw(self):
+            return self.bw
+
+        def set_bw(self, bw):
+            with self._lock:
+                self.bw = bw
+                self.set_samp_rate(self.bw)
+
+        def get_sf(self):
+            return self.sf
+
+        def set_sf(self, sf):
+            with self._lock:
+                self.sf = sf
+
+        def get_samp_rate(self):
+            return self.samp_rate
+
+        def set_samp_rate(self, samp_rate):
+            with self._lock:
+                self.samp_rate = samp_rate
+                self.blocks_throttle_0_0.set_sample_rate(self.samp_rate)
+
+        def get_pay_len(self):
+            return self.pay_len
+
+        def set_pay_len(self, pay_len):
+            with self._lock:
+                self.pay_len = pay_len
+
+        def get_n_frame(self):
+            return self.n_frame
+
+        def set_n_frame(self, n_frame):
+            with self._lock:
+                self.n_frame = n_frame
+
+        def get_multi_control(self):
+            return self.multi_control
+
+        def set_multi_control(self, multi_control):
+            with self._lock:
+                self.multi_control = multi_control
+
+        def get_mult_const(self):
+            return self.mult_const
+
+        def set_mult_const(self, mult_const):
+            with self._lock:
+                self.mult_const = mult_const
+
+        def get_mean(self):
+            return self.mean
+
+        def set_mean(self, mean):
+            with self._lock:
+                self.mean = mean
+
+        def get_impl_head(self):
+            return self.impl_head
+
+        def set_impl_head(self, impl_head):
+            with self._lock:
+                self.impl_head = impl_head
+
+        def get_has_crc(self):
+            return self.has_crc
+
+        def set_has_crc(self, has_crc):
+            with self._lock:
+                self.has_crc = has_crc
+
+        def get_frame_period(self):
+            return self.frame_period
+
+        def set_frame_period(self, frame_period):
+            with self._lock:
+                self.frame_period = frame_period
+
+        def get_cr(self):
+            return self.cr
+
+        def set_cr(self, cr):
+            with self._lock:
+                self.cr = cr
 
         # run the flowgraph, since we use a message strobe we have to run and stop the flowgraph with some computation time inbetween
         self.tb.start()
-        time.sleep(10)
-        self.tb.stop()
+        # time.sleep(10)
+        # self.tb.stop()
         self.tb.wait()
         num_messages = self.blocks_message_debug_0.num_messages()
         if num_messages > 1:

@@ -2,79 +2,81 @@
 #define INCLUDED_LORA_ADD_CRC_IMPL_H
 
 #include <lora_sdr/add_crc.h>
-
+#include <lora_sdr/utilities.h>
 namespace gr {
 namespace lora_sdr {
 
 class add_crc_impl : public add_crc {
 private:
+/**
+ * @brief indicate the presence of a payload CRC
+ * 
+ */
+  bool m_has_crc;            
+  
   /**
-   * @brief Indicate the presence of a payload CRC
-   *
-   */
-  bool m_has_crc;
-
-  /**
-   * @brief The payload data itself
-   *
+   * @brief payload data
+   * 
    */
   std::vector<uint8_t> m_payload;
-
+  
   /**
-   * @brief The length of the payload in bytes
-   *
+   * @brief length of the payload in Bytes
+   * 
    */
-  uint8_t m_payload_len;
-
+  uint8_t m_payload_len;          
+  
   /**
-   * @brief Message handler, handles the pmt input message (i.e. input data)
-   *
-   * @param message : input message (i.e input data)
+   * @brief length of the frame in number of gnuradio items
+   * 
    */
-  void msg_handler(pmt::pmt_t message);
+  int m_frame_len; 
+  
+  /**
+   * @brief  counter of the number of symbol in frame
+   * 
+   */
+  int m_cnt;    
 
   /**
-   * @brief CRC16, add 16 bit CRC to the payload.
-   *
-   * @param crcValue :
-   * @param newByte :
-   * @return unsigned int
+   * @brief Calculates the crc value for a given byte
+   * 
+   * @param crcValue : current crc value
+   * @param newByte : byte for calculate the crc value for 
+   * @return unsigned int 
    */
   unsigned int crc16(unsigned int crcValue, unsigned char newByte);
 
 public:
-  /**
-   * @brief Construct a new add crc impl object
-   *
-   * @param has_crc : boolean to indicate if crc should be added to the payload
-   */
+/**
+ * @brief Construct a new add crc impl object
+ * 
+ * @param has_crc : boolean if crc is turned on or not
+ */
   add_crc_impl(bool has_crc);
 
   /**
    * @brief Destroy the add crc impl object
-   *
+   * 
    */
   ~add_crc_impl();
 
   /**
-   * @brief Gnuradio standard function to tell the system it should operate once
-   * it has a input item
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items_required : number of required input items
+   * @brief Standard gnuradio function for telling the scheduler how many input items are needed
+   * 
+   * @param noutput_items number of input items
+   * @param ninput_items_required minimum items required
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
   /**
-   * @brief Main function of the add_crc module, this module will add Cyclic
-   * Redundancy Check (CRC) to the payload to be able to detect more bit errors.
-   * If m_has_crc is set to True
-   *
-   * @param noutput_items : number of output items
-   * @param ninput_items : number of input items
-   * @param input_items  : vector containing the input items
-   * @param output_items : vector containting the output items
-   * @return int
+   * @brief stanard gnuradio function that does the actual computations
+   * 
+   * @param noutput_items number of output items
+   * @param ninput_items number of input items
+   * @param input_items input items (input data)
+   * @param output_items output items (output data)
+   * @return int 
    */
   int general_work(int noutput_items, gr_vector_int &ninput_items,
                    gr_vector_const_void_star &input_items,

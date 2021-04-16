@@ -35,9 +35,10 @@ public:
    * class. lora_sdr::hier_tx::make is the public interface for
    * creating new instances.
    */
-  static sptr make(int pay_len, int n_frames, std::string src_data, uint8_t cr,
-                   uint8_t sf, bool impl_head, bool has_crc, uint32_t samp_rate,
-                   uint32_t bw, uint32_t mean, bool multi_control);
+  static sptr make(int pay_len, int n_frames, std::string src_data,
+                   uint8_t cr, uint8_t sf, bool impl_head, bool has_crc,
+                   uint32_t samp_rate, uint32_t bw, uint32_t mean, std::vector<uint16_t> sync_words,
+                   bool create_zeros);
 };
 
 } // namespace lora_sdr

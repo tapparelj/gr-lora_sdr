@@ -28,12 +28,10 @@ private:
   uint32_t cw_cnt;
 
   /**
-   * @brief PMT input message handler.
-   * Handles the pmt message (i.e. input data)
+   * @brief length of the frame in number of items
    *
-   * @param message
    */
-  void msg_handler(pmt::pmt_t message);
+  int m_frame_len;
 
 public:
   /**
@@ -51,13 +49,14 @@ public:
   ~interleaver_impl();
 
   /**
-   * @brief Standard gnuradio function to ensure a number of input items are received before continuing
+   * @brief Standard gnuradio function to ensure a number of input items are
+   * received before continuing
    *
    * @param noutput_items : number of input items
    * @param ninput_items_required : number of requires input items = 1
    */
   void forecast(int noutput_items, gr_vector_int &ninput_items_required);
-
+  
   /**
    * @brief Main function that does the actual computation of the interleaver.
    * 

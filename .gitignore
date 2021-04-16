@@ -9,6 +9,8 @@ apps/profiling/
 .vscode/
 
 cmake-build-debug/
-
+cmake-build-debug-system/
 ##Pycharm
 .idea/
+
+Testing/

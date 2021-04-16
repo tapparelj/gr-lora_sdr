@@ -39,5 +39,14 @@ install(FILES
     lora_sdr_err_measures.block.yml
     lora_sdr_hier_rx.block.yml
     lora_sdr_hier_tx.block.yml
-    lora_sdr_data_source_sim.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora_sdr_data_source_sim.block.yml
+    lora_sdr_frame_detector.block.yml 
+    lora_sdr_signal_detector.block.yml 
+    lora_sdr_frame_src.block.yml
+    lora_sdr_noise_est.block.yml
+    lora_sdr_mu_demod.block.yml
+    lora_sdr_partial_ml.block.yml
+    lora_sdr_mu_synchro.block.yml
+    lora_sdr_mu_detection.block.yml    DESTINATION share/gnuradio/grc/blocks
 )
+
