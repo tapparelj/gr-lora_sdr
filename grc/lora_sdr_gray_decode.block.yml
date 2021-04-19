@@ -2,43 +2,42 @@
 
 id: lora_sdr_gray_decode
 label: Gray mapping
-category: '[LoRa]/Tx'
+category: "[LoRa]/Tx"
 flags: [python, cpp]
 
 parameters:
--   id: sf
+  - id: sf
     label: Sf
     dtype: int
 
 inputs:
--   domain: stream
+  - domain: stream
     dtype: int
 
 assert:
--   ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-
+  - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
 
 outputs:
--   domain: stream
+  - domain: stream
     dtype: int
 
 templates:
-    imports: import lora_sdr
-    make: lora_sdr.gray_decode(${sf})
+  imports: import lora_sdr
+  make: lora_sdr.gray_decode(${sf})
 
-cpp_templates: 
-     includes: ['#include <lora_sdr/gray_decode.h>'] 
-     declarations: 'lora_sdr::gray_decode::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::gray_decode::make(${sf});' 
-     link: ['gnuradio-lora_sdr']
+cpp_templates:
+  includes: ["#include <lora_sdr/gray_decode.h>"]
+  declarations: "lora_sdr::gray_decode::sptr ${id};"
+  make: "this->${id} = lora_sdr::gray_decode::make(${sf});"
+  link: ["gnuradio-lora_sdr"]
 
 documentation: |-
-    Apply the gray mapping operation. (Corresponding to a reverse gray encoding with a shift)
-        Parameters:
-            sf: spreading factor
-        Input:
-            in: decimal value
-        Output:
-            out: decimal value mapped
+  Apply the gray mapping operation. (Corresponding to a reverse gray encoding with a shift)
+      Parameters:
+          sf: spreading factor
+      Input:
+          in: decimal value
+      Output:
+          out: decimal value mapped
 
 file_format: 1

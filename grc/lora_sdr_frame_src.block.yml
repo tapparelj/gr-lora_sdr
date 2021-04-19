@@ -2,46 +2,47 @@
 
 id: lora_sdr_frame_src
 label: Frame src
-category: '[LoRa]/mu'
+category: "[LoRa]/mu"
 
 parameters:
--   id: sf
+  - id: sf
     label: Sf
     dtype: int
--   id: pay_len
+  - id: pay_len
     label: Pay_len
     dtype: int
--   id: delay
+  - id: delay
     label: Delay
     dtype: int
--   id: offset
+  - id: offset
     label: Offset
     dtype: int
--   id: cfo
+  - id: cfo
     label: Cfo
     dtype: float
--   id: n_frames
+  - id: n_frames
     label: N_frames
     dtype: int
--   id: os_factor
+  - id: os_factor
     label: Os factor
     dtype: int
--   id: rand_sto
+  - id: rand_sto
     label: Rand sto
     dtype: bool
 
 outputs:
--   label: signal
+  - label: signal
     domain: stream
     dtype: complex
--   label: symb
+  - label: symb
     domain: stream
     dtype: short
     optional: true
 
 templates:
-    imports: import lora_sdr
-    make: lora_sdr.frame_src(${sf}, ${pay_len}, ${delay}, ${offset}, ${cfo}, ${n_frames},
-        ${os_factor}, ${rand_sto})
+  imports: import lora_sdr
+  make:
+    lora_sdr.frame_src(${sf}, ${pay_len}, ${delay}, ${offset}, ${cfo}, ${n_frames},
+    ${os_factor}, ${rand_sto})
 
 file_format: 1

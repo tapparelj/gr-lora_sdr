@@ -2,32 +2,32 @@
 
 id: lora_sdr_gray_enc
 label: Gray demap
-category: '[LoRa]/Rx'
+category: "[LoRa]/Rx"
 flags: [python, cpp]
 
 inputs:
--   domain: stream
+  - domain: stream
     dtype: int
 
 outputs:
--   domain: stream
+  - domain: stream
     dtype: int
 
 templates:
-    imports: import lora_sdr
-    make: lora_sdr.gray_enc()
+  imports: import lora_sdr
+  make: lora_sdr.gray_enc()
 
-cpp_templates: 
-     includes: ['#include <lora_sdr/gray_enc.h>'] 
-     declarations: 'lora_sdr::gray_enc::sptr ${id};' 
-     make: 'this->${id} = lora_sdr::gray_enc::make();' 
-     link: ['gnuradio-lora_sdr']
+cpp_templates:
+  includes: ["#include <lora_sdr/gray_enc.h>"]
+  declarations: "lora_sdr::gray_enc::sptr ${id};"
+  make: "this->${id} = lora_sdr::gray_enc::make();"
+  link: ["gnuradio-lora_sdr"]
 
 documentation: |-
-    Apply the gray demapping operation. (Corresponding to a gray encoding with a shift)
-        Input:
-            in: decimal value gray mapped
-        Output:
-            out: decimal value demapped
+  Apply the gray demapping operation. (Corresponding to a gray encoding with a shift)
+      Input:
+          in: decimal value gray mapped
+      Output:
+          out: decimal value demapped
 
 file_format: 1

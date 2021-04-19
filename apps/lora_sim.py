@@ -40,7 +40,7 @@ class lora_sim(gr.top_block):
         self.sf = sf = 9
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.noise = noise = 15
+        self.noise = noise = 5
         self.n_frame = n_frame = 5
         self.multi_control = multi_control = True
         self.mult_const = mult_const = 1

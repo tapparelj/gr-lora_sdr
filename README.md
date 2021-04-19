@@ -107,8 +107,14 @@ Similarly to any GNU Radio OOT module, it can be build using Cmake and make.
     - UHD 
     - doxygen (optional for documentation)
     - log4cpp (optional for logging/debugging)
-## Changelog
-For changelog checkout [Changelog](CHANGELOG.md)
+
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Make sure to add or update tests as appropriate.
+
+## [Changelog](CHANGELOG.md)
 ## TODO
 For TODO list checkout [TODO](TODO.md)
 ## License

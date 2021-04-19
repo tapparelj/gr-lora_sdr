@@ -2,33 +2,33 @@
 
 id: lora_sdr_partial_ml
 label: Partial ml
-category: '[LoRa]/mu'
+category: "[LoRa]/mu"
 
 parameters:
--   id: sf
+  - id: sf
     label: Sf
     dtype: int
     hide: ${ 'part' if vlen == 1 else 'none' }
--   id: _id
+  - id: _id
     label: Id
     dtype: int
 
 inputs:
--   domain: stream
+  - domain: stream
     dtype: complex
 
 outputs:
--   domain: stream
+  - domain: stream
     dtype: float
--   domain: stream
+  - domain: stream
     dtype: complex
     vlen: ${ 2**sf }
--   domain: stream
+  - domain: stream
     dtype: complex
     vlen: ${ 2**sf }
 
 templates:
-    imports: import lora_sdr
-    make: lora_sdr.partial_ml(${sf}, ${_id})
+  imports: import lora_sdr
+  make: lora_sdr.partial_ml(${sf}, ${_id})
 
 file_format: 1

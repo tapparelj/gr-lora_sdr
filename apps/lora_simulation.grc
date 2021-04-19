@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '15'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false

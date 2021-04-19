@@ -2,45 +2,47 @@
 
 id: lora_sdr_signal_detector
 label: Signal detector
-category: '[LoRa]/mu'
+category: "[LoRa]/mu"
 flags: [python, cpp]
 
 parameters:
--   id: sf
+  - id: sf
     label: Sf
     dtype: raw
--   id: os_factor
+  - id: os_factor
     label: Os_factor
     dtype: raw
--   id: threshold
+  - id: threshold
     label: Threshold
     dtype: real
--   id: margin
+  - id: margin
     label: Margin
     dtype: int
--   id: fft_symb
+  - id: fft_symb
     label: Fft_symb
     dtype: int
--   id: transp_len
+  - id: transp_len
     label: Transp_len
     dtype: int
 
 inputs:
--   domain: stream
+  - domain: stream
     dtype: complex
 
 outputs:
--   domain: stream
+  - domain: stream
     dtype: complex
 
 templates:
-    imports: import lora_sdr
-    make: lora_sdr.signal_detector(${sf}, ${os_factor}, ${threshold}, ${margin}, ${fft_symb},
-        ${transp_len})
+  imports: import lora_sdr
+  make:
+    lora_sdr.signal_detector(${sf}, ${os_factor}, ${threshold}, ${margin}, ${fft_symb},
+    ${transp_len})
 cpp_templates:
-    includes: ['#include <lora_sdr/signal_detector.h>']
-    declarations: 'lora_sdr::signal_detector::sptr ${id};'
-    make: 'this->${id} = lora_sdr::signal_detector::make(${sf}, ${os_factor}, ${threshold}, ${margin}, ${fft_symb},
-                                                          ${transp_len});'
-    link: ['gnuradio-lora_sdr']
+  includes: ["#include <lora_sdr/signal_detector.h>"]
+  declarations: "lora_sdr::signal_detector::sptr ${id};"
+  make:
+    "this->${id} = lora_sdr::signal_detector::make(${sf}, ${os_factor}, ${threshold}, ${margin}, ${fft_symb},
+    ${transp_len});"
+  link: ["gnuradio-lora_sdr"]
 file_format: 1
