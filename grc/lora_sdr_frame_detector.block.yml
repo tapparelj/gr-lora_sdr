@@ -5,12 +5,12 @@ flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_detector(${samp_rate}, ${bw}, ${sf},${threshold})
+  make: lora_sdr.frame_detector(${sf},${threshold})
 
 cpp_templates:
   includes: ["#include <lora_sdr/frame_detector.h>"]
   declarations: "lora_sdr::frame_detector::sptr ${id};"
-  make: "this->${id} = lora_sdr::frame_detector::make(${samp_rate},${bw},${sf},${threshold});"
+  make: "this->${id} = lora_sdr::frame_detector::make(${sf},${threshold});"
   link: ["gnuradio-lora_sdr"]
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -21,12 +21,6 @@ parameters:
   - id: sf
     label: Sf
     dtype: int
-  - id: samp_rate
-    label: Samp_rate
-    dtype: int
-  - id: bw
-    label: Bw
-    dtype: int
   - id: threshold
     label: Threshold
     dtype: int
@@ -34,8 +28,6 @@ parameters:
 
 asserts:
   - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-  - ${ bw > 0 }
-  - ${samp_rate > 0 }
   - ${threshold >0}
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
@@ -53,7 +45,15 @@ outputs:
   - domain: stream
     dtype: complex
 
-documentation: "Finds and outputs one LoRa frame TESt"
+documentation: |-
+  Only lets LoRa frames pass this block.
+      Parameters:
+          sf: spreading factor
+          threshold: thresshold value to use
+      Input:
+          in: stream of complex samples
+      Output:
+          out: stream of complex samples
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

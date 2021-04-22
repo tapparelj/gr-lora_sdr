@@ -3,7 +3,7 @@
 /********************
 GNU Radio C++ Flow Graph Header File
 
-Title: Not titled yet
+Title: cpp_debug
 GNU Radio version: 3.8.2.0
 ********************/
 
@@ -11,8 +11,6 @@ GNU Radio version: 3.8.2.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
-#include <gnuradio/analog/noise_source.h>
-#include <gnuradio/blocks/add_blk.h>
 #include <gnuradio/blocks/throttle.h>
 #include <gnuradio/filter/interp_fir_filter.h>
 #include <lora_sdr/frame_detector.h>
@@ -32,19 +30,21 @@ private:
 
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
     lora_sdr::hier_rx::sptr lora_sdr_hier_rx_1;
-    lora_sdr::frame_detector::sptr lora_sdr_frame_detector_2;
-    filter::interp_fir_filter_ccc::sptr interp_fir_filter_xxx_0_1_0_0;
+    lora_sdr::frame_detector::sptr lora_sdr_frame_detector_1;
+    filter::interp_fir_filter_ccf::sptr interp_fir_filter_xxx_0_1_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
-    blocks::add_cc::sptr blocks_add_xx_0;
 
 
 // Variables:
-    int sf = 9;
+    int time_wait = 200;
+    int threshold = 100;
+    int sf = 12;
     int samp_rate = 250000;
     int pay_len = 64;
-    int noise = 15;
-    int n_frame = 10;
-    int mean = 200;
+    int noise = 5;
+    int n_frame = 5;
+    bool multi_control = true;
+    int mult_const = 1;
     bool impl_head = true;
     bool has_crc = false;
     int frame_period = 200;
@@ -56,6 +56,10 @@ public:
     zmq_test();
     ~zmq_test();
 
+    int get_time_wait () const;
+    void set_time_wait(int time_wait);
+    int get_threshold () const;
+    void set_threshold(int threshold);
     int get_sf () const;
     void set_sf(int sf);
     int get_samp_rate () const;
@@ -66,8 +70,10 @@ public:
     void set_noise(int noise);
     int get_n_frame () const;
     void set_n_frame(int n_frame);
-    int get_mean () const;
-    void set_mean(int mean);
+    bool get_multi_control () const;
+    void set_multi_control(bool multi_control);
+    int get_mult_const () const;
+    void set_mult_const(int mult_const);
     bool get_impl_head () const;
     void set_impl_head(bool impl_head);
     bool get_has_crc () const;

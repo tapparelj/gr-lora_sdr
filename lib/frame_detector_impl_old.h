@@ -2,22 +2,76 @@
  * @file frame_detector_impl.h
  * @author Martyn van Dijke (martijnvdijke600@gmail.com)
  * @brief
- * @version 0.2
+ * @version 0.1
  * @date 2021-03-23
  *
  *
  */
 #ifndef INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
-#include <gnuradio/io_signature.h>
 #include <lora_sdr/frame_detector.h>
+#include <gnuradio/io_signature.h>
 #include <math.h>
 extern "C" {
 #include "kiss_fft.h"
 }
+//#define GRLORA_log
 
 namespace gr {
 namespace lora_sdr {
+
+    /**
+     * @brief Simple data holder class for memory vec
+     * 
+     */
+    class Temporary_buffer{
+        /**
+         * @brief Temporary vector containting data elements
+         * 
+         */
+        std::vector<gr_complex> temp_mem_vec;
+    public:
+        /**
+         * @brief Wrapper around the push_back function
+         * 
+         */
+        void push_value(gr_complex);
+        /**
+         * @brief Wrapper function for the clear function
+         * 
+         */
+        void clear();
+        /**
+         * @brief Wrapper for the erase functoin
+         * 
+         */
+        void erase(int);
+        /**
+         * @brief Wrapper for the empty function
+         * 
+         * @return true : memory is empty
+         * @return false : memory is not empty
+         */
+        bool empty();
+        /**
+         * @brief Wrapper of the size function
+         * 
+         * @return int : number of elements in the vector
+         */
+        int get_size();
+        /**
+         * @brief Get the value of vector at point int
+         * 
+         * @return gr_complex 
+         */
+        gr_complex get_value(int);
+        /**
+         * @brief Set the reserve object
+         * 
+         */
+        void set_reserve(int);
+    } temp_mem;
+
 
 class frame_detector_impl : public frame_detector {
 private:
@@ -26,7 +80,8 @@ private:
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, SEND_FRAMES };
+  enum State { FIND_PREAMBLE, SEND_FRAMES};
+
 
   /**
    * @brief Current state of the frame finder
@@ -53,10 +108,29 @@ private:
   uint32_t m_N;
 
   /**
+   * @brief oversampling factor
+   *
+   */
+  uint8_t m_os_factor;
+
+  /**
    * @brief detection threshold
    *
    */
-  float m_threshold;
+  double m_threshold;
+
+  /**
+   * @brief number of symbols on which the fft will be made
+   *
+   */
+  int32_t m_fft_symb;
+
+  /**
+   * @brief margin in the input buffer that will be output when a detection
+   * occurs [number of symbols]
+   *
+   */
+  int32_t m_margin;
 
   /**
    * @brief the reference downchirp
@@ -81,6 +155,12 @@ private:
    *
    */
   kiss_fft_cfg fft_cfg;
+
+  /**
+   * @brief downsampled input
+   *
+   */
+  std::vector<gr_complex> m_input_downsampled;
 
   /**
    * @briefiterator used to find max and argmax of FFT
@@ -116,7 +196,7 @@ private:
    * @brief Temporary memory vector
    *
    */
-  std::vector<gr_complex> buffer;
+  Temporary_buffer mem_vec;
 
   /**
    * @brief  LoRa symbol count
@@ -131,38 +211,47 @@ private:
   float m_power;
 
   /**
-   * @brief Get the symbol object value (aka decoded LoRa symbol value)
-   * Function consumes vectors of length m_N 
-   * 
-   * @param input : complex samples
-   * @return int32_t : LoRa symbol value
-   */
-  int32_t get_symbol_val(const gr_complex *input);
-
-  /**
-   * @brief Checks if current samples have the right
+   * @brief Value to devide by when there is no noise in the system (recommended value 2)
    *
-   * @param input : complex input samples
-   * @return true : we are in a LoRa frame
-   * @return false : we are not in a LoRa frame
    */
-  bool check_in_frame(const gr_complex *input);
+  uint16_t m_signal_power_decim;
 
-  /**
-   * @brief Calculates the LoRa frame peak power
-   *
-   * @param input : complex input samples
-   * @return float : peak power
-   */
-  float calc_power(const gr_complex *input);
+#ifdef GRLORA_log
+  std::ofstream output_log_before;
+  std::ofstream output_log_after;
+#endif
 
-  /**
-   * @brief Set the current LoRa symbol energy
-   * Function uses vectors of length m_N
-   *
-   * @param input : complex samples
-   */
-  void set_power(const gr_complex *input);
+/**
+ * @brief Get the symbol object value (aka decoded LoRa symbol value)
+ * 
+ * @param input : complex samples
+ * @return int32_t : LoRa symbol value
+ */
+  int32_t get_symbol(gr_complex *input);
+
+/**
+ * @brief Checks if current samples have the right 
+ * 
+ * @param input 
+ * @return true : we are in a LoRa frame
+ * @return false : we are not in a LoRa frame
+ */
+  bool check_in_frame(gr_complex *input);
+
+/**
+ * @brief Calculates the LoRa frame peak power
+ * 
+ * @param input : input samples
+ * @return float : peak power
+ */
+  float calc_power(gr_complex *input);
+
+/**
+ * @brief Set the current LoRa frame power
+ *
+ * @param input : complex samples
+ */
+  void set_power(gr_complex *input);
 
 public:
   /**
@@ -173,8 +262,7 @@ public:
    * @param sf : spreading factor
    * @param threshold : threshold value to use
    */
-  frame_detector_impl(uint8_t sf,
-                      uint32_t threshold);
+  frame_detector_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,uint32_t threshold);
 
   /**
    * @brief Destroy the frame detector impl object

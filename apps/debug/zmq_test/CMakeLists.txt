@@ -1,6 +1,6 @@
 # GNU Radio C++ Flow Graph CMakeLists.txt
 #
-# Title: Not titled yet
+# Title: cpp_debug
 # GNU Radio version: 3.8.2.0
 
 
@@ -22,9 +22,8 @@ set(GR_LIBRARIES
     gnuradio-runtime
     gnuradio-pmt
     log4cpp
-    gnuradio-lora_sdr
-    gnuradio-analog
     gnuradio-filter
+    gnuradio-lora_sdr
 )
 
 add_executable(zmq_test zmq_test.cpp)

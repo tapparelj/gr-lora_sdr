@@ -10,7 +10,6 @@
 # Description: Simulation example LoRa
 # GNU Radio version: 3.8.2.0
 
-from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -37,7 +36,7 @@ class lora_sim(gr.top_block):
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
         self.threshold = threshold = 100
-        self.sf = sf = 9
+        self.sf = sf = 12
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.noise = noise = 5
@@ -55,23 +54,22 @@ class lora_sim(gr.top_block):
         self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(10000000)
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
+        self.lora_sdr_frame_detector_1 = lora_sdr.frame_detector(sf,threshold)
+        self.lora_sdr_frame_detector_1.set_min_output_buffer(20000)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(20000)
         self.blocks_throttle_0_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
-        self.blocks_add_xx_0 = blocks.add_vcc(1)
-        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_UNIFORM, noise, 0)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_0, 1))
-        self.connect((self.blocks_add_xx_0, 0), (self.blocks_throttle_0_1_0, 0))
-        self.connect((self.blocks_throttle_0_1_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
+        self.connect((self.blocks_throttle_0_1_0, 0), (self.lora_sdr_frame_detector_1, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
-        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_add_xx_0, 0))
+        self.connect((self.lora_sdr_frame_detector_1, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
+        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0, 0))
 
 
     def get_bw(self):
@@ -124,7 +122,6 @@ class lora_sim(gr.top_block):
     def set_noise(self, noise):
         with self._lock:
             self.noise = noise
-            self.analog_noise_source_x_0.set_amplitude(self.noise)
 
     def get_n_frame(self):
         return self.n_frame

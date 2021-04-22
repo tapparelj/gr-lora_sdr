@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '9'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
@@ -218,7 +218,7 @@ blocks:
     bus_structure: null
     coordinate: [406, 297]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_add_xx_0
   id: blocks_add_xx
   parameters:
@@ -236,7 +236,7 @@ blocks:
     bus_structure: null
     coordinate: [645, 156]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -275,7 +275,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 404.0]
+    coordinate: [528, 452.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -283,11 +283,9 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: bw
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '20000'
-    samp_rate: samp_rate
     sf: sf
     threshold: threshold
   states:
@@ -296,7 +294,7 @@ blocks:
     bus_structure: null
     coordinate: [936, 300.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_0
   id: lora_sdr_hier_rx
   parameters:
@@ -342,7 +340,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [568, 348.0]
+    coordinate: [248, 452.0]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -376,11 +374,11 @@ blocks:
 connections:
 - [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
 - [blocks_add_xx_0, '0', blocks_throttle_0_1_0, '0']
-- [blocks_throttle_0_1_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_add_xx_0, '0']
+- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
 
 metadata:
   file_format: 1
