@@ -48,6 +48,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   cx_out.resize(m_N, 0.0);
   m_dfts_mag.resize(m_N, 0);
   m_dechirped.resize(m_N, 0);
+  m_temp.resize(m_N, 0);
   // set downchirp and generate downchirp
   m_downchirp.resize(m_N);
   for (uint n = 0; n < m_N; n++) {
@@ -65,6 +66,8 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   m_power = 0;
   // set initial state to find preamble
   m_state = FIND_PREAMBLE;
+  m_cnt = 0;
+  m_end = false;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
 }
@@ -99,26 +102,21 @@ int32_t frame_detector_impl::get_symbol_val(const gr_complex *input) {
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-bool frame_detector_impl::check_in_frame(const gr_complex *input) {
-  // temporary variables
-  // current power of frame
-  float current_power = 0;
+bool frame_detector_impl::check_in_frame(float power) {
   // compare power to compare against
   float compare_power = 0;
 
   // get current power
-  current_power = frame_detector_impl::calc_power(input);
   compare_power = m_power - m_threshold;
-  return true;
   // if current power is higher then the set power - threshold we are in the
   // LoRa frame
-  if (current_power > compare_power) {
+  if (power > compare_power) {
     return true;
   } else {
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Outside LoRa frame");
     GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG: current power:" + std::to_string(current_power) +
+                 "DEBUG:Current power:" + std::to_string(power) +
                      "compare power:" + std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
@@ -140,9 +138,15 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   int n_bin = 3;
   // get maximum argument
   int32_t arg_max = get_symbol_val(input);
-  // calculate power around peak +-1 symbol
-  for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
-    signal_power += std::abs(m_dfts_mag[(arg_max + j)]);
+  // if we found the zero padding in the end of frame
+  if (m_dfts_mag[arg_max] < 1) {
+    std::cout << "Hero" << std::endl;
+    return -1.0;
+  } else {
+    // calculate power around peak +-1 symbol
+    for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
+      signal_power += std::abs(m_dfts_mag[(arg_max + j)]);
+    }
   }
 
   float peak_power = 0;
@@ -151,30 +155,34 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   signal_power = signal_power / 3;
 
   // loop over the entire dft spectrum and sum the power of all noise
-  float noise_level = 0;
+  float noise_power = 0;
 
   unsigned int alignment = volk_get_alignment();
   float *out = (float *)volk_malloc(sizeof(float), m_N);
   volk_32f_accumulator_s32f(out, &m_dfts_mag[0], m_N);
   // disregard the power of the peak signal and divide by the length
-  noise_level = (*out - peak_power) / ((float)(m_N - n_bin));
+  noise_power = (*out - peak_power) / ((float)(m_N - n_bin));
 
 #ifdef GRLORA_DEBUG
-  // calculate snr value
-  float snr = 0;
-  snr = 10 * log10(signal_power / noise_level);
-  GR_LOG_DEBUG(this->d_logger,
-               "DEBUG:signal power: " + std::to_string(signal_power));
-  GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: " + std::to_string(noise_level));
-  GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: " + std::to_string(snr));
+//  // calculate snr value
+//  float snr = 0;
+//  snr = 10 * log10(signal_power / noise_power);
+//  GR_LOG_DEBUG(this->d_logger,
+//               "DEBUG:signal power: " + std::to_string(signal_power));
+//  GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: " + std::to_string(noise_power));
+//  GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: " + std::to_string(snr));
 #endif
 
-  if (noise_level > 1) {
-    signal_power = signal_power / noise_level;
+  if (noise_power > 1) {
+    signal_power = signal_power / noise_power;
   } else {
     signal_power = signal_power / 2;
   }
 
+#ifdef GRLORA_DEBUG
+  GR_LOG_DEBUG(this->d_logger, "DEBUG:signal/noise: " +
+                                   std::to_string(signal_power / noise_power));
+#endif
   volk_free(out);
   return signal_power;
 }
@@ -271,14 +279,14 @@ int frame_detector_impl::general_work(int noutput_items,
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
-      m_state = SEND_FRAMES;
+      m_state = SEND_FRAME;
       // set symbol count back to zero
       symbol_cnt = 0;
       break;
     }
     return 0;
   }
-  case SEND_FRAMES: {
+  case SEND_FRAME: {
     // actual sending of samples in split packets (due to gnuradio scheduler)
 
     // set the end of the vector to be or the maximum number of items we can
@@ -297,26 +305,73 @@ int frame_detector_impl::general_work(int noutput_items,
     // clear used items from buffer
     buffer.erase(buffer.begin(), buffer.begin() + end_vec);
 
-    // check the first symbol of the input is we are still in a LoRa frame
-    bool in_frame = check_in_frame(&in[0]);
+    // calculate how many whole samples are in the input
+    float rat = ninput_items[0] / m_samples_per_symbol;
+    int sym = std::floor(rat);
+    //
+    float avg_power = 0;
 
-    // if we are still in a frame
+    for (int j = 0; j < sym; j++) {
+      // TODO could use memcpy for speed
+      for (int k = 0; k < m_samples_per_symbol; k++) {
+        m_temp[k] = in[k + m_samples_per_symbol * j];
+      }
+
+      // after we have found the preamble there are 5 symbols containing the
+      // network identifiers and
+      // downchrips we skip these in calculation
+      if (m_cnt < 6) {
+        avg_power += m_power;
+      } else {
+        avg_power += calc_power(&m_temp[0]);
+      }
+      m_cnt++;
+    }
+    // check if we are still in a LoRa frame
+    bool in_frame = check_in_frame(avg_power / sym);
+
+    //     if we are still in a frame
     if (in_frame == true) {
       // append input to the buffer
-      for (int i = 0; i < ninput_items[0]; i++) {
+      for (int i = 0; i < (sym * m_samples_per_symbol); i++) {
         buffer.push_back(in[i]);
       }
     } else {
-      // if the buffer is empty (all stored items have been send)
-      if (buffer.empty()) {
-        // go to finding the preamble
-        m_state = FIND_PREAMBLE;
-      }
+        if (buffer.empty()) {
+            // go to finding the preamble
+            // reset preamble counter
+            m_cnt = 0;
+            m_state = FIND_PREAMBLE;
+        }
     }
     // tell the gnuradio scheduler how many items we have used.
-    consume_each(ninput_items[0]);
+    consume_each(sym * m_samples_per_symbol);
     // return the number of items produced by the system
     return end_vec;
+  }
+  case SEND_END_FRAME: {
+      int end_vec = buffer.size();
+      if (end_vec > noutput_items) {
+          end_vec = noutput_items;
+      }
+
+      // set output to be the buffer
+      // TODO could maybe use memcpy for speed
+      for (int i = 0; i < end_vec; i++) {
+          out[i] = buffer.at(i);
+      }
+      // clear used items from buffer
+      buffer.erase(buffer.begin(), buffer.begin() + end_vec);
+      //we are not consuming items
+      consume_each(0);
+      // if the buffer is empty (all stored items have been send)
+      if (buffer.empty()) {
+          // go to finding the preamble
+          // reset preamble counter
+          m_cnt = 0;
+          m_state = FIND_PREAMBLE;
+      }
+      return end_vec;
   }
 
   default: {

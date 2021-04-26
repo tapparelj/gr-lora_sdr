@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '12'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false

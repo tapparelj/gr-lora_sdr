@@ -36,7 +36,7 @@ class lora_sim(gr.top_block):
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
         self.threshold = threshold = 100
-        self.sf = sf = 12
+        self.sf = sf = 10
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.noise = noise = 5

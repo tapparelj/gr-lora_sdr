@@ -26,7 +26,7 @@ private:
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, SEND_FRAMES };
+  enum State { FIND_PREAMBLE, SEND_FRAME, SEND_END_FRAME };
 
   /**
    * @brief Current state of the frame finder
@@ -131,9 +131,24 @@ private:
   float m_power;
 
   /**
+   * @brief Counter for counting if we are past the net identifier and
+   * downchirps once we have found the preamble
+   *
+   */
+  int m_cnt;
+
+  bool m_end;
+
+  /**
+   * @brief Temporary gr_complex vector for processing the input per m_samples_processed
+   *
+   */
+  std::vector<gr_complex> m_temp;
+
+  /**
    * @brief Get the symbol object value (aka decoded LoRa symbol value)
-   * Function consumes vectors of length m_N 
-   * 
+   * Function consumes vectors of length m_N
+   *
    * @param input : complex samples
    * @return int32_t : LoRa symbol value
    */
@@ -146,7 +161,7 @@ private:
    * @return true : we are in a LoRa frame
    * @return false : we are not in a LoRa frame
    */
-  bool check_in_frame(const gr_complex *input);
+  bool check_in_frame(float power);
 
   /**
    * @brief Calculates the LoRa frame peak power
@@ -173,8 +188,7 @@ public:
    * @param sf : spreading factor
    * @param threshold : threshold value to use
    */
-  frame_detector_impl(uint8_t sf,
-                      uint32_t threshold);
+  frame_detector_impl(uint8_t sf, uint32_t threshold);
 
   /**
    * @brief Destroy the frame detector impl object
