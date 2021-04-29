@@ -48,7 +48,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '4'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -72,7 +72,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [648, 236.0]
+    coordinate: [552, 236.0]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0
@@ -233,12 +233,12 @@ blocks:
       ,0.300105438719035\t,0.636619772367581\t,0.900316316157106,\t1\t,0.900316316157106,\t\
       0.636619772367581,\t0.300105438719035,\t3.89817183251938e-17,\t-0.180063263231421,\t\
       -0.212206590789194,\t-0.128616616593872)"
-    type: ccf
+    type: ccc
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 420.0]
+    coordinate: [552, 436.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -250,12 +250,12 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '20000'
     sf: sf
-    threshold: threshold
+    threshold: '200'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 332.0]
+    coordinate: [768, 228.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_1
@@ -266,7 +266,7 @@ blocks:
     bw: bw
     comment: ''
     cr: cr
-    exit: 'true'
+    exit: 'false'
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
@@ -279,7 +279,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 444.0]
+    coordinate: [296, 380.0]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -295,7 +295,7 @@ blocks:
     maxoutbuf: '0'
     mean: time_wait
     minoutbuf: '10000000'
-    multi_control: 'true'
+    multi_control: 'false'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate

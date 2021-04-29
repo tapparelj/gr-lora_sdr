@@ -137,7 +137,9 @@ private:
    */
   int m_cnt;
 
-  bool m_end;
+  bool in_frame;
+
+  int test;
 
   /**
    * @brief Temporary gr_complex vector for processing the input per m_samples_processed
@@ -161,7 +163,7 @@ private:
    * @return true : we are in a LoRa frame
    * @return false : we are not in a LoRa frame
    */
-  bool check_in_frame(float power);
+  bool check_in_frame(gr_complex *input);
 
   /**
    * @brief Calculates the LoRa frame peak power

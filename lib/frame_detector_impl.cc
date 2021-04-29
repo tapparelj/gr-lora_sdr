@@ -67,9 +67,11 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   // set initial state to find preamble
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
-  m_end = false;
+  in_frame = false;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
+
+  test = 0;
 }
 
 /**
@@ -102,21 +104,22 @@ int32_t frame_detector_impl::get_symbol_val(const gr_complex *input) {
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-bool frame_detector_impl::check_in_frame(float power) {
+bool frame_detector_impl::check_in_frame(gr_complex *input) {
   // compare power to compare against
   float compare_power = 0;
-
+  float current_power = 0;
+  current_power = frame_detector_impl::calc_power(input);
   // get current power
   compare_power = m_power - m_threshold;
   // if current power is higher then the set power - threshold we are in the
   // LoRa frame
-  if (power > compare_power) {
+  if (current_power > compare_power) {
     return true;
   } else {
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Outside LoRa frame");
     GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG:Current power:" + std::to_string(power) +
+                 "DEBUG:Current power:" + std::to_string(current_power) +
                      "compare power:" + std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
@@ -141,12 +144,11 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   // if we found the zero padding in the end of frame
   if (m_dfts_mag[arg_max] < 1) {
     std::cout << "Hero" << std::endl;
-    return -1.0;
-  } else {
-    // calculate power around peak +-1 symbol
-    for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
-      signal_power += std::abs(m_dfts_mag[(arg_max + j)]);
-    }
+  }
+
+  // calculate power around peak +-1 symbol
+  for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
+    signal_power += std::abs(m_dfts_mag[(arg_max + j)]);
   }
 
   float peak_power = 0;
@@ -213,7 +215,7 @@ void frame_detector_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
   // we need at least the preamble symbols to start working
-  ninput_items_required[0] = m_samples_per_symbol + 2;
+  ninput_items_required[0] = m_samples_per_symbol * n_up;
 }
 
 /**
@@ -246,9 +248,6 @@ int frame_detector_impl::general_work(int noutput_items,
 
   switch (m_state) {
   case FIND_PREAMBLE: {
-#ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Finding preamble");
-#endif
     // copy input to memory vector for later use.
     for (int i = 0; i < m_N; i++) {
       buffer.push_back(in[i]);
@@ -274,7 +273,7 @@ int frame_detector_impl::general_work(int noutput_items,
     // if we have n_up-1 symbols counted we have found the preamble
     if (symbol_cnt == nR_up) {
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found preamble!");
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND FRAME!");
 #endif
       // store the current power level in m_power
       set_power(&in[0]);
@@ -308,27 +307,23 @@ int frame_detector_impl::general_work(int noutput_items,
     // calculate how many whole samples are in the input
     float rat = ninput_items[0] / m_samples_per_symbol;
     int sym = std::floor(rat);
-    //
-    float avg_power = 0;
-
+    // loop over input symbols
     for (int j = 0; j < sym; j++) {
-      // TODO could use memcpy for speed
-      for (int k = 0; k < m_samples_per_symbol; k++) {
-        m_temp[k] = in[k + m_samples_per_symbol * j];
-      }
-
-      // after we have found the preamble there are 5 symbols containing the
-      // network identifiers and
-      // downchrips we skip these in calculation
       if (m_cnt < 6) {
-        avg_power += m_power;
+        // after we have found the preamble there are 5 symbols containing the
+        // network identifiers and
+        // downchrips we skip these in calculation because they make life/computations hard and are always there
+        in_frame = true;
       } else {
-        avg_power += calc_power(&m_temp[0]);
+        // TODO could use memcpy for speed
+        for (int k = 0; k < m_samples_per_symbol; k++) {
+          m_temp[k] = in[k + m_samples_per_symbol * j];
+        }
+        // check if we are still in a LoRa frame
+        in_frame = check_in_frame(&m_temp[0]);
       }
       m_cnt++;
     }
-    // check if we are still in a LoRa frame
-    bool in_frame = check_in_frame(avg_power / sym);
 
     //     if we are still in a frame
     if (in_frame == true) {
@@ -337,41 +332,42 @@ int frame_detector_impl::general_work(int noutput_items,
         buffer.push_back(in[i]);
       }
     } else {
-        if (buffer.empty()) {
-            // go to finding the preamble
-            // reset preamble counter
-            m_cnt = 0;
-            m_state = FIND_PREAMBLE;
-        }
+      if (buffer.empty()) {
+        // go to finding the preamble
+        // reset preamble counter
+        m_cnt = 0;
+        m_state = FIND_PREAMBLE;
+      }
     }
     // tell the gnuradio scheduler how many items we have used.
     consume_each(sym * m_samples_per_symbol);
+    test += sym;
     // return the number of items produced by the system
     return end_vec;
   }
   case SEND_END_FRAME: {
-      int end_vec = buffer.size();
-      if (end_vec > noutput_items) {
-          end_vec = noutput_items;
-      }
+    int end_vec = buffer.size();
+    if (end_vec > noutput_items) {
+      end_vec = noutput_items;
+    }
 
-      // set output to be the buffer
-      // TODO could maybe use memcpy for speed
-      for (int i = 0; i < end_vec; i++) {
-          out[i] = buffer.at(i);
-      }
-      // clear used items from buffer
-      buffer.erase(buffer.begin(), buffer.begin() + end_vec);
-      //we are not consuming items
-      consume_each(0);
-      // if the buffer is empty (all stored items have been send)
-      if (buffer.empty()) {
-          // go to finding the preamble
-          // reset preamble counter
-          m_cnt = 0;
-          m_state = FIND_PREAMBLE;
-      }
-      return end_vec;
+    // set output to be the buffer
+    // TODO could maybe use memcpy for speed
+    for (int i = 0; i < end_vec; i++) {
+      out[i] = buffer.at(i);
+    }
+    // clear used items from buffer
+    buffer.erase(buffer.begin(), buffer.begin() + end_vec);
+    // we are not consuming items
+    consume_each(0);
+    // if the buffer is empty (all stored items have been send)
+    if (buffer.empty()) {
+      // go to finding the preamble
+      // reset preamble counter
+      m_cnt = 0;
+      m_state = FIND_PREAMBLE;
+    }
+    return end_vec;
   }
 
   default: {

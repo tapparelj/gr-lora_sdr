@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [406, 297]
+    coordinate: [632, 92.0]
     rotation: 0
     state: disabled
 - name: blocks_add_xx_0
@@ -253,7 +253,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 268.0]
+    coordinate: [528, 244.0]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0
@@ -275,7 +275,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 452.0]
+    coordinate: [712, 388.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -285,40 +285,16 @@ blocks:
     alias: ''
     comment: ''
     maxoutbuf: '0'
-    minoutbuf: '20000'
+    minoutbuf: '10000000'
     sf: sf
-    threshold: threshold
+    threshold: '200'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 300.0]
+    coordinate: [800, 196.0]
     rotation: 0
     state: enabled
-- name: lora_sdr_hier_rx_0
-  id: lora_sdr_hier_rx
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: bw
-    comment: ''
-    cr: cr
-    exit: 'True'
-    has_crc: has_crc
-    impl_head: impl_head
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    pay_len: pay_len
-    samp_rate: samp_rate
-    sf: sf
-    sync_words: '[8, 16]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [536, 812.0]
-    rotation: 180
-    state: disabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -340,7 +316,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 452.0]
+    coordinate: [480, 332.0]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -367,7 +343,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [208, 164.0]
+    coordinate: [240, 156.0]
     rotation: 0
     state: enabled
 

@@ -115,7 +115,7 @@ int data_source_sim_impl::general_work(int noutput_items,
 
     // if the number of frames send is less then the number of frames that must
     // be send
-    while (frame_cnt < m_n_frames + 1) {
+    while (frame_cnt < m_n_frames ) {
       // variable to hold string input
       std::string str;
 
@@ -140,7 +140,7 @@ int data_source_sim_impl::general_work(int noutput_items,
       return 2 * m_pay_len;
     }
     // if the number of frames is the same -> all frames are sent
-    if (frame_cnt > m_n_frames) {
+    if (frame_cnt >= m_n_frames) {
       boost::this_thread::sleep(boost::posix_time::milliseconds(m_mean));
       // if the multi control uses is not used, send done to the rest of the
       // chain

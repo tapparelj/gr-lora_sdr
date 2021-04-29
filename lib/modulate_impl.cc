@@ -189,6 +189,8 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   }
   // std::cout<<nitems_to_process<<" "<<output_offset<<"
   // "<<noutput_items<<std::endl;
+//  test += (output_offset/((float)m_samples_per_symbol));
+  std::cout << symb_cnt << std::endl;
   consume_each(nitems_to_process);
   return output_offset;
 }

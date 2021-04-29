@@ -31,14 +31,14 @@ private:
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
     lora_sdr::hier_rx::sptr lora_sdr_hier_rx_1;
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_1;
-    filter::interp_fir_filter_ccf::sptr interp_fir_filter_xxx_0_1_0;
+    filter::interp_fir_filter_ccc::sptr interp_fir_filter_xxx_0_1_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
 
 
 // Variables:
     int time_wait = 200;
     int threshold = 100;
-    int sf = 10;
+    int sf = 7;
     int samp_rate = 250000;
     int pay_len = 64;
     int noise = 5;
@@ -46,9 +46,9 @@ private:
     bool multi_control = true;
     int mult_const = 1;
     bool impl_head = false;
-    bool has_crc = false;
+    bool has_crc = true;
     int frame_period = 200;
-    int cr = 4;
+    int cr = 2;
     int bw = 250000;
 
 public:
