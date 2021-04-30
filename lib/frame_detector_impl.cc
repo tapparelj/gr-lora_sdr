@@ -33,7 +33,8 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
     : gr::block("frame_detector",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
-    gr::thread::thread_bind_to_processor(7);
+  gr::thread::thread_bind_to_processor(2);
+  gr::block::set_thread_priority(90);
   // set internal variables
   // spreading factor
   m_sf = sf;
@@ -71,8 +72,6 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   in_frame = false;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
-
-  test = 0;
 }
 
 /**
@@ -144,7 +143,9 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   int32_t arg_max = get_symbol_val(input);
   // if we found the zero padding in the end of frame
   if (m_dfts_mag[arg_max] < 1) {
-    std::cout << "Hero" << std::endl;
+#ifdef GRLORA_DEBUG
+    GR_LOG_DEBUG(this->d_logger, "DEBUG:hero end of frame");
+#endif
   }
 
   // calculate power around peak +-1 symbol
@@ -182,10 +183,11 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
     signal_power = signal_power / 2;
   }
 
-#ifdef GRLORA_DEBUG
-  GR_LOG_DEBUG(this->d_logger, "DEBUG:signal/noise: " +
-                                   std::to_string(signal_power / noise_power));
-#endif
+  //#ifdef GRLORA_DEBUG
+  //  GR_LOG_DEBUG(this->d_logger, "DEBUG:signal/noise: " +
+  //                                   std::to_string(signal_power /
+  //                                   noise_power));
+  //#endif
   volk_free(out);
   return signal_power;
 }
@@ -215,17 +217,18 @@ frame_detector_impl::~frame_detector_impl() {}
 void frame_detector_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-  if(m_state == FIND_PREAMBLE) {
-      // we need at least the preamble symbols to start working
-      ninput_items_required[0] = m_samples_per_symbol * n_up;
+  if (m_state == FIND_PREAMBLE) {
+    // we need at least the preamble symbols to start working
+    ninput_items_required[0] = m_samples_per_symbol;
   }
-  if(m_state == SEND_PREAMBLE){
-      //we are just emptying our internal buffer, we do not need any new input
-      ninput_items_required[0] = 0;
+  if (m_state == SEND_PREAMBLE) {
+    // we are just emptying our internal buffer, we do not need any new input
+    ninput_items_required[0] = 0;
   }
-  if(m_state == SEND_FRAME){
-      //we process the input based on the number of samples in a symbol, so we only need one symbol.
-      ninput_items_required[0] = m_samples_per_symbol;
+  if (m_state == SEND_FRAME) {
+    // we process the input based on the number of samples in a symbol, so we
+    // only need one symbol.
+    ninput_items_required[0] = m_samples_per_symbol;
   }
 }
 
@@ -284,21 +287,27 @@ int frame_detector_impl::general_work(int noutput_items,
     // if we have n_up-1 symbols counted we have found the preamble
     if (symbol_cnt == nR_up) {
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND FRAME!");
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLe!");
 #endif
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
+      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
+                     pmt::intern("start"), pmt::intern("frame_detector"));
+
       // set symbol count back to zero
       symbol_cnt = 0;
+      return 0;
       break;
     }
     return 0;
   }
   case SEND_PREAMBLE: {
     // send the preamble symbols
-
+#ifdef GRLORA_DEBUG
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Starting sending preamble");
+#endif
     // set the end of the vector to be or the maximum number of items we can
     // output or the maximum of the vector
     int end_vec = buffer.size();
@@ -331,9 +340,14 @@ int frame_detector_impl::general_work(int noutput_items,
   }
 
   case SEND_FRAME: {
-    // Computing power of input and checking if this is below the preamble power - threshold
+    // Computing power of input and checking if this is below the preamble power
+    // - threshold
 
-    if (m_cnt < 6) {
+    if (noutput_items < m_samples_per_symbol) {
+      consume_each(0);
+      return 0;
+    }
+    if (m_cnt < 10) {
       // after we have found the preamble there are 5 symbols containing the
       // network identifiers and
       // downchrips we skip these in calculation because they make
@@ -344,24 +358,29 @@ int frame_detector_impl::general_work(int noutput_items,
       // check if we are still in the frame
       in_frame = check_in_frame(&in[0]);
     }
-    //increment proceced symbol counter
+    // increment proceced symbol counter
     m_cnt++;
 
-    //if we are still in a frame
+    // if we are still in a frame
     if (in_frame == true) {
-      //copy input to output
-      memcpy(&out[0], &in[0],
-               sizeof(gr_complex) * m_samples_per_symbol);
+      // copy input to output
+      memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
     } else {
-      m_cnt = 0;
+        add_item_tag(0, nitems_written(0), pmt::intern("frame"),
+                     pmt::intern("end"), pmt::intern("frame_detector"));
+        // initialize values of variables
+        bin_idx = 0;
+        symbol_cnt = 0;
+        m_power = 0;
+        // set initial state to find preamble
+        m_cnt = 0;
       m_state = FIND_PREAMBLE;
 #ifdef GRLORA_DEBUG
-        GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> FIND_PREAMBLE");
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> FIND_PREAMBLE");
 #endif
     }
     // tell the gnuradio scheduler how many items we have used.
     consume_each(m_samples_per_symbol);
-    test++;
     // return the number of items produced by the system
     return m_samples_per_symbol;
   }

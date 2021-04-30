@@ -30,6 +30,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
     : gr::block("frame_sync", gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(0, 1, (1u << sf) * sizeof(gr_complex))) {
   gr::thread::thread_bind_to_processor(1);
+  gr::block::set_thread_priority(92);
   m_state = DETECT;
   m_bw = bandwidth;
   m_samp_rate = samp_rate;

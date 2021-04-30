@@ -24,6 +24,7 @@ hamming_dec_impl::hamming_dec_impl()
                      gr::io_signature::make(1, 1, sizeof(uint8_t)),
                      gr::io_signature::make(1, 1, sizeof(uint8_t))) {
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
+        gr::block::set_thread_priority(96);
 }
 
 /**

@@ -44,6 +44,7 @@ fft_demod_impl::fft_demod_impl(float samp_rate, uint32_t bandwidth, uint8_t sf,
   m_dechirped.resize(m_samples_per_symbol);
 
   set_tag_propagation_policy(TPP_DONT);
+        gr::block::set_thread_priority(93);
 
 #ifdef GRLORA_MEASUREMENTS
   int num = 0; // check next file name to use

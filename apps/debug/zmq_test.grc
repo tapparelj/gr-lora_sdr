@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -219,7 +219,7 @@ blocks:
     coordinate: [552, 236.0]
     rotation: 0
     state: enabled
-- name: interp_fir_filter_xxx_0_1_0
+- name: interp_fir_filter_xxx_0_1_0_0
   id: interp_fir_filter_xxx
   parameters:
     affinity: ''
@@ -233,12 +233,12 @@ blocks:
       ,0.300105438719035\t,0.636619772367581\t,0.900316316157106,\t1\t,0.900316316157106,\t\
       0.636619772367581,\t0.300105438719035,\t3.89817183251938e-17,\t-0.180063263231421,\t\
       -0.212206590789194,\t-0.128616616593872)"
-    type: ccc
+    type: ccf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 436.0]
+    coordinate: [510, 414]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -255,7 +255,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 228.0]
+    coordinate: [746, 228]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_1
@@ -279,7 +279,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [296, 380.0]
+    coordinate: [317, 474]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -312,8 +312,8 @@ blocks:
 
 connections:
 - [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
-- [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
-- [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
+- [interp_fir_filter_xxx_0_1_0_0, '0', lora_sdr_hier_rx_1, '0']
+- [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
 
 metadata:

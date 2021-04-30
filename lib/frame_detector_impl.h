@@ -139,7 +139,6 @@ private:
 
   bool in_frame;
 
-  int test;
 
   /**
    * @brief Temporary gr_complex vector for processing the input per m_samples_processed

@@ -24,6 +24,7 @@ deinterleaver_impl::deinterleaver_impl(uint8_t sf)
   // is_first = true;
   m_sf = sf;
   set_tag_propagation_policy(TPP_DONT);
+        gr::block::set_thread_priority(95);
 }
 
 /**

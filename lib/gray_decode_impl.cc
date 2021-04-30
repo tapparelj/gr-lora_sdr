@@ -28,6 +28,7 @@ namespace gr {
     {
         m_sf=sf;
         set_tag_propagation_policy(TPP_ONE_TO_ONE);
+        gr::block::set_thread_priority(94);
     }
 
 /**

@@ -31,7 +31,7 @@ private:
     lora_sdr::hier_tx::sptr lora_sdr_hier_tx_1;
     lora_sdr::hier_rx::sptr lora_sdr_hier_rx_1;
     lora_sdr::frame_detector::sptr lora_sdr_frame_detector_1;
-    filter::interp_fir_filter_ccc::sptr interp_fir_filter_xxx_0_1_0;
+    filter::interp_fir_filter_ccf::sptr interp_fir_filter_xxx_0_1_0_0;
     blocks::throttle::sptr blocks_throttle_0_1_0;
 
 
@@ -42,7 +42,7 @@ private:
     int samp_rate = 250000;
     int pay_len = 64;
     int noise = 5;
-    int n_frame = 1;
+    int n_frame = 10;
     bool multi_control = true;
     int mult_const = 1;
     bool impl_head = false;

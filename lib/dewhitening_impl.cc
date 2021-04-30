@@ -22,6 +22,7 @@ dewhitening_impl::dewhitening_impl()
     : gr::block("dewhitening", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(1, 1, sizeof(uint8_t))) {
   set_tag_propagation_policy(TPP_DONT);
+        gr::block::set_thread_priority(98);
 }
 
 /**

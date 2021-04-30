@@ -28,6 +28,7 @@ header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr,
                                          uint32_t pay_len, bool has_crc)
     : gr::block("header_decoder", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(1, 1, sizeof(uint8_t))) {
+        gr::block::set_thread_priority(97);
   m_impl_header = impl_head;
   m_cr = cr;
   m_payload_len = pay_len;

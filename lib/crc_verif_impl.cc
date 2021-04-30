@@ -19,6 +19,7 @@ crc_verif_impl::crc_verif_impl(bool exit)
     : gr::block("crc_verif", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
     m_exit = exit;
+        gr::block::set_thread_priority(99);
   message_port_register_out(pmt::mp("msg"));
 }
 

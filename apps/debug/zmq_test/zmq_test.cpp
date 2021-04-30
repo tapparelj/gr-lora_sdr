@@ -31,8 +31,8 @@ zmq_test::zmq_test () {
         this->lora_sdr_frame_detector_1 = lora_sdr::frame_detector::make(sf,10);
     }
     {
-        std::vector<gr_complex> taps = {-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872};
-        this->interp_fir_filter_xxx_0_1_0 = filter::interp_fir_filter_ccc::make(4, taps);
+        std::vector<float > taps = {-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872};
+        this->interp_fir_filter_xxx_0_1_0_0 = filter::interp_fir_filter_ccf::make(4, taps);
     }
     {
         this->blocks_throttle_0_1_0 = blocks::throttle::make(sizeof(gr_complex)*1, samp_rate*10, true);
@@ -40,8 +40,8 @@ zmq_test::zmq_test () {
 
 // Connections:
     this->tb->hier_block2::connect(this->blocks_throttle_0_1_0, 0, this->lora_sdr_frame_detector_1, 0);
-    this->tb->hier_block2::connect(this->interp_fir_filter_xxx_0_1_0, 0, this->lora_sdr_hier_rx_1, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_1, 0, this->interp_fir_filter_xxx_0_1_0, 0);
+    this->tb->hier_block2::connect(this->interp_fir_filter_xxx_0_1_0_0, 0, this->lora_sdr_hier_rx_1, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_frame_detector_1, 0, this->interp_fir_filter_xxx_0_1_0_0, 0);
     this->tb->hier_block2::connect(this->lora_sdr_hier_tx_1, 0, this->blocks_throttle_0_1_0, 0);
 }
 
