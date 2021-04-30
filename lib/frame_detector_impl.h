@@ -26,7 +26,7 @@ private:
    * - FIND_PREAMLBE : find the preamble
    * - FIND_END_FRAME : find the end of the frame
    */
-  enum State { FIND_PREAMBLE, SEND_FRAME, SEND_END_FRAME };
+  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME };
 
   /**
    * @brief Current state of the frame finder
@@ -163,7 +163,7 @@ private:
    * @return true : we are in a LoRa frame
    * @return false : we are not in a LoRa frame
    */
-  bool check_in_frame(gr_complex *input);
+  bool check_in_frame(const gr_complex *input);
 
   /**
    * @brief Calculates the LoRa frame peak power

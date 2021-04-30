@@ -29,6 +29,7 @@ frame_sync_impl::frame_sync_impl(float samp_rate, uint32_t bandwidth,
                                  std::vector<uint16_t> sync_word)
     : gr::block("frame_sync", gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(0, 1, (1u << sf) * sizeof(gr_complex))) {
+  gr::thread::thread_bind_to_processor(1);
   m_state = DETECT;
   m_bw = bandwidth;
   m_samp_rate = samp_rate;
@@ -410,7 +411,6 @@ int frame_sync_impl::general_work(int noutput_items,
       m_state = SYNC;
       symbol_cnt = 0;
       cfo_sto_est = false;
-//      std::cout << bin_idx_new << std::endl;
       k_hat = round(k_hat / (n_up - 1));
 
       // perform the coarse synchronization

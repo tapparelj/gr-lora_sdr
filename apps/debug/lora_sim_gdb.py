@@ -21,6 +21,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
 import threading
+import os
 
 
 class lora_sim(gr.top_block):
@@ -192,6 +193,7 @@ def main(top_block_cls=lora_sim, options=None):
 
     tb.wait()
 
-
 if __name__ == '__main__':
+    print('Blocked waiting for GDB attach (pid = %d)' % (os.getpid()))
+    input ('Press Enter to continue: ')
     main()

@@ -28,7 +28,7 @@ zmq_test::zmq_test () {
         this->lora_sdr_hier_rx_1 = lora_sdr::hier_rx::make(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, sync_words ,false);
     }
     {
-        this->lora_sdr_frame_detector_1 = lora_sdr::frame_detector::make(sf,200);
+        this->lora_sdr_frame_detector_1 = lora_sdr::frame_detector::make(sf,10);
     }
     {
         std::vector<gr_complex> taps = {-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872};

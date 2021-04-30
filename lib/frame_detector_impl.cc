@@ -33,6 +33,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
     : gr::block("frame_detector",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
+    gr::thread::thread_bind_to_processor(7);
   // set internal variables
   // spreading factor
   m_sf = sf;
@@ -104,7 +105,7 @@ int32_t frame_detector_impl::get_symbol_val(const gr_complex *input) {
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-bool frame_detector_impl::check_in_frame(gr_complex *input) {
+bool frame_detector_impl::check_in_frame(const gr_complex *input) {
   // compare power to compare against
   float compare_power = 0;
   float current_power = 0;
@@ -214,8 +215,18 @@ frame_detector_impl::~frame_detector_impl() {}
 void frame_detector_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
-  // we need at least the preamble symbols to start working
-  ninput_items_required[0] = m_samples_per_symbol * n_up;
+  if(m_state == FIND_PREAMBLE) {
+      // we need at least the preamble symbols to start working
+      ninput_items_required[0] = m_samples_per_symbol * n_up;
+  }
+  if(m_state == SEND_PREAMBLE){
+      //we are just emptying our internal buffer, we do not need any new input
+      ninput_items_required[0] = 0;
+  }
+  if(m_state == SEND_FRAME){
+      //we process the input based on the number of samples in a symbol, so we only need one symbol.
+      ninput_items_required[0] = m_samples_per_symbol;
+  }
 }
 
 /**
@@ -278,15 +289,15 @@ int frame_detector_impl::general_work(int noutput_items,
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
-      m_state = SEND_FRAME;
+      m_state = SEND_PREAMBLE;
       // set symbol count back to zero
       symbol_cnt = 0;
       break;
     }
     return 0;
   }
-  case SEND_FRAME: {
-    // actual sending of samples in split packets (due to gnuradio scheduler)
+  case SEND_PREAMBLE: {
+    // send the preamble symbols
 
     // set the end of the vector to be or the maximum number of items we can
     // output or the maximum of the vector
@@ -299,77 +310,61 @@ int frame_detector_impl::general_work(int noutput_items,
     // TODO could maybe use memcpy for speed
     for (int i = 0; i < end_vec; i++) {
       out[i] = buffer.at(i);
+#ifdef GRLORA_log
+      output_log_after << out[i] << std::endl;
+#endif
     }
 
     // clear used items from buffer
     buffer.erase(buffer.begin(), buffer.begin() + end_vec);
-
-    // calculate how many whole samples are in the input
-    float rat = ninput_items[0] / m_samples_per_symbol;
-    int sym = std::floor(rat);
-    // loop over input symbols
-    for (int j = 0; j < sym; j++) {
-      if (m_cnt < 6) {
-        // after we have found the preamble there are 5 symbols containing the
-        // network identifiers and
-        // downchrips we skip these in calculation because they make life/computations hard and are always there
-        in_frame = true;
-      } else {
-        // TODO could use memcpy for speed
-        for (int k = 0; k < m_samples_per_symbol; k++) {
-          m_temp[k] = in[k + m_samples_per_symbol * j];
-        }
-        // check if we are still in a LoRa frame
-        in_frame = check_in_frame(&m_temp[0]);
-      }
-      m_cnt++;
-    }
-
-    //     if we are still in a frame
-    if (in_frame == true) {
-      // append input to the buffer
-      for (int i = 0; i < (sym * m_samples_per_symbol); i++) {
-        buffer.push_back(in[i]);
-      }
-    } else {
-      if (buffer.empty()) {
-        // go to finding the preamble
-        // reset preamble counter
-        m_cnt = 0;
-        m_state = FIND_PREAMBLE;
-      }
+    if (buffer.empty()) {
+      // go to sending the rest of the symbols
+      m_state = SEND_FRAME;
+#ifdef GRLORA_DEBUG
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_PREAMBLE -> SEND_FRAME");
+#endif
     }
     // tell the gnuradio scheduler how many items we have used.
-    consume_each(sym * m_samples_per_symbol);
-    test += sym;
+    consume_each(0);
     // return the number of items produced by the system
     return end_vec;
   }
-  case SEND_END_FRAME: {
-    int end_vec = buffer.size();
-    if (end_vec > noutput_items) {
-      end_vec = noutput_items;
-    }
 
-    // set output to be the buffer
-    // TODO could maybe use memcpy for speed
-    for (int i = 0; i < end_vec; i++) {
-      out[i] = buffer.at(i);
+  case SEND_FRAME: {
+    // Computing power of input and checking if this is below the preamble power - threshold
+
+    if (m_cnt < 6) {
+      // after we have found the preamble there are 5 symbols containing the
+      // network identifiers and
+      // downchrips we skip these in calculation because they make
+      // life/computations hard and are always there in the frame
+      in_frame = true;
+    } else {
+      // if we are past the symbols containting network and downchirps
+      // check if we are still in the frame
+      in_frame = check_in_frame(&in[0]);
     }
-    // clear used items from buffer
-    buffer.erase(buffer.begin(), buffer.begin() + end_vec);
-    // we are not consuming items
-    consume_each(0);
-    // if the buffer is empty (all stored items have been send)
-    if (buffer.empty()) {
-      // go to finding the preamble
-      // reset preamble counter
+    //increment proceced symbol counter
+    m_cnt++;
+
+    //if we are still in a frame
+    if (in_frame == true) {
+      //copy input to output
+      memcpy(&out[0], &in[0],
+               sizeof(gr_complex) * m_samples_per_symbol);
+    } else {
       m_cnt = 0;
       m_state = FIND_PREAMBLE;
+#ifdef GRLORA_DEBUG
+        GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> FIND_PREAMBLE");
+#endif
     }
-    return end_vec;
+    // tell the gnuradio scheduler how many items we have used.
+    consume_each(m_samples_per_symbol);
+    test++;
+    // return the number of items produced by the system
+    return m_samples_per_symbol;
   }
-
   default: {
     GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
     return 0;

@@ -10,18 +10,18 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: zmq_test
+    id: lora_sim_recieve
     max_nouts: '0'
-    output_language: cpp
+    output_language: python
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
     run: 'True'
     run_command: '{python} -u {filename}'
-    run_options: run
+    run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: cpp_debug
+    title: Not titled yet
     window_size: ''
   states:
     bus_sink: false
@@ -41,19 +41,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 0.0]
+    coordinate: [317, 11]
     rotation: 0
     state: enabled
 - name: cr
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '4'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 0.0]
+    coordinate: [589, 11]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -65,22 +65,10 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 8.0]
+    coordinate: [885, 15]
     rotation: 0
     state: enabled
 - name: has_crc
-  id: variable
-  parameters:
-    comment: ''
-    value: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [680, 0.0]
-    rotation: 0
-    state: enabled
-- name: impl_head
   id: variable
   parameters:
     comment: ''
@@ -89,7 +77,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 0.0]
+    coordinate: [653, 11]
+    rotation: 0
+    state: enabled
+- name: impl_head
+  id: variable
+  parameters:
+    comment: ''
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [501, 11]
     rotation: 0
     state: enabled
 - name: mult_const
@@ -101,7 +101,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 8.0]
+    coordinate: [981, 15]
     rotation: 0
     state: enabled
 - name: multi_control
@@ -113,7 +113,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 8.0]
+    coordinate: [1074, 16]
     rotation: 0
     state: enabled
 - name: n_frame
@@ -125,19 +125,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 8.0]
-    rotation: 0
-    state: enabled
-- name: noise
-  id: variable
-  parameters:
-    comment: ''
-    value: '5'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [368, 80.0]
+    coordinate: [813, 15]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -149,19 +137,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 0.0]
+    coordinate: [733, 11]
     rotation: 0
     state: enabled
 - name: samp_rate
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: bw
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [256, 0.0]
+    coordinate: [236, 13]
     rotation: 0
     state: enabled
 - name: sf
@@ -173,19 +161,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 8.0]
+    coordinate: [393, 12]
     rotation: 0
     state: enabled
 - name: threshold
   id: variable
   parameters:
     comment: ''
-    value: '100'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 8.0]
+    coordinate: [1249, 13]
     rotation: 0
     state: enabled
 - name: time_wait
@@ -197,26 +185,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 8.0]
-    rotation: 0
-    state: enabled
-- name: blocks_throttle_0_1_0
-  id: blocks_throttle
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    ignoretag: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samples_per_second: samp_rate*10
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [552, 236.0]
+    coordinate: [1171, 13]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0
@@ -238,7 +207,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 436.0]
+    coordinate: [536, 362]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -248,14 +217,14 @@ blocks:
     alias: ''
     comment: ''
     maxoutbuf: '0'
-    minoutbuf: '20000'
+    minoutbuf: '0'
     sf: sf
     threshold: '10'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 228.0]
+    coordinate: [605, 156]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_1
@@ -266,7 +235,7 @@ blocks:
     bw: bw
     comment: ''
     cr: cr
-    exit: 'false'
+    exit: 'True'
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
@@ -279,42 +248,35 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [296, 380.0]
+    coordinate: [280, 306]
     rotation: 180
     state: true
-- name: lora_sdr_hier_tx_1
-  id: lora_sdr_hier_tx
+- name: zeromq_sub_source_0
+  id: zeromq_sub_source
   parameters:
+    address: tcp://127.0.0.1:50246
     affinity: ''
     alias: ''
-    bw: bw
     comment: ''
-    cr: cr
-    has_crc: has_crc
-    impl_head: impl_head
+    hwm: '-1'
     maxoutbuf: '0'
-    mean: time_wait
-    minoutbuf: '10000000'
-    multi_control: 'false'
-    n_frames: n_frame
-    pay_len: pay_len
-    samp_rate: samp_rate
-    sf: sf
-    src_data: '"TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9"'
-    sync_words: '[8, 16]'
+    minoutbuf: '0'
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [208, 160.0]
+    coordinate: [283, 149]
     rotation: 0
-    state: enabled
+    state: true
 
 connections:
-- [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [zeromq_sub_source_0, '0', lora_sdr_frame_detector_1, '0']
 
 metadata:
   file_format: 1
