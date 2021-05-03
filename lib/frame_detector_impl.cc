@@ -69,7 +69,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   buffer.reserve(m_N * n_up);
 
   // initialize values of variables
-  bin_idx = 0;
+  bin_idx = 2;
   symbol_cnt = 0;
   m_power = 0;
   // set initial state to find preamble
@@ -149,12 +149,6 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   int n_bin = 3;
   // get maximum argument
   int32_t arg_max = get_symbol_val(input);
-  // if we found the zero padding in the end of frame
-  if (m_dfts_mag[arg_max] < 1) {
-#ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:hero end of frame");
-#endif
-  }
 
   // calculate power around peak +-1 symbol
   for (int j = -n_bin / 2; j <= n_bin / 2; j++) {
@@ -175,27 +169,12 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   // disregard the power of the peak signal and divide by the length
   noise_power = (*out - peak_power) / ((float)(m_N - n_bin));
 
-#ifdef GRLORA_DEBUG
-//  // calculate snr value
-//  float snr = 0;
-//  snr = 10 * log10(signal_power / noise_power);
-//  GR_LOG_DEBUG(this->d_logger,
-//               "DEBUG:signal power: " + std::to_string(signal_power));
-//  GR_LOG_DEBUG(this->d_logger, "DEBUG:noise: " + std::to_string(noise_power));
-//  GR_LOG_DEBUG(this->d_logger, "DEBUG:snr: " + std::to_string(snr));
-#endif
-
   if (noise_power > 1) {
     signal_power = signal_power / noise_power;
   } else {
-    signal_power = signal_power / 2;
+    signal_power = signal_power;
   }
 
-  //#ifdef GRLORA_DEBUG
-  //  GR_LOG_DEBUG(this->d_logger, "DEBUG:signal/noise: " +
-  //                                   std::to_string(signal_power /
-  //                                   noise_power));
-  //#endif
   volk_free(out);
   return signal_power;
 }
@@ -276,8 +255,14 @@ int frame_detector_impl::general_work(int noutput_items,
     }
     // tell scheduler how many items have been used
     consume_each(m_N);
+
     // get symbol value of input
     bin_idx_new = get_symbol_val(&in[0]);
+
+//#ifdef GRLORA_DEBUG
+//    GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:Current symbol :" + std::to_string(bin_idx_new));
+//#endif
     // calculate difference between this value and previous symbol value
     if ((bin_idx_new - bin_idx) <= 1) {
       // increase the number of symbols counted
@@ -287,6 +272,7 @@ int frame_detector_impl::general_work(int noutput_items,
     else {
       // clear memory vector
       buffer.clear();
+      bin_idx = bin_idx_new;
       // set symbol value to be 1
       symbol_cnt = 1;
     }
@@ -295,7 +281,7 @@ int frame_detector_impl::general_work(int noutput_items,
     // if we have n_up-1 symbols counted we have found the preamble
     if (symbol_cnt == nR_up) {
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLe!");
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
       // store the current power level in m_power
       set_power(&in[0]);
@@ -304,6 +290,8 @@ int frame_detector_impl::general_work(int noutput_items,
 #ifdef GRLORA_DEBUG
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
                                        std::to_string(nitems_written(0)));
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:set power at:" +
+                                       std::to_string(m_power));
 #endif
       add_item_tag(0, nitems_written(0), pmt::intern("frame"),
                    pmt::intern("start"), pmt::intern("frame_detector"));
@@ -406,7 +394,6 @@ int frame_detector_impl::general_work(int noutput_items,
       memcpy(&out[0], &in[0], sizeof(gr_complex) * (m_samples_per_symbol / 4));
       cnt_padding = 0;
       // initialize values of variables
-      bin_idx = 0;
       symbol_cnt = 0;
       m_power = 0;
       // set initial state to find preamble

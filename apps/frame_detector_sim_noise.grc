@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: Martyn
+    author: Martyn van Dijke
     category: '[GRC Hier Blocks]'
     cmake_opt: '""'
     comment: ''
@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: lora_sim
+    id: frame_detector
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -21,7 +21,7 @@ options:
     run_options: run
     sizing_mode: fixed
     thread_safe_setters: '1'
-    title: test
+    title: Frame detector test with noise and cfo
     window_size: ''
   states:
     bus_sink: false
@@ -44,6 +44,30 @@ blocks:
     coordinate: [347, 4]
     rotation: 0
     state: enabled
+- name: center_freq
+  id: variable
+  parameters:
+    comment: ''
+    value: 868.1e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [855, 92]
+    rotation: 0
+    state: enabled
+- name: cfo
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.25'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 95]
+    rotation: 0
+    state: enabled
 - name: cr
   id: variable
   parameters:
@@ -54,6 +78,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [619, 4]
+    rotation: 0
+    state: enabled
+- name: delay
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 96]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -128,18 +164,6 @@ blocks:
     coordinate: [843, 8]
     rotation: 0
     state: enabled
-- name: noise
-  id: variable
-  parameters:
-    comment: ''
-    value: '5'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [371, 78]
-    rotation: 0
-    state: enabled
 - name: pay_len
   id: variable
   parameters:
@@ -168,12 +192,36 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '12'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [422, 5]
+    rotation: 0
+    state: enabled
+- name: snr
+  id: variable
+  parameters:
+    comment: ''
+    value: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1029, 91]
+    rotation: 0
+    state: enabled
+- name: sto
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.3'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [946, 91]
     rotation: 0
     state: enabled
 - name: threshold
@@ -185,7 +233,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1279, 6]
+    coordinate: [1282, 7]
     rotation: 0
     state: enabled
 - name: time_wait
@@ -200,13 +248,48 @@ blocks:
     coordinate: [1201, 6]
     rotation: 0
     state: enabled
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [406, 164]
+    rotation: 0
+    state: true
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [629, 183]
+    rotation: 0
+    state: true
 - name: blocks_delay_0
   id: blocks_delay
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    delay: '0'
+    delay: delay
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
@@ -216,9 +299,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [772, 146]
+    coordinate: [441, 221]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -235,7 +318,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [531, 245]
+    coordinate: [248, 221]
+    rotation: 0
+    state: enabled
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'False'
+    comment: ''
+    epsilon: 1+cfo*samp_rate/center_freq/2**sf
+    freq_offset: cfo/2**sf
+    maxoutbuf: '0'
+    minoutbuf: 2**sf*8
+    noise_voltage: 10**(-snr/20)
+    seed: '0'
+    taps: 1.0 + 1.0j
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [766, 156]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0
@@ -257,7 +361,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [646, 386]
+    coordinate: [291, 445]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -271,13 +375,13 @@ blocks:
     minoutbuf: 2**sf*8
     samp_rate: samp_rate
     sf: sf
-    threshold: '600'
+    threshold: '20'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [772, 221]
-    rotation: 0
+    coordinate: [949, 317]
+    rotation: 270
     state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
@@ -300,7 +404,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [441, 331]
+    coordinate: [64, 389]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1
@@ -327,12 +431,16 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 156.0]
+    coordinate: [8, 133]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_1, '0']
+- [analog_const_source_x_0, '0', blocks_add_xx_0, '0']
+- [blocks_add_xx_0, '0', channels_channel_model_0, '0']
+- [blocks_delay_0, '0', blocks_add_xx_0, '1']
+- [blocks_throttle_0_1_0, '0', blocks_delay_0, '0']
+- [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
