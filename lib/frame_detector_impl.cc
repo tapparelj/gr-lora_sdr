@@ -18,8 +18,10 @@
 namespace gr {
 namespace lora_sdr {
 
-frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t threshold) {
-  return gnuradio::get_initial_sptr(new frame_detector_impl(sf, threshold));
+frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
+                                          uint32_t bw, uint32_t threshold) {
+  return gnuradio::get_initial_sptr(
+      new frame_detector_impl(sf, samp_rate, bw, threshold));
 }
 
 /**
@@ -29,7 +31,8 @@ frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t threshold) {
  * @param bandwidth : bandwith
  * @param sf : spreading factor
  */
-frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
+frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
+                                         uint32_t bw, uint32_t threshold)
     : gr::block("frame_detector",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
@@ -38,12 +41,15 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   // set internal variables
   // spreading factor
   m_sf = sf;
+  m_samp_rate = samp_rate;
+  m_bw = bw;
   // threshold value
   m_threshold = threshold;
 
   // calculate derived variables
   m_N = (uint32_t)(1u << m_sf);
-  m_samples_per_symbol = m_N;
+  m_symbols_per_second = (double)m_bw / m_N;
+  m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
 
   // initialise all vector values and make sure they have the same length
   fft_cfg = kiss_fft_alloc(m_N, 0, NULL, NULL);
@@ -70,6 +76,8 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t threshold)
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
   in_frame = false;
+  m_inter_frame_padding = 4;
+  cnt_padding = 0;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
 }
@@ -293,8 +301,12 @@ int frame_detector_impl::general_work(int noutput_items,
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
+#ifdef GRLORA_DEBUG
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
+                                       std::to_string(nitems_written(0)));
+#endif
       add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-                     pmt::intern("start"), pmt::intern("frame_detector"));
+                   pmt::intern("start"), pmt::intern("frame_detector"));
 
       // set symbol count back to zero
       symbol_cnt = 0;
@@ -306,7 +318,7 @@ int frame_detector_impl::general_work(int noutput_items,
   case SEND_PREAMBLE: {
     // send the preamble symbols
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Starting sending preamble");
+    GR_LOG_DEBUG(this->d_logger, "DEBUG:Starting sending preamble");
 #endif
     // set the end of the vector to be or the maximum number of items we can
     // output or the maximum of the vector
@@ -360,30 +372,69 @@ int frame_detector_impl::general_work(int noutput_items,
     }
     // increment proceced symbol counter
     m_cnt++;
-
+    // tell the gnuradio scheduler how many items we have used.
     // if we are still in a frame
     if (in_frame == true) {
+      consume_each(m_samples_per_symbol);
+
       // copy input to output
       memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+      // return the number of items produced by the system
+      return m_samples_per_symbol;
     } else {
-        add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-                     pmt::intern("end"), pmt::intern("frame_detector"));
-        // initialize values of variables
-        bin_idx = 0;
-        symbol_cnt = 0;
-        m_power = 0;
-        // set initial state to find preamble
-        m_cnt = 0;
+      consume_each(0);
+      //      // initialize values of variables
+      //      bin_idx = 0;
+      //      symbol_cnt = 0;
+      //      m_power = 0;
+      //      // set initial state to find preamble
+      //      m_cnt = 0;
+      m_state = SEND_END_FRAME;
+#ifdef GRLORA_DEBUG
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> SEND_END_FRAME");
+#endif
+
+      // we consume items but do not output any items (if its outside the frame)
+      // return the number of items produced by the system
+      return 0;
+    }
+  }
+  case SEND_END_FRAME: {
+
+    if (cnt_padding == m_inter_frame_padding) {
+      consume_each((m_samples_per_symbol / 4));
+      memcpy(&out[0], &in[0], sizeof(gr_complex) * (m_samples_per_symbol / 4));
+      cnt_padding = 0;
+      // initialize values of variables
+      bin_idx = 0;
+      symbol_cnt = 0;
+      m_power = 0;
+      // set initial state to find preamble
+      m_cnt = 0;
       m_state = FIND_PREAMBLE;
 #ifdef GRLORA_DEBUG
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> FIND_PREAMBLE");
+      GR_LOG_DEBUG(this->d_logger,
+                   "DEBUG:Done SEND_EDN_FRAME -> FIND_PREAMBLE");
 #endif
+#ifdef GRLORA_DEBUG
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
+                                       std::to_string(nitems_written(0)));
+#endif
+      add_item_tag(0, nitems_written(0) + (m_samples_per_symbol / 4),
+                   pmt::intern("frame"), pmt::intern("end"),
+                   pmt::intern("frame_detector"));
+      return (m_samples_per_symbol / 4);
+    } else {
+      // copy the 4 inter padding frames to the output
+      consume_each(m_samples_per_symbol);
+      // copy input to output
+      memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+      // return the number of items produced by the system
+      cnt_padding++;
+      return m_samples_per_symbol;
     }
-    // tell the gnuradio scheduler how many items we have used.
-    consume_each(m_samples_per_symbol);
-    // return the number of items produced by the system
-    return m_samples_per_symbol;
   }
+
   default: {
     GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
     return 0;

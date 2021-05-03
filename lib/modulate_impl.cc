@@ -71,7 +71,7 @@ void modulate_impl::forecast(int noutput_items,
 }
 
 /**
- * @brief 
+ * @brief Main function where all the processing happens
  * 
  * @param noutput_items 
  * @param ninput_items 
@@ -188,6 +188,8 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     }
   }
 //  std::cout << symb_cnt << std::endl;
+//        test += (output_offset/((float)m_samples_per_symbol));
+//        std::cout << test << std::endl;
   consume_each(nitems_to_process);
   return output_offset;
 }

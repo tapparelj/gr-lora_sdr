@@ -24,9 +24,12 @@ private:
   /**
    * @brief State the frame finder can be in
    * - FIND_PREAMLBE : find the preamble
-   * - FIND_END_FRAME : find the end of the frame
+   * - SEND_PREAMBLE : send the buffered preamble symbols
+   * - SEND_FRAME : send frame
+   * - SEND_END_FRAME : send the last part of the frame
+   *
    */
-  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME };
+  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME, SEND_END_FRAME };
 
   /**
    * @brief Current state of the frame finder
@@ -137,11 +140,46 @@ private:
    */
   int m_cnt;
 
+  /**
+   * @brief boolean variables to tell if we are still in a LoRa frame or not
+   *
+   */
   bool in_frame;
 
+  /**
+   * @brief length in samples of zero append to each frame
+   *
+   */
+  int m_inter_frame_padding;
 
   /**
-   * @brief Temporary gr_complex vector for processing the input per m_samples_processed
+   * @brief Counter variable to tell how many extra padding symbols we have
+   * processed
+   *
+   */
+  int cnt_padding;
+
+  /**
+   * @brief lora symbols per second
+   *
+   */
+  double m_symbols_per_second;
+
+  /**
+   * @brief Transmission sampling rate
+   *
+   */
+  uint32_t m_samp_rate;
+
+  /**
+   * @brief Transmission bandwidth (Works only for samp_rate=bw)
+   *
+   */
+  uint32_t m_bw;
+
+  /**
+   * @brief Temporary gr_complex vector for processing the input per
+   * m_samples_processed
    *
    */
   std::vector<gr_complex> m_temp;
@@ -189,7 +227,8 @@ public:
    * @param sf : spreading factor
    * @param threshold : threshold value to use
    */
-  frame_detector_impl(uint8_t sf, uint32_t threshold);
+  frame_detector_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
+                      uint32_t threshold);
 
   /**
    * @brief Destroy the frame detector impl object

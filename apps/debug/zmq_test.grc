@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 236.0]
+    coordinate: [484, 247]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0_0
@@ -238,7 +238,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [510, 414]
+    coordinate: [658, 383]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -255,7 +255,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [746, 228]
+    coordinate: [697, 236]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_1
@@ -279,7 +279,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [317, 474]
+    coordinate: [411, 326]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1

@@ -102,8 +102,6 @@ private:
    */
   uint32_t padd_cnt;
 
-  float test;
-
 public:
   /**
    * @brief Construct a new modulate impl object
