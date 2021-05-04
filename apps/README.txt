@@ -1,7 +1,4 @@
-File description:
-
-setpaths.sh: script that add the library and python paths for the current shell process. It might have to be adapted accordingly to your installation locations.
-		
+File description:		
 
 -single_user folder:
 	-tx_rx_simulation: flowgraph connecting a receiver and a transmitter in software only, avoiding radio usage. It can be useful to check the installation of the module gr-lora_sdr. 
