@@ -43,15 +43,17 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
-  // threshold value
-  m_threshold = threshold;
+  int temp = pow(2,(m_sf-7));
+  // threshold value -> since
+  m_threshold = threshold*temp;
+  std::cout << m_threshold << std::endl;
 
-  // calculate derived variables
+  // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
   m_symbols_per_second = (double)m_bw / m_N;
   m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
 
-  // initialise all vector values and make sure they have the same length
+  // initialise all vector values and make sure they have the same length and are initialized
   fft_cfg = kiss_fft_alloc(m_N, 0, NULL, NULL);
   cx_out.resize(m_N, 0.0);
   m_dfts_mag.resize(m_N, 0);
@@ -125,9 +127,8 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input) {
     return true;
   } else {
 #ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger, "DEBUG:Outside LoRa frame");
     GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG:Current power:" + std::to_string(current_power) +
+                 "DEBUG:Outside LoRa frame, current power:" + std::to_string(current_power) +
                      "compare power:" + std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
@@ -259,10 +260,6 @@ int frame_detector_impl::general_work(int noutput_items,
     // get symbol value of input
     bin_idx_new = get_symbol_val(&in[0]);
 
-//#ifdef GRLORA_DEBUG
-//    GR_LOG_DEBUG(this->d_logger,
-//                 "DEBUG:Current symbol :" + std::to_string(bin_idx_new));
-//#endif
     // calculate difference between this value and previous symbol value
     if ((bin_idx_new - bin_idx) <= 1) {
       // increase the number of symbols counted
@@ -280,14 +277,14 @@ int frame_detector_impl::general_work(int noutput_items,
     int nR_up = (int)(n_up - 1);
     // if we have n_up-1 symbols counted we have found the preamble
     if (symbol_cnt == nR_up) {
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
                                        std::to_string(nitems_written(0)));
       GR_LOG_DEBUG(this->d_logger, "DEBUG:set power at:" +
@@ -305,7 +302,7 @@ int frame_detector_impl::general_work(int noutput_items,
   }
   case SEND_PREAMBLE: {
     // send the preamble symbols
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Starting sending preamble");
 #endif
     // set the end of the vector to be or the maximum number of items we can
@@ -329,7 +326,7 @@ int frame_detector_impl::general_work(int noutput_items,
     if (buffer.empty()) {
       // go to sending the rest of the symbols
       m_state = SEND_FRAME;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_PREAMBLE -> SEND_FRAME");
 #endif
     }
@@ -371,14 +368,8 @@ int frame_detector_impl::general_work(int noutput_items,
       return m_samples_per_symbol;
     } else {
       consume_each(0);
-      //      // initialize values of variables
-      //      bin_idx = 0;
-      //      symbol_cnt = 0;
-      //      m_power = 0;
-      //      // set initial state to find preamble
-      //      m_cnt = 0;
       m_state = SEND_END_FRAME;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> SEND_END_FRAME");
 #endif
 
@@ -399,11 +390,9 @@ int frame_detector_impl::general_work(int noutput_items,
       // set initial state to find preamble
       m_cnt = 0;
       m_state = FIND_PREAMBLE;
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger,
                    "DEBUG:Done SEND_EDN_FRAME -> FIND_PREAMBLE");
-#endif
-#ifdef GRLORA_DEBUG
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
                                        std::to_string(nitems_written(0)));
 #endif

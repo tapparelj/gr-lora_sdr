@@ -60,12 +60,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.25'
+    value: '0.2'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 95]
+    coordinate: [1102, 93]
     rotation: 0
     state: enabled
 - name: cr
@@ -89,7 +89,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 96]
+    coordinate: [789, 90]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -128,18 +128,6 @@ blocks:
     coordinate: [531, 4]
     rotation: 0
     state: enabled
-- name: mult_const
-  id: variable
-  parameters:
-    comment: ''
-    value: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1011, 8]
-    rotation: 0
-    state: enabled
 - name: multi_control
   id: variable
   parameters:
@@ -149,7 +137,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 9]
+    coordinate: [1016, 10]
     rotation: 0
     state: enabled
 - name: n_frame
@@ -192,7 +180,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
@@ -228,12 +216,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '13'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1282, 7]
+    coordinate: [424, 95]
     rotation: 0
     state: enabled
 - name: time_wait
@@ -245,7 +233,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1201, 6]
+    coordinate: [1113, 13]
     rotation: 0
     state: enabled
 - name: analog_const_source_x_0
@@ -329,7 +317,7 @@ blocks:
     block_tags: 'False'
     comment: ''
     epsilon: 1+cfo*samp_rate/center_freq/2**sf
-    freq_offset: cfo/2**sf
+    freq_offset: cfo
     maxoutbuf: '0'
     minoutbuf: 2**sf*8
     noise_voltage: 10**(-snr/20)
@@ -375,12 +363,12 @@ blocks:
     minoutbuf: 2**sf*8
     samp_rate: samp_rate
     sf: sf
-    threshold: '20'
+    threshold: threshold
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [949, 317]
+    coordinate: [943, 309]
     rotation: 270
     state: enabled
 - name: lora_sdr_hier_rx_1

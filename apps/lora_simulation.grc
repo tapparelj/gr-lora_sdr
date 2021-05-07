@@ -200,25 +200,6 @@ blocks:
     coordinate: [1201, 6]
     rotation: 0
     state: enabled
-- name: blocks_delay_0
-  id: blocks_delay
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    delay: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_ports: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [772, 146]
-    rotation: 0
-    state: true
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
