@@ -31,6 +31,12 @@ if(DEFINED ENV{PYBOMBS_PREFIX})
     message(STATUS "PyBOMBS installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{PYBOMBS_PREFIX}")
 endif()
 
+#install to conda if prefix defined
+if(DEFINED ENV{CONDA_PREFIX} )
+    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
+    message(STATUS "Conda installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{CONDA_PREFIX}")
+endif()
+
 # Select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
