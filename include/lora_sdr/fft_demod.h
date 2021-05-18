@@ -46,7 +46,8 @@ namespace gr {
        * class. lora_sdr::fft_demod::make is the public interface for
        * creating new instances.
        */
-      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
+      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf,
+                               bool impl_head);
     };
 
   } // namespace lora_sdr

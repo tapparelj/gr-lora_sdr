@@ -5,9 +5,11 @@
 #include <string.h>
 #include <iomanip>
 #include <numeric>
+#include <volk/volk.h>
 #include <gnuradio/expj.h>
 #include <sys/resource.h>
 #include <sys/syscall.h>
+
 
 namespace gr {
     namespace lora_sdr {
@@ -62,27 +64,7 @@ namespace gr {
             uint32_t integer = std::accumulate(b.begin(), b.end(), 0, [](int x, int y) { return (x << 1) + y; });
             return integer;
         };
-
-
-        /**
-         *  \brief  Return the reference chirps using s_f=bw
-         *
-         *  \param  upchirp
-         *          The pointer to the reference upchirp
-         *  \param  downchirp
-         *          The pointer to the reference downchirp
-         * \param   sf
-         *          The spreading factor to use
-         */
-        inline void build_ref_chirps(gr_complex* upchirp, gr_complex* downchirp, uint8_t sf){
-            double N = (1 << sf);
-            for(uint n = 0; n < N ;n++){
-                //the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
-                upchirp[n] =  gr_complex(0.9f, 0.0f)*gr_expj(2.0 * M_PI * (n*n/(2*N)-0.5*n));
-                downchirp[n] = gr_complex(0.9f, 0.0f)*gr_expj(-2.0 * M_PI * (n*n/(2*N)-0.5*n));
-            }
-        }
-        /**
+         /**
          *  \brief  Return an modulated upchirp using s_f=bw
          *
          *  \param  chirp
@@ -99,14 +81,32 @@ namespace gr {
             int n_fold = N* os_factor - id*os_factor;
             for(uint n = 0; n < N* os_factor; n++){
                 if(n<n_fold)
-                    chirp[n] = gr_complex(0.9,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-0.5)*n/os_factor));
+                    chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-0.5)*n/os_factor));
                 else
-                    chirp[n] = gr_complex(0.9,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-1.5)*n/os_factor));
+                    chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-1.5)*n/os_factor));
 
             }
-            // for(uint n = 0; n < N; n++){
+        }
+
+        /**
+         *  \brief  Return the reference chirps using s_f=bw
+         *
+         *  \param  upchirp
+         *          The pointer to the reference upchirp
+         *  \param  downchirp
+         *          The pointer to the reference downchirp
+         * \param   sf
+         *          The spreading factor to use
+         */
+        inline void build_ref_chirps(gr_complex* upchirp, gr_complex* downchirp, uint8_t sf, uint8_t os_factor = 1){
+            double N = (1 << sf);
+            build_upchirp(upchirp,0,sf,os_factor);
+            volk_32fc_conjugate_32fc(&downchirp[0], &upchirp[0], N*os_factor);
+
+            // for(uint n = 0; n < N ;n++){
             //     //the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
-            //     chirp[n]=gr_complex(0.9f, 0.0f)*gr_expj(2.0 * M_PI *(n*n/(2*N)+(id/N-0.5)*n));
+            //     upchirp[n] =  gr_complex(0.9f, 0.0f)*gr_expj(2.0 * M_PI * (n*n/(2*N)-0.5*n));
+            //     downchirp[n] = gr_complex(0.9f, 0.0f)*gr_expj(-2.0 * M_PI * (n*n/(2*N)-0.5*n));
             // }
         }
         inline std::string random_string(int Nbytes){

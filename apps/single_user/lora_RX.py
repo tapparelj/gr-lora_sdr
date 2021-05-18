@@ -115,6 +115,13 @@ class lora_RX(gr.top_block):
     def set_cr(self, cr):
         self.cr = cr
 
+    def get_center_freq(self):
+        return self.center_freq
+
+    def set_center_freq(self, center_freq):
+        self.center_freq = center_freq
+        self.uhd_usrp_source_0.set_center_freq(self.center_freq, 0)
+
     def get_bw(self):
         return self.bw
 

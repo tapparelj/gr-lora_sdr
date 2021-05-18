@@ -118,6 +118,13 @@ class lora_TX(gr.top_block):
     def set_cr(self, cr):
         self.cr = cr
 
+    def get_center_freq(self):
+        return self.center_freq
+
+    def set_center_freq(self, center_freq):
+        self.center_freq = center_freq
+        self.uhd_usrp_sink_0.set_center_freq(self.center_freq, 0)
+
     def get_TX_gain(self):
         return self.TX_gain
 

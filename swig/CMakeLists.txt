@@ -61,6 +61,6 @@ GR_SWIG_INSTALL(TARGETS lora_sdr_swig DESTINATION ${GR_PYTHON_DIR}/lora_sdr)
 install(
     FILES
     lora_sdr_swig.i
-    ${CMAKE_CURRENT_BINARY_DIR}/lora_sdr_swig_doc.i
+    #${CMAKE_CURRENT_BINARY_DIR}/lora_sdr_swig_doc.i
     DESTINATION ${GR_INCLUDE_DIR}/lora_sdr/swig
 )

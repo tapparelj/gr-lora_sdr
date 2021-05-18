@@ -5,7 +5,7 @@
 %include "gnuradio.i"			// the common stuff
 
 //load generated python docstrings
-%include "lora_sdr_swig_doc.i"
+//%include "lora_sdr_swig_doc.i"
 
 %{
 #include "lora_sdr/add_crc.h"
