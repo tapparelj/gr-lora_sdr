@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2020 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+
 #ifndef INCLUDED_LORA_SDR_FFT_DEMOD_H
 #define INCLUDED_LORA_SDR_FFT_DEMOD_H
 
@@ -28,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief FFT demodulation block ,for more information about the implementation visit fft_demod_impl
      * \ingroup lora_sdr
      *
      */
@@ -45,7 +46,8 @@ namespace gr {
        * class. lora_sdr::fft_demod::make is the public interface for
        * creating new instances.
        */
-      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf, bool impl_head);
+      static sptr make(float samp_rate, uint32_t bandwidth, uint8_t sf,
+                               bool impl_head);
     };
 
   } // namespace lora_sdr

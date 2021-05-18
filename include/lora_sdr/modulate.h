@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief End block of the sending side that modulates the final to be sent data to the LoRa standard
+     * For more information about the implementation visit modulate_impl
      * \ingroup lora_sdr
      *
      */
@@ -46,7 +47,7 @@ namespace gr {
        * class. lora_sdr::modulate::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw);
+      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, bool create_zeros);
     };
 
   } // namespace lora_sdr

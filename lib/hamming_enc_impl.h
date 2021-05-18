@@ -1,50 +1,60 @@
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
-
 #ifndef INCLUDED_LORA_HAMMING_ENC_IMPL_H
 #define INCLUDED_LORA_HAMMING_ENC_IMPL_H
 
 #include <lora_sdr/hamming_enc.h>
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class hamming_enc_impl : public hamming_enc
-    {
-     private:
-        uint8_t m_cr; ///< Transmission coding rate
-        uint8_t m_sf; ///< Transmission spreading factor
+class hamming_enc_impl : public hamming_enc {
+private:
+  /**
+   * @brief Transmission coding rate
+   *
+   */
+  uint8_t m_cr;
 
-     public:
-      hamming_enc_impl(uint8_t cr, uint8_t sf);
-      ~hamming_enc_impl();
+  /**
+   * @brief Transmission spreading factor
+   *
+   */
+  uint8_t m_sf;
 
-      // Where all the action really happens
-      int work(
-              int noutput_items,
-              gr_vector_const_void_star &input_items,
-              gr_vector_void_star &output_items
-      );
-    };
+  /**
+   * @brief count the number of processed items in the current frame
+   *
+   */
+  int m_cnt;
 
-  } // namespace lora
+public:
+  /**
+   * @brief Construct a new hamming enc impl object
+   *
+   * @param cr : coding rate
+   * @param sf : spreading factor
+   */
+  hamming_enc_impl(uint8_t cr, uint8_t sf);
+
+  /**
+   * @brief Destroy the hamming enc impl object
+   *
+   */
+  ~hamming_enc_impl();
+
+  /**
+   * @brief Main function that does the actual hamming encoding.
+   * With cr : coding rate, and sf : spreading factor
+   *
+   * @param noutput_items : number of output items
+   * @param input_items : number of input items
+   * @param output_items : number of output items
+   * @return int
+   */
+  int work(int noutput_items, gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+};
+
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_HAMMING_ENC_IMPL_H */

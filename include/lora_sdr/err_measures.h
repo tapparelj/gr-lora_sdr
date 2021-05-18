@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2020 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Simple block that can count and output the number of Bit Error's (BE) ,for more information about the implementation visit err_measures_impl
      * \ingroup lora_sdr
      *
      */

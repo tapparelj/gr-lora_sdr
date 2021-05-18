@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Hamming decoding stage, decode the received payload. 
+     * If necessary this block will preform error detection and correction using the hamming code parity bits.
+     * For more information about the implementation visit hamming_dec_impl
      * \ingroup lora_sdr
      *
      */

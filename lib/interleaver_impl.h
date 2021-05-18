@@ -1,23 +1,3 @@
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
-
 #ifndef INCLUDED_LORA_INTERLEAVER_IMPL_H
 #define INCLUDED_LORA_INTERLEAVER_IMPL_H
 
@@ -25,32 +5,74 @@
 // #define GRLORA_DEBUG
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class interleaver_impl : public interleaver
-    {
-     private:
-        uint8_t m_cr; ///< Transmission coding rate
-        uint8_t m_sf; ///< Transmission spreading factor
+class interleaver_impl : public interleaver {
+private:
+  /**
+   * @brief Transmission coding rate
+   *
+   */
+  uint8_t m_cr;
 
-        uint32_t cw_cnt; ///< count the number of codewords
+  /**
+   * @brief Transmission spreading factor
+   *
+   */
+  uint8_t m_sf;
 
-        void msg_handler(pmt::pmt_t message);
+  /**
+   * @brief variable that counts the number of codewords
+   *
+   */
+  uint32_t cw_cnt;
 
-     public:
-      interleaver_impl(uint8_t cr, uint8_t sf);
-      ~interleaver_impl();
+  /**
+   * @brief length of the frame in number of items
+   *
+   */
+  int m_frame_len;
 
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+public:
+  /**
+   * @brief Construct a new interleaver impl object
+   *
+   * @param cr coding rate
+   * @param sf sampling rate
+   */
+  interleaver_impl(uint8_t cr, uint8_t sf);
 
-      int general_work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+  /**
+   * @brief Destroy the interleaver impl object
+   *
+   */
+  ~interleaver_impl();
 
-    };
+  /**
+   * @brief Standard gnuradio function to ensure a number of input items are
+   * received before continuing
+   *
+   * @param noutput_items : number of input items
+   * @param ninput_items_required : number of requires input items = 1
+   */
+  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
+  
+  /**
+   * @brief Main function that does the actual computation of the interleaver.
+   * 
+   *
+   * @param noutput_items : number of output items
+   * @param ninput_items : number of input items
+   * @param input_items : the data of the input items (i.e hamming encoding stage)
+   * @param output_items : output data
+   * @return int
+   */
+  int general_work(int noutput_items, gr_vector_int &ninput_items,
+                   gr_vector_const_void_star &input_items,
+                   gr_vector_void_star &output_items);
+};
 
-  } // namespace lora
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_INTERLEAVER_IMPL_H */

@@ -1,60 +1,82 @@
-/* -*- c++ -*- */
-/* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
- * 
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- * 
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street,
- * Boston, MA 02110-1301, USA.
- */
-
 #ifndef INCLUDED_LORA_SDR_ERR_MEASURES_IMPL_H
 #define INCLUDED_LORA_SDR_ERR_MEASURES_IMPL_H
 
-// #define GRLORA_MEASUREMENTS
+#define GRLORA_MEASUREMENTS
 
-#include <lora_sdr/err_measures.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <lora_sdr/err_measures.h>
 
 namespace gr {
-  namespace lora_sdr {
+namespace lora_sdr {
 
-    class err_measures_impl : public err_measures
-    {
-     private:
-        std::vector<char> m_corr_payload; ///< Vector containing the reference payload
-        std::vector<char> m_payload; ///< Vector containing the received payload
-        int BE; ///< Bits errors in the frame
-        int drop; ///< variable used to detect missing frames
-        #ifdef GRLORA_MEASUREMENTS
-        std::ofstream err_outfile;
-        #endif
+class err_measures_impl : public err_measures {
+private:
+  /**
+   * @brief Vector containing the reference payload
+   *
+   */
+  std::vector<char> m_corr_payload;
 
-        void msg_handler(pmt::pmt_t msg);
-        void ref_handler(pmt::pmt_t ref);
+  /**
+   * @brief Vector containing the received payload
+   *
+   */
+  std::vector<char> m_payload;
+  /**
+   * @brief Bits errors in the frame
+   *
+   */
+  int BE;
+  /**
+   * @brief variable used to detect missing frames
+   *
+   */
+  int drop;
+  
+#ifdef GRLORA_MEASUREMENTS
+  std::ofstream err_outfile;
+#endif
+  /**
+   * @brief Msg handler, will handle the incoming decoded message
+   *
+   * @param msg : decoded payload message
+   */
+  void msg_handler(pmt::pmt_t msg);
 
-     public:
-      err_measures_impl( );
-      ~err_measures_impl();
+  /**
+   * @brief Reference handler, input of the reference payload
+   *
+   * @param ref : reference payload to compare against
+   */
+  void ref_handler(pmt::pmt_t ref);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
-    };
+public:
+  /**
+   * @brief Construct a new err measures impl object
+   *
+   */
+  err_measures_impl();
 
-  } // namespace lora_sdr
+  /**
+   * @brief Destroy the err measures impl object
+   *
+   */
+  ~err_measures_impl();
+
+  /**
+   * @brief Main function of error measurement
+   *
+   * @param noutput_items : number of output items
+   * @param input_items  : input items (i.e data from dewhitening)
+   * @param output_items : output data (i.e. decode payload)
+   * @return int
+   */
+  int work(int noutput_items, gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+};
+
+} // namespace lora_sdr
 } // namespace gr
 
 #endif /* INCLUDED_LORA_SDR_ERR_MEASURES_IMPL_H */

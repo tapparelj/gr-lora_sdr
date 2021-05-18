@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Add hamming code to the to be sent playload.
+     * This means extra party bits are added to the payload to be able to recover from bit errors during transmission
+     * For more information about the implementation visit hamming_enc_impl
      * \ingroup lora_sdr
      *
      */

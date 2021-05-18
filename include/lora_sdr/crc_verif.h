@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2019 Joachim Tapparel TCL@EPFL.
+ * Copyright 2019 <+YOU OR YOUR COMPANY+>.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace gr {
   namespace lora_sdr {
 
     /*!
-     * \brief <+description of block+>
+     * \brief Verifies if the included crc is correct or not for more information about the implementation visit crc_verify_impl
      * \ingroup lora_sdr
      *
      */
@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::crc_verif::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(bool exit);
     };
 
   } // namespace lora_sdr
