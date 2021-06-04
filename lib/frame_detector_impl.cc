@@ -77,7 +77,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
   in_frame = false;
-  m_inter_frame_padding = 4;
+  m_inter_frame_padding = 2;
   cnt_padding = 0;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);

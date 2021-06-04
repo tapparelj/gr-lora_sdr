@@ -36,16 +36,17 @@ class frame_detector(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.threshold = threshold = 2.5
+        self.threshold = threshold = 1.4
         self.sto = sto = 0
-        self.snr = snr = -5
+        self.snr = snr = -7
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 10
+        self.n_frame = n_frame = 100
         self.multi_control = multi_control = True
         self.impl_head = impl_head = False
         self.has_crc = has_crc = False
+        self.frame_period = frame_period = 200
         self.delay = delay = 1000
         self.cr = cr = 4
         self.cfo = cfo = 0.0
@@ -70,23 +71,18 @@ class frame_detector(gr.top_block):
             noise_seed=0,
             block_tags=False)
         self.channels_channel_model_0.set_min_output_buffer(1024)
-        self.blocks_throttle_0_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
-        self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, 1000)
-        self.blocks_add_xx_0 = blocks.add_vcc(1)
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_add_xx_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.blocks_delay_0, 0), (self.blocks_add_xx_0, 0))
-        self.connect((self.blocks_throttle_0_1_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_detector_1, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
         self.connect((self.lora_sdr_frame_detector_1, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
-        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_delay_0, 0))
-        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0, 0))
+        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0, 0))
 
 
     def get_bw(self):
@@ -140,7 +136,7 @@ class frame_detector(gr.top_block):
     def set_samp_rate(self, samp_rate):
         with self._lock:
             self.samp_rate = samp_rate
-            self.blocks_throttle_0_1_0.set_sample_rate(self.samp_rate*10)
+            self.blocks_throttle_0.set_sample_rate(self.samp_rate)
             self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
 
     def get_pay_len(self):
@@ -177,6 +173,13 @@ class frame_detector(gr.top_block):
     def set_has_crc(self, has_crc):
         with self._lock:
             self.has_crc = has_crc
+
+    def get_frame_period(self):
+        return self.frame_period
+
+    def set_frame_period(self, frame_period):
+        with self._lock:
+            self.frame_period = frame_period
 
     def get_delay(self):
         return self.delay
