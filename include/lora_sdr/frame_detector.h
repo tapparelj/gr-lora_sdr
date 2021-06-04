@@ -37,7 +37,7 @@ namespace gr {
        * class. lora_sdr::frame_detector::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, uint32_t threshold);
+      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, float threshold);
     };
 
   } // namespace lora_sdr

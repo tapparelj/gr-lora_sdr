@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '1000'
   states:
     bus_sink: false
     bus_source: false
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '200'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -238,7 +238,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [658, 383]
+    coordinate: [468, 456]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_detector_1
@@ -246,9 +246,11 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    bw: ''
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '20000'
+    samp_rate: ''
     sf: sf
     threshold: '10'
   states:
@@ -279,7 +281,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [411, 326]
+    coordinate: [250, 400]
     rotation: 180
     state: true
 - name: lora_sdr_hier_tx_1

@@ -4,6 +4,7 @@
 
 #include "crc_verif_impl.h"
 #include <gnuradio/io_signature.h>
+#include <chrono>
 
 namespace gr {
 namespace lora_sdr {
@@ -20,6 +21,7 @@ crc_verif_impl::crc_verif_impl(bool exit)
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
     m_exit = exit;
         gr::block::set_thread_priority(99);
+        t1 = std::chrono::high_resolution_clock::now();
   message_port_register_out(pmt::mp("msg"));
 }
 
@@ -147,6 +149,14 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         out[i] = in[i];
     }
     cnt++;
+//    std::cout << cnt << std::endl;
+//    if(cnt > 950){
+//        using namespace std::chrono;
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+//        std::cout << "Avg time: " << time_span.count()/cnt << " seconds.";
+//        std::exit(EXIT_SUCCESS);
+//    }
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:msg:" + message_str);

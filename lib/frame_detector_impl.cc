@@ -19,7 +19,7 @@ namespace gr {
 namespace lora_sdr {
 
 frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
-                                          uint32_t bw, uint32_t threshold) {
+                                          uint32_t bw, float threshold) {
   return gnuradio::get_initial_sptr(
       new frame_detector_impl(sf, samp_rate, bw, threshold));
 }
@@ -32,7 +32,7 @@ frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
  * @param sf : spreading factor
  */
 frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
-                                         uint32_t bw, uint32_t threshold)
+                                         uint32_t bw, float threshold)
     : gr::block("frame_detector",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
@@ -43,10 +43,9 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
-  int temp = pow(2,(m_sf-7));
+//  int temp = pow(2,(m_sf-7));
   // threshold value -> since
-  m_threshold = threshold*temp;
-  std::cout << m_threshold << std::endl;
+  m_threshold = threshold;
 
   // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
@@ -78,7 +77,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
   in_frame = false;
-  m_inter_frame_padding = 4;
+  m_inter_frame_padding = 2;
   cnt_padding = 0;
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
@@ -129,7 +128,7 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input) {
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:Outside LoRa frame, current power:" + std::to_string(current_power) +
-                     "compare power:" + std::to_string(compare_power));
+                     " compare power:" + std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
     return false;
@@ -160,6 +159,10 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   peak_power = signal_power;
   // divide by three to compensate for the +-1 bins
   signal_power = signal_power / 3;
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:signal power:" + std::to_string(signal_power));
+//#endif
 
   // loop over the entire dft spectrum and sum the power of all noise
   float noise_power = 0;
@@ -169,13 +172,19 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   volk_32f_accumulator_s32f(out, &m_dfts_mag[0], m_N);
   // disregard the power of the peak signal and divide by the length
   noise_power = (*out - peak_power) / ((float)(m_N - n_bin));
-
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:noise power:" + std::to_string(noise_power));
+//#endif
   if (noise_power > 1) {
     signal_power = signal_power / noise_power;
   } else {
     signal_power = signal_power;
   }
-
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:ratio power:" + std::to_string(signal_power));
+//#endif
   volk_free(out);
   return signal_power;
 }
@@ -351,11 +360,11 @@ int frame_detector_impl::general_work(int noutput_items,
       // life/computations hard and are always there in the frame
       in_frame = true;
     } else {
-      // if we are past the symbols containting network and downchirps
+      // if we are past the symbols containing network and downchirps
       // check if we are still in the frame
       in_frame = check_in_frame(&in[0]);
     }
-    // increment proceced symbol counter
+    // increment proceed symbol counter
     m_cnt++;
     // tell the gnuradio scheduler how many items we have used.
     // if we are still in a frame

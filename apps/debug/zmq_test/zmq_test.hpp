@@ -36,13 +36,13 @@ private:
 
 
 // Variables:
-    int time_wait = 200;
+    int time_wait = 2;
     int threshold = 100;
     int sf = 7;
     int samp_rate = 250000;
     int pay_len = 64;
     int noise = 5;
-    int n_frame = 10;
+    int n_frame = 1000;
     bool multi_control = true;
     int mult_const = 1;
     bool impl_head = false;
