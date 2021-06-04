@@ -29,7 +29,7 @@ parameters:
     dtype: int
   - id: threshold
     label: Threshold
-    dtype: int
+    dtype: float
     default: 10
 
 asserts:

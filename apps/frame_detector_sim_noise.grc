@@ -53,7 +53,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [855, 92]
+    coordinate: [592, 92]
     rotation: 0
     state: enabled
 - name: cfo
@@ -65,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1102, 93]
+    coordinate: [845, 89]
     rotation: 0
     state: enabled
 - name: cr
@@ -89,19 +89,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [789, 90]
-    rotation: 0
-    state: enabled
-- name: frame_period
-  id: variable
-  parameters:
-    comment: ''
-    value: '200'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [915, 8]
+    coordinate: [515, 94]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -137,19 +125,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 10]
+    coordinate: [839, 6]
     rotation: 0
     state: enabled
 - name: n_frame
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [843, 8]
+    coordinate: [280, 99]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -192,31 +180,31 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '-5'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1026, 90]
+    coordinate: [764, 91]
     rotation: 0
     state: enabled
 - name: sto
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [946, 91]
+    coordinate: [684, 92]
     rotation: 0
     state: enabled
 - name: threshold
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '2.5'
   states:
     bus_sink: false
     bus_source: false
@@ -233,80 +221,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1113, 13]
-    rotation: 0
-    state: enabled
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: complex
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [406, 164]
-    rotation: 0
-    state: true
-- name: blocks_add_xx_0
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_inputs: '2'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [629, 183]
-    rotation: 0
-    state: true
-- name: blocks_delay_0
-  id: blocks_delay
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    delay: delay
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_ports: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [441, 221]
-    rotation: 0
-    state: enabled
-- name: blocks_throttle_0_1_0
-  id: blocks_throttle
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    ignoretag: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samples_per_second: samp_rate*10
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [248, 221]
+    coordinate: [940, 10]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -327,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [766, 156]
+    coordinate: [311, 179]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0_1_0
@@ -368,9 +283,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [943, 309]
+    coordinate: [874, 337]
     rotation: 270
-    state: bypassed
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -424,14 +339,10 @@ blocks:
     state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', blocks_add_xx_0, '0']
-- [blocks_add_xx_0, '0', channels_channel_model_0, '0']
-- [blocks_delay_0, '0', blocks_add_xx_0, '1']
-- [blocks_throttle_0_1_0, '0', blocks_delay_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', channels_channel_model_0, '0']
 
 metadata:
   file_format: 1
