@@ -19,7 +19,7 @@ namespace gr {
 namespace lora_sdr {
 
 frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
-                                          uint32_t bw, uint32_t threshold) {
+                                          uint32_t bw, float threshold) {
   return gnuradio::get_initial_sptr(
       new frame_detector_impl(sf, samp_rate, bw, threshold));
 }
@@ -32,7 +32,7 @@ frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
  * @param sf : spreading factor
  */
 frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
-                                         uint32_t bw, uint32_t threshold)
+                                         uint32_t bw, float threshold)
     : gr::block("frame_detector",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
@@ -76,7 +76,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
   in_frame = false;
-  m_inter_frame_padding = 4;
+  m_inter_frame_padding = 2;
   cnt_padding = 0;
 
   //set tag detection initial values.
@@ -132,7 +132,7 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input) {
 #ifdef GRLORA_DEBUG
     GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:Outside LoRa frame, current power:" + std::to_string(current_power) +
-                     "compare power:" + std::to_string(compare_power));
+                     " compare power:" + std::to_string(compare_power));
 #endif
     // we are not inside safe margin of threshold (not in a LoRa frame)
     return false;
@@ -163,6 +163,10 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   peak_power = signal_power;
   // divide by three to compensate for the +-1 bins
   signal_power = signal_power / 3;
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:signal power:" + std::to_string(signal_power));
+//#endif
 
   // loop over the entire dft spectrum and sum the power of all noise
   float noise_power = 0;
@@ -172,13 +176,19 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
   volk_32f_accumulator_s32f(out, &m_dfts_mag[0], m_N);
   // disregard the power of the peak signal and divide by the length
   noise_power = (*out - peak_power) / ((float)(m_N - n_bin));
-
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:noise power:" + std::to_string(noise_power));
+//#endif
   if (noise_power > 1) {
     signal_power = signal_power / noise_power;
   } else {
     signal_power = signal_power;
   }
-
+//#ifdef GRLORA_DEBUG
+//        GR_LOG_DEBUG(this->d_logger,
+//                 "DEBUG:ratio power:" + std::to_string(signal_power));
+//#endif
   volk_free(out);
   return signal_power;
 }

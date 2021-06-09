@@ -42,7 +42,7 @@ class frame_detector(gr.top_block):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 5
+        self.n_frame = n_frame = 100
         self.multi_control = multi_control = True
         self.impl_head = impl_head = False
         self.has_crc = has_crc = False
@@ -127,7 +127,7 @@ class frame_detector(gr.top_block):
     def set_samp_rate(self, samp_rate):
         with self._lock:
             self.samp_rate = samp_rate
-            self.blocks_throttle_0_1_0.set_sample_rate(self.samp_rate*10)
+            self.blocks_throttle_0.set_sample_rate(self.samp_rate)
             self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
 
     def get_pay_len(self):

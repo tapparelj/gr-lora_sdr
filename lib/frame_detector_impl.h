@@ -15,6 +15,7 @@
 extern "C" {
 #include "kiss_fft.h"
 }
+//#define GRLORA_DEBUGV
 
 //#define GRLORA_DEBUGV
 
@@ -236,7 +237,7 @@ public:
    * @param threshold : threshold value to use
    */
   frame_detector_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
-                      uint32_t threshold);
+                      float threshold);
 
   /**
    * @brief Destroy the frame detector impl object

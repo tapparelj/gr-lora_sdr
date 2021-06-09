@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '100'
   states:
     bus_sink: false
     bus_source: false
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '-7'
   states:
     bus_sink: false
     bus_source: false
@@ -204,7 +204,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -245,16 +245,16 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate*10
+    samples_per_second: samp_rate
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 221]
+    coordinate: [268, 218]
     rotation: 0
-    state: enabled
+    state: true
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -374,7 +374,7 @@ connections:
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', blocks_throttle_0, '0']
 
 metadata:
   file_format: 1
