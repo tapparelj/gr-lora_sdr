@@ -197,7 +197,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1026, 90]
+    coordinate: [574, 105]
     rotation: 0
     state: enabled
 - name: sto
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -234,60 +234,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1113, 13]
-    rotation: 0
-    state: enabled
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: complex
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [406, 164]
-    rotation: 0
-    state: true
-- name: blocks_add_xx_0
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_inputs: '2'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [629, 183]
-    rotation: 0
-    state: true
-- name: blocks_delay_0
-  id: blocks_delay
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    delay: delay
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_ports: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [441, 221]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0_1_0
@@ -327,9 +273,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [766, 156]
+    coordinate: [537, 178]
     rotation: 0
-    state: enabled
+    state: bypassed
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -368,9 +314,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [943, 309]
+    coordinate: [727, 312]
     rotation: 270
-    state: bypassed
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -424,10 +370,7 @@ blocks:
     state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', blocks_add_xx_0, '0']
-- [blocks_add_xx_0, '0', channels_channel_model_0, '0']
-- [blocks_delay_0, '0', blocks_add_xx_0, '1']
-- [blocks_throttle_0_1_0, '0', blocks_delay_0, '0']
+- [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']

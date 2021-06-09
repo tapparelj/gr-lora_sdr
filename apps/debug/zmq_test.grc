@@ -180,12 +180,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '100'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 8.0]
+    coordinate: [440, 82]
     rotation: 0
     state: enabled
 - name: time_wait
@@ -246,11 +246,13 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    bw: bw
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '20000'
+    samp_rate: samp_rate
     sf: sf
-    threshold: '10'
+    threshold: threshold
   states:
     bus_sink: false
     bus_source: false

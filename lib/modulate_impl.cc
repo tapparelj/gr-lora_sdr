@@ -134,6 +134,11 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     for (int i = 0; i < noutput_items / m_samples_per_symbol; i++) {
       if (preamb_symb_cnt < n_up + 5) // should output preamble part
       {
+          if(preamb_symb_cnt == 1) {
+              //tag the beginning of a new frame
+              add_item_tag(0, nitems_written(0)+1, pmt::intern("frame"),
+                           pmt::intern("start"), pmt::intern("modulate"));
+          }
         if (preamb_symb_cnt < n_up) { // upchirps
           memcpy(&out[output_offset], &m_upchirp[0],
                  m_samples_per_symbol * sizeof(gr_complex));
@@ -171,20 +176,25 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   } else {
     nitems_to_process = 0;
   }
+  if(symb_cnt == m_frame_len){
+      //tag the end of a frame
+      add_item_tag(0, nitems_written(0)+output_offset, pmt::intern("frame"),
+                   pmt::intern("end"), pmt::intern("modulate"));
+  }
 
   if (symb_cnt >= m_frame_len) // padd frame end with zeros
   {
     for (int i = 0; i < (noutput_items - output_offset) / m_samples_per_symbol;
          i++) {
-      if (symb_cnt >= m_frame_len &&
-          symb_cnt < m_frame_len + m_inter_frame_padding) {
-        for (int i = 0; i < m_samples_per_symbol; i++) {
-          out[output_offset + i] = gr_complex(0.0, 0.0);
-        }
-        output_offset += m_samples_per_symbol;
-        symb_cnt++;
-        padd_cnt++;
-      }
+              if (symb_cnt >= m_frame_len &&
+                  symb_cnt < m_frame_len + m_inter_frame_padding) {
+                    for (int i = 0; i < m_samples_per_symbol; i++) {
+                      out[output_offset + i] = gr_complex(0.0, 0.0);
+                    }
+                    output_offset += m_samples_per_symbol;
+                    symb_cnt++;
+                    padd_cnt++;
+              }
     }
   }
 //  std::cout << symb_cnt << std::endl;

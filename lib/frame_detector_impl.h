@@ -16,6 +16,8 @@ extern "C" {
 #include "kiss_fft.h"
 }
 
+//#define GRLORA_DEBUGV
+
 namespace gr {
 namespace lora_sdr {
 
@@ -183,6 +185,12 @@ private:
    *
    */
   std::vector<gr_complex> m_temp;
+
+  std::vector <tag_t> m_tags_vector;
+
+  bool m_detected_tag_begin;
+
+  bool m_detected_tag_end;
 
   /**
    * @brief Get the symbol object value (aka decoded LoRa symbol value)

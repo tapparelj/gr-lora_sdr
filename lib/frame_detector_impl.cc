@@ -43,11 +43,9 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
-  int temp = pow(2,(m_sf-7));
+  //  int temp = pow(2,(m_sf-7));
   // threshold value -> since
-  m_threshold = threshold*temp;
-  std::cout << m_threshold << std::endl;
-
+  m_threshold = threshold;
   // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
   m_symbols_per_second = (double)m_bw / m_N;
@@ -80,6 +78,11 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
   in_frame = false;
   m_inter_frame_padding = 4;
   cnt_padding = 0;
+
+  //set tag detection initial values.
+  m_detected_tag_begin = false;
+  m_detected_tag_end = false;
+
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
 }
@@ -247,8 +250,7 @@ int frame_detector_impl::general_work(int noutput_items,
     consume_each(ninput_items[0]);
     return 1;
   }
-
-  switch (m_state) {
+        switch (m_state) {
   case FIND_PREAMBLE: {
     // copy input to memory vector for later use.
     for (int i = 0; i < m_N; i++) {
@@ -280,6 +282,16 @@ int frame_detector_impl::general_work(int noutput_items,
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
+      //find the frame info tag
+        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+1,
+                           pmt::string_to_symbol("frame"));
+        if (m_tags_vector.size()) {
+            if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag, at offset:"+std::to_string(m_tags_vector[0].offset));
+                m_detected_tag_begin = true;
+            }
+        }
+
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
@@ -351,11 +363,11 @@ int frame_detector_impl::general_work(int noutput_items,
       // life/computations hard and are always there in the frame
       in_frame = true;
     } else {
-      // if we are past the symbols containting network and downchirps
+      // if we are past the symbols containing network and downchirps
       // check if we are still in the frame
       in_frame = check_in_frame(&in[0]);
     }
-    // increment proceced symbol counter
+    // increment proceed symbol counter
     m_cnt++;
     // tell the gnuradio scheduler how many items we have used.
     // if we are still in a frame
@@ -368,12 +380,26 @@ int frame_detector_impl::general_work(int noutput_items,
       return m_samples_per_symbol;
     } else {
       consume_each(0);
+        get_tags_in_range(m_tags_vector,0, nitems_written(0)-m_samples_per_symbol, nitems_read(0)+m_samples_per_symbol,
+                          pmt::string_to_symbol("frame"));
+        if (m_tags_vector.size()) {
+            if(pmt::symbol_to_string(m_tags_vector[0].value) == "end"){
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found end tag, at offset:"+std::to_string(m_tags_vector[0].offset));
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:items writen:"+std::to_string(nitems_written(0)));
+                int offset = m_tags_vector[0].offset;
+                if(nitems_written(0)-m_samples_per_symbol >= offset) {
+                    m_detected_tag_end = true;
+                }
+            }
+        }
       m_state = SEND_END_FRAME;
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> SEND_END_FRAME");
 #endif
 
-      // we consume items but do not output any items (if its outside the frame)
+
+
+        // we consume items but do not output any items (if its outside the frame)
       // return the number of items produced by the system
       return 0;
     }
@@ -390,6 +416,13 @@ int frame_detector_impl::general_work(int noutput_items,
       // set initial state to find preamble
       m_cnt = 0;
       m_state = FIND_PREAMBLE;
+      if(!m_detected_tag_begin && !m_detected_tag_end){
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:Packet Detection Error");
+      }
+      m_detected_tag_begin = false;
+      m_detected_tag_end = false;
+
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger,
                    "DEBUG:Done SEND_EDN_FRAME -> FIND_PREAMBLE");
