@@ -129,7 +129,7 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input) {
   if (current_power > compare_power) {
     return true;
   } else {
-#ifdef GRLORA_DEBUG
+#ifdef GRLORA_DEBUGV
     GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:Outside LoRa frame, current power:" + std::to_string(current_power) +
                      " compare power:" + std::to_string(compare_power));
@@ -250,6 +250,16 @@ int frame_detector_impl::general_work(int noutput_items,
   const gr_complex *in = (const gr_complex *)input_items[0];
   gr_complex *out = (gr_complex *)output_items[0];
 
+#ifdef GRLORA_SIM
+        //Search for tags in the data stream and if the end tag is found save it
+        get_tags_in_window(m_tags_vector,0, 0, ninput_items[0],
+                          pmt::string_to_symbol("frame"));
+        if (m_tags_vector.size()) {
+            if(pmt::symbol_to_string(m_tags_vector[0].value) == "end"){
+                m_end_offset = m_tags_vector[0].offset;
+            }
+        }
+#endif
   // search for work_done tags and if found add them to the stream
   std::vector<tag_t> work_done_tags;
   get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
@@ -292,16 +302,19 @@ int frame_detector_impl::general_work(int noutput_items,
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
+#ifdef GRLORA_SIM
       //find the frame info tag
-        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+1,
+        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+m_samples_per_symbol,
                            pmt::string_to_symbol("frame"));
         if (m_tags_vector.size()) {
             if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
-                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag, at offset:"+std::to_string(m_tags_vector[0].offset));
+#ifdef GRLORA_DEBUGV
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found correct beginning tag at offset:"+std::to_string(m_tags_vector[0].offset));
+#endif
                 m_detected_tag_begin = true;
             }
         }
-
+#endif
       // store the current power level in m_power
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
@@ -312,8 +325,8 @@ int frame_detector_impl::general_work(int noutput_items,
       GR_LOG_DEBUG(this->d_logger, "DEBUG:set power at:" +
                                        std::to_string(m_power));
 #endif
-      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-                   pmt::intern("start"), pmt::intern("frame_detector"));
+//      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
+//                   pmt::intern("start"), pmt::intern("frame_detector"));
 
       // set symbol count back to zero
       symbol_cnt = 0;
@@ -390,26 +403,21 @@ int frame_detector_impl::general_work(int noutput_items,
       return m_samples_per_symbol;
     } else {
       consume_each(0);
-        get_tags_in_range(m_tags_vector,0, nitems_written(0)-m_samples_per_symbol, nitems_read(0)+m_samples_per_symbol,
-                          pmt::string_to_symbol("frame"));
-        if (m_tags_vector.size()) {
-            if(pmt::symbol_to_string(m_tags_vector[0].value) == "end"){
-                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found end tag, at offset:"+std::to_string(m_tags_vector[0].offset));
-                GR_LOG_DEBUG(this->d_logger, "DEBUG:items writen:"+std::to_string(nitems_written(0)));
-                int offset = m_tags_vector[0].offset;
-                if(nitems_written(0)-m_samples_per_symbol >= offset) {
-                    m_detected_tag_end = true;
-                }
-            }
+#ifdef GRLORA_SIM
+        if(nitems_read(0)>= m_end_offset) {
+#ifdef GRLORA_DEBUGV
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag:"+std::to_string(m_tags_vector[0].offset));
+#endif
+            m_detected_tag_end = true;
         }
+#endif
       m_state = SEND_END_FRAME;
+
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> SEND_END_FRAME");
 #endif
 
-
-
-        // we consume items but do not output any items (if its outside the frame)
+      // we consume items but do not output any items (if its outside the frame)
       // return the number of items produced by the system
       return 0;
     }
@@ -426,12 +434,17 @@ int frame_detector_impl::general_work(int noutput_items,
       // set initial state to find preamble
       m_cnt = 0;
       m_state = FIND_PREAMBLE;
-      if(!m_detected_tag_begin && !m_detected_tag_end){
+#ifdef GRLORA_SIM
+      if(m_detected_tag_begin && m_detected_tag_end){
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:Good Packet Detected");
+      } else{
           GR_LOG_DEBUG(this->d_logger,
                        "DEBUG:Packet Detection Error");
       }
       m_detected_tag_begin = false;
       m_detected_tag_end = false;
+#endif
 
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger,
@@ -439,9 +452,9 @@ int frame_detector_impl::general_work(int noutput_items,
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
                                        std::to_string(nitems_written(0)));
 #endif
-      add_item_tag(0, nitems_written(0) + (m_samples_per_symbol / 4),
-                   pmt::intern("frame"), pmt::intern("end"),
-                   pmt::intern("frame_detector"));
+//      add_item_tag(0, nitems_written(0) + (m_samples_per_symbol / 4),
+//                   pmt::intern("frame"), pmt::intern("end"),
+//                   pmt::intern("frame_detector"));
       return (m_samples_per_symbol / 4);
     } else {
       // copy the 4 inter padding frames to the output

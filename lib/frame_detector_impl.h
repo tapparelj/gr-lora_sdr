@@ -16,8 +16,7 @@ extern "C" {
 #include "kiss_fft.h"
 }
 //#define GRLORA_DEBUGV
-
-//#define GRLORA_DEBUGV
+#define GRLORA_SIM
 
 namespace gr {
 namespace lora_sdr {
@@ -187,11 +186,32 @@ private:
    */
   std::vector<gr_complex> m_temp;
 
+#ifdef GRLORA_SIM
+  /**
+   * @brief Tags vector to hold gnuradio simulation tags
+   * 
+   */
   std::vector <tag_t> m_tags_vector;
 
+  /**
+   * @brief Boolean to tell if the beginning of pakcet tag has been detected
+   * 
+   */
   bool m_detected_tag_begin;
 
+  /**
+   * @brief Boolean to tell if the end of pakcet tag has been detected
+   * 
+   */
   bool m_detected_tag_end;
+
+  /**
+   * @brief Variable to hold the packet offset of the end tag
+   * 
+   */
+  u_int32_t m_end_offset;
+
+#endif
 
   /**
    * @brief Get the symbol object value (aka decoded LoRa symbol value)

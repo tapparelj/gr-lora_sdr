@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '100'
+    value: '20'
   states:
     bus_sink: false
     bus_source: false
@@ -192,12 +192,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-7'
+    value: '-1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [574, 105]
+    coordinate: [573, 105]
     rotation: 0
     state: enabled
 - name: sto
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -268,14 +268,14 @@ blocks:
     minoutbuf: 2**sf*8
     noise_voltage: 10**(-snr/20)
     seed: '0'
-    taps: 1.0 + 1.0j
+    taps: '1.0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [537, 178]
+    coordinate: [480, 176]
     rotation: 0
-    state: bypassed
+    state: enabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -374,7 +374,7 @@ connections:
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0, '0']
+- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
 
 metadata:
   file_format: 1
