@@ -1,16 +1,16 @@
 /**
- * @file frame_detector_impl.h
+ * @file frame_detector_threshold_impl.h
  * @author Martyn van Dijke (martijnvdijke600@gmail.com)
  * @brief
- * @version 0.2
+ * @version 0.3
  * @date 2021-03-23
  *
  *
  */
-#ifndef INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
-#define INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H
+#ifndef INCLUDED_LORA_SDR_FRAME_DETECTOR_THRESHOLD_IMPL_H
+#define INCLUDED_LORA_SDR_FRAME_DETECTOR_THRESHOLD_IMPL_H
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/frame_detector.h>
+#include <lora_sdr/frame_detector_threshold.h>
 #include <math.h>
 extern "C" {
 #include "kiss_fft.h"
@@ -21,7 +21,7 @@ extern "C" {
 namespace gr {
 namespace lora_sdr {
 
-class frame_detector_impl : public frame_detector {
+class frame_detector_threshold_impl : public frame_detector_threshold {
 private:
   /**
    * @brief State the frame finder can be in
@@ -256,14 +256,14 @@ public:
    * @param sf : spreading factor
    * @param threshold : threshold value to use
    */
-  frame_detector_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
+  frame_detector_threshold_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
                       float threshold);
 
   /**
    * @brief Destroy the frame detector impl object
    *
    */
-  ~frame_detector_impl();
+  ~frame_detector_threshold_impl();
 
   /**
    * @brief
@@ -292,4 +292,4 @@ public:
 } // namespace lora_sdr
 } // namespace gr
 
-#endif /* INCLUDED_LORA_SDR_FRAME_DETECTOR_IMPL_H */
+#endif /* INCLUDED_LORA_SDR_FRAME_DETECTOR_THRESHOLD_IMPL_H */

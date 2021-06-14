@@ -1,8 +1,8 @@
 /**
- * @file frame_detector_impl.cc
+ * @file frame_detector_threshold_impl.cc
  * @author Martyn van Dijke (martijnvdijke600@gmail.com)
  * @brief
- * @version 0.2
+ * @version 0.3
  * @date 2021-03-23
  *
  *
@@ -11,17 +11,17 @@
 #include "config.h"
 #endif
 
-#include "frame_detector_impl.h"
+#include "frame_detector_threshold_impl.h"
 #include "helpers.h"
 #include <gnuradio/io_signature.h>
 
 namespace gr {
 namespace lora_sdr {
 
-frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
+frame_detector_threshold::sptr frame_detector_threshold::make(uint8_t sf, uint32_t samp_rate,
                                           uint32_t bw, float threshold) {
   return gnuradio::get_initial_sptr(
-      new frame_detector_impl(sf, samp_rate, bw, threshold));
+      new frame_detector_threshold_impl(sf, samp_rate, bw, threshold));
 }
 
 /**
@@ -31,9 +31,9 @@ frame_detector::sptr frame_detector::make(uint8_t sf, uint32_t samp_rate,
  * @param bandwidth : bandwith
  * @param sf : spreading factor
  */
-frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
+frame_detector_threshold_impl::frame_detector_threshold_impl(uint8_t sf, uint32_t samp_rate,
                                          uint32_t bw, float threshold)
-    : gr::block("frame_detector",
+    : gr::block("frame_detector_threshold",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
   gr::thread::thread_bind_to_processor(2);
@@ -93,7 +93,7 @@ frame_detector_impl::frame_detector_impl(uint8_t sf, uint32_t samp_rate,
  * @param input : complex samples
  * @return int32_t : LoRa symbol value
  */
-int32_t frame_detector_impl::get_symbol_val(const gr_complex *input) {
+int32_t frame_detector_threshold_impl::get_symbol_val(const gr_complex *input) {
   // dechirp the new potential symbol
   volk_32fc_x2_multiply_32fc(&m_dechirped[0], input, &m_downchirp[0], m_N);
   // do the FFT
@@ -117,11 +117,11 @@ int32_t frame_detector_impl::get_symbol_val(const gr_complex *input) {
  * @return true : we are in a LoRa frame
  * @return false : we are not in a LoRa frame
  */
-bool frame_detector_impl::check_in_frame(const gr_complex *input) {
+bool frame_detector_threshold_impl::check_in_frame(const gr_complex *input) {
   // compare power to compare against
   float compare_power = 0;
   float current_power = 0;
-  current_power = frame_detector_impl::calc_power(input);
+  current_power = frame_detector_threshold_impl::calc_power(input);
   // get current power
   compare_power = m_power - m_threshold;
   // if current power is higher then the set power - threshold we are in the
@@ -145,7 +145,7 @@ bool frame_detector_impl::check_in_frame(const gr_complex *input) {
  * @param input : input samples
  * @return float : peak power
  */
-float frame_detector_impl::calc_power(const gr_complex *input) {
+float frame_detector_threshold_impl::calc_power(const gr_complex *input) {
   // temporary variables
   // variable to hold the signal power
   float signal_power = 0;
@@ -198,7 +198,7 @@ float frame_detector_impl::calc_power(const gr_complex *input) {
  *
  * @param input : complex samples
  */
-void frame_detector_impl::set_power(const gr_complex *input) {
+void frame_detector_threshold_impl::set_power(const gr_complex *input) {
   m_power = calc_power(input);
 }
 
@@ -206,7 +206,7 @@ void frame_detector_impl::set_power(const gr_complex *input) {
  * @brief Destroy the frame detector impl::frame detector impl object
  *
  */
-frame_detector_impl::~frame_detector_impl() {}
+frame_detector_threshold_impl::~frame_detector_threshold_impl() {}
 
 /**
  * @brief
@@ -215,7 +215,7 @@ frame_detector_impl::~frame_detector_impl() {}
  * @param ninput_items_required : required input items (how many items must we
  * have for we can do something)
  */
-void frame_detector_impl::forecast(int noutput_items,
+void frame_detector_threshold_impl::forecast(int noutput_items,
                                    gr_vector_int &ninput_items_required) {
   /* <+forecast+> e.g. ninput_items_required[0] = noutput_items */
   if (m_state == FIND_PREAMBLE) {
@@ -243,7 +243,7 @@ void frame_detector_impl::forecast(int noutput_items,
  * @param output_items : output items
  * @return int
  */
-int frame_detector_impl::general_work(int noutput_items,
+int frame_detector_threshold_impl::general_work(int noutput_items,
                                       gr_vector_int &ninput_items,
                                       gr_vector_const_void_star &input_items,
                                       gr_vector_void_star &output_items) {
@@ -266,7 +266,7 @@ int frame_detector_impl::general_work(int noutput_items,
                      pmt::string_to_symbol("work_done"));
   if (work_done_tags.size()) {
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
-                 pmt::intern("done"), pmt::intern("frame_detector"));
+                 pmt::intern("done"), pmt::intern("frame_detector_threshold"));
     consume_each(ninput_items[0]);
     return 1;
   }
@@ -326,7 +326,7 @@ int frame_detector_impl::general_work(int noutput_items,
                                        std::to_string(m_power));
 #endif
 //      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-//                   pmt::intern("start"), pmt::intern("frame_detector"));
+//                   pmt::intern("start"), pmt::intern("frame_detector_threshold"));
 
       // set symbol count back to zero
       symbol_cnt = 0;
@@ -454,7 +454,7 @@ int frame_detector_impl::general_work(int noutput_items,
 #endif
 //      add_item_tag(0, nitems_written(0) + (m_samples_per_symbol / 4),
 //                   pmt::intern("frame"), pmt::intern("end"),
-//                   pmt::intern("frame_detector"));
+//                   pmt::intern("frame_detector_threshold"));
       return (m_samples_per_symbol / 4);
     } else {
       // copy the 4 inter padding frames to the output

@@ -47,7 +47,7 @@ list(APPEND lora_sdr_sources
     hier_tx_impl.cc
     hier_rx_impl.cc
     data_source_sim_impl.cc
-        frame_detector_impl.cc
+        frame_detector_threshold_impl.cc
     helpers.cc
     mu_detection_impl.cc
     mu_synchro_impl.cc
@@ -55,6 +55,7 @@ list(APPEND lora_sdr_sources
     frame_src_impl.cc
     noise_est_impl.cc
     signal_detector_impl.cc
+    frame_detector_sequence_impl.cc
 )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)

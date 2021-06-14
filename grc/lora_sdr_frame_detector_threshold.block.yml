@@ -1,16 +1,16 @@
 id: lora_sdr_frame_detector
-label: Frame detector
+label: Frame detector Threshold
 category: "[LoRa]/CRAN"
 flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_detector(${sf},${samp_rate},${bw},${threshold})
+  make: lora_sdr.frame_detector_threshold(${sf},${samp_rate},${bw},${threshold})
 
 cpp_templates:
   includes: ["#include <lora_sdr/frame_detector.h>"]
   declarations: "lora_sdr::frame_detector::sptr ${id};"
-  make: "this->${id} = lora_sdr::frame_detector::make(${sf},${samp_rate},${bw},${threshold});"
+  make: "this->${id} = lora_sdr::frame_detector_threshold::make(${sf},${samp_rate},${bw},${threshold});"
   link: ["gnuradio-lora_sdr"]
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -30,8 +30,7 @@ parameters:
   - id: threshold
     label: Threshold
     dtype: float
-    default: 10
-
+    default: 2
 asserts:
   - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
   - ${threshold >0}

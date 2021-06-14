@@ -309,14 +309,33 @@ blocks:
     minoutbuf: 2**sf*8
     samp_rate: samp_rate
     sf: sf
-    threshold: threshold
+    threshold: '2'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [727, 312]
+    coordinate: [719, 259]
     rotation: 270
     state: enabled
+- name: lora_sdr_frame_detector_sequence_0
+  id: lora_sdr_frame_detector_sequence
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_seq: '8'
+    samp_rate: ''
+    sf: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [839, 349]
+    rotation: 0
+    state: true
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
