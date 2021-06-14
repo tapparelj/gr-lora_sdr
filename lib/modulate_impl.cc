@@ -136,7 +136,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       {
           if(preamb_symb_cnt == 1) {
               //tag the beginning of a new frame
-              add_item_tag(0, nitems_written(0)+1, pmt::intern("frame"),
+              add_item_tag(0, nitems_written(0), pmt::intern("frame"),
                            pmt::intern("start"), pmt::intern("modulate"));
           }
         if (preamb_symb_cnt < n_up) { // upchirps

@@ -15,7 +15,7 @@
 extern "C" {
 #include "kiss_fft.h"
 }
-
+#define GRLORA_DEBUGV
 namespace gr {
 namespace lora_sdr {
 
@@ -28,7 +28,7 @@ private:
    * - SEND_FRAME : send frame
    *
    */
-  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME};
+  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME, SEND_END_FRAME};
   
     /**
    * @brief Current state of the frame finder

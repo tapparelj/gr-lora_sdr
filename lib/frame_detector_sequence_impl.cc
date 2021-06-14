@@ -43,11 +43,12 @@ frame_detector_sequence_impl::frame_detector_sequence_impl(uint8_t sf,
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
 
   gr::block::set_thread_priority(90);
-  // set internal variables
-  // spreading factor
+  // set internal variables from grc
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
+  m_n_seq = n_seq;
+
   // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
   m_symbols_per_second = (double)m_bw / m_N;
@@ -160,7 +161,8 @@ int frame_detector_sequence_impl::general_work(
     bin_idx_new = get_symbol_val(&in[0]);
 
     // calculate difference between this value and previous symbol value
-    if ((bin_idx_new - bin_idx) <= 1) {
+    if (std::abs(bin_idx_new - bin_idx) <= 1 &&
+        bin_idx_new != -1) {
       // increase the number of symbols counted
       symbol_cnt++;
     }
@@ -179,29 +181,11 @@ int frame_detector_sequence_impl::general_work(
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
-#ifdef GRLORA_SIM
-      // find the frame info tag
-      get_tags_in_range(m_tags_vector, 0, nitems_written(0),
-                        nitems_read(0) + m_samples_per_symbol,
-                        pmt::string_to_symbol("frame"));
-      if (m_tags_vector.size()) {
-        if (pmt::symbol_to_string(m_tags_vector[0].value) == "start") {
-#ifdef GRLORA_DEBUGV
-          GR_LOG_DEBUG(this->d_logger,
-                       "DEBUG:Found correct beginning tag at offset:" +
-                           std::to_string(m_tags_vector[0].offset));
-#endif
-          m_detected_tag_begin = true;
-        }
-      }
-#endif
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
                                        std::to_string(nitems_written(0)));
-      GR_LOG_DEBUG(this->d_logger,
-                   "DEBUG:set power at:" + std::to_string(m_power));
 #endif
       //      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
       //                   pmt::intern("start"),
@@ -230,9 +214,6 @@ int frame_detector_sequence_impl::general_work(
     // TODO could maybe use memcpy for speed
     for (int i = 0; i < end_vec; i++) {
       out[i] = buffer.at(i);
-#ifdef GRLORA_log
-      output_log_after << out[i] << std::endl;
-#endif
     }
 
     // clear used items from buffer
@@ -254,60 +235,75 @@ int frame_detector_sequence_impl::general_work(
     // Computing power of input and checking if this is below the preamble power
     // - threshold
 
+    // if the output is smaller then a LoRa symbol wait (do not use any items)
     if (noutput_items < m_samples_per_symbol) {
       consume_each(0);
       return 0;
     }
+    // enough output items to hold input
+    else {
+      // get symbol value of input
+      bin_idx_new = get_symbol_val(&in[0]);
 
-//    if (m_cnt < 10) {
-//      // after we have found the preamble there are 5 symbols containing the
-//      // network identifiers and
-//      // downchrips we skip these in calculation because they make
-//      // life/computations hard and are always there in the frame
-//      in_frame = true;
-//    } else {
-//      // if we are past the symbols containing network and downchirps
-//      // check if we are still in the frame
-//      in_frame = check_in_frame(&in[0]);
-//    }
-//    // increment proceed symbol counter
-//    m_cnt++;
-//    // tell the gnuradio scheduler how many items we have used.
-//    // if we are still in a frame
-//    if (in_frame == true) {
-//      consume_each(m_samples_per_symbol);
-//
-//      // copy input to output
-//      memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-//      // return the number of items produced by the system
-//      return m_samples_per_symbol;
-//    } else {
-//      consume_each(0);
-//#ifdef GRLORA_SIM
-//      if (nitems_read(0) >= m_end_offset) {
-//#ifdef GRLORA_DEBUGV
-//        GR_LOG_DEBUG(this->d_logger,
-//                     "DEBUG:Correct end tag:" +
-//                         std::to_string(m_tags_vector[0].offset));
-//#endif
-//        m_detected_tag_end = true;
-//      }
-//#endif
-//
-//#ifdef GRLORA_DEBUGV
-//      GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_FRAME -> SEND_END_FRAME");
-//#endif
-
-      // we consume items but do not output any items (if its outside the frame)
-      // return the number of items produced by the system
-      return 0;
-    }
-      default: {
-          GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
-          return 0;
+      // calculate difference between this value and previous symbol value
+      if (std::abs(bin_idx_new - bin_idx) <= 1 &&
+          bin_idx_new != -1) {
+        // increase the number of symbols counted
+        symbol_cnt++;
+      } else {
+        // set value to be the newly calculated value
+        bin_idx = bin_idx_new;
+        // set symbol value to be 1
+        symbol_cnt = 1;
       }
-  }
+      //check if the number of symbols is n_seq
+      if (symbol_cnt == uint16_t(m_n_seq)) {
+        // found the end
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:symbol_cnt:"+std::to_string(symbol_cnt)+" m_cnt:"+std::to_string(m_n_seq));
 
+
+        //clear used variables
+        symbol_cnt = 0;
+        //return to finding preamble
+        m_state = SEND_END_FRAME;
+
+#ifdef GRLORA_DEBUGV
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found POSTAMBLE -> SEND END_FRAME!");
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
+                                       std::to_string(nitems_written(0)));
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
+                                       std::to_string(nitems_read(0)));
+#endif
+        // copy input to the output and tell the scheduler
+        consume_each(m_samples_per_symbol);
+        // copy input to output
+        memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+        // return the number of items produced by the system
+        return m_samples_per_symbol;
+      } else {
+        // copy input to the output and tell the scheduler
+        consume_each(m_samples_per_symbol);
+        // copy input to output
+        memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+        // return the number of items produced by the system
+        return m_samples_per_symbol;
+      }
+    }
+  }
+  case SEND_END_FRAME: {
+      //extra padding and CRC stuff should be done here
+      // TODO : how to handle CRC ?
+      //for now just go to finding the preamble
+    m_state = FIND_PREAMBLE;
+    consume_each(0);
+    return 0;
+  }
+  default: {
+    GR_LOG_WARN(this->d_logger, "WARNING : No state! Shouldn't happen");
+    consume_each(0);
+    return 0;
+  }
+  }
 }
 
 } /* namespace lora_sdr */
