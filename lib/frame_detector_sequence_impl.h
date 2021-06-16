@@ -24,11 +24,12 @@ private:
   /**
    * @brief State the frame finder can be in
    * - FIND_PREAMLBE : find the preamble
-   * - SEND_PREAMBLE : send the buffered preamble symbols
-   * - SEND_FRAME : send frame
-   *
+   * - SEND_BUFFER : send the buffered input
+   * - SEND_PREAMBLE : send the preamble
+   * - SEND_FRAME : send frame and serach for end of frame
+   * -SEND_END_FRAME : TODO: logic surrounding CRC check
    */
-  enum State { FIND_PREAMBLE, SEND_PREAMBLE, SEND_FRAME, SEND_END_FRAME};
+  enum State { FIND_PREAMBLE, SEND_BUFFER, SEND_PREAMBLE, SEND_FRAME, SEND_END_FRAME};
   
     /**
    * @brief Current state of the frame finder
@@ -143,6 +144,13 @@ private:
    * 
    */
   uint8_t m_n_seq;
+
+  /**
+   * @brief Counter for counting if we are past the net identifier and
+   * downchirps once we have found the preamble
+   *
+   */
+    int m_cnt;
 
   /**
    * @brief Get the symbol object value (aka decoded LoRa symbol value)

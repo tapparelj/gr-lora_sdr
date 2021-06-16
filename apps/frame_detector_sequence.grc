@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -156,7 +156,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '64'
+    value: '32'
   states:
     bus_sink: false
     bus_source: false
@@ -274,6 +274,27 @@ blocks:
     coordinate: [268, 218]
     rotation: 0
     state: true
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'False'
+    comment: ''
+    epsilon: 1+sto/samp_rate
+    freq_offset: cfo
+    maxoutbuf: '0'
+    minoutbuf: 2**sf*8
+    noise_voltage: 10**(-snr/20)
+    seed: '0'
+    taps: '1.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [477, 179]
+    rotation: 0
+    state: bypassed
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -305,16 +326,16 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    n_seq: '6'
+    n_seq: '9'
     samp_rate: samp_rate
     sf: sf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [523, 271]
+    coordinate: [716, 262]
     rotation: 270
-    state: true
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -357,7 +378,7 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: '"TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocMMMMMMMM"'
+    src_data: '"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"'
     sync_words: '[8, 16]'
   states:
     bus_sink: false

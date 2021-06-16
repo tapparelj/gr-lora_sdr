@@ -11,8 +11,9 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
-from gnuradio import filter
+from gnuradio import channels
 from gnuradio.filter import firdes
+from gnuradio import filter
 from gnuradio import gr
 import sys
 import signal
@@ -41,7 +42,7 @@ class frame_detector_sequence(gr.top_block):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 5
+        self.n_frame = n_frame = 10
         self.multi_control = multi_control = True
         self.impl_head = impl_head = False
         self.has_crc = has_crc = False
@@ -54,10 +55,10 @@ class frame_detector_sequence(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocMMMMMMMM", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
+        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(1024)
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_detector_sequence_0 = lora_sdr.frame_detector_sequence(sf,samp_rate,bw,6)
+        self.lora_sdr_frame_detector_sequence_0 = lora_sdr.frame_detector_sequence(sf,samp_rate,bw,9)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
@@ -105,6 +106,7 @@ class frame_detector_sequence(gr.top_block):
     def set_sto(self, sto):
         with self._lock:
             self.sto = sto
+            self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
 
     def get_snr(self):
         return self.snr
@@ -112,6 +114,7 @@ class frame_detector_sequence(gr.top_block):
     def set_snr(self, snr):
         with self._lock:
             self.snr = snr
+            self.channels_channel_model_0.set_noise_voltage(10**(-self.snr/20))
 
     def get_sf(self):
         return self.sf
@@ -127,6 +130,7 @@ class frame_detector_sequence(gr.top_block):
         with self._lock:
             self.samp_rate = samp_rate
             self.blocks_throttle_0_1_0.set_sample_rate(self.samp_rate)
+            self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
@@ -190,6 +194,7 @@ class frame_detector_sequence(gr.top_block):
     def set_cfo(self, cfo):
         with self._lock:
             self.cfo = cfo
+            self.channels_channel_model_0.set_frequency_offset(self.cfo)
 
     def get_center_freq(self):
         return self.center_freq

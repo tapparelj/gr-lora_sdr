@@ -76,6 +76,7 @@ frame_detector_sequence_impl::frame_detector_sequence_impl(uint8_t sf,
   bin_idx = 2;
   symbol_cnt = 0;
   m_state = FIND_PREAMBLE;
+  m_cnt = 0;
 
   // set tag propagation
   set_tag_propagation_policy(TPP_ONE_TO_ONE);
@@ -151,11 +152,11 @@ int frame_detector_sequence_impl::general_work(
   switch (m_state) {
   case FIND_PREAMBLE: {
     // copy input to memory vector for later use.
-    for (int i = 0; i < m_N; i++) {
+    for (int i = 0; i < m_samples_per_symbol; i++) {
       buffer.push_back(in[i]);
     }
     // tell scheduler how many items have been used
-    consume_each(m_N);
+    consume_each(m_samples_per_symbol);
 
     // get symbol value of input
     bin_idx_new = get_symbol_val(&in[0]);
@@ -182,7 +183,7 @@ int frame_detector_sequence_impl::general_work(
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
       // set state to be sending LoRa frame packets
-      m_state = SEND_PREAMBLE;
+      m_state = SEND_BUFFER;
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
                                        std::to_string(nitems_written(0)));
@@ -198,7 +199,7 @@ int frame_detector_sequence_impl::general_work(
     }
     return 0;
   }
-  case SEND_PREAMBLE: {
+  case SEND_BUFFER: {
     // send the preamble symbols
 #ifdef GRLORA_DEBUGV
     GR_LOG_DEBUG(this->d_logger, "DEBUG:Starting sending preamble");
@@ -220,7 +221,8 @@ int frame_detector_sequence_impl::general_work(
     buffer.erase(buffer.begin(), buffer.begin() + end_vec);
     if (buffer.empty()) {
       // go to sending the rest of the symbols
-      m_state = SEND_FRAME;
+      //TODO skip 4.25 symbols standard in the packet
+      m_state = SEND_PREAMBLE;
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Done SEND_PREAMBLE -> SEND_FRAME");
 #endif
@@ -229,6 +231,23 @@ int frame_detector_sequence_impl::general_work(
     consume_each(0);
     // return the number of items produced by the system
     return end_vec;
+  }
+
+  case SEND_PREAMBLE:{
+        //Send the network identifiers and the downchirps
+      if(m_cnt = 6){
+          consume_each((m_samples_per_symbol / 4));
+          memcpy(&out[0], &in[0], sizeof(gr_complex) * (m_samples_per_symbol / 4));
+          m_state = SEND_FRAME;
+          m_cnt = 0;
+          return  m_samples_per_symbol/4;
+      }
+      else{
+          consume_each(m_samples_per_symbol);
+          memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+      }
+      m_cnt++;
+      return m_samples_per_symbol;
   }
 
   case SEND_FRAME: {
@@ -244,6 +263,8 @@ int frame_detector_sequence_impl::general_work(
     else {
       // get symbol value of input
       bin_idx_new = get_symbol_val(&in[0]);
+//        GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging bin_idx_new:" +
+//                                     std::to_string(bin_idx_new));
 
       // calculate difference between this value and previous symbol value
       if (std::abs(bin_idx_new - bin_idx) <= 1 &&
@@ -259,8 +280,10 @@ int frame_detector_sequence_impl::general_work(
       //check if the number of symbols is n_seq
       if (symbol_cnt == uint16_t(m_n_seq)) {
         // found the end
+#ifdef GRLORA_DEBUGV
           GR_LOG_DEBUG(this->d_logger, "DEBUG:symbol_cnt:"+std::to_string(symbol_cnt)+" m_cnt:"+std::to_string(m_n_seq));
-
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:bind_idx:"+std::to_string(bin_idx));
+#endif
 
         //clear used variables
         symbol_cnt = 0;
