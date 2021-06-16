@@ -211,6 +211,12 @@ private:
    */
   u_int32_t m_end_offset;
 
+    /**
+   * @brief Variable to hold the packet offset of the end tag
+   *
+   */
+    std::vector<u_int32_t> m_begin_offset;
+
 #endif
 
   /**

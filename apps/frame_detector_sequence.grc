@@ -252,7 +252,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [249, 302]
+    coordinate: [308, 298]
     rotation: 0
     state: true
 - name: blocks_throttle_0_1_0
@@ -271,7 +271,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [268, 218]
+    coordinate: [312, 219]
     rotation: 0
     state: true
 - name: channels_channel_model_0
@@ -292,7 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [477, 179]
+    coordinate: [1053, 203]
     rotation: 0
     state: bypassed
 - name: interp_fir_filter_xxx_0_1_0

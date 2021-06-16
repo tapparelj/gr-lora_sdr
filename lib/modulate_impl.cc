@@ -37,7 +37,7 @@ modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
   m_symbols_per_second = (double)m_bw / m_number_of_bins;
   m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
 
-  m_inter_frame_padding = 4; // add 4 empty symbols at the end of a frame
+  m_inter_frame_padding = 7; // add 4 empty symbols at the end of a frame
 
   m_downchirp.resize(m_samples_per_symbol);
   m_upchirp.resize(m_samples_per_symbol);
@@ -173,12 +173,14 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       output_offset += m_samples_per_symbol;
       symb_cnt++;
     }
+      consume_each(nitems_to_process);
+      return output_offset;
   } else {
     nitems_to_process = 0;
   }
   if(symb_cnt == m_frame_len){
       //tag the end of a frame
-      add_item_tag(0, nitems_written(0)+output_offset, pmt::intern("frame"),
+      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
                    pmt::intern("end"), pmt::intern("modulate"));
   }
 

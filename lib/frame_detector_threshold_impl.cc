@@ -258,6 +258,9 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
             if(pmt::symbol_to_string(m_tags_vector[0].value) == "end"){
                 m_end_offset = m_tags_vector[0].offset;
             }
+            if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
+                m_begin_offset.push_back(m_tags_vector[0].offset);
+            }
         }
 #endif
   // search for work_done tags and if found add them to the stream
@@ -303,17 +306,29 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
 #ifdef GRLORA_SIM
-      //find the frame info tag
-        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+m_samples_per_symbol,
-                           pmt::string_to_symbol("frame"));
-        if (m_tags_vector.size()) {
-            if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
-#ifdef GRLORA_DEBUGV
-                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found correct beginning tag at offset:"+std::to_string(m_tags_vector[0].offset));
-#endif
-                m_detected_tag_begin = true;
-            }
-        }
+      if(nitems_read(0) >= m_begin_offset.at(0)){
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag correctly:"+std::to_string(m_begin_offset.at(0)));
+          m_detected_tag_begin = true;
+          //pop first item
+          if(m_begin_offset.size() > 1) {
+              m_begin_offset.erase(m_begin_offset.begin());
+          }
+      }else{
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found no beginning tag:"+std::to_string(nitems_written(0)));
+      }
+//      //find the frame info tag
+//        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+m_samples_per_symbol,
+//                           pmt::string_to_symbol("frame"));
+//        if (m_tags_vector.size()) {
+//            if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
+//#ifdef GRLORA_DEBUGV
+//                GR_LOG_DEBUG(this->d_logger, "DEBUG:Found correct beginning tag at offset:"+std::to_string(m_tags_vector[0].offset));
+//#endif
+//                m_detected_tag_begin = true;
+//            }
+//        }
+//        GR_LOG_DEBUG(this->d_logger, "DEBUG:Found no beginning tag:"+std::to_string(nitems_written(0)));
+
 #endif
       // store the current power level in m_power
       set_power(&in[0]);
@@ -404,12 +419,18 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
     } else {
       consume_each(0);
 #ifdef GRLORA_SIM
-        if(nitems_read(0)>= m_end_offset) {
+        if(nitems_read(0)+m_samples_per_symbol>= m_end_offset) {
 #ifdef GRLORA_DEBUGV
             GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag:"+std::to_string(m_tags_vector[0].offset));
 #endif
             m_detected_tag_end = true;
         }
+        else{
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag is at :"+std::to_string(m_end_offset));
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:i am at :"+std::to_string(nitems_read(0)));
+
+        }
+
 #endif
       m_state = SEND_END_FRAME;
 
@@ -441,6 +462,10 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       } else{
           GR_LOG_DEBUG(this->d_logger,
                        "DEBUG:Packet Detection Error");
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:detected begin"+std::to_string(m_detected_tag_begin));
+          GR_LOG_DEBUG(this->d_logger,
+                       "DEBUG:detected end"+std::to_string(m_detected_tag_end));
       }
       m_detected_tag_begin = false;
       m_detected_tag_end = false;
@@ -448,9 +473,9 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
 
 #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger,
-                   "DEBUG:Done SEND_EDN_FRAME -> FIND_PREAMBLE");
+                   "DEBUG:Done SEND_END_FRAME -> FIND_PREAMBLE");
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging end of frame at :" +
-                                       std::to_string(nitems_written(0)));
+                                       std::to_string(nitems_written(0)+(m_samples_per_symbol / 4)));
 #endif
 //      add_item_tag(0, nitems_written(0) + (m_samples_per_symbol / 4),
 //                   pmt::intern("frame"), pmt::intern("end"),
