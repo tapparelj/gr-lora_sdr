@@ -76,8 +76,11 @@ frame_detector_threshold_impl::frame_detector_threshold_impl(uint8_t sf, uint32_
   m_state = FIND_PREAMBLE;
   m_cnt = 0;
   in_frame = false;
-  m_inter_frame_padding = 2;
+  m_inter_frame_padding = 1;
   cnt_padding = 0;
+  m_end_offset = m_samples_per_symbol*10000;
+  m_n_avg = 1;
+
 
   //set tag detection initial values.
   m_detected_tag_begin = false;
@@ -124,6 +127,23 @@ bool frame_detector_threshold_impl::check_in_frame(const gr_complex *input) {
   current_power = frame_detector_threshold_impl::calc_power(input);
   // get current power
   compare_power = m_power - m_threshold;
+
+  //push the ratio of power to the vector for taking the average
+  avg_ratio.push_back(current_power);
+  //if average vector has enough items
+  if(avg_ratio.size() > m_n_avg){
+      //calulate avg
+      current_power = std::accumulate(avg_ratio.begin(), avg_ratio.end(), 0.0)/avg_ratio.size();
+      //delete first item from vector
+      avg_ratio.erase(avg_ratio.begin());
+//      std::cout << "AVG ratio" +  std::to_string(current_power) << std::endl;
+//
+//    for(int i =0; k < avg_ratio.size(); i++){
+//        avg_power += avg_ratio.at(i);
+//    }
+
+  }
+
   // if current power is higher then the set power - threshold we are in the
   // LoRa frame
   if (current_power > compare_power) {
@@ -163,10 +183,14 @@ float frame_detector_threshold_impl::calc_power(const gr_complex *input) {
   peak_power = signal_power;
   // divide by three to compensate for the +-1 bins
   signal_power = signal_power / 3;
-//#ifdef GRLORA_DEBUG
-//        GR_LOG_DEBUG(this->d_logger,
-//                 "DEBUG:signal power:" + std::to_string(signal_power));
-//#endif
+#ifdef GRLORA_DEBUGv
+        GR_LOG_DEBUG(this->d_logger,
+                 "DEBUG:signal power:" + std::to_string(signal_power));
+#endif
+        if( signal_power > 4000.0){
+            GR_LOG_CRIT(this->d_logger,"CRIT:To much signal power, should not happen");
+            signal_power = 0;
+        }
 
   // loop over the entire dft spectrum and sum the power of all noise
   float noise_power = 0;
@@ -185,10 +209,10 @@ float frame_detector_threshold_impl::calc_power(const gr_complex *input) {
   } else {
     signal_power = signal_power;
   }
-//#ifdef GRLORA_DEBUG
-//        GR_LOG_DEBUG(this->d_logger,
-//                 "DEBUG:ratio power:" + std::to_string(signal_power));
-//#endif
+#ifdef GRLORA_DEBUGv
+        GR_LOG_DEBUG(this->d_logger,
+                 "DEBUG:ratio power:" + std::to_string(signal_power)+" at position in stream: "+std::to_string(nitems_read(0)) );
+#endif
   volk_free(out);
   return signal_power;
 }
@@ -286,7 +310,8 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
     bin_idx_new = get_symbol_val(&in[0]);
 
     // calculate difference between this value and previous symbol value
-    if ((bin_idx_new - bin_idx) <= 1) {
+    if (std::abs(bin_idx_new - bin_idx) <= 1 &&
+        bin_idx_new != -1) {
       // increase the number of symbols counted
       symbol_cnt++;
     }
@@ -306,15 +331,17 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
 #ifdef GRLORA_SIM
-      if(nitems_read(0) >= m_begin_offset.at(0)){
+      if(nitems_written(0) <= m_begin_offset.at(0) || nitems_read(0) > m_end_offset ){
           GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag correctly:"+std::to_string(m_begin_offset.at(0)));
           m_detected_tag_begin = true;
+          symbol_cnt = 0;
           //pop first item
           if(m_begin_offset.size() > 1) {
               m_begin_offset.erase(m_begin_offset.begin());
           }
       }else{
           GR_LOG_DEBUG(this->d_logger, "DEBUG:Found no beginning tag:"+std::to_string(nitems_written(0)));
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:beginning tag is at:"+std::to_string(m_begin_offset.at(0)));
       }
 //      //find the frame info tag
 //        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+m_samples_per_symbol,
@@ -346,7 +373,6 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       // set symbol count back to zero
       symbol_cnt = 0;
       return 0;
-      break;
     }
     return 0;
   }
@@ -427,7 +453,7 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
         }
         else{
             GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag is at :"+std::to_string(m_end_offset));
-            GR_LOG_DEBUG(this->d_logger, "DEBUG:i am at :"+std::to_string(nitems_read(0)));
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Frame detector is at :"+std::to_string(nitems_read(0)));
 
         }
 
@@ -463,9 +489,9 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
           GR_LOG_DEBUG(this->d_logger,
                        "DEBUG:Packet Detection Error");
           GR_LOG_DEBUG(this->d_logger,
-                       "DEBUG:detected begin"+std::to_string(m_detected_tag_begin));
+                       "DEBUG:detected begin :"+std::to_string(m_detected_tag_begin));
           GR_LOG_DEBUG(this->d_logger,
-                       "DEBUG:detected end"+std::to_string(m_detected_tag_end));
+                       "DEBUG:detected end :"+std::to_string(m_detected_tag_end));
       }
       m_detected_tag_begin = false;
       m_detected_tag_end = false;

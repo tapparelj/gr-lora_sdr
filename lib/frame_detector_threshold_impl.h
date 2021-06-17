@@ -15,7 +15,7 @@
 extern "C" {
 #include "kiss_fft.h"
 }
-//#define GRLORA_DEBUGV
+#define GRLORA_DEBUGV
 #define GRLORA_SIM
 
 namespace gr {
@@ -185,6 +185,10 @@ private:
    *
    */
   std::vector<gr_complex> m_temp;
+
+  std::vector<float> avg_ratio;
+
+  int m_n_avg;
 
 #ifdef GRLORA_SIM
   /**

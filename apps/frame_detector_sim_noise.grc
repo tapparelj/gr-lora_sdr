@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -180,7 +180,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-7'
+    value: '-13'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.9'
+    value: '0.1'
   states:
     bus_sink: false
     bus_source: false
@@ -261,7 +261,7 @@ blocks:
     alias: ''
     comment: ''
     display: 'True'
-    filter: '"frame"'
+    filter: '""'
     name: ''
     num_inputs: '1'
     type: complex
@@ -310,9 +310,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 176]
+    coordinate: [481, 175]
     rotation: 0
-    state: enabled
+    state: bypassed
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -353,7 +353,7 @@ blocks:
     bus_structure: null
     coordinate: [719, 259]
     rotation: 270
-    state: enabled
+    state: bypassed
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
