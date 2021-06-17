@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -180,7 +180,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '12'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.1'
+    value: '40'
   states:
     bus_sink: false
     bus_source: false
@@ -251,9 +251,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [703, 629]
+    coordinate: [533, 324]
     rotation: 0
     state: disabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [877, 453]
+    rotation: 0
+    state: true
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
   parameters:
@@ -312,7 +329,7 @@ blocks:
     bus_structure: null
     coordinate: [481, 175]
     rotation: 0
-    state: bypassed
+    state: enabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -334,7 +351,7 @@ blocks:
     bus_structure: null
     coordinate: [288, 443]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: lora_sdr_frame_detector_1
   id: lora_sdr_frame_detector
   parameters:
@@ -351,9 +368,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [719, 259]
+    coordinate: [736, 241]
     rotation: 270
-    state: bypassed
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -377,7 +394,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 389]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_tx_1
   id: lora_sdr_hier_tx
   parameters:
@@ -391,7 +408,7 @@ blocks:
     maxoutbuf: '0'
     mean: time_wait
     minoutbuf: 2**sf*8
-    multi_control: 'True'
+    multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
@@ -405,35 +422,6 @@ blocks:
     coordinate: [8, 133]
     rotation: 0
     state: enabled
-- name: qtgui_sink_x_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: samp_rate
-    comment: ''
-    fc: '0'
-    fftsize: '1024'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '""'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'False'
-    showrf: 'False'
-    type: complex
-    wintype: firdes.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [977, 237]
-    rotation: 0
-    state: disabled
 
 connections:
 - [blocks_throttle_0_1_0, '0', blocks_tag_debug_0, '0']
@@ -441,9 +429,9 @@ connections:
 - [channels_channel_model_0, '0', blocks_file_sink_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
+- [lora_sdr_frame_detector_1, '0', blocks_null_sink_0, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', qtgui_sink_x_0, '0']
 
 metadata:
   file_format: 1

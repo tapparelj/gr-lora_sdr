@@ -11,13 +11,15 @@
 #define INCLUDED_LORA_SDR_FRAME_DETECTOR_THRESHOLD_IMPL_H
 #include <gnuradio/io_signature.h>
 #include <lora_sdr/frame_detector_threshold.h>
+#include <fstream>
+#include <iostream>
 #include <math.h>
 extern "C" {
 #include "kiss_fft.h"
 }
 #define GRLORA_DEBUGV
 #define GRLORA_SIM
-
+#define GRLORA_FILE
 namespace gr {
 namespace lora_sdr {
 
@@ -221,6 +223,10 @@ private:
    */
     std::vector<u_int32_t> m_begin_offset;
 
+#endif
+
+#ifdef GRLORA_FILE
+    std::ofstream file_ratio;
 #endif
 
   /**

@@ -81,6 +81,11 @@ frame_detector_threshold_impl::frame_detector_threshold_impl(uint8_t sf, uint32_
   m_end_offset = m_samples_per_symbol*10000;
   m_n_avg = 1;
 
+#ifdef GRLORA_FILE
+        file_ratio.open("../test/ratio.csv",
+                         std::ios::out | std::ios::trunc);
+        file_ratio << "First line \n";
+#endif
 
   //set tag detection initial values.
   m_detected_tag_begin = false;
@@ -129,20 +134,20 @@ bool frame_detector_threshold_impl::check_in_frame(const gr_complex *input) {
   compare_power = m_power - m_threshold;
 
   //push the ratio of power to the vector for taking the average
-  avg_ratio.push_back(current_power);
-  //if average vector has enough items
-  if(avg_ratio.size() > m_n_avg){
-      //calulate avg
-      current_power = std::accumulate(avg_ratio.begin(), avg_ratio.end(), 0.0)/avg_ratio.size();
-      //delete first item from vector
-      avg_ratio.erase(avg_ratio.begin());
-//      std::cout << "AVG ratio" +  std::to_string(current_power) << std::endl;
+//  avg_ratio.push_back(current_power);
+//  //if average vector has enough items
+//  if(avg_ratio.size() > m_n_avg){
+//      //calulate avg
+//      current_power = std::accumulate(avg_ratio.begin(), avg_ratio.end(), 0.0)/avg_ratio.size();
+//      //delete first item from vector
+//      avg_ratio.erase(avg_ratio.begin());
+////      std::cout << "AVG ratio" +  std::to_string(current_power) << std::endl;
+////
+////    for(int i =0; k < avg_ratio.size(); i++){
+////        avg_power += avg_ratio.at(i);
+////    }
 //
-//    for(int i =0; k < avg_ratio.size(); i++){
-//        avg_power += avg_ratio.at(i);
-//    }
-
-  }
+//  }
 
   // if current power is higher then the set power - threshold we are in the
   // LoRa frame
@@ -213,6 +218,7 @@ float frame_detector_threshold_impl::calc_power(const gr_complex *input) {
         GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:ratio power:" + std::to_string(signal_power)+" at position in stream: "+std::to_string(nitems_read(0)) );
 #endif
+  file_ratio << signal_power << ",";
   volk_free(out);
   return signal_power;
 }
