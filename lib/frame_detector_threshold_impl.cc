@@ -218,7 +218,9 @@ float frame_detector_threshold_impl::calc_power(const gr_complex *input) {
         GR_LOG_DEBUG(this->d_logger,
                  "DEBUG:ratio power:" + std::to_string(signal_power)+" at position in stream: "+std::to_string(nitems_read(0)) );
 #endif
+#ifdef GRLORA_FILE
   file_ratio << signal_power << ",";
+#endif
   volk_free(out);
   return signal_power;
 }
