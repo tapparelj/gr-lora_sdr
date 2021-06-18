@@ -69,7 +69,7 @@ frame_detector_threshold_impl::frame_detector_threshold_impl(uint8_t sf, uint32_
   buffer.reserve(m_N * n_up);
 
   // initialize values of variables
-  bin_idx = 2;
+  bin_idx = 0;
   symbol_cnt = 0;
   m_power = 0;
   // set initial state to find preamble
@@ -316,6 +316,9 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
 
     // get symbol value of input
     bin_idx_new = get_symbol_val(&in[0]);
+    #ifdef GRLORA_DEBUGV
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Symbol:"+std::to_string(bin_idx_new));
+#endif
 
     // calculate difference between this value and previous symbol value
     if (std::abs(bin_idx_new - bin_idx) <= 1 &&
@@ -332,7 +335,7 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       symbol_cnt = 1;
     }
     // number of preambles needed
-    int nR_up = (int)(n_up - 1);
+    int nR_up = (int)(n_up);
     // if we have n_up-1 symbols counted we have found the preamble
     if (symbol_cnt == nR_up) {
 #ifdef GRLORA_DEBUGV
@@ -453,9 +456,10 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
     } else {
       consume_each(0);
 #ifdef GRLORA_SIM
-        if(nitems_read(0)+m_samples_per_symbol>= m_end_offset) {
+        if(nitems_read(0)>= m_end_offset) {
 #ifdef GRLORA_DEBUGV
-            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag:"+std::to_string(m_tags_vector[0].offset));
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tagis at :"+std::to_string(m_tags_vector[0].offset));
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Frame detector is at :"+std::to_string(nitems_read(0)));
 #endif
             m_detected_tag_end = true;
         }

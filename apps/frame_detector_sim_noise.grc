@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'True'
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -156,7 +156,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '64'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-7'
+    value: '-4'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.4'
+    value: '0.3'
   states:
     bus_sink: false
     bus_source: false
@@ -312,7 +312,7 @@ blocks:
     bus_structure: null
     coordinate: [481, 175]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -353,7 +353,7 @@ blocks:
     bus_structure: null
     coordinate: [736, 241]
     rotation: 270
-    state: disabled
+    state: bypassed
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -396,7 +396,7 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: '"TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9"'
+    src_data: ''
     sync_words: '[8, 16]'
   states:
     bus_sink: false
@@ -409,7 +409,6 @@ blocks:
 connections:
 - [blocks_throttle_0_1_0, '0', blocks_tag_debug_0, '0']
 - [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
-- [blocks_throttle_0_1_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [channels_channel_model_0, '0', blocks_file_sink_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']

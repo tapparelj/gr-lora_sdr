@@ -37,7 +37,7 @@ modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
   m_symbols_per_second = (double)m_bw / m_number_of_bins;
   m_samples_per_symbol = (uint32_t)(m_samp_rate / m_symbols_per_second);
 
-  m_inter_frame_padding = 7; // add 4 empty symbols at the end of a frame
+  m_inter_frame_padding = 40; // add 4 empty symbols at the end of a frame
 
   m_downchirp.resize(m_samples_per_symbol);
   m_upchirp.resize(m_samples_per_symbol);
