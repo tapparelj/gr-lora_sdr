@@ -19,7 +19,7 @@ extern "C" {
 }
 #define GRLORA_DEBUGV
 #define GRLORA_SIM
-#define GRLORA_FILE
+// #define GRLORA_FILE
 namespace gr {
 namespace lora_sdr {
 
