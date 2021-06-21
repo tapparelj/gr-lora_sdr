@@ -56,6 +56,7 @@ list(APPEND lora_sdr_sources
     noise_est_impl.cc
     signal_detector_impl.cc
     frame_detector_sequence_impl.cc
+    frame_detector_timeout_impl.cc
 )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)

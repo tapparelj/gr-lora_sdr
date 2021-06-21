@@ -1,8 +1,7 @@
-id: lora_sdr_frame_detector_sequence
-label: Frame detector Sequence
+id: lora_sdr_frame_detector_timeout
+label: Frame detector timeout
 category: "[LoRa]/CRAN"
 flags: [python, cpp]
-
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -12,12 +11,12 @@ flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_detector_sequence(${sf},${samp_rate},${bw},${n_seq})
+  make: lora_sdr.frame_detector_timeout(${sf},${samp_rate},${bw},${n_bytes})
 
 cpp_templates:
-  includes: ["#include <lora_sdr/frame_detector.h>"]
-  declarations: "lora_sdr::frame_detector::sptr ${id};"
-  make: "this->${id} = lora_sdr::frame_detector_sequence:make(${sf},${samp_rate},${bw},${n_seq});"
+  includes: ["#include <lora_sdr/frame_detector_timeout.h>"]
+  declarations: "lora_sdr::frame_detector_timeout::sptr ${id};"
+  make: "this->${id} = lora_sdr::frame_detector_timeout:make(${sf},${samp_rate},${bw},${n_bytes});"
   link: ["gnuradio-lora_sdr"]
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
@@ -27,22 +26,22 @@ cpp_templates:
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 parameters:
   - id: sf
-    label: Sf
+    label: Spreading Factor
     dtype: int
   - id: samp_rate
-    label: Samp_rate
+    label: Sampling rate
     dtype: int
   - id: bw
-    label: Bw
+    label: Bandwith
     dtype: int
-  - id: n_seq
-    label: Number sequence
+  - id: n_bytes
+    label: Number of bytes
     dtype: int
     default: 55
 
 asserts:
   - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-  - ${n_seq >0}
+  - ${n_bytes >0}
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:

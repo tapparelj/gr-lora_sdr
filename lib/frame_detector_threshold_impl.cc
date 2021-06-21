@@ -303,6 +303,7 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
                  pmt::intern("done"), pmt::intern("frame_detector_threshold"));
     consume_each(ninput_items[0]);
+    out[0] = gr_complex(0.0,0.0);
     return 1;
   }
         switch (m_state) {

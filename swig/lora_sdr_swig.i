@@ -36,7 +36,9 @@
 #include "lora_sdr/partial_ml.h"
 #include "lora_sdr/mu_synchro.h"
 #include "lora_sdr/mu_detection.h"
-#include "lora_sdr/frame_detector_sequence.h" %}
+#include "lora_sdr/frame_detector_sequence.h"
+#include "lora_sdr/frame_detector_timeout.h"
+%}
 
 %include "lora_sdr/add_crc.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, add_crc);
@@ -96,3 +98,5 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_src);
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, signal_detector);
 %include "lora_sdr/frame_detector_sequence.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_detector_sequence);
+%include "lora_sdr/frame_detector_timeout.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_detector_timeout);

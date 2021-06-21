@@ -51,5 +51,6 @@ install(FILES
     frame_src.h
     signal_detector.h
     frame_detector_threshold.h
-    frame_detector_sequence.h DESTINATION include/lora_sdr
+    frame_detector_sequence.h
+    frame_detector_timeout.h DESTINATION include/lora_sdr
 )
