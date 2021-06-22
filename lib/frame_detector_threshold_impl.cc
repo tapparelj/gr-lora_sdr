@@ -36,7 +36,6 @@ frame_detector_threshold_impl::frame_detector_threshold_impl(uint8_t sf, uint32_
     : gr::block("frame_detector_threshold",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
-  gr::thread::thread_bind_to_processor(2);
   gr::block::set_thread_priority(90);
   // set internal variables
   // spreading factor
@@ -287,11 +286,13 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
         get_tags_in_window(m_tags_vector,0, 0, ninput_items[0],
                           pmt::string_to_symbol("frame"));
         if (m_tags_vector.size()) {
-            if(pmt::symbol_to_string(m_tags_vector[0].value) == "end"){
-                m_end_offset = m_tags_vector[0].offset;
-            }
-            if(pmt::symbol_to_string(m_tags_vector[0].value) == "start"){
-                m_begin_offset.push_back(m_tags_vector[0].offset);
+            for(int j=0; j< m_tags_vector.size(); j++){
+              if (pmt::symbol_to_string(m_tags_vector[j].value) == "end"){
+              m_end_offset = m_tags_vector[j].offset;
+              }
+              if (pmt::symbol_to_string(m_tags_vector[j].value) == "start"){
+              m_begin_offset = m_tags_vector[j].offset;
+              }
             }
         }
 #endif
@@ -318,7 +319,7 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
     // get symbol value of input
     bin_idx_new = get_symbol_val(&in[0]);
     #ifdef GRLORA_DEBUGV
-      GR_LOG_DEBUG(this->d_logger, "DEBUG:Symbol:"+std::to_string(bin_idx_new));
+//      GR_LOG_DEBUG(this->d_logger, "DEBUG:Symbol:"+std::to_string(bin_idx_new));
 #endif
 
     // calculate difference between this value and previous symbol value
@@ -343,18 +344,19 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Found PREAMBLE -> SEND PREAMBLE!");
 #endif
 #ifdef GRLORA_SIM
-      if(nitems_written(0) <= m_begin_offset.at(0) || nitems_read(0) > m_end_offset ){
-          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag correctly:"+std::to_string(m_begin_offset.at(0)));
-          m_detected_tag_begin = true;
-          symbol_cnt = 0;
-          //pop first item
-          if(m_begin_offset.size() > 1) {
-              m_begin_offset.erase(m_begin_offset.begin());
-          }
-      }else{
-          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found no beginning tag:"+std::to_string(nitems_written(0)));
-          GR_LOG_DEBUG(this->d_logger, "DEBUG:beginning tag is at:"+std::to_string(m_begin_offset.at(0)));
-      }
+    m_begin_store = nitems_written(0);
+//    if( (nitems_read(0)-n_up*m_N ) <= m_begin_offset.at(0)  ){
+//          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found beginning tag correctly:"+std::to_string(m_begin_offset.at(0)));
+//          m_detected_tag_begin = true;
+//          symbol_cnt = 0;
+//          //pop first item
+//          if(m_begin_offset.size() > 1) {
+//              m_begin_offset.erase(m_begin_offset.begin());
+//          }
+//      }else{
+//          GR_LOG_DEBUG(this->d_logger, "DEBUG:Found no beginning tag:"+std::to_string((nitems_read(0)-n_up*m_N )));
+//          GR_LOG_DEBUG(this->d_logger, "DEBUG:beginning tag is at:"+std::to_string(m_begin_offset.at(0)));
+//      }
 //      //find the frame info tag
 //        get_tags_in_range(m_tags_vector,0, nitems_written(0), nitems_read(0)+m_samples_per_symbol,
 //                           pmt::string_to_symbol("frame"));
@@ -373,7 +375,8 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
       set_power(&in[0]);
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
-#ifdef GRLORA_DEBUGV
+
+      #ifdef GRLORA_DEBUGV
       GR_LOG_DEBUG(this->d_logger, "DEBUG:Tagging start of frame at :" +
                                        std::to_string(nitems_written(0)));
       GR_LOG_DEBUG(this->d_logger, "DEBUG:set power at:" +
@@ -459,10 +462,18 @@ int frame_detector_threshold_impl::general_work(int noutput_items,
 #ifdef GRLORA_SIM
         if(nitems_read(0)>= m_end_offset) {
 #ifdef GRLORA_DEBUGV
-            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tagis at :"+std::to_string(m_tags_vector[0].offset));
+            GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag is at :"+std::to_string(m_end_offset));
             GR_LOG_DEBUG(this->d_logger, "DEBUG:Frame detector is at :"+std::to_string(nitems_read(0)));
 #endif
-            m_detected_tag_end = true;
+
+m_detected_tag_end = true;
+        }
+        if( m_begin_store <= m_begin_offset){
+        m_detected_tag_begin =true;
+#ifdef GRLORA_DEBUGV
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:begin tag is at :"+std::to_string(m_begin_offset));
+      GR_LOG_DEBUG(this->d_logger, "DEBUG:Frame detector is at :"+std::to_string(m_begin_store));
+#endif
         }
         else{
             GR_LOG_DEBUG(this->d_logger, "DEBUG:Correct end tag is at :"+std::to_string(m_end_offset));

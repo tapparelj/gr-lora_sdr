@@ -15,7 +15,7 @@ options:
     output_language: python
     placement: (0,0)
     qt_qss_theme: ''
-    realtime_scheduling: ''
+    realtime_scheduling: '1'
     run: 'True'
     run_command: '{python} -u {filename}'
     run_options: run
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-1'
+    value: '-7'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +216,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '11'
+    value: '1.5'
   states:
     bus_sink: false
     bus_source: false
@@ -316,7 +316,7 @@ blocks:
     bus_structure: null
     coordinate: [636.0, 320]
     rotation: 270
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_detector_timeout_0
   id: lora_sdr_frame_detector_timeout
   parameters:
@@ -333,9 +333,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [676.0, 280]
+    coordinate: [743, 331]
     rotation: 270
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:

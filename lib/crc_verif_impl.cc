@@ -3,8 +3,8 @@
 #endif
 
 #include "crc_verif_impl.h"
-#include <gnuradio/io_signature.h>
 #include <chrono>
+#include <gnuradio/io_signature.h>
 
 namespace gr {
 namespace lora_sdr {
@@ -19,9 +19,8 @@ crc_verif::sptr crc_verif::make(bool exit) {
 crc_verif_impl::crc_verif_impl(bool exit)
     : gr::block("crc_verif", gr::io_signature::make(1, 1, sizeof(uint8_t)),
                 gr::io_signature::make(0, 1, sizeof(uint8_t))) {
-    m_exit = exit;
-        gr::block::set_thread_priority(99);
-        t1 = std::chrono::high_resolution_clock::now();
+  m_exit = exit;
+  gr::block::set_thread_priority(99);
   message_port_register_out(pmt::mp("msg"));
 }
 
@@ -60,14 +59,15 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   if (output_items.size())
     out = (uint8_t *)output_items[0];
   int nitem_to_process = ninput_items[0];
-  if(m_exit) {
-      //search for work_done tags and if found add them to the stream
-      std::vector <tag_t> work_done_tags;
-      get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
-                         pmt::string_to_symbol("work_done"));
-      if (work_done_tags.size()) {
-          std::exit(EXIT_SUCCESS);
-      }
+
+  if (m_exit) {
+    // search for work_done tags and if found add them to the stream
+    std::vector<tag_t> work_done_tags;
+    get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
+                       pmt::string_to_symbol("work_done"));
+    if (work_done_tags.size()) {
+      std::exit(EXIT_SUCCESS);
+    }
   }
 
   std::vector<tag_t> tags;
@@ -86,13 +86,9 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
           pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
       m_payload_len = pmt::to_long(
           pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err));
-#ifdef GRLORA_DEBUGV
-      std::cout << m_payload_len << " " << nitem_to_process << std::endl;
-      std::cout << "\ncrc_crc " << tags[0].offset
-                << " - crc:
-                   "<<(int)m_crc_presence<<" -
-                       pay_len : "<<(int)m_payload_len<<"\n ";
-#endif
+      // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
+      // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc:
+      // "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
     }
   }
 
@@ -109,7 +105,7 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
 
       // XOR the obtained CRC with the last 2 data bytes
       m_crc = m_crc ^ in[m_payload_len - 1] ^ (in[m_payload_len - 2] << 8);
-#ifdef GRLORA_DEBUGV
+#ifdef GRLORA_DEBUG
       for (int i = 0; i < (int)m_payload_len + 2; i++)
         std::cout << std::hex << (int)in[i] << std::dec << std::endl;
       std::cout << "Calculated " << std::hex << m_crc << std::dec << std::endl;
@@ -126,14 +122,15 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         if (output_items.size())
           out[i] = in[i];
       }
-#ifdef GRLORA_DEBUGV
+
       cnt++;
-      std::cout << "msg " << cnt << ": " << message_str << std::endl
-                << std::endl;
-      if (!(in[m_payload_len] + (in[m_payload_len + 1] << 8) - m_crc))
-        std::cout << "CRC valid!" << std::endl << std::endl;
-      else
-        std::cout << RED << "CRC invalid" << RESET << std::endl << std::endl;
+#ifdef GRLORA_DEBUGv
+        std::cout << "msg " << cnt << ": " << message_str << std::endl
+                  << std::endl;
+        if (!(in[m_payload_len] + (in[m_payload_len + 1] << 8) - m_crc))
+          std::cout << "CRC valid!" << std::endl << std::endl;
+        else
+          std::cout << RED << "CRC invalid" << RESET << std::endl << std::endl;
 #endif
       message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
       consume_each(m_payload_len + 2);
@@ -149,17 +146,13 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
         out[i] = in[i];
     }
     cnt++;
-//    std::cout << cnt << std::endl;
-//    if(cnt > 950){
-//        using namespace std::chrono;
-//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-//        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-//        std::cout << "Avg time: " << time_span.count()/cnt << " seconds.";
-//        std::exit(EXIT_SUCCESS);
-//    }
+#ifdef GRLORA_DEBUGv
+      std::cout << "msg " << cnt << ": ";
+      std::cout << message_str << std::endl;
+#endif
 #ifdef GRLORA_DEBUG
-    GR_LOG_DEBUG(this->d_logger,
-                 "DEBUG:msg:" + message_str);
+      GR_LOG_DEBUG(this->d_logger,
+      "DEBUG:msg:" + message_str);
 #endif
     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
     consume_each(m_payload_len);
@@ -167,5 +160,6 @@ int crc_verif_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   } else
     return 0;
 }
+
 } // namespace lora_sdr
 } /* namespace gr */

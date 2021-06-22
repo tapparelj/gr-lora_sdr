@@ -4,8 +4,8 @@
 #include <lora_sdr/crc_verif.h>
 #include <lora_sdr/utilities.h>
 
-// #define GRLORA_DEBUG
-
+//#define  GRLORA_DEBUGV
+#define GRLORA_DEBUG
 namespace gr {
   namespace lora_sdr {
 
