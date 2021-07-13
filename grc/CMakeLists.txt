@@ -47,6 +47,8 @@ install(FILES
     lora_sdr_mu_demod.block.yml
     lora_sdr_partial_ml.block.yml
     lora_sdr_mu_synchro.block.yml
-    lora_sdr_mu_detection.block.yml    DESTINATION share/gnuradio/grc/blocks
+    lora_sdr_mu_detection.block.yml
+    lora_sdr_frame_sender.block.yml
+    lora_sdr_frame_reciever.block.yml DESTINATION share/gnuradio/grc/blocks
 )
 
