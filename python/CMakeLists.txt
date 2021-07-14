@@ -33,7 +33,8 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     mu_demod.py
-    DESTINATION ${GR_PYTHON_DIR}/lora_sdr
+    frame_sender.py
+    frame_reciever.py DESTINATION ${GR_PYTHON_DIR}/lora_sdr
 )
 
 ########################################################################
@@ -115,4 +116,5 @@ GR_ADD_TEST(qa_frame_detector_threshold ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOU
 # GR_ADD_TEST(qa_partial_ml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_partial_ml.py)
 # GR_ADD_TEST(qa_mu_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_demod.py)
 # GR_ADD_TEST(qa_noise_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_noise_est.py)
-# GR_ADD_TEST(qa_frame_src ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_src.py)
+# GR_ADD_TEST(qa_frame_src ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_src.py)GR_ADD_TEST(qa_frame_sender ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_sender.py)
+GR_ADD_TEST(qa_frame_reciever ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_reciever.py)
