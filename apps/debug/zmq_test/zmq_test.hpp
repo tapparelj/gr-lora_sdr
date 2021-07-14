@@ -36,8 +36,8 @@ private:
 
 
 // Variables:
-    int time_wait = 2;
-    int threshold = 100;
+    int time_wait = 200;
+    int threshold = 1;
     int sf = 7;
     int samp_rate = 250000;
     int pay_len = 64;

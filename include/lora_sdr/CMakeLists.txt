@@ -50,5 +50,7 @@ install(FILES
     partial_ml.h
     frame_src.h
     signal_detector.h
-    frame_detector.h DESTINATION include/lora_sdr
+    frame_detector_threshold.h
+    frame_detector_sequence.h
+    frame_detector_timeout.h DESTINATION include/lora_sdr
 )
