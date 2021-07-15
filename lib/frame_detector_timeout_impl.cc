@@ -47,7 +47,8 @@ frame_detector_timeout_impl::frame_detector_timeout_impl(uint8_t sf,
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
-  m_n_bytes = n_bytes;
+  m_n_bytes = (u_int16_t) n_bytes;
+  m_store_n_bytes = m_n_bytes;
 
   // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
@@ -74,6 +75,7 @@ frame_detector_timeout_impl::frame_detector_timeout_impl(uint8_t sf,
   symbol_cnt = 0;
   m_cnt = 0;
   m_state = FIND_PREAMBLE;
+  m_detect_second_packet = true;
 
   // set buffer reserve
   buffer.reserve(m_N * n_up);
@@ -219,9 +221,46 @@ int frame_detector_timeout_impl::general_work(
     return end_vec;
   }
   case SEND_FRAME: {
-    // send the frame over till we have reached n_bytes
-    //if the output buffer can hold the input
+
+    // if there is enough output buffer to hold a byte
     if (noutput_items > m_samples_per_symbol) {
+
+        //if we need to detect a second packet inside the window.
+        if(m_detect_second_packet){
+            //get symbol value of input
+            bin_idx_new = get_symbol_val(&in[0]);
+
+            // calculate difference between this value and previous symbol value
+            if (std::abs(bin_idx_new - bin_idx) <= 1 && bin_idx_new != -1) {
+                symbol_cnt++;
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:val:"+std::to_string(bin_idx_new));
+            } // is symbol value are not close to each other start over
+            else {
+                bin_idx = bin_idx_new;
+                // set symbol value to be 1
+                symbol_cnt = 1;
+            }
+            // number of preambles needed
+            int nR_up = (int)(n_up);
+            // if we have n_up symbols counted we have found the preamble
+            if (symbol_cnt == nR_up) {
+#ifdef GRLORA_DEBUGV
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Detected second packet inside the timeout window");
+//                GR_LOG_DEBUG(this->d_logger, "DEBUG:val:"+std::to_string(bin_idx_new));
+//                GR_LOG_DEBUG(this->d_logger, "DEBUG:temp:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes)+ ":"+std::to_string(m_store_n_bytes));
+#endif
+                //offset the number of bytes to be send with new timeout window calculated relative to this point
+                m_n_bytes = (m_n_bytes - m_cnt)+m_store_n_bytes;
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:val:"+std::to_string(m_n_bytes));
+                //tag the beginning of the new packet
+                add_item_tag(0, nitems_written(0),
+                             pmt::intern("frame"), pmt::intern("start"),
+                             pmt::intern("frame_detector_timeout"));
+            }
+        }
+
+
+        //if the output buffer can hold the input
       if (m_cnt == 0) {
         // send over the quarter symbol in the preamble
         consume_each((m_samples_per_symbol / 4));
@@ -230,18 +269,22 @@ int frame_detector_timeout_impl::general_work(
         m_cnt++;
         return (m_samples_per_symbol / 4);
       }
-      //if we processed the number of bytes
+      //if we processed the number of bytes in the timeout window
       if (m_cnt == m_n_bytes) {
 #ifdef GRLORA_DEBUGV
-        GR_LOG_DEBUG(this->d_logger,
+            GR_LOG_DEBUG(this->d_logger,
                      "DEBUG:Done SEND_FRAME -> FINDING_PREAMBLE");
+          GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes) +":"+std::to_string(m_store_n_bytes));
 #endif
           add_item_tag(0, nitems_written(0)+m_samples_per_symbol,
                        pmt::intern("frame"), pmt::intern("end"),
                        pmt::intern("frame_detector_timeout"));
         m_state = FIND_PREAMBLE;
         m_cnt = 0;
-        //padding between detected frames
+        symbol_cnt = 0;
+        m_n_bytes = m_store_n_bytes;
+//        GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes))
+        //pad byte padding between detected frames (to allow propagation of end tag
         consume_each(0);
         out[0] = gr_complex(0.0,0.0);
         return 1;

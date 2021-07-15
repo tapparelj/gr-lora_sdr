@@ -11,7 +11,7 @@ class frame_sender(gr.sync_block):
     def __init__(self, addres, port, mode):
         gr.sync_block.__init__(self,
             name="frame_sender",
-            in_sig=[<+numpy.float32+>, ],
+            in_sig=[numpy.float32],
             out_sig=None)
 
 

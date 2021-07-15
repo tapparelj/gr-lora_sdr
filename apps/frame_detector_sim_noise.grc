@@ -72,7 +72,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '4'
   states:
     bus_sink: false
     bus_source: false
@@ -120,7 +120,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -316,7 +316,7 @@ blocks:
     bus_structure: null
     coordinate: [636.0, 320]
     rotation: 270
-    state: enabled
+    state: disabled
 - name: lora_sdr_frame_detector_timeout_0
   id: lora_sdr_frame_detector_timeout
   parameters:
@@ -326,7 +326,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    n_bytes: '95'
+    n_bytes: '150'
     samp_rate: samp_rate
     sf: sf
   states:
@@ -335,7 +335,7 @@ blocks:
     bus_structure: null
     coordinate: [743, 331]
     rotation: 270
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:

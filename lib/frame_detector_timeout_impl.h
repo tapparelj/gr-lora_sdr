@@ -46,7 +46,9 @@ private:
    * @brief Number of bytes we should send after detection
    *
    */
-  uint8_t m_n_bytes;
+  uint16_t m_n_bytes;
+
+  uint16_t m_store_n_bytes;
 
   /**
    * @brief Number of samples per LoRa symbol
@@ -148,7 +150,9 @@ private:
    * @brief Counter for counting the number of bytes we have sent
    *
    */
-  int m_cnt;
+  uint16_t m_cnt;
+
+  bool m_detect_second_packet;
 
   /**
    * @brief Get the symbol object value (aka decoded LoRa symbol value)
