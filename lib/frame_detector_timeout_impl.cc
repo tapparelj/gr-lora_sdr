@@ -251,8 +251,14 @@ int frame_detector_timeout_impl::general_work(
 #endif
                 //offset the number of bytes to be send with new timeout window calculated relative to this point
                 m_n_bytes = (m_n_bytes - m_cnt)+m_store_n_bytes;
-                GR_LOG_DEBUG(this->d_logger, "DEBUG:val:"+std::to_string(m_n_bytes));
-                //tag the beginning of the new packet
+                //tag the end of packet and the beginning of the new packet
+
+                //TODO: find out how we want to package two consecutive frames
+
+//                add_item_tag(0, nitems_written(0),
+//                             pmt::intern("frame"), pmt::intern("end"),
+//                             pmt::intern("frame_detector_timeout"));
+
                 add_item_tag(0, nitems_written(0),
                              pmt::intern("frame"), pmt::intern("start"),
                              pmt::intern("frame_detector_timeout"));
@@ -283,8 +289,7 @@ int frame_detector_timeout_impl::general_work(
         m_cnt = 0;
         symbol_cnt = 0;
         m_n_bytes = m_store_n_bytes;
-//        GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes))
-        //pad byte padding between detected frames (to allow propagation of end tag
+        //pad byte padding between detected frames (to allow propagation of end tag)
         consume_each(0);
         out[0] = gr_complex(0.0,0.0);
         return 1;
