@@ -37,7 +37,7 @@ namespace gr {
        * creating new instances.
        */
       static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw,
-                              uint8_t n_bytes);
+                              uint8_t n_bytes, bool detect_second_packet);
     };
 
   } // namespace lora_sdr

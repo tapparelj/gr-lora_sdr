@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '500'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false
@@ -156,12 +156,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '64'
+    value: '24'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [763, 4]
+    coordinate: [764, 3]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -180,7 +180,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '12'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
@@ -252,7 +252,7 @@ blocks:
     bus_structure: null
     coordinate: [692, 590]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -341,6 +341,7 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
+    detect_second_packet: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
     n_bytes: '150'
@@ -370,7 +371,7 @@ blocks:
     bus_structure: null
     coordinate: [456, 564]
     rotation: 0
-    state: true
+    state: disabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -413,7 +414,7 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: '"TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9"'
+    src_data: ''
     sync_words: '[8, 16]'
   states:
     bus_sink: false

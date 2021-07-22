@@ -39,10 +39,10 @@ class frame_detector(gr.top_block):
         self.threshold = threshold = 1.5
         self.sto = sto = 0.3
         self.snr = snr = -7
-        self.sf = sf = 12
+        self.sf = sf = 7
         self.samp_rate = samp_rate = bw
-        self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 500
+        self.pay_len = pay_len = 24
+        self.n_frame = n_frame = 5
         self.multi_control = multi_control = True
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -55,14 +55,13 @@ class frame_detector(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
-        self.lora_sdr_hier_tx_1.set_min_output_buffer(32768)
+        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, '', cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],True)
+        self.lora_sdr_hier_tx_1.set_min_output_buffer(1024)
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'test')
-        self.lora_sdr_frame_detector_timeout_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,150)
+        self.lora_sdr_frame_detector_timeout_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,150,True)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
-        self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(32768)
+        self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=10**(-snr/20),
             frequency_offset=cfo,
@@ -70,9 +69,8 @@ class frame_detector(gr.top_block):
             taps=[1.0 + 1.0j],
             noise_seed=0,
             block_tags=False)
-        self.channels_channel_model_0.set_min_output_buffer(32768)
+        self.channels_channel_model_0.set_min_output_buffer(1024)
         self.blocks_throttle_0_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
-        self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
@@ -83,7 +81,6 @@ class frame_detector(gr.top_block):
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_detector_timeout_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
         self.connect((self.lora_sdr_frame_detector_timeout_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
-        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_null_sink_0_0, 0))
         self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0, 0))
 
 

@@ -3,7 +3,7 @@
 
 import numpy
 from gnuradio import gr
-from loudify_client import client_api
+from loudify import client_api
 
 class frame_sender(gr.sync_block):
     """

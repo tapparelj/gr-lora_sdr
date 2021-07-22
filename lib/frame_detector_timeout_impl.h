@@ -48,6 +48,10 @@ private:
    */
   uint16_t m_n_bytes;
 
+  /**
+   * @brief Number of bytes we should store for reference later
+   *
+   */
   uint16_t m_store_n_bytes;
 
   /**
@@ -152,6 +156,10 @@ private:
    */
   uint16_t m_cnt;
 
+  /**
+   * @brief wheter we should detect a second packet in the timeout window or nor
+   *
+   */
   bool m_detect_second_packet;
 
   /**
@@ -171,9 +179,10 @@ public:
    * @param bandwidth : bandwith
    * @param sf : spreading factor
    * @param n_bytes : number of bytes to send after preamble detection
+   * @param detect_second_packet : if systems needs to detect second frame inside the window
    */
   frame_detector_timeout_impl(uint8_t sf, uint32_t smap_rate, uint32_t bw,
-                              uint8_t n_bytes);
+                              uint8_t n_bytes, bool detect_second_packet);
 
   /**
    * @brief Destroy the frame detector impl object
