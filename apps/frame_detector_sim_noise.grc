@@ -252,6 +252,25 @@ blocks:
     bus_structure: null
     coordinate: [692, 590]
     rotation: 0
+    state: enabled
+- name: blocks_null_source_0
+  id: blocks_null_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_source: '[[0,],]'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_outputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [294, 711]
+    rotation: 0
     state: disabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
@@ -271,7 +290,7 @@ blocks:
     bus_structure: null
     coordinate: [248, 221]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -292,7 +311,7 @@ blocks:
     bus_structure: null
     coordinate: [440, 180.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -314,7 +333,7 @@ blocks:
     bus_structure: null
     coordinate: [291, 445]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: lora_sdr_frame_detector_1
   id: lora_sdr_frame_detector
   parameters:
@@ -353,7 +372,7 @@ blocks:
     bus_structure: null
     coordinate: [743, 331]
     rotation: 270
-    state: enabled
+    state: disabled
 - name: lora_sdr_frame_reciever_0
   id: lora_sdr_frame_reciever
   parameters:
@@ -365,11 +384,28 @@ blocks:
     minoutbuf: '0'
     mode: test
     port: '5555'
+    service: echo
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 564]
+    coordinate: [456, 556]
+    rotation: 0
+    state: enabled
+- name: lora_sdr_frame_sender_0
+  id: lora_sdr_frame_sender
+  parameters:
+    addres: localhost
+    affinity: ''
+    alias: ''
+    comment: ''
+    mode: ''
+    port: '5555'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [476, 693]
     rotation: 0
     state: disabled
 - name: lora_sdr_hier_rx_1
@@ -395,7 +431,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 389]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_tx_1
   id: lora_sdr_hier_tx
   parameters:
@@ -422,9 +458,10 @@ blocks:
     bus_structure: null
     coordinate: [8, 133]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
+- [blocks_null_source_0, '0', lora_sdr_frame_sender_0, '0']
 - [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_timeout_0, '0']

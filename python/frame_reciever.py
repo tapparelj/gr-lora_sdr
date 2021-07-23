@@ -4,17 +4,19 @@
 import numpy
 from gnuradio import gr
 from loudify import worker_api
+import time
+import signal
 
 class frame_reciever(gr.sync_block):
     """
     docstring for block frame_reciever
     """
-    def __init__(self, addres, port, mode):
+    def __init__(self, addres, port, service, mode):
         verbose  = True
-        print(addres,port,mode)
+        
 
         #make a worker context
-        self.worker = worker_api.Worker("tcp://localhost:5555", b"echo", verbose)
+        self.worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
         
         gr.sync_block.__init__(self,
             name="frame_reciever",
@@ -24,16 +26,16 @@ class frame_reciever(gr.sync_block):
 
     def work(self, input_items, output_items):
         reply = None
+        print("test")
         while True:
             request = self.worker.recv(reply)
-            # sleep(0.025)
             if request is None:
                 print("Worker was interrupted")
-                break  # Worker was interrupted
-            reply = request  # Echo is complex... :-)
+            print(request)
+            
+            out = output_items[0]
+            # <+signal processing here+>
+            out[0] = 1+2j
 
-        out = output_items[0]
-        # <+signal processing here+>
-        out[0] = numpy.array([1+2j, 3+4j, 5+6j])
-        return len(output_items[0])
+            return len(output_items[0])
 

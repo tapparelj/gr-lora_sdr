@@ -4,7 +4,7 @@ category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_reciever(${addres}, ${port}, ${mode})
+  make: lora_sdr.frame_reciever(${addres}, ${port}, ${service} ,${mode})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -15,9 +15,15 @@ parameters:
 - id: addres
   label: Broker addres
   dtype: string
+  default : "localhost"
 - id: port
   label: Brokers port
   dtype: int
+  default : 5555
+- id : service
+  label: Worker service
+  dtype: string
+  default : "Rx"
 - id: mode
   label : modus
   dtype : string
