@@ -53,15 +53,15 @@ class frame_detector(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'echo' ,'test')
-        self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True)
+        self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_null_sink_0_0, 0))
+        self.connect((self.blocks_null_source_0, 0), (self.lora_sdr_frame_sender_0, 0))
 
 
     def get_bw(self):
@@ -193,6 +193,7 @@ def main(top_block_cls=frame_detector, options=None):
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
+        tb.wait()
 
         sys.exit(0)
 

@@ -252,7 +252,7 @@ blocks:
     bus_structure: null
     coordinate: [692, 590]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_source_0
   id: blocks_null_source
   parameters:
@@ -271,7 +271,7 @@ blocks:
     bus_structure: null
     coordinate: [294, 711]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -382,7 +382,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    mode: test
+    mode: sync
     port: '5555'
     service: echo
   states:
@@ -391,7 +391,7 @@ blocks:
     bus_structure: null
     coordinate: [456, 556]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_frame_sender_0
   id: lora_sdr_frame_sender
   parameters:
@@ -399,7 +399,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    mode: ''
+    mode: sync
     port: '5555'
   states:
     bus_sink: false
@@ -407,7 +407,7 @@ blocks:
     bus_structure: null
     coordinate: [476, 693]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:

@@ -21,8 +21,13 @@ parameters:
   dtype: int
   default : 5555
 - id: mode
-  label : modus
-  dtype : string
+  label : Synchronous mode
+  dtype: enum
+  default : 'True'
+  options: ['True', 'False']
+  option_labels: ['Yes', 'No']
+
+
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
