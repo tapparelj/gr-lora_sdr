@@ -4,6 +4,8 @@
 import numpy
 from gnuradio import gr
 from loudify import worker_api
+from loudify import zhelpers
+from loudify import definitions
 import time
 import signal
 
@@ -26,16 +28,24 @@ class frame_reciever(gr.sync_block):
 
     def work(self, input_items, output_items):
         reply = None
-        print("test")
         while True:
             request = self.worker.recv(reply)
             if request is None:
                 print("Worker was interrupted")
-            print(request)
+            
+            zhelpers.dump(request)
+
+            if request:
+                header = request.pop(0) 
+                service = request.pop(0)
+                
+                if header == definitions.C_CLIENT:
+                    print(header, service)
+
             
             out = output_items[0]
             # <+signal processing here+>
-            out[0] = 1+2j
+            # out[0] = 1+2j
 
             return len(output_items[0])
 

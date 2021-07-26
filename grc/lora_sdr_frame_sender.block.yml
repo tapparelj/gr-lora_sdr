@@ -4,7 +4,8 @@ category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode})
+  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode}, ${sf}, ${samp_rate}, ${bw}, ${has_crc},
+   ${pay_len}, ${cr}, ${impl_head}, ${sync_words})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -26,8 +27,47 @@ parameters:
   default : 'True'
   options: ['True', 'False']
   option_labels: ['Yes', 'No']
+- id: compress
+  label : Compress data
+  dtype: enum
+  default : 'True'
+  options: ['True', 'False']
+  option_labels: ['Yes', 'No']
+- id: sf
+  label: Sf
+  dtype: int
+- id: samp_rate
+  label: Samp_rate
+  dtype: int
+- id: bw
+  label: Bw
+  dtype: int
+- id: has_crc
+  label: Has_crc
+  dtype: bool
+  default: "False"
+  optional: true
+- id: pay_len
+  label: Pay_len
+  dtype: int
+  optional: true
+- id: cr
+  label: Cr
+  dtype: int
+  optional: true
+- id: impl_head
+  label: Impl_head
+  dtype: bool
+  optional: true
+- id: sync_words
+  label: Sync words
+  dtype: int_vector
+  default: [8, 16]
+  optional: true
 
-
+asserts:
+  - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+  - ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:

@@ -182,7 +182,7 @@ int frame_detector_timeout_impl::general_work(
       // store the current power level in m_power
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
-      add_item_tag(0, nitems_written(0),
+      add_item_tag(0, nitems_written(0)+1,
                    pmt::intern("frame"), pmt::intern("start"),
                    pmt::intern("frame_detector_timeout"));
 #ifdef GRLORA_DEBUGV
@@ -272,7 +272,7 @@ int frame_detector_timeout_impl::general_work(
                 add_item_tag(0, nitems_written(0),
                              pmt::intern("frame"), pmt::intern("end"),
                              pmt::intern("frame_detector_timeout"));
-                add_item_tag(0, nitems_written(0) +1,
+                add_item_tag(0, nitems_written(0),
                              pmt::intern("frame"), pmt::intern("start"),
                              pmt::intern("frame_detector_timeout"));
                 //reset variables and go to sending the buffer and then return

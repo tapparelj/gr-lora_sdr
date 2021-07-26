@@ -35,13 +35,15 @@ parameters:
     label: Bandwith
     dtype: int
   - id: n_bytes
-    label: Number of bytes
+    label: Timeout window
     dtype: int
     default: 55
   - id: detect_second_packet
     label: Detect second packet
-    dtype: bool
-    default: false
+    dtype: enum
+    default : 'false'
+    options: ['True', 'False']
+    option_labels: ['Yes', 'No']
 
 
 asserts:

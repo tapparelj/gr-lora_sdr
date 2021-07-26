@@ -39,8 +39,8 @@ class frame_detector(gr.top_block):
         self.snr = snr = -7
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
-        self.pay_len = pay_len = 24
-        self.n_frame = n_frame = 5
+        self.pay_len = pay_len = 64
+        self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
@@ -53,15 +53,15 @@ class frame_detector(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True)
-        self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
+        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'echo' ,True)
+        self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_null_source_0, 0), (self.lora_sdr_frame_sender_0, 0))
+        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_null_sink_0_0, 0))
 
 
     def get_bw(self):

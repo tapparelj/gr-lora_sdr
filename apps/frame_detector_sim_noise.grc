@@ -144,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -156,7 +156,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '24'
+    value: '64'
   states:
     bus_sink: false
     bus_source: false
@@ -250,26 +250,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [692, 590]
-    rotation: 0
-    state: disabled
-- name: blocks_null_source_0
-  id: blocks_null_source
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_source: '[[0,],]'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_outputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [294, 711]
+    coordinate: [682, 583]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0_1_0
@@ -370,8 +351,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [743, 331]
+    coordinate: [731, 332]
     rotation: 270
+    state: disabled
+- name: lora_sdr_frame_detector_timeout_0_0
+  id: lora_sdr_frame_detector_timeout
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    detect_second_packet: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_bytes: '150'
+    samp_rate: samp_rate
+    sf: sf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [356, 698]
+    rotation: 0
     state: disabled
 - name: lora_sdr_frame_reciever_0
   id: lora_sdr_frame_reciever
@@ -382,32 +383,41 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    mode: sync
+    mode: 'True'
     port: '5555'
     service: echo
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 556]
+    coordinate: [453, 555]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_sender_0
   id: lora_sdr_frame_sender
   parameters:
     addres: localhost
     affinity: ''
     alias: ''
+    bw: bw
     comment: ''
-    mode: sync
+    compress: 'True'
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    mode: 'True'
+    pay_len: pay_len
     port: '5555'
+    samp_rate: samp_rate
+    sf: sf
+    sync_words: '[8, 16]'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [476, 693]
+    coordinate: [746, 641]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -445,7 +455,7 @@ blocks:
     maxoutbuf: '0'
     mean: time_wait
     minoutbuf: 2**sf*8
-    multi_control: 'True'
+    multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
@@ -456,20 +466,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 133]
+    coordinate: [54, 642]
     rotation: 0
     state: disabled
 
 connections:
-- [blocks_null_source_0, '0', lora_sdr_frame_sender_0, '0']
 - [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_detector_timeout_0, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
 - [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [lora_sdr_frame_detector_timeout_0, '0', interp_fir_filter_xxx_0_1_0, '0']
+- [lora_sdr_frame_detector_timeout_0_0, '0', lora_sdr_frame_sender_0, '0']
 - [lora_sdr_frame_reciever_0, '0', blocks_null_sink_0_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', lora_sdr_frame_detector_timeout_0_0, '0']
 
 metadata:
   file_format: 1
