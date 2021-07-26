@@ -373,7 +373,7 @@ blocks:
     bus_structure: null
     coordinate: [356, 698]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_reciever_0
   id: lora_sdr_frame_reciever
   parameters:
@@ -417,7 +417,7 @@ blocks:
     bus_structure: null
     coordinate: [746, 641]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -466,9 +466,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [54, 642]
+    coordinate: [52, 642]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
 - [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
