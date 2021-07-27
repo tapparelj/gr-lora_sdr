@@ -11,9 +11,8 @@
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
-from gnuradio import channels
-from gnuradio.filter import firdes
 from gnuradio import filter
+from gnuradio.filter import firdes
 from gnuradio import gr
 import sys
 import signal
@@ -22,9 +21,12 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
 import threading
+from loudify import worker_api
+import ast
+import numpy
+import pickle
 
-
-class frame_detector_threshold(gr.top_block):
+class cran_recieve(gr.top_block):
 
     def __init__(self):
         gr.top_block.__init__(self, "Frame detector test with noise and cfo")
@@ -36,53 +38,35 @@ class frame_detector_threshold(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.threshold = threshold = 0.3
-        self.sto = sto = 0
-        self.snr = snr = -4
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
-        self.pay_len = pay_len = 10
-        self.n_frame = n_frame = 100
+        self.pay_len = pay_len = 64
+        self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
-        self.impl_head = impl_head = False
+        self.input_vec = input_vec = (0, 0, 0)
+        self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
-        self.delay = delay = 1000
         self.cr = cr = 4
-        self.cfo = cfo = 0.0
-        self.center_freq = center_freq = 868.1e6
 
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, '', cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
-        self.lora_sdr_hier_tx_1.set_min_output_buffer(1024)
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
-        self.channels_channel_model_0 = channels.channel_model(
-            noise_voltage=10**(-snr/20),
-            frequency_offset=cfo,
-            epsilon=1+sto/samp_rate,
-            taps=[1.0],
-            noise_seed=0,
-            block_tags=False)
-        self.channels_channel_model_0.set_min_output_buffer(1024)
-        self.blocks_throttle_0_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_gr_complex*1, '', "")
-        self.blocks_tag_debug_0.set_display(True)
+        self.blocks_vector_source_x_0 = blocks.vector_source_c(input_vec, False, 1, [])
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_throttle_0_1_0, 0), (self.blocks_tag_debug_0, 0))
-        self.connect((self.blocks_throttle_0_1_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
-        self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0, 0))
 
 
     def get_bw(self):
@@ -100,29 +84,6 @@ class frame_detector_threshold(gr.top_block):
         with self._lock:
             self.time_wait = time_wait
 
-    def get_threshold(self):
-        return self.threshold
-
-    def set_threshold(self, threshold):
-        with self._lock:
-            self.threshold = threshold
-
-    def get_sto(self):
-        return self.sto
-
-    def set_sto(self, sto):
-        with self._lock:
-            self.sto = sto
-            self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
-
-    def get_snr(self):
-        return self.snr
-
-    def set_snr(self, snr):
-        with self._lock:
-            self.snr = snr
-            self.channels_channel_model_0.set_noise_voltage(10**(-self.snr/20))
-
     def get_sf(self):
         return self.sf
 
@@ -136,8 +97,7 @@ class frame_detector_threshold(gr.top_block):
     def set_samp_rate(self, samp_rate):
         with self._lock:
             self.samp_rate = samp_rate
-            self.blocks_throttle_0_1_0.set_sample_rate(self.samp_rate)
-            self.channels_channel_model_0.set_timing_offset(1+self.sto/self.samp_rate)
+            self.blocks_throttle_0.set_sample_rate(self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
@@ -160,6 +120,14 @@ class frame_detector_threshold(gr.top_block):
         with self._lock:
             self.multi_control = multi_control
 
+    def get_input_vec(self):
+        return self.input_vec
+
+    def set_input_vec(self, input_vec):
+        with self._lock:
+            self.input_vec = input_vec
+            self.blocks_vector_source_x_0.set_data(self.input_vec, [])
+
     def get_impl_head(self):
         return self.impl_head
 
@@ -181,13 +149,6 @@ class frame_detector_threshold(gr.top_block):
         with self._lock:
             self.frame_period = frame_period
 
-    def get_delay(self):
-        return self.delay
-
-    def set_delay(self, delay):
-        with self._lock:
-            self.delay = delay
-
     def get_cr(self):
         return self.cr
 
@@ -195,27 +156,18 @@ class frame_detector_threshold(gr.top_block):
         with self._lock:
             self.cr = cr
 
-    def get_cfo(self):
-        return self.cfo
-
-    def set_cfo(self, cfo):
-        with self._lock:
-            self.cfo = cfo
-            self.channels_channel_model_0.set_frequency_offset(self.cfo)
-
-    def get_center_freq(self):
-        return self.center_freq
-
-    def set_center_freq(self, center_freq):
-        with self._lock:
-            self.center_freq = center_freq
 
 
 
 
-
-def main(top_block_cls=frame_detector_threshold, options=None):
+def main(top_block_cls=cran_recieve, options=None):
     tb = top_block_cls()
+    addres = "localhost"
+    port = 5555
+    service = "echo"
+    verbose = True
+    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
+
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
@@ -227,9 +179,39 @@ def main(top_block_cls=frame_detector_threshold, options=None):
     signal.signal(signal.SIGTERM, sig_handler)
 
     tb.start()
+    reply = None
+    while True:
+        request = worker.recv(reply)
+        if request is None:
+            print("Worker was interrupted")
+        
+        if request:
+            data = request.pop(0)
+            test = tb.get_input_vec()
+            input_data = pickle.loads(data)
+            complex = input_data[:,0] + 1j* input_data[:,1]
+            tb.set_input_vec(complex)
+            test2 = tb.get_input_vec()
+            shape = input_data.shape
+            #convert back to dict
+            flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
+            
+            print(flowgraph_vars)
+            tb.set_sf(flowgraph_vars['sf'])
+            tb.set_samp_rate(flowgraph_vars['samp_rate'])
+            tb.set_bw(flowgraph_vars['bw'])
+            tb.set_has_crc(flowgraph_vars['has_crc'])
+            tb.set_pay_len(flowgraph_vars['pay_len'])
+            tb.set_cr(flowgraph_vars['cr'])
+            tb.set_impl_head(flowgraph_vars['impl_head'])
+            # tb.set_
+            print("Updated flowgrapgh")
+            print(tb.get_sf())
 
-    tb.wait()
+        tb.wait()
+
 
 
 if __name__ == '__main__':
     main()
+

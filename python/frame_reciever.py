@@ -36,7 +36,7 @@ class frame_reciever(gr.sync_block):
             if request:
                 data = request.pop(0) 
                 flowgraph_vars = request.pop(0)
-                #TODO : find out what to do whit flowgraph vars
+                #TODO : find out what to do with flowgraph vars
                 out = data
                 print("Outputting..")
                 print(len(out))

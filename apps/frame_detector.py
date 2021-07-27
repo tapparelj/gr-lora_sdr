@@ -42,6 +42,7 @@ class frame_detector(gr.top_block):
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
+        self.input_vec = input_vec = (0, 0, 0)
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
@@ -56,20 +57,17 @@ class frame_detector(gr.top_block):
         self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, '', cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(1024)
         self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16])
-        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'echo' ,True)
         self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,150,False)
-        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_gr_complex*1, '', "")
-        self.blocks_tag_debug_0.set_display(True)
-        self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.blocks_vector_source_x_0 = blocks.vector_source_c(input_vec, False, 1, [])
+        self.blocks_null_sink_0_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_null_sink_0_0_0, 0))
         self.connect((self.lora_sdr_frame_detector_timeout_0_0, 0), (self.lora_sdr_frame_sender_0, 0))
-        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_null_sink_0_0, 0))
-        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_tag_debug_0, 0))
         self.connect((self.lora_sdr_hier_tx_1, 0), (self.lora_sdr_frame_detector_timeout_0_0, 0))
 
 
@@ -143,6 +141,14 @@ class frame_detector(gr.top_block):
     def set_multi_control(self, multi_control):
         with self._lock:
             self.multi_control = multi_control
+
+    def get_input_vec(self):
+        return self.input_vec
+
+    def set_input_vec(self, input_vec):
+        with self._lock:
+            self.input_vec = input_vec
+            self.blocks_vector_source_x_0.set_data(self.input_vec, [])
 
     def get_impl_head(self):
         return self.impl_head

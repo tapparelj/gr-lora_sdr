@@ -7,7 +7,7 @@ from loudify import client_sync_api
 from loudify import client_async_api
 import pmt
 import time
-
+import pickle
 from pmt.pmt_swig import length
 
 class frame_sender(gr.sync_block):
@@ -23,8 +23,8 @@ class frame_sender(gr.sync_block):
         self.send_packet = False
         self.start_index = []
         self.end_index = []
-        self.data = numpy.empty([1, 2])
-        self.buffer = numpy.empty([1, 2])
+        self.data = numpy.empty([0, 2])
+        self.buffer = numpy.empty([0, 2])
         self.sf = sf
         self.samp_rate = samp_rate
         self.bw = bw
@@ -60,8 +60,11 @@ class frame_sender(gr.sync_block):
     def work(self, input_items, output_items):
 
         #copy input data to output
-        self.buffer = numpy.concatenate((self.buffer, input_items[0]))
-
+        self.buffer = numpy.concatenate((self.buffer, input_items[0]),axis=0)
+        print(input_items[0].dtype)
+        print(input_items[0])
+        print(self.buffer.dtype)
+        print(self.buffer)
         #search for begin and end tags
         tags = self.get_tags_in_window(0, 0, len(input_items[0]))
         for tag in tags:
@@ -85,7 +88,9 @@ class frame_sender(gr.sync_block):
             end = self.end_index[0]
             print(start, end)
             #TODO : find out how to package the second packet
-            self.data = self.buffer[start:end]
+            self.data = self.buffer[0:end]
+            print(self.data)
+            print(self.data.dtype)
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
@@ -94,7 +99,10 @@ class frame_sender(gr.sync_block):
         if self.send_packet:
             if self.modus == True:
                 request = self.data
-                reply = self.client.send(b"echo",  request, self.flowgraph_vars)
+                print(request.dtype)
+                print(request.size)
+                print((request.shape))
+                reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                 if reply:
                     replycode = reply[0]
                     print("Reply from broker")
@@ -104,7 +112,7 @@ class frame_sender(gr.sync_block):
             else:
                 request = b"Hello world"
                 try:
-                    self.client.send(b"echo",  request)
+                    self.client.send(b"echo",  request, flowgraph_vars=self.flowgraph_vars)
                     time.sleep(0.5)
                     self.num_request +=1
                 except KeyboardInterrupt:

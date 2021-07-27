@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: frame_detector_sequence
+    id: cran_recieve
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -44,30 +44,6 @@ blocks:
     coordinate: [347, 4]
     rotation: 0
     state: enabled
-- name: center_freq
-  id: variable
-  parameters:
-    comment: ''
-    value: 868.1e6
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [855, 92]
-    rotation: 0
-    state: enabled
-- name: cfo
-  id: variable
-  parameters:
-    comment: ''
-    value: '0.0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1102, 93]
-    rotation: 0
-    state: enabled
 - name: cr
   id: variable
   parameters:
@@ -80,18 +56,6 @@ blocks:
     coordinate: [619, 4]
     rotation: 0
     state: enabled
-- name: delay
-  id: variable
-  parameters:
-    comment: ''
-    value: '1000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [789, 90]
-    rotation: 0
-    state: enabled
 - name: frame_period
   id: variable
   parameters:
@@ -101,7 +65,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [915, 8]
+    coordinate: [603, 61]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -120,12 +84,32 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [531, 4]
+    rotation: 0
+    state: enabled
+- name: input_vec
+  id: variable
+  parameters:
+    comment: ''
+    value: '[ 1.00000000e+00+0.00000000e+00j -9.99698818e-01-2.45412104e-02j,  9.95184720e-01+9.80172455e-02j
+      -9.75702226e-01-2.19100893e-01j,  9.23879623e-01+3.82683247e-01j -8.17584753e-01-5.75808287e-01j,  6.34392858e-01+7.73010790e-01j
+      -3.59894872e-01-9.32992876e-01j,  5.96244050e-08+1.00000000e+00j  4.05241162e-01-9.14209843e-01j,
+      -7.73010373e-01+6.34393394e-01j  9.85277653e-01-1.70961827e-01j, -9.23880100e-01-3.82682025e-01j  5.34998536e-01+8.44852984e-01j,  9.80166867e-02-9.95184779e-01j
+      -7.24247277e-01+6.89540327e-01j,  1.00000000e+00+1.16026683e-06j -6.89541757e-01-7.24245965e-01j,
+      -9.80166644e-02+9.95184779e-01j  8.44853997e-01-5.34996927e-01j, -9.23880160e-01-3.82681996e-01j  1.70961887e-01+9.85277653e-01j,  7.73011565e-01-6.34391963e-01j
+      -9.14209843e-01-4.05241102e-01j, -1.75232515e-06+1.00000000e+00j  9.32992816e-01-3.59894961e-01j,
+      -6.34394407e-01-7.73009539e-01j -5.75808942e-01+8.17584276e-01j,  9.23878193e-01+3.82686645e-01j  2.19099820e-01-9.75702465e-01j,
+      -9.95184600e-01-9.801850]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [419, 68]
     rotation: 0
     state: enabled
 - name: multi_control
@@ -137,31 +121,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 10]
+    coordinate: [704, 63]
     rotation: 0
     state: enabled
 - name: n_frame
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [843, 8]
+    coordinate: [531, 61]
     rotation: 0
     state: enabled
 - name: pay_len
   id: variable
   parameters:
     comment: ''
-    value: '32'
+    value: '64'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [763, 4]
+    coordinate: [764, 3]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -188,42 +172,6 @@ blocks:
     coordinate: [422, 5]
     rotation: 0
     state: enabled
-- name: snr
-  id: variable
-  parameters:
-    comment: ''
-    value: '-10'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [573, 105]
-    rotation: 0
-    state: enabled
-- name: sto
-  id: variable
-  parameters:
-    comment: ''
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [946, 91]
-    rotation: 0
-    state: enabled
-- name: threshold
-  id: variable
-  parameters:
-    comment: ''
-    value: '2'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [424, 95]
-    rotation: 0
-    state: enabled
 - name: time_wait
   id: variable
   parameters:
@@ -233,29 +181,10 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1113, 13]
+    coordinate: [801, 66]
     rotation: 0
     state: enabled
-- name: blocks_tag_debug_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '"frame"'
-    name: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [308, 298]
-    rotation: 0
-    state: true
-- name: blocks_throttle_0_1_0
+- name: blocks_throttle_0
   id: blocks_throttle
   parameters:
     affinity: ''
@@ -271,30 +200,29 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 219]
-    rotation: 0
+    coordinate: [517, 453]
+    rotation: 180
     state: true
-- name: channels_channel_model_0
-  id: channels_channel_model
+- name: blocks_vector_source_x_0
+  id: blocks_vector_source_x
   parameters:
     affinity: ''
     alias: ''
-    block_tags: 'False'
     comment: ''
-    epsilon: 1+sto/samp_rate
-    freq_offset: cfo
     maxoutbuf: '0'
-    minoutbuf: 2**sf*8
-    noise_voltage: 10**(-snr/20)
-    seed: '0'
-    taps: '1.0'
+    minoutbuf: '0'
+    repeat: 'False'
+    tags: '[]'
+    type: complex
+    vector: input_vec
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1053, 203]
-    rotation: 0
-    state: bypassed
+    coordinate: [734, 437]
+    rotation: 180
+    state: disabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -314,27 +242,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [291, 445]
+    coordinate: [253, 445]
     rotation: 180
-    state: enabled
-- name: lora_sdr_frame_detector_sequence_0
-  id: lora_sdr_frame_detector_sequence
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: bw
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    n_seq: '9'
-    samp_rate: samp_rate
-    sf: sf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [716, 262]
-    rotation: 270
     state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
@@ -359,41 +268,34 @@ blocks:
     bus_structure: null
     coordinate: [64, 389]
     rotation: 180
-    state: true
-- name: lora_sdr_hier_tx_1
-  id: lora_sdr_hier_tx
+    state: enabled
+- name: zeromq_req_source_0
+  id: zeromq_req_source
   parameters:
+    address: ''
     affinity: ''
     alias: ''
-    bw: bw
     comment: ''
-    cr: cr
-    has_crc: has_crc
-    impl_head: impl_head
+    hwm: '-1'
     maxoutbuf: '0'
-    mean: time_wait
-    minoutbuf: 2**sf*8
-    multi_control: 'True'
-    n_frames: n_frame
-    pay_len: pay_len
-    samp_rate: samp_rate
-    sf: sf
-    src_data: '"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"'
-    sync_words: '[8, 16]'
+    minoutbuf: '0'
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 133]
-    rotation: 0
-    state: enabled
+    coordinate: [716, 333]
+    rotation: 180
+    state: true
 
 connections:
-- [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_sequence_0, '0']
+- [blocks_throttle_0, '0', interp_fir_filter_xxx_0_1_0, '0']
+- [blocks_vector_source_x_0, '0', blocks_throttle_0, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
-- [lora_sdr_frame_detector_sequence_0, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_tag_debug_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [zeromq_req_source_0, '0', blocks_throttle_0, '0']
 
 metadata:
   file_format: 1
