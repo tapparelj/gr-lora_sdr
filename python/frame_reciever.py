@@ -19,7 +19,7 @@ class frame_reciever(gr.sync_block):
         #make a worker context
         context = zmq.Context()
         self.socket = context.socket(zmq.PAIR)
-        self.socket.connect("ipc://test")
+        self.socket.connect("tcp://localhost:6270")
         self.buffer =[]
         self.state = 1
         
@@ -38,7 +38,7 @@ class frame_reciever(gr.sync_block):
             data = pickle.loads(data)
             print(data.shape)
             print(data.size)
-            out[:] = data[0:max_items]
+            out[:] = numpy.transpose([data[0:max_items,0],data[0:max_items,1]])
             self.buffer = data[max_items+1:]
             # out = output_items[0]
             # # <+signal processing here+>
@@ -54,10 +54,16 @@ class frame_reciever(gr.sync_block):
             len_buffer = len(self.buffer)
             if len_buffer < max_items :
                 items_to_use = len_buffer
+                print(max_items-items_to_use)
+                #append empty padding after the frame (to fill to entire frame )
+                out[:] = numpy.concatenate((self.buffer[0:items_to_use], numpy.zeros((max_items-items_to_use,2),dtype=complex)),axis=0)
                 self.state = 1
+            else:
+                out[:] = self.buffer[0:items_to_use]
+                numpy.transpose([self.buffer[0:items_to_use,0],self.buffer[0:max_items,1]])
+                self.buffer = self.buffer[items_to_use+1:]
             print(items_to_use, max_items)
             print(self.buffer.shape)
-            out[:] = self.buffer[0:items_to_use]
-            self.buffer = self.buffer[items_to_use+1:]
+
             #TODO find out why in the end it will not work
             return len(output_items[0])

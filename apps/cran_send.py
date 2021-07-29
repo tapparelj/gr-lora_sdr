@@ -39,7 +39,7 @@ class cran_send(gr.top_block):
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
-        self.n_frame = n_frame = 2
+        self.n_frame = n_frame = 200
         self.multi_control = multi_control = True
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False

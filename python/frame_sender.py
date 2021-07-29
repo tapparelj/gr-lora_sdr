@@ -61,10 +61,10 @@ class frame_sender(gr.sync_block):
 
         #copy input data to output
         self.buffer = numpy.concatenate((self.buffer, input_items[0]),axis=0)
-        print(input_items[0].dtype)
-        print(input_items[0])
-        print(self.buffer.dtype)
-        print(self.buffer)
+        # print(input_items[0].dtype)
+        # print(input_items[0])
+        # print(self.buffer.dtype)
+        # print(self.buffer)
         #search for begin and end tags
         tags = self.get_tags_in_window(0, 0, len(input_items[0]))
         for tag in tags:
@@ -89,8 +89,8 @@ class frame_sender(gr.sync_block):
             print(start, end)
             #TODO : find out how to package the second packet
             self.data = self.buffer[0:end]
-            print(self.data)
-            print(self.data.dtype)
+            # print(self.data)
+            # print(self.data.dtype)
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
@@ -99,9 +99,10 @@ class frame_sender(gr.sync_block):
         if self.send_packet:
             if self.modus == True:
                 request = self.data
-                print(request.dtype)
-                print(request.size)
-                print((request.shape))
+                print("Sending request")
+                # print(request.dtype)
+                # print(request.size)
+                # print((request.shape))
                 reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                 if reply:
                     replycode = reply[0]

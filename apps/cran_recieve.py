@@ -21,10 +21,10 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
 import threading
+import pickle
+import zmq
 from loudify import worker_api
 import ast
-import numpy
-import pickle
 
 class cran_recieve(gr.top_block):
 
@@ -43,7 +43,6 @@ class cran_recieve(gr.top_block):
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
-        self.input_vec = input_vec = (0, 0, 0)
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
@@ -53,10 +52,10 @@ class cran_recieve(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
+        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'Rx' ,True)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
-        self.blocks_vector_source_x_0 = blocks.vector_source_c(input_vec, False, 1, [])
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
 
 
@@ -65,8 +64,8 @@ class cran_recieve(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
-        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
+        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_throttle_0, 0))
 
 
     def get_bw(self):
@@ -126,7 +125,6 @@ class cran_recieve(gr.top_block):
     def set_input_vec(self, input_vec):
         with self._lock:
             self.input_vec = input_vec
-            self.blocks_vector_source_x_0.set_data(self.input_vec, [])
 
     def get_impl_head(self):
         return self.impl_head
@@ -162,12 +160,6 @@ class cran_recieve(gr.top_block):
 
 def main(top_block_cls=cran_recieve, options=None):
     tb = top_block_cls()
-    addres = "localhost"
-    port = 5555
-    service = "echo"
-    verbose = True
-    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
-
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
@@ -177,22 +169,28 @@ def main(top_block_cls=cran_recieve, options=None):
 
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
-
-    tb.start()
     reply = None
+    addres = "localhost"
+    port = 5555
+    service = "echo"
+    verbose = True
+    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
+    context = zmq.Context()
+    socket = context.socket(zmq.PAIR)
+    socket.bind("tcp://*:6270")
+    tb.start()
     while True:
         request = worker.recv(reply)
         if request is None:
             print("Worker was interrupted")
         
         if request:
+            print("Got a request")
             data = request.pop(0)
-            test = tb.get_input_vec()
-            input_data = pickle.loads(data)
-            complex = input_data[:,0] + 1j* input_data[:,1]
-            tb.set_input_vec(complex)
-            test2 = tb.get_input_vec()
-            shape = input_data.shape
+            input_data = data
+            print(pickle.loads(data))
+            socket.send(input_data)
+            
             #convert back to dict
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
             
@@ -207,11 +205,9 @@ def main(top_block_cls=cran_recieve, options=None):
             # tb.set_
             print("Updated flowgrapgh")
             print(tb.get_sf())
-
-        tb.wait()
-
+            reply = [b"ACK"]
+    tb.wait()
 
 
 if __name__ == '__main__':
     main()
-
