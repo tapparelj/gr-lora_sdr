@@ -221,7 +221,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [686, 292]
+    coordinate: [548, 283]
     rotation: 0
     state: true
 - name: lora_sdr_hier_rx_1

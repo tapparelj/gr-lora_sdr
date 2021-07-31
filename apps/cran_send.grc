@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '200'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -229,6 +229,25 @@ blocks:
     coordinate: [682, 583]
     rotation: 0
     state: disabled
+- name: blocks_tag_debug_0
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '""'
+    name: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [781, 498]
+    rotation: 0
+    state: true
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -307,9 +326,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [291, 445]
+    coordinate: [506, 435]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_detector_timeout_0_0
   id: lora_sdr_frame_detector_timeout
   parameters:
@@ -320,7 +339,7 @@ blocks:
     detect_second_packet: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    n_bytes: '150'
+    n_bytes: '180'
     samp_rate: samp_rate
     sf: sf
   states:
@@ -374,6 +393,30 @@ blocks:
     coordinate: [747, 642]
     rotation: 0
     state: enabled
+- name: lora_sdr_hier_rx_0
+  id: lora_sdr_hier_rx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    cr: cr
+    exit: 'True'
+    has_crc: has_crc
+    impl_head: impl_head
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pay_len: pay_len
+    samp_rate: samp_rate
+    sf: sf
+    sync_words: '[8, 16]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [729, 292]
+    rotation: 0
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
@@ -416,7 +459,7 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: ''
+    src_data: '"TrccpfQHyKfvXswsA4ySxtTiIvi10nSJCUJPYonkWqDHH005UmNfGuocPw3FHKc9"'
     sync_words: '[8, 16]'
   states:
     bus_sink: false
@@ -429,7 +472,9 @@ blocks:
 connections:
 - [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle_0_1_0_0, '0', lora_sdr_frame_detector_timeout_0_0, '0']
-- [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
+- [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_0, '0']
+- [lora_sdr_frame_detector_timeout_0_0, '0', blocks_tag_debug_0, '0']
+- [lora_sdr_frame_detector_timeout_0_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [lora_sdr_frame_detector_timeout_0_0, '0', lora_sdr_frame_sender_0, '0']
 - [lora_sdr_frame_reciever_0, '0', blocks_null_sink_0_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']

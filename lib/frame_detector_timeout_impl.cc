@@ -182,12 +182,13 @@ int frame_detector_timeout_impl::general_work(
       // store the current power level in m_power
       // set state to be sending LoRa frame packets
       m_state = SEND_PREAMBLE;
-      add_item_tag(0, nitems_written(0)+1,
+      add_item_tag(0, nitems_written(0),
                    pmt::intern("frame"), pmt::intern("start"),
                    pmt::intern("frame_detector_timeout"));
 #ifdef GRLORA_DEBUGV
         GR_LOG_DEBUG(this->d_logger, "DEBUG:Done PREAMBLE -> SEND_PREAMBLE");
 #endif
+      
       // set symbol count back to zero
       symbol_cnt = 0;
     }
@@ -269,10 +270,10 @@ int frame_detector_timeout_impl::general_work(
                 //create zero to hold the tag propagation
                 out[0] = gr_complex(0,0);
                 out[1] = gr_complex(0,0);
-                add_item_tag(0, nitems_written(0),
+                add_item_tag(0, nitems_written(0)+1,
                              pmt::intern("frame"), pmt::intern("end"),
                              pmt::intern("frame_detector_timeout"));
-                add_item_tag(0, nitems_written(0),
+                add_item_tag(0, nitems_written(0)+2,
                              pmt::intern("frame"), pmt::intern("start"),
                              pmt::intern("frame_detector_timeout"));
                 //reset variables and go to sending the buffer and then return
@@ -295,7 +296,7 @@ int frame_detector_timeout_impl::general_work(
                         GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
                                                      std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
 #endif
-                        add_item_tag(0, nitems_written(0) + m_samples_per_symbol,
+                        add_item_tag(0, nitems_written(0)+1,
                                      pmt::intern("frame"), pmt::intern("end"),
                                      pmt::intern("frame_detector_timeout"));
                         buffer.clear();
@@ -347,7 +348,7 @@ int frame_detector_timeout_impl::general_work(
                 GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
                                              std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
 #endif
-                add_item_tag(0, nitems_written(0) + m_samples_per_symbol,
+                add_item_tag(0, nitems_written(0)+1,
                              pmt::intern("frame"), pmt::intern("end"),
                              pmt::intern("frame_detector_timeout"));
                 m_state = FIND_PREAMBLE;

@@ -61,6 +61,8 @@ class frame_sender(gr.sync_block):
 
         #copy input data to output
         self.buffer = numpy.concatenate((self.buffer, input_items[0]),axis=0)
+        print("Len input items", len(input_items[0]))
+        print("LEn buffer:", len(self.buffer))
         # print(input_items[0].dtype)
         # print(input_items[0])
         # print(self.buffer.dtype)
@@ -89,8 +91,9 @@ class frame_sender(gr.sync_block):
             print(start, end)
             #TODO : find out how to package the second packet
             self.data = self.buffer[0:end]
+            print("Len packet" , len(self.data))
             # print(self.data)
-            # print(self.data.dtype)
+            print(self.data.shape)
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
