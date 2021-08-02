@@ -33,13 +33,14 @@ class frame_reciever(gr.sync_block):
         out = output_items[0]
         max_items = len(output_items[0])
         if self.state == 1:
-            print(len(output_items[0]))
             data = self.socket.recv()
             data = pickle.loads(data)
-            print(data.shape)
-            print(data.size)
+            # print(max_items)
+            # print(data.shape)
+            # print(data.size)
+            self.buffer = data
             out[:] = numpy.transpose([data[0:max_items,0],data[0:max_items,1]])
-            self.buffer = data[max_items+1:]
+            self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             # out = output_items[0]
             # # <+signal processing here+>
             # # out[0] = 1+2j
@@ -49,21 +50,26 @@ class frame_reciever(gr.sync_block):
         
         if self.state == 2:
             print("emptying frame")
-            print(max_items)
             items_to_use = max_items
             len_buffer = len(self.buffer)
             if len_buffer < max_items :
                 items_to_use = len_buffer
-                print(max_items-items_to_use)
+                # print(max_items-items_to_use)
+                data = numpy.transpose([self.buffer[0:items_to_use,0],self.buffer[0:items_to_use,1]])
+                zeros = numpy.zeros((max_items-items_to_use,2),dtype="float64")
+                # print(data.shape)
+                # print(zeros.shape)
+                # print(data.dtype)
+                # print(zeros.dtype)
                 #append empty padding after the frame (to fill to entire frame )
-                out[:] = numpy.concatenate((self.buffer[0:items_to_use], numpy.zeros((max_items-items_to_use,2),dtype=complex)),axis=0)
+                out[:] = numpy.concatenate((data, zeros),axis=0)
                 self.state = 1
             else:
                 out[:] = self.buffer[0:items_to_use]
                 numpy.transpose([self.buffer[0:items_to_use,0],self.buffer[0:max_items,1]])
-                self.buffer = self.buffer[items_to_use+1:]
-            print(items_to_use, max_items)
-            print(self.buffer.shape)
+                self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
+            # print(items_to_use, max_items)
+            # print(self.buffer.shape)
 
             #TODO find out why in the end it will not work
             return len(output_items[0])

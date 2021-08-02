@@ -4,7 +4,7 @@ category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode}, ${sf}, ${samp_rate}, ${bw}, ${has_crc},
+  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode}, ${reply}, ${sf}, ${samp_rate}, ${bw}, ${has_crc},
    ${pay_len}, ${cr}, ${impl_head}, ${sync_words})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
@@ -23,6 +23,12 @@ parameters:
   default : 5555
 - id: mode
   label : Synchronous mode
+  dtype: enum
+  default : 'True'
+  options: ['True', 'False']
+  option_labels: ['Yes', 'No']
+- id: reply
+  label : Reply back
   dtype: enum
   default : 'True'
   options: ['True', 'False']

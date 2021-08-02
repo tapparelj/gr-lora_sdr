@@ -24,9 +24,10 @@ import threading
 import numpy
 import pickle
 import zmq
+import pickle
+import zmq
 from loudify import worker_api
 import ast
-from datetime import datetime
 
 
 class cran_recieve(gr.top_block):
@@ -202,6 +203,21 @@ def main(top_block_cls=cran_recieve, options=None):
     #     print("Published")
 
         # tb.wait()
+    while True:
+        request = worker.recv(reply)
+        if request is None:
+            print("Worker was interrupted")
+        
+    reply = None
+    addres = "localhost"
+    port = 5555
+    service = "echo"
+    verbose = True
+    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
+    context = zmq.Context()
+    socket = context.socket(zmq.PAIR)
+    socket.bind("tcp://*:6270")
+    tb.start()
     while True:
         request = worker.recv(reply)
         if request is None:

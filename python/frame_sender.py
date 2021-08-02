@@ -17,9 +17,10 @@ class frame_sender(gr.sync_block):
         gr ([type]): [description]
     """
 
-    def __init__(self, addres, port, modus, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words):
+    def __init__(self, addres, port, modus, reply, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words):
         verbose = True
         self.modus = modus
+        self.reply = reply
         self.send_packet = False
         self.start_index = []
         self.end_index = []
@@ -58,15 +59,25 @@ class frame_sender(gr.sync_block):
 
 
     def work(self, input_items, output_items):
+        """Main function all the computations happend here
 
+        Args:
+            input_items (np.complex): the input items of this block
+            output_items (None): None
+
+        Returns:
+            [type]: [description]
+        """
         #copy input data to output
         self.buffer = numpy.concatenate((self.buffer, input_items[0]),axis=0)
-        print("Len input items", len(input_items[0]))
-        print("LEn buffer:", len(self.buffer))
+
+        # print("Len input items", len(input_items[0]))
+        # print("LEn buffer:", len(self.buffer))
         # print(input_items[0].dtype)
         # print(input_items[0])
         # print(self.buffer.dtype)
         # print(self.buffer)
+
         #search for begin and end tags
         tags = self.get_tags_in_window(0, 0, len(input_items[0]))
         for tag in tags:
@@ -88,12 +99,12 @@ class frame_sender(gr.sync_block):
         if len(self.start_index) > 0 and len(self.end_index) > 0:
             start = self.start_index[0]
             end = self.end_index[0]
-            print(start, end)
+            # print(start, end)
             #TODO : find out how to package the second packet
-            self.data = self.buffer[0:end]
-            print("Len packet" , len(self.data))
+            self.data = self.buffer[start:end]
+            # print("Len packet" , len(self.data))
             # print(self.data)
-            print(self.data.shape)
+            # print(self.data.shape)
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
@@ -106,21 +117,25 @@ class frame_sender(gr.sync_block):
                 # print(request.dtype)
                 # print(request.size)
                 # print((request.shape))
-                reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
-                if reply:
-                    replycode = reply[0]
-                    print("Reply from broker")
+                
+                if self.reply:
+                    reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
+                    if reply:
+                        replycode = reply[0]
+                        print("I: Reply from broker {}", replycode)
+                    else:
+                        print("E: no response from broker, make sure it's running")
                 else:
-                    print("E: no response from broker, make sure it's running")
+                    self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                 self.send_packet = False
             else:
-                request = b"Hello world"
+                request = self.data
                 try:
                     self.client.send(b"echo",  request, flowgraph_vars=self.flowgraph_vars)
                     time.sleep(0.5)
                     self.num_request +=1
                 except KeyboardInterrupt:
-                    print("send interrupted, aborting")
+                    print("Send interrupted, aborting")
                     return
                 count = 0
                 

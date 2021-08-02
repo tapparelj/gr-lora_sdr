@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '20'
   states:
     bus_sink: false
     bus_source: false
@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '9'
   states:
     bus_sink: false
     bus_source: false
@@ -383,6 +383,7 @@ blocks:
     mode: 'True'
     pay_len: pay_len
     port: '5555'
+    reply: 'True'
     samp_rate: samp_rate
     sf: sf
     sync_words: '[8, 16]'
