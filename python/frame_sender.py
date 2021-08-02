@@ -121,8 +121,9 @@ class frame_sender(gr.sync_block):
                 if self.reply:
                     reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                     if reply:
-                        replycode = reply[0]
-                        print("I: Reply from broker {}", replycode)
+                        print(reply)
+                        replycode = reply.pop(0)
+                        print("I: Reply from broker {}".format(replycode))
                     else:
                         print("E: no response from broker, make sure it's running")
                 else:

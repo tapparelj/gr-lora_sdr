@@ -5,7 +5,7 @@ options:
     cmake_opt: '""'
     comment: ''
     copyright: ''
-    description: Simulation example LoRa
+    description: CRAN reciever
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui
@@ -21,7 +21,7 @@ options:
     run_options: run
     sizing_mode: fixed
     thread_safe_setters: '1'
-    title: Frame detector test with noise and cfo
+    title: Cran reciever
     window_size: ''
   states:
     bus_sink: false
@@ -60,7 +60,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '200'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -164,22 +164,17 @@ blocks:
     coordinate: [801, 66]
     rotation: 0
     state: enabled
-- name: blocks_file_sink_0
-  id: blocks_file_sink
+- name: blocks_message_debug_0
+  id: blocks_message_debug
   parameters:
     affinity: ''
     alias: ''
-    append: 'False'
     comment: ''
-    file: /home/martyn/gr-lora_sdr/test/after
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [845, 272]
+    coordinate: [81, 265]
     rotation: 0
     state: true
 - name: blocks_throttle_0
@@ -220,7 +215,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [253, 445]
+    coordinate: [273, 445]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_reciever_0
@@ -239,8 +234,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [548, 283]
-    rotation: 0
+    coordinate: [709, 430]
+    rotation: 180
     state: true
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
@@ -263,15 +258,15 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 389]
+    coordinate: [86, 389]
     rotation: 180
     state: enabled
 
 connections:
 - [blocks_throttle_0, '0', interp_fir_filter_xxx_0_1_0, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
-- [lora_sdr_frame_reciever_0, '0', blocks_file_sink_0, '0']
 - [lora_sdr_frame_reciever_0, '0', blocks_throttle_0, '0']
+- [lora_sdr_hier_rx_1, msg, blocks_message_debug_0, store]
 
 metadata:
   file_format: 1

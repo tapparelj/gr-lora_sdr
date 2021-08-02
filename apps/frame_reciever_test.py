@@ -32,7 +32,7 @@ import ast
 
 class cran_recieve(gr.top_block):
 
-    def __init__(self):
+    def __init__(self, sf):
         gr.top_block.__init__(self, "Frame detector test with noise and cfo")
 
         self._lock = threading.RLock()
@@ -42,7 +42,7 @@ class cran_recieve(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.sf = sf = 7
+        self.sf = sf
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
@@ -56,20 +56,23 @@ class cran_recieve(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
+        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'Rx' ,True)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/martyn/gr-lora_sdr/test/after', False)
+        self.blocks_file_sink_0.set_unbuffered(False)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_null_source_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
+        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_throttle_0, 0))
 
 
     def get_bw(self):
@@ -123,13 +126,6 @@ class cran_recieve(gr.top_block):
         with self._lock:
             self.multi_control = multi_control
 
-    def get_input_vec(self):
-        return self.input_vec
-
-    def set_input_vec(self, input_vec):
-        with self._lock:
-            self.input_vec = input_vec
-
     def get_impl_head(self):
         return self.impl_head
 
@@ -163,7 +159,7 @@ class cran_recieve(gr.top_block):
 
 
 def main(top_block_cls=cran_recieve, options=None):
-    tb = top_block_cls()
+    
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
@@ -174,40 +170,6 @@ def main(top_block_cls=cran_recieve, options=None):
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
 
-    tb.start()
-
-    reply = None
-    addres = "localhost"
-    port = 5555
-    service = "echo"
-    verbose = True
-    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
-
-
-    reply = None
-    context = zmq.Context()
-    socket = context.socket(zmq.PAIR)
-    socket.bind("tcp://*:6270")
-
-
-    # while True:
-    #     # check if there is a message on the socket
-    #     n = 10000
-    #     print("hero")
-    #     part1= numpy.random.rand(n,2)
-    #     part2 = numpy.random.rand(n,2)*1j
-    #     msg = part1 + part2
-    #     print(msg.shape)
-    #     print("hero2")
-    #     socket.send(pickle.dumps(msg))
-    #     print("Published")
-
-        # tb.wait()
-    while True:
-        request = worker.recv(reply)
-        if request is None:
-            print("Worker was interrupted")
-        
     reply = None
     addres = "localhost"
     port = 5555
@@ -217,7 +179,7 @@ def main(top_block_cls=cran_recieve, options=None):
     context = zmq.Context()
     socket = context.socket(zmq.PAIR)
     socket.bind("tcp://*:6270")
-    tb.start()
+    
     while True:
         request = worker.recv(reply)
         if request is None:
@@ -228,24 +190,26 @@ def main(top_block_cls=cran_recieve, options=None):
             data = request.pop(0)
             input_data = data
             print(pickle.loads(data))
-            socket.send(input_data)
+            
             
             #convert back to dict
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
-            
             print(flowgraph_vars)
-            tb.set_sf(flowgraph_vars['sf'])
-            tb.set_samp_rate(flowgraph_vars['samp_rate'])
-            tb.set_bw(flowgraph_vars['bw'])
-            tb.set_has_crc(flowgraph_vars['has_crc'])
-            tb.set_pay_len(flowgraph_vars['pay_len'])
-            tb.set_cr(flowgraph_vars['cr'])
-            tb.set_impl_head(flowgraph_vars['impl_head'])
-            # tb.set_
+            
+            # tb.set_sf(flowgraph_vars['sf'])
+            # tb.set_samp_rate(flowgraph_vars['samp_rate'])
+            # tb.set_bw(flowgraph_vars['bw'])
+            # tb.set_has_crc(flowgraph_vars['has_crc'])
+            # tb.set_pay_len(flowgraph_vars['pay_len'])
+            # tb.set_cr(flowgraph_vars['cr'])
+            # tb.set_impl_head(flowgraph_vars['impl_head'])
+            tb = top_block_cls(flowgraph_vars['sf'])
+            tb.start()
+            socket.send(input_data)
             print("Updated flowgrapgh")
             print(tb.get_sf())
             reply = [b"ACK"]
-    # tb.wait()
+            tb.wait()
 
 
 if __name__ == '__main__':

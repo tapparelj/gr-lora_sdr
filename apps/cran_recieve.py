@@ -5,9 +5,9 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Frame detector test with noise and cfo
+# Title: Cran reciever
 # Author: Martyn van Dijke
-# Description: Simulation example LoRa
+# Description: CRAN reciever
 # GNU Radio version: 3.8.2.0
 
 from gnuradio import blocks
@@ -21,19 +21,19 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
 import threading
-import numpy
-import pickle
-import zmq
 import pickle
 import zmq
 from loudify import worker_api
+from loudify import definitions
 import ast
-
+import pmt
+import timeout_decorator
+import time
 
 class cran_recieve(gr.top_block):
 
     def __init__(self, sf):
-        gr.top_block.__init__(self, "Frame detector test with noise and cfo")
+        gr.top_block.__init__(self, "Cran reciever")
 
         self._lock = threading.RLock()
 
@@ -42,14 +42,14 @@ class cran_recieve(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.sf = sf
+        self.sf = sf = sf
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
         self.impl_head = impl_head = True
         self.has_crc = has_crc = False
-        self.frame_period = frame_period = 200
+        self.frame_period = frame_period = 2
         self.cr = cr = 4
 
         ##################################################
@@ -61,17 +61,16 @@ class cran_recieve(gr.top_block):
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/martyn/gr-lora_sdr/test/after', False)
-        self.blocks_file_sink_0.set_unbuffered(False)
+        self.blocks_message_debug_0 = blocks.message_debug()
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.lora_sdr_hier_rx_1, 'msg'), (self.blocks_message_debug_0, 'store'))
         self.connect((self.blocks_throttle_0, 0), (self.interp_fir_filter_xxx_0_1_0, 0))
         self.connect((self.interp_fir_filter_xxx_0_1_0, 0), (self.lora_sdr_hier_rx_1, 0))
-        self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.lora_sdr_frame_reciever_0, 0), (self.blocks_throttle_0, 0))
 
 
@@ -155,12 +154,23 @@ class cran_recieve(gr.top_block):
             self.cr = cr
 
 
-
-
+@timeout_decorator.timeout(definitions.Rx_timeout)
+def get_output(tb):
+    while True:
+        num_messages = tb.blocks_message_debug_0.num_messages()
+        if num_messages >= 1:
+            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            try:
+                msg = pmt.symbol_to_string(
+                    tb.blocks_message_debug_0.get_message(0))
+                print("Print message")
+                print(msg)
+                return msg
+            except:
+                # if not possible set message to be None
+                msg = None
 
 def main(top_block_cls=cran_recieve, options=None):
-    
-
     def sig_handler(sig=None, frame=None):
         tb.stop()
         tb.wait()
@@ -177,10 +187,10 @@ def main(top_block_cls=cran_recieve, options=None):
     verbose = True
     worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
     context = zmq.Context()
-    socket = context.socket(zmq.PAIR)
-    socket.bind("tcp://*:6270")
-    
+    socket = context.socket(zmq.REQ)
+
     while True:
+        print(reply)
         request = worker.recv(reply)
         if request is None:
             print("Worker was interrupted")
@@ -189,8 +199,7 @@ def main(top_block_cls=cran_recieve, options=None):
             print("Got a request")
             data = request.pop(0)
             input_data = data
-            print(pickle.loads(data))
-            
+     
             
             #convert back to dict
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
@@ -205,12 +214,24 @@ def main(top_block_cls=cran_recieve, options=None):
             # tb.set_impl_head(flowgraph_vars['impl_head'])
             tb = top_block_cls(flowgraph_vars['sf'])
             tb.start()
+            time.sleep(1)
+            print("Started flowgraph")
+            context = zmq.Context()
+            socket = context.socket(zmq.REQ)
+            socket.connect("ipc://6270")
             socket.send(input_data)
             print("Updated flowgrapgh")
             print(tb.get_sf())
             reply = [b"ACK"]
-            tb.wait()
-
+            reply_req = socket.recv()
+            print(reply_req)
+            msg = get_output(tb)
+            print("Got output back to normal")
+            tb.stop()
+            print("Stopped flowgraph")
+            context.destroy(0)
+            # context.term()
+                
 
 if __name__ == '__main__':
     main()

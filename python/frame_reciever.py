@@ -18,10 +18,12 @@ class frame_reciever(gr.sync_block):
 
         #make a worker context
         context = zmq.Context()
-        self.socket = context.socket(zmq.PAIR)
-        self.socket.connect("tcp://localhost:6270")
+        self.context = context
+        self.socket = context.socket(zmq.REP)
+        self.socket.bind("ipc://6270")
         self.buffer =[]
         self.state = 1
+        print("new init")
         
         gr.sync_block.__init__(self,
             name="frame_reciever",
@@ -34,6 +36,7 @@ class frame_reciever(gr.sync_block):
         max_items = len(output_items[0])
         if self.state == 1:
             data = self.socket.recv()
+            print("data recv")
             data = pickle.loads(data)
             # print(max_items)
             # print(data.shape)
@@ -63,6 +66,10 @@ class frame_reciever(gr.sync_block):
                 # print(zeros.dtype)
                 #append empty padding after the frame (to fill to entire frame )
                 out[:] = numpy.concatenate((data, zeros),axis=0)
+                reply = "done".encode("ascii")
+                print("Reply back to req")
+                self.socket.send(reply)
+                # self.context.destroy(0)
                 self.state = 1
             else:
                 out[:] = self.buffer[0:items_to_use]
