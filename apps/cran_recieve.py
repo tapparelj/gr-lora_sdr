@@ -56,7 +56,7 @@ class cran_recieve(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'Rx' ,True)
+        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'Rx' ,False)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
@@ -154,83 +154,50 @@ class cran_recieve(gr.top_block):
             self.cr = cr
 
 
-@timeout_decorator.timeout(definitions.Rx_timeout)
-def get_output(tb):
-    while True:
+# @timeout_decorator.timeout(definitions.Rx_timeout)
+# def get_output(tb):
+
+
+def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
+    tb = top_block_cls(flowgraph_vars)
+    tb.start()
+    print(tb.get_sf())
+    time.sleep(1)
+    tb.stop()
+    find = True
+    while find:
         num_messages = tb.blocks_message_debug_0.num_messages()
         if num_messages >= 1:
             # try to get get the message from the store port of the message debug printer and convert to string from pmt message
             try:
                 msg = pmt.symbol_to_string(
                     tb.blocks_message_debug_0.get_message(0))
-                print("Print message")
-                print(msg)
+                # print("Print message in cran")
+                # print(msg)
                 return msg
+                # return msg
             except:
                 # if not possible set message to be None
                 msg = None
+    # print("Exit cran")
+    # temp[0] = msg
+    # print(temp)
+    # print("exit for real")
+    # return temp
+    # sys.exit(0)
+    # msg = get_output(tb)
+    # print("main in cran")
+    # return msg
+    # def sig_handler(sig=None, frame=None):
+    #     tb.stop()
+    #     tb.wait()
 
-def main(top_block_cls=cran_recieve, options=None):
-    def sig_handler(sig=None, frame=None):
-        tb.stop()
-        tb.wait()
+    #     sys.exit(0)
 
-        sys.exit(0)
+    # signal.signal(signal.SIGINT, sig_handler)
+    # signal.signal(signal.SIGTERM, sig_handler)
 
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
 
-    reply = None
-    addres = "localhost"
-    port = 5555
-    service = "echo"
-    verbose = True
-    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
-    context = zmq.Context()
-    socket = context.socket(zmq.REQ)
-
-    while True:
-        print(reply)
-        request = worker.recv(reply)
-        if request is None:
-            print("Worker was interrupted")
-        
-        if request:
-            print("Got a request")
-            data = request.pop(0)
-            input_data = data
-     
-            
-            #convert back to dict
-            flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
-            print(flowgraph_vars)
-            
-            # tb.set_sf(flowgraph_vars['sf'])
-            # tb.set_samp_rate(flowgraph_vars['samp_rate'])
-            # tb.set_bw(flowgraph_vars['bw'])
-            # tb.set_has_crc(flowgraph_vars['has_crc'])
-            # tb.set_pay_len(flowgraph_vars['pay_len'])
-            # tb.set_cr(flowgraph_vars['cr'])
-            # tb.set_impl_head(flowgraph_vars['impl_head'])
-            tb = top_block_cls(flowgraph_vars['sf'])
-            tb.start()
-            time.sleep(1)
-            print("Started flowgraph")
-            context = zmq.Context()
-            socket = context.socket(zmq.REQ)
-            socket.connect("ipc://6270")
-            socket.send(input_data)
-            print("Updated flowgrapgh")
-            print(tb.get_sf())
-            reply = [b"ACK"]
-            reply_req = socket.recv()
-            print(reply_req)
-            msg = get_output(tb)
-            print("Got output back to normal")
-            tb.stop()
-            print("Stopped flowgraph")
-            context.destroy(0)
-            # context.term()
                 
 
 if __name__ == '__main__':

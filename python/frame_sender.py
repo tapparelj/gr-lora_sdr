@@ -122,6 +122,7 @@ class frame_sender(gr.sync_block):
                     reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                     if reply:
                         print(reply)
+                        reply.pop(0)
                         replycode = reply.pop(0)
                         print("I: Reply from broker {}".format(replycode))
                     else:
@@ -133,7 +134,6 @@ class frame_sender(gr.sync_block):
                 request = self.data
                 try:
                     self.client.send(b"echo",  request, flowgraph_vars=self.flowgraph_vars)
-                    time.sleep(0.5)
                     self.num_request +=1
                 except KeyboardInterrupt:
                     print("Send interrupted, aborting")
