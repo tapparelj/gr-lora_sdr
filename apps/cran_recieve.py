@@ -27,12 +27,11 @@ from loudify import worker_api
 from loudify import definitions
 import ast
 import pmt
-import timeout_decorator
 import time
 
 class cran_recieve(gr.top_block):
 
-    def __init__(self, sf):
+    def __init__(self, flowgraph_vars):
         gr.top_block.__init__(self, "Cran reciever")
 
         self._lock = threading.RLock()
@@ -42,7 +41,7 @@ class cran_recieve(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.sf = sf = sf
+        self.sf = sf = flowgraph_vars['sf']
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 2
@@ -153,52 +152,27 @@ class cran_recieve(gr.top_block):
         with self._lock:
             self.cr = cr
 
-
-# @timeout_decorator.timeout(definitions.Rx_timeout)
-# def get_output(tb):
-
-
 def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
     tb = top_block_cls(flowgraph_vars)
     tb.start()
     print(tb.get_sf())
     time.sleep(1)
     tb.stop()
-    find = True
-    while find:
+    while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
         if num_messages >= 1:
-            # try to get get the message from the store port of the message debug printer and convert to string from pmt message
+            # try to get get the message from the store port of the message
+            # debug printer and convert to string from pmt message
             try:
                 msg = pmt.symbol_to_string(
                     tb.blocks_message_debug_0.get_message(0))
-                # print("Print message in cran")
-                # print(msg)
                 return msg
-                # return msg
             except:
                 # if not possible set message to be None
                 msg = None
-    # print("Exit cran")
-    # temp[0] = msg
-    # print(temp)
-    # print("exit for real")
-    # return temp
-    # sys.exit(0)
-    # msg = get_output(tb)
-    # print("main in cran")
-    # return msg
-    # def sig_handler(sig=None, frame=None):
-    #     tb.stop()
-    #     tb.wait()
-
-    #     sys.exit(0)
-
-    # signal.signal(signal.SIGINT, sig_handler)
-    # signal.signal(signal.SIGTERM, sig_handler)
 
 
-                
+
 
 if __name__ == '__main__':
     main()

@@ -10,6 +10,7 @@ import time
 import pickle
 from pmt.pmt_swig import length
 
+
 class frame_sender(gr.sync_block):
     """Frame sender part of the ZMQ client <-> broker <-> worker setup
 
@@ -35,28 +36,27 @@ class frame_sender(gr.sync_block):
         self.impl_head = impl_head
         self.sync_words = sync_words
 
-        self.flowgraph_vars ={
-            'sf' : self.sf,
-            'samp_rate' : self.samp_rate,
-            'bw' : self.bw,
+        self.flowgraph_vars = {
+            'sf': self.sf,
+            'samp_rate': self.samp_rate,
+            'bw': self.bw,
             'has_crc': self.has_crc,
-            'pay_len' : self.pay_len,
-            'cr' : self.cr,
-            'impl_head' : self.impl_head,
-            'sync_words' : self.sync_words
+            'pay_len': self.pay_len,
+            'cr': self.cr,
+            'impl_head': self.impl_head,
+            'sync_words': self.sync_words
         }
 
         if self.modus == True:
-            self.client = client_sync_api.Client("tcp://"+addres+":"+str(port), verbose)
+            self.client = client_sync_api.Client("tcp://" + addres + ":" + str(port), verbose)
         else:
-            self.client = client_async_api.Client("tcp://"+addres+":"+str(port), verbose)
+            self.client = client_async_api.Client("tcp://" + addres + ":" + str(port), verbose)
             self.num_request = 0
 
         gr.sync_block.__init__(self,
-            name="frame_sender",
-            in_sig=[(numpy.float32,2)],
-            out_sig=None)
-
+                               name="frame_sender",
+                               in_sig=[(numpy.float32, 2)],
+                               out_sig=None)
 
     def work(self, input_items, output_items):
         """Main function all the computations happend here
@@ -68,8 +68,8 @@ class frame_sender(gr.sync_block):
         Returns:
             [type]: [description]
         """
-        #copy input data to output
-        self.buffer = numpy.concatenate((self.buffer, input_items[0]),axis=0)
+        # copy input data to output
+        self.buffer = numpy.concatenate((self.buffer, input_items[0]), axis=0)
 
         # print("Len input items", len(input_items[0]))
         # print("LEn buffer:", len(self.buffer))
@@ -78,7 +78,7 @@ class frame_sender(gr.sync_block):
         # print(self.buffer.dtype)
         # print(self.buffer)
 
-        #search for begin and end tags
+        # search for begin and end tags
         tags = self.get_tags_in_window(0, 0, len(input_items[0]))
         for tag in tags:
             source = pmt.to_python(tag.srcid)
@@ -90,17 +90,17 @@ class frame_sender(gr.sync_block):
                     print("Start offset is ", offset)
                     self.start_index.append(offset)
                 elif value == "end":
-                    print("End offset is ",offset)
+                    print("End offset is ", offset)
                     self.end_index.append(offset)
                 else:
                     print("Error value does not equal start or end")
-        
-        #if the index of one packet is known get this data
+
+        # if the index of one packet is known get this data
         if len(self.start_index) > 0 and len(self.end_index) > 0:
             start = self.start_index[0]
             end = self.end_index[0]
             # print(start, end)
-            #TODO : find out how to package the second packet
+            # TODO : find out how to package the second packet
             self.data = self.buffer[start:end]
             # print("Len packet" , len(self.data))
             # print(self.data)
@@ -109,17 +109,17 @@ class frame_sender(gr.sync_block):
             self.start_index.pop(0)
             self.end_index.pop(0)
 
-        #we have one packet onto sending it onto the network
+        # we have one packet onto sending it onto the network
         if self.send_packet:
             if self.modus == True:
                 request = self.data
                 print("Sending request")
-                # print(request.dtype)
-                # print(request.size)
-                # print((request.shape))
-                
+                print(request.dtype)
+                print(request.size)
+                print(request.shape)
+
                 if self.reply:
-                    reply = self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
+                    reply = self.client.send(b"echo", pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                     if reply:
                         print(reply)
                         reply.pop(0)
@@ -128,18 +128,18 @@ class frame_sender(gr.sync_block):
                     else:
                         print("E: no response from broker, make sure it's running")
                 else:
-                    self.client.send(b"echo",  pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
+                    self.client.send(b"echo", pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                 self.send_packet = False
             else:
                 request = self.data
                 try:
-                    self.client.send(b"echo",  request, flowgraph_vars=self.flowgraph_vars)
-                    self.num_request +=1
+                    self.client.send(b"echo", request, flowgraph_vars=self.flowgraph_vars)
+                    self.num_request += 1
                 except KeyboardInterrupt:
                     print("Send interrupted, aborting")
                     return
                 count = 0
-                
+
                 while count < self.num_request:
                     try:
                         reply = self.client.recv()
@@ -154,4 +154,3 @@ class frame_sender(gr.sync_block):
         in0 = input_items[0]
         # <+signal processing here+>
         return len(input_items[0])
-
