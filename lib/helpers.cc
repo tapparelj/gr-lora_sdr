@@ -18,15 +18,66 @@ namespace gr {
 namespace lora_sdr {
 
 /**
- * @brief Function that gets the symbol from the received samples
+ * @brief Simple modulo the modulus a%b between 0 and (b-1) for longs
+ *
+ * @param a
+ * @param b
+ * @return long modulo of a%b
+ */
+long mod(long a, long b) { return (a % b + b) % b; }
+
+/**
+ * @brief Simple modulo the modulus a%b between 0 and (b-1) for doubles
  * 
+ * @param a 
+ * @param b 
+ * @return double 
+ */
+double double_mod(double a, long b) { return fmod(fmod(a, b) + b, b); }
+
+/**
+ * @brief Convert a MSB first vector of bool to a integer
+ *
+ * @param integer The integer to convert
+ * @param n_bits The output number of bits
+ * @return std::vector<bool>
+ */
+std::vector<bool> int2bool(uint integer, uint8_t n_bits) {
+  std::vector<bool> vec(n_bits, 0);
+  int j = n_bits;
+  for (int i = 0; i < n_bits; i++) {
+    vec[--j] = ((integer >> i) & 1);
+  }
+  return vec;
+}
+
+/**
+ * @brief Generates a random string of given length
+ *
+ * @param Nbytes : Number of bytes in the string
+ * @return std::string
+ */
+std::string random_string(int Nbytes) {
+  const char *charmap =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const size_t charmapLength = strlen(charmap);
+  auto generator = [&]() { return charmap[rand() % charmapLength]; };
+  std::string result;
+  result.reserve(Nbytes);
+  std::generate_n(std::back_inserter(result), Nbytes, generator);
+  return result;
+}
+
+/**
+ * @brief Function that gets the symbol from the received samples
+ *
  * @param samples : the complex samples
  * @param ref_chirp : the reference chirp to use to dechirp the lora symbol.
  * @param m_number_of_bins : number of bings
  * @param m_samples_per_symbol : number of samples per LoRa symbol
  * @param cx_in : fft in
  * @param cx_out : fft out
- * @return uint32_t 
+ * @return uint32_t
  */
 uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
                         uint32_t m_number_of_bins,
@@ -61,10 +112,10 @@ uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
 
 /**
  * @brief Determine the energy of a symbol.
- * 
+ *
  * @param samples The complex symbol to analyse.
  * @param m_samples_per_symbol : number of samples per LoRa symbol
- * @return float 
+ * @return float
  */
 float determine_energy(const gr_complex *samples,
                        uint32_t m_samples_per_symbol) {
@@ -73,22 +124,6 @@ float determine_energy(const gr_complex *samples,
   volk_32fc_magnitude_squared_32f(magsq_chirp, samples, m_samples_per_symbol);
   volk_32f_accumulator_s32f(&energy_chirp, magsq_chirp, m_samples_per_symbol);
   return energy_chirp;
-}
-
-/**
- * @brief Convert an integer into a MSB first vector of bool
- *
- * @param integer : The integer to convert
- * @param n_bits : The output number of bits
- * @return std::vector<bool>
- */
-std::vector<bool> int2bool(uint integer, uint8_t n_bits) {
-  std::vector<bool> vec(n_bits, 0);
-  int j = n_bits;
-  for (int i = 0; i < n_bits; i++) {
-    vec[--j] = ((integer >> i) & 1);
-  }
-  return vec;
 }
 
 /**
@@ -104,11 +139,6 @@ uint32_t bool2int(std::vector<bool> b) {
 }
 
 /**
- *  @brief  return the modulus a%b between 0 and (b-1)
- */
-long mod(long a, long b) { return (a % b + b) % b; }
-
-/**
  * @brief Return the reference chirps using s_f=bw
  *
  * @param upchirp : The pointer to the reference upchirp
@@ -119,7 +149,8 @@ void build_ref_chirps(gr_complex *upchirp, gr_complex *downchirp, uint8_t sf) {
   double N = (1 << sf);
   for (uint n = 0; n < N; n++) {
     // the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
-    //gr_expj is the phase of the angle of the complex exponential and returns and real and imag part by gr_sincosf(phase, &t_imag, &t_real);
+    // gr_expj is the phase of the angle of the complex exponential and returns
+    // and real and imag part by gr_sincosf(phase, &t_imag, &t_real);
     upchirp[n] = gr_complex(0.9f, 0.0f) *
                  gr_expj(2.0 * M_PI * (n * n / (2 * N) - 0.5 * n));
     downchirp[n] = gr_complex(0.9f, 0.0f) *
@@ -143,6 +174,18 @@ void build_upchirp(gr_complex *chirp, uint32_t id, uint8_t sf) {
                gr_expj(2.0 * M_PI * (n * n / (2 * N) + (id / N - 0.5) * n));
   }
 }
+
+void build_upchirp_os_factor(gr_complex* chirp, uint32_t id, uint8_t sf, uint8_t os_factor = 1){
+            double N = (1 << sf)  ;
+            int n_fold = N* os_factor - id*os_factor;
+            for(uint n = 0; n < N* os_factor; n++){
+                if(n<n_fold)
+                    chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-0.5)*n/os_factor));
+                else
+                    chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-1.5)*n/os_factor));
+
+            }
+        }
 
 } /* namespace lora_sdr */
 } /* namespace gr */

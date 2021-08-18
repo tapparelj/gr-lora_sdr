@@ -23,7 +23,7 @@
 
 #include <lora_sdr/partial_ml.h>
 #include <volk/volk.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <iostream>
 #include <fstream>
 
@@ -32,6 +32,19 @@ extern "C"
 #include "kiss_fft.h"
 }
 // #define GRLORA_DEBUG
+/**
+ * @brief Permitted symbol types
+ *
+ */
+enum Symbol_type {
+  VOID,
+  UPCHIRP,
+  SYNC_WORD,
+  DOWNCHIRP,
+  QUARTER_DOWN,
+  PAYLOAD,
+  UNDETERMINED
+};
 
 namespace gr
 {

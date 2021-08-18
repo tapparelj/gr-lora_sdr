@@ -2,7 +2,7 @@
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
 #include <lora_sdr/crc_verif.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 
 //#define  GRLORA_DEBUGV
 #define GRLORA_DEBUG

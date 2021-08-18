@@ -4,7 +4,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "gray_decode_impl.h"
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 
 namespace gr {
   namespace lora_sdr {
