@@ -26,7 +26,7 @@
 #include <fstream>
 #include <iostream>
 #include <lora_sdr/mu_detection.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <volk/volk.h>
 
 extern "C" {

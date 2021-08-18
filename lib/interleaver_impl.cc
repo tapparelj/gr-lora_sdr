@@ -4,7 +4,7 @@
 
 #include "interleaver_impl.h"
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 
 namespace gr {
 namespace lora_sdr {
@@ -151,7 +151,8 @@ int interleaver_impl::general_work(int noutput_items,
       out[i] = bool2int(inter_bin[i]);
     }
 
-#ifdef GRLORA_DEBUGV    std::cout << "interleaved------" << std::endl;
+#ifdef GRLORA_DEBUGV    
+    std::cout << "interleaved----" << std::endl;
     for (uint32_t i = 0u; i < cw_len; i++) {
       for (int j = 0; j < int(m_sf); j++) {
         std::cout << inter_bin[i][j];

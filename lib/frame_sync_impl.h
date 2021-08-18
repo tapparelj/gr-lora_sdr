@@ -10,7 +10,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <lora_sdr/frame_sync.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <volk/volk.h>
 extern "C" {
 #include "kiss_fft.h"

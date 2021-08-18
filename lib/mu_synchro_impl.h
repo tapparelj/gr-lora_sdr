@@ -23,11 +23,24 @@
 // #define GRLORA_DEBUG // synchronisation infos will be printed in the
 // terminal(it is advised to transmitt only one frame)
 
+#include "helpers.h"
 #include <fstream>
 #include <iostream>
 #include <lora_sdr/mu_synchro.h>
-#include <lora_sdr/utilities.h>
 
+/**
+ * @brief Permitted symbol types
+ *
+ */
+enum Symbol_type {
+  VOID,
+  UPCHIRP,
+  SYNC_WORD,
+  DOWNCHIRP,
+  QUARTER_DOWN,
+  PAYLOAD,
+  UNDETERMINED
+};
 namespace gr {
 namespace lora_sdr {
 
@@ -80,17 +93,17 @@ private:
                          ///< input buffer
 
   /**
-   * @brief 
-   * 
-   * @param power1 
-   * @param power2 
-   * @param win_len 
-   * @param Tu 
-   * @param Ti1 
-   * @param Ti2 
-   * @param tau 
-   * @param delta_cfo 
-   * @param offset 
+   * @brief
+   *
+   * @param power1
+   * @param power2
+   * @param win_len
+   * @param Tu
+   * @param Ti1
+   * @param Ti2
+   * @param tau
+   * @param delta_cfo
+   * @param offset
    */
   void add_tag(double power1, double power2, long win_len, Symbol_type Tu,
                Symbol_type Ti1, Symbol_type Ti2, double tau, double delta_cfo,
@@ -98,23 +111,22 @@ private:
 
   /**
    * @brief return the symbol type given the sample counter of a user
-   * 
-   * @param cnt 
-   * @return Symbol_type 
+   *
+   * @param cnt
+   * @return Symbol_type
    */
   Symbol_type get_type(int cnt);
 
-
-
   /**
-   * @brief main function, responsible of the output buffer filling, window  and tag creation
-   * 
-   * @param in 
-   * @param out 
-   * @param state_out 
-   * @param offset 
-   * @param state_offset 
-   * @return std::tuple<int, int, int> 
+   * @brief main function, responsible of the output buffer filling, window  and
+   * tag creation
+   *
+   * @param in
+   * @param out
+   * @param state_out
+   * @param offset
+   * @param state_offset
+   * @return std::tuple<int, int, int>
    */
   std::tuple<int, int, int> sync_frame(const gr_complex *in, gr_complex *out,
                                        uint32_t *state_out, int offset,

@@ -3,7 +3,7 @@
 #ifndef INCLUDED_LORA_WHITENING_IMPL_H
 #define INCLUDED_LORA_WHITENING_IMPL_H
 
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <lora_sdr/whitening.h>
 namespace gr {
 namespace lora_sdr {

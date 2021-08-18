@@ -22,7 +22,7 @@
 #define INCLUDED_LORA_SDR_FRAME_SRC_IMPL_H
 
 #include <lora_sdr/frame_src.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <volk/volk.h>
 
 namespace gr {

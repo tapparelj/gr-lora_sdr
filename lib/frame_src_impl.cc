@@ -71,7 +71,7 @@ frame_src_impl::frame_src_impl(uint8_t sf, int pay_len, int delay, int offset,
   m_downchirp.resize(m_N * m_os_factor);
   m_upchirp.resize(m_N * m_os_factor);
 
-  build_upchirp(&m_upchirp[0], 0, m_sf, m_os_factor);
+  build_upchirp_os_factor(&m_upchirp[0], 0, m_sf, m_os_factor);
   volk_32fc_conjugate_32fc(&m_downchirp[0], &m_upchirp[0], m_N * m_os_factor);
   // build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
@@ -89,8 +89,8 @@ frame_src_impl::frame_src_impl(uint8_t sf, int pay_len, int delay, int offset,
            m_os_factor * m_N * sizeof(gr_complex));
   }
   // sync word
-  build_upchirp(&m_frame[(m_n_up)*m_N * m_os_factor], 8, m_sf, m_os_factor);
-  build_upchirp(&m_frame[(m_n_up + 1) * m_N * m_os_factor], 16, m_sf,
+  build_upchirp_os_factor(&m_frame[(m_n_up)*m_N * m_os_factor], 8, m_sf, m_os_factor);
+  build_upchirp_os_factor(&m_frame[(m_n_up + 1) * m_N * m_os_factor], 16, m_sf,
                 m_os_factor);
 
   // downchirp
@@ -106,7 +106,7 @@ frame_src_impl::frame_src_impl(uint8_t sf, int pay_len, int delay, int offset,
   std::vector<int> S2{125, 115, 105, 95, 85, 75, 65, 55, 45, 35, 25, 15, 5};
 
   for (size_t i = 0; i < m_pay_len; i++) {
-    build_upchirp(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
+    build_upchirp_os_factor(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
                   (is_first_user() ? S1[i % S1.size()] : S2[i % S2.size()]),
                   m_sf, m_os_factor);
   }
@@ -183,12 +183,12 @@ int frame_src_impl::work(int noutput_items,
           } else {
             symb_id = (mask & dec_val);
           }
-          build_upchirp(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
+          build_upchirp_os_factor(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
                         symb_id, m_sf, m_os_factor);
           symb_out[i] = symb_id;
         } else {
           dec_val = rand() % m_N;
-          build_upchirp(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
+          build_upchirp_os_factor(&m_frame[(m_n_up + 4.25 + i) * m_N * m_os_factor],
                         dec_val, m_sf, m_os_factor);
           symb_out[i] = dec_val;
         }

@@ -23,7 +23,7 @@
 
 #include <lora_sdr/signal_detector.h>
 #include <volk/volk.h>
-#include <lora_sdr/utilities.h>
+#include "helpers.h"
 #include <iostream>
 #include <fstream>
 extern "C"
