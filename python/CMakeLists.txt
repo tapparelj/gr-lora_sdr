@@ -110,7 +110,7 @@ GR_ADD_TEST(qa61_tx_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa61_tx_
 GR_ADD_TEST(qa62_tx_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa62_tx_rx.py) 
 GR_ADD_TEST(qa63_tx_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa63_tx_rx.py) 
 GR_ADD_TEST(qa64_tx_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa64_tx_rx.py) 
-GR_ADD_TEST(qa_frame_detector_threshold ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_detector_threshold.py)
+# GR_ADD_TEST(qa_frame_detector_threshold ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_detector_threshold.py)
 #GR_ADD_TEST(qa_mu_detection ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_detection.py)
 # GR_ADD_TEST(qa_mu_synchro ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_synchro.py)
 # GR_ADD_TEST(qa_partial_ml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_partial_ml.py)

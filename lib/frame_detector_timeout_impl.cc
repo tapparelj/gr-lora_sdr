@@ -22,9 +22,10 @@ namespace lora_sdr {
 frame_detector_timeout::sptr frame_detector_timeout::make(uint8_t sf,
                                                           uint32_t samp_rate,
                                                           uint32_t bw,
-                                                          uint8_t n_bytes) {
+                                                          uint8_t n_bytes,
+                                                          bool detect_second_packet) {
   return gnuradio::get_initial_sptr(
-      new frame_detector_timeout_impl(sf, samp_rate, bw, n_bytes));
+      new frame_detector_timeout_impl(sf, samp_rate, bw, n_bytes, detect_second_packet));
 }
 
 /**
@@ -35,11 +36,13 @@ frame_detector_timeout::sptr frame_detector_timeout::make(uint8_t sf,
  * @param samp_rate : sampling rate
  * @param bw : bandwith
  * @param n_bytes : number of bytes
+ * @param detect_second_packet : if systems needs to detect second frame inside the window
  */
 frame_detector_timeout_impl::frame_detector_timeout_impl(uint8_t sf,
                                                          uint32_t samp_rate,
                                                          uint32_t bw,
-                                                         uint8_t n_bytes)
+                                                         uint8_t n_bytes,
+                                                         bool detect_second_packet)
     : gr::block("frame_detector_timeout",
                 gr::io_signature::make(1, 1, sizeof(gr_complex)),
                 gr::io_signature::make(1, 1, sizeof(gr_complex))) {
@@ -47,7 +50,8 @@ frame_detector_timeout_impl::frame_detector_timeout_impl(uint8_t sf,
   m_sf = sf;
   m_samp_rate = samp_rate;
   m_bw = bw;
-  m_n_bytes = n_bytes;
+  m_n_bytes = (u_int16_t) n_bytes;
+  m_store_n_bytes = m_n_bytes;
 
   // calculate derived variables number of samples per symbol
   m_N = (uint32_t)(1u << m_sf);
@@ -74,6 +78,7 @@ frame_detector_timeout_impl::frame_detector_timeout_impl(uint8_t sf,
   symbol_cnt = 0;
   m_cnt = 0;
   m_state = FIND_PREAMBLE;
+  m_detect_second_packet = detect_second_packet;
 
   // set buffer reserve
   buffer.reserve(m_N * n_up);
@@ -183,6 +188,7 @@ int frame_detector_timeout_impl::general_work(
 #ifdef GRLORA_DEBUGV
         GR_LOG_DEBUG(this->d_logger, "DEBUG:Done PREAMBLE -> SEND_PREAMBLE");
 #endif
+      
       // set symbol count back to zero
       symbol_cnt = 0;
     }
@@ -219,42 +225,150 @@ int frame_detector_timeout_impl::general_work(
     return end_vec;
   }
   case SEND_FRAME: {
-    // send the frame over till we have reached n_bytes
-    //if the output buffer can hold the input
-    if (noutput_items > m_samples_per_symbol) {
-      if (m_cnt == 0) {
-        // send over the quarter symbol in the preamble
-        consume_each((m_samples_per_symbol / 4));
-        memcpy(&out[0], &in[0],
-               sizeof(gr_complex) * (m_samples_per_symbol / 4));
-        m_cnt++;
-        return (m_samples_per_symbol / 4);
-      }
-      //if we processed the number of bytes
-      if (m_cnt == m_n_bytes) {
-#ifdef GRLORA_DEBUGV
-        GR_LOG_DEBUG(this->d_logger,
-                     "DEBUG:Done SEND_FRAME -> FINDING_PREAMBLE");
-#endif
-          add_item_tag(0, nitems_written(0)+m_samples_per_symbol,
-                       pmt::intern("frame"), pmt::intern("end"),
-                       pmt::intern("frame_detector_timeout"));
-        m_state = FIND_PREAMBLE;
-        m_cnt = 0;
-        //padding between detected frames
-        consume_each(0);
-        out[0] = gr_complex(0.0,0.0);
-        return 1;
-      }else{
-          // copy input to output
-          consume_each(m_samples_per_symbol);
-          memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-          // increase the number of symbols transmitted
-          m_cnt++;
-          return m_samples_per_symbol;
-      }
 
-    } else {
+    // if there is enough output buffer to hold a byte
+    if (noutput_items > m_samples_per_symbol) {
+
+
+        if (m_detect_second_packet) {
+            //if we need to detect a second packet inside the window.
+
+            // copy input to buffer
+            for (int i = 0; i < m_samples_per_symbol; i++) {
+                buffer.push_back(in[i]);
+            }
+
+            consume_each(m_samples_per_symbol);
+
+            //get symbol value of input
+            bin_idx_new = get_symbol_val(&in[0]);
+
+            // calculate difference between this value and previous symbol value
+            if (std::abs(bin_idx_new - bin_idx) <= 1 && bin_idx_new != -1) {
+                symbol_cnt++;
+            }
+            else {
+                // is symbol value are not close to each other start over
+                bin_idx = bin_idx_new;
+                // set symbol value to be 1
+                symbol_cnt = 1;
+            }
+            // number of preambles needed
+            int nR_up = (int) (n_up);
+            if (symbol_cnt == nR_up) {
+                // if we have n_up symbols counted we have found the preamble
+#ifdef GRLORA_DEBUGV
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:Detected second packet inside the timeout window");
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:temp:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes)+ ":"+std::to_string(m_store_n_bytes));
+#endif
+                //offset the number of bytes to be send with new timeout window calculated relative to this point
+                m_n_bytes = m_cnt + m_store_n_bytes;
+#ifdef GRLORA_DEBUGV
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:temp:"+std::to_string(m_cnt)+" :"+std::to_string(m_n_bytes)+ ":"+std::to_string(m_store_n_bytes));
+#endif
+                //we have found a new preamble, so we know the old pakcet has already ended tag the end and tag the new beginning of the packet
+                //create zero to hold the tag propagation
+                out[0] = gr_complex(0,0);
+                out[1] = gr_complex(0,0);
+                add_item_tag(0, nitems_written(0)+1,
+                             pmt::intern("frame"), pmt::intern("end"),
+                             pmt::intern("frame_detector_timeout"));
+                add_item_tag(0, nitems_written(0)+2,
+                             pmt::intern("frame"), pmt::intern("start"),
+                             pmt::intern("frame_detector_timeout"));
+                //reset variables and go to sending the buffer and then return
+                symbol_cnt = 0;
+                m_state = SEND_PREAMBLE;
+                return 2;
+            }else {
+                //if we did not get an preamble sym
+                //get size of buffered input
+                int end_vec = buffer.size();
+
+                if (end_vec > n_up*m_samples_per_symbol) {
+                    //we have buffered n_pr symbols and did not found a preamble
+
+                    if (m_cnt == m_n_bytes) {
+                        //we are at the last part of the
+#ifdef GRLORA_DEBUGV
+                        GR_LOG_DEBUG(this->d_logger,
+                                     "DEBUG:Done SEND_FRAME -> FINDING_PREAMBLE");
+                        GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
+                                                     std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
+#endif
+                        add_item_tag(0, nitems_written(0)+1,
+                                     pmt::intern("frame"), pmt::intern("end"),
+                                     pmt::intern("frame_detector_timeout"));
+                        buffer.clear();
+                        m_state = FIND_PREAMBLE;
+                        m_cnt = 0;
+                        symbol_cnt = 0;
+                        m_n_bytes = m_store_n_bytes;
+                        //pad byte padding between detected frames (to allow propagation of end tag)
+                        consume_each(0);
+                        out[0] = gr_complex(0.0, 0.0);
+                        return 1;
+                    }
+                    else {
+                        if (end_vec > m_samples_per_symbol) {
+                            end_vec = m_samples_per_symbol;
+                        }
+                        // set output to be the buffer
+                        for (int i = 0; i < m_samples_per_symbol; i++) {
+                            out[i] = buffer.at(i);
+                        }
+                        m_cnt++;
+                        //clear the items used in the buffer
+                        buffer.erase(buffer.begin(), buffer.begin() + end_vec);
+                        return m_samples_per_symbol;
+                    }
+
+                }
+                return 0;
+
+            }
+
+        } else {
+            //we do not need to search for extra packet we can processed everything as its streamed in
+
+            //if the output buffer can hold the input
+            if (m_cnt == 0) {
+                // send over the quarter symbol in the preamble
+                consume_each((m_samples_per_symbol / 4));
+                memcpy(&out[0], &in[0],
+                       sizeof(gr_complex) * (m_samples_per_symbol / 4));
+                m_cnt++;
+                return (m_samples_per_symbol / 4);
+            }
+            //if we processed the number of bytes in the timeout window
+            if (m_cnt == m_n_bytes) {
+#ifdef GRLORA_DEBUGV
+                GR_LOG_DEBUG(this->d_logger,
+                             "DEBUG:Done SEND_FRAME -> FINDING_PREAMBLE");
+                GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
+                                             std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
+#endif
+                add_item_tag(0, nitems_written(0)+1,
+                             pmt::intern("frame"), pmt::intern("end"),
+                             pmt::intern("frame_detector_timeout"));
+                m_state = FIND_PREAMBLE;
+                m_cnt = 0;
+                symbol_cnt = 0;
+                m_n_bytes = m_store_n_bytes;
+                //pad byte padding between detected frames (to allow propagation of end tag)
+                consume_each(0);
+                out[0] = gr_complex(0.0, 0.0);
+                return 1;
+            } else {
+                // copy input to output
+                consume_each(m_samples_per_symbol);
+                memcpy(&out[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                // increase the number of symbols transmitted
+                m_cnt++;
+                return m_samples_per_symbol;
+            }
+        }
+    }else {
         //wait for the output buffer to handle the input
       consume_each(0);
       return 0;

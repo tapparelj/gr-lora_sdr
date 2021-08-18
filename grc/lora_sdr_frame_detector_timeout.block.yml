@@ -11,7 +11,7 @@ flags: [python, cpp]
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_detector_timeout(${sf},${samp_rate},${bw},${n_bytes})
+  make: lora_sdr.frame_detector_timeout(${sf},${samp_rate},${bw},${n_bytes},${detect_second_packet})
 
 cpp_templates:
   includes: ["#include <lora_sdr/frame_detector_timeout.h>"]
@@ -35,9 +35,16 @@ parameters:
     label: Bandwith
     dtype: int
   - id: n_bytes
-    label: Number of bytes
+    label: Timeout window
     dtype: int
     default: 55
+  - id: detect_second_packet
+    label: Detect second packet
+    dtype: enum
+    default : 'false'
+    options: ['True', 'False']
+    option_labels: ['Yes', 'No']
+
 
 asserts:
   - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }

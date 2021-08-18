@@ -1,10 +1,10 @@
 id: lora_sdr_frame_reciever
 label: frame_reciever
-category: '[lora_sdr]'
+category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_reciever(${addres}, ${port}, ${mode})
+  make: lora_sdr.frame_reciever(${addres}, ${port}, ${service} ,${mode})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -12,12 +12,24 @@ templates:
 #     * label (label shown in the GUI)
 #     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 parameters:
-- id: ...
-  label: ...
-  dtype: ...
-- id: ...
-  label: ...
-  dtype: ...
+- id: addres
+  label: Broker addres
+  dtype: string
+  default : "localhost"
+- id: port
+  label: Brokers port
+  dtype: int
+  default : 5555
+- id : service
+  label: Worker service
+  dtype: string
+  default : "Rx"
+- id: mode
+  label : Synchronous mode
+  dtype: enum
+  default : 'True'
+  options: ['True', 'False']
+  option_labels: ['Yes', 'No']
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:
@@ -26,19 +38,12 @@ parameters:
 #      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
 #      * vlen (optional - data stream vector length. Default is 1)
 #      * optional (optional - set to 1 for optional inputs. Default is 0)
-inputs:
-- label: ...
-  domain: ...
-  dtype: ...
-  vlen: ...
-  optional: ...
 
 outputs:
-- label: ...
-  domain: ...
-  dtype: ...
-  vlen: ...
-  optional: ...
+  - domain: stream
+    dtype: complex
+
+
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

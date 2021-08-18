@@ -1,0 +1,240 @@
+options:
+  parameters:
+    author: ''
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: test
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: input_vec
+  id: variable
+  parameters:
+    comment: ''
+    value: (1,2,3)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [270, 31]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [498, 258]
+    rotation: 0
+    state: disabled
+- name: lora_sdr_frame_reciever_0
+  id: lora_sdr_frame_reciever
+  parameters:
+    addres: localhost
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mode: 'True'
+    port: '5555'
+    service: Rx
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 517]
+    rotation: 0
+    state: true
+- name: lora_sdr_hier_rx_0
+  id: lora_sdr_hier_rx
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: ''
+    comment: ''
+    cr: ''
+    exit: 'True'
+    has_crc: 'False'
+    impl_head: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pay_len: ''
+    samp_rate: ''
+    sf: ''
+    sync_words: '[8, 16]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [672, 501]
+    rotation: 0
+    state: true
+- name: qtgui_sink_x_0
+  id: qtgui_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: samp_rate
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    plotconst: 'True'
+    plotfreq: 'True'
+    plottime: 'True'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'False'
+    type: complex
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [506, 318]
+    rotation: 0
+    state: disabled
+- name: zeromq_pull_source_0
+  id: zeromq_pull_source
+  parameters:
+    address: tcp://127.0.0.1:5555
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [223, 403]
+    rotation: 0
+    state: disabled
+- name: zeromq_rep_msg_sink_0
+  id: zeromq_rep_msg_sink
+  parameters:
+    address: ''
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: ''
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [610, 176]
+    rotation: 0
+    state: disabled
+- name: zeromq_req_source_0
+  id: zeromq_req_source
+  parameters:
+    address: tcp://127.0.0.1:5555
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [217, 190]
+    rotation: 0
+    state: disabled
+- name: zeromq_sub_source_0
+  id: zeromq_sub_source
+  parameters:
+    address: tcp://127.0.0.1:5555
+    affinity: ''
+    alias: ''
+    comment: ''
+    hwm: '-1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pass_tags: 'False'
+    timeout: '100'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 291]
+    rotation: 0
+    state: disabled
+
+connections:
+- [lora_sdr_frame_reciever_0, '0', blocks_null_sink_0, '0']
+- [lora_sdr_frame_reciever_0, '0', lora_sdr_hier_rx_0, '0']
+- [lora_sdr_frame_reciever_0, '0', qtgui_sink_x_0, '0']
+- [zeromq_pull_source_0, '0', blocks_null_sink_0, '0']
+- [zeromq_pull_source_0, '0', qtgui_sink_x_0, '0']
+- [zeromq_req_source_0, '0', blocks_null_sink_0, '0']
+- [zeromq_req_source_0, '0', qtgui_sink_x_0, '0']
+- [zeromq_sub_source_0, '0', blocks_null_sink_0, '0']
+- [zeromq_sub_source_0, '0', qtgui_sink_x_0, '0']
+
+metadata:
+  file_format: 1

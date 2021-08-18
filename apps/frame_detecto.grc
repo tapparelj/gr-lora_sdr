@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: frame_detector_sequence
+    id: frame_detector
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -60,7 +60,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.0'
+    value: '0.2'
   states:
     bus_sink: false
     bus_source: false
@@ -120,12 +120,24 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [531, 4]
+    rotation: 0
+    state: enabled
+- name: input_vec
+  id: variable
+  parameters:
+    comment: ''
+    value: (0, 0, 0)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [946, 191]
     rotation: 0
     state: enabled
 - name: multi_control
@@ -144,7 +156,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '10'
+    value: '2'
   states:
     bus_sink: false
     bus_source: false
@@ -156,12 +168,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '32'
+    value: '64'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [763, 4]
+    coordinate: [764, 3]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -192,19 +204,19 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-10'
+    value: '-7'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [573, 105]
+    coordinate: [336, 100.0]
     rotation: 0
     state: enabled
 - name: sto
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '0.3'
   states:
     bus_sink: false
     bus_source: false
@@ -216,7 +228,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: '1.5'
   states:
     bus_sink: false
     bus_source: false
@@ -236,25 +248,6 @@ blocks:
     coordinate: [1113, 13]
     rotation: 0
     state: enabled
-- name: blocks_tag_debug_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '"frame"'
-    name: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [308, 298]
-    rotation: 0
-    state: true
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -264,16 +257,16 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
+    samples_per_second: samp_rate*10
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 219]
+    coordinate: [248, 221]
     rotation: 0
-    state: true
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -281,20 +274,20 @@ blocks:
     alias: ''
     block_tags: 'False'
     comment: ''
-    epsilon: 1+sto/samp_rate
+    epsilon: 1+cfo*samp_rate/center_freq/2**sf
     freq_offset: cfo
     maxoutbuf: '0'
     minoutbuf: 2**sf*8
     noise_voltage: 10**(-snr/20)
     seed: '0'
-    taps: '1.0'
+    taps: 1.0 + 1.0j
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1053, 203]
+    coordinate: [440, 180.0]
     rotation: 0
-    state: bypassed
+    state: disabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -316,25 +309,90 @@ blocks:
     bus_structure: null
     coordinate: [291, 445]
     rotation: 180
-    state: enabled
-- name: lora_sdr_frame_detector_sequence_0
-  id: lora_sdr_frame_detector_sequence
+    state: disabled
+- name: lora_sdr_frame_detector_1
+  id: lora_sdr_frame_detector
   parameters:
     affinity: ''
     alias: ''
     bw: bw
     comment: ''
     maxoutbuf: '0'
+    minoutbuf: 2**sf*8
+    samp_rate: samp_rate
+    sf: sf
+    threshold: threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [626, 290]
+    rotation: 270
+    state: disabled
+- name: lora_sdr_frame_detector_timeout_0
+  id: lora_sdr_frame_detector_timeout
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    detect_second_packet: 'True'
+    maxoutbuf: '0'
     minoutbuf: '0'
-    n_seq: '9'
+    n_bytes: '150'
     samp_rate: samp_rate
     sf: sf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [716, 262]
+    coordinate: [731, 332]
     rotation: 270
+    state: disabled
+- name: lora_sdr_frame_detector_timeout_0_0
+  id: lora_sdr_frame_detector_timeout
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    detect_second_packet: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_bytes: '150'
+    samp_rate: samp_rate
+    sf: sf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [356, 698]
+    rotation: 0
+    state: enabled
+- name: lora_sdr_frame_sender_0
+  id: lora_sdr_frame_sender
+  parameters:
+    addres: localhost
+    affinity: ''
+    alias: ''
+    bw: bw
+    comment: ''
+    compress: 'True'
+    cr: cr
+    has_crc: has_crc
+    impl_head: impl_head
+    mode: 'True'
+    pay_len: pay_len
+    port: '5555'
+    samp_rate: samp_rate
+    sf: sf
+    sync_words: '[8, 16]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [746, 641]
+    rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
@@ -359,7 +417,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 389]
     rotation: 180
-    state: true
+    state: disabled
 - name: lora_sdr_hier_tx_1
   id: lora_sdr_hier_tx
   parameters:
@@ -373,27 +431,31 @@ blocks:
     maxoutbuf: '0'
     mean: time_wait
     minoutbuf: 2**sf*8
-    multi_control: 'True'
+    multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: '"MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"'
+    src_data: ''
     sync_words: '[8, 16]'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 133]
+    coordinate: [52, 642]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_throttle_0_1_0, '0', lora_sdr_frame_detector_sequence_0, '0']
+- [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
+- [channels_channel_model_0, '0', lora_sdr_frame_detector_1, '0']
+- [channels_channel_model_0, '0', lora_sdr_frame_detector_timeout_0, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_1, '0']
-- [lora_sdr_frame_detector_sequence_0, '0', interp_fir_filter_xxx_0_1_0, '0']
-- [lora_sdr_hier_tx_1, '0', blocks_tag_debug_0, '0']
+- [lora_sdr_frame_detector_1, '0', interp_fir_filter_xxx_0_1_0, '0']
+- [lora_sdr_frame_detector_timeout_0, '0', interp_fir_filter_xxx_0_1_0, '0']
+- [lora_sdr_frame_detector_timeout_0_0, '0', lora_sdr_frame_sender_0, '0']
 - [lora_sdr_hier_tx_1, '0', blocks_throttle_0_1_0, '0']
+- [lora_sdr_hier_tx_1, '0', lora_sdr_frame_detector_timeout_0_0, '0']
 
 metadata:
   file_format: 1

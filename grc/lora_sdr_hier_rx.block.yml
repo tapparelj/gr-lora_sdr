@@ -39,9 +39,6 @@ parameters:
   - id: cr
     label: Cr
     dtype: int
-  - id: sf
-    label: Sf
-    dtype: int
   - id: impl_head
     label: Impl_head
     dtype: bool
