@@ -15,7 +15,7 @@ class frame_sender(gr.sync_block):
     """Frame sender part of the ZMQ client <-> broker <-> worker setup
 
     Args:
-        gr ([type]): [description]
+        gr (sync_block): sink block
     """
 
     def __init__(self, addres, port, modus, reply, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words):

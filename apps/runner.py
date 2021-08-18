@@ -46,13 +46,10 @@ def main():
             index = 1
             #convert back to dict
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
-            #TODO add some kind of thread timeout
             threads[index] = Thread(target=start_flowgraph, args=(flowgraph_vars, results, index))
             threads[index].start()
             socket.send(input_data)
-            reply_cran = socket.recv()
-            print(reply_cran)
-            threads[index].join()
+            threads[index].join(definitions.Rx_timeout)
             #if there is a result send result back else send back an error code
             if results[index] is not None:
                 reply = [results[index].encode()]
