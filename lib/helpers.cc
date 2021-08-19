@@ -42,7 +42,7 @@ double double_mod(double a, long b) { return fmod(fmod(a, b) + b, b); }
  * @param n_bits The output number of bits
  * @return std::vector<bool>
  */
-std::vector<bool> int2bool(uint integer, uint8_t n_bits) {
+std::vector<bool> int2bool(uint8_t integer, uint8_t n_bits) {
   std::vector<bool> vec(n_bits, 0);
   int j = n_bits;
   for (int i = 0; i < n_bits; i++) {
@@ -147,7 +147,7 @@ uint32_t bool2int(std::vector<bool> b) {
  */
 void build_ref_chirps(gr_complex *upchirp, gr_complex *downchirp, uint8_t sf) {
   double N = (1 << sf);
-  for (uint n = 0; n < N; n++) {
+  for (uint16_t n = 0; n < N; n++) {
     // the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
     // gr_expj is the phase of the angle of the complex exponential and returns
     // and real and imag part by gr_sincosf(phase, &t_imag, &t_real);
@@ -168,7 +168,7 @@ void build_ref_chirps(gr_complex *upchirp, gr_complex *downchirp, uint8_t sf) {
 void build_upchirp(gr_complex *chirp, uint32_t id, uint8_t sf) {
   double N = 1 << sf;
   // procces all samples
-  for (uint n = 0; n < N; n++) {
+  for (uint16_t n = 0; n < N; n++) {
     // the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
     chirp[n] = gr_complex(0.9f, 0.0f) *
                gr_expj(2.0 * M_PI * (n * n / (2 * N) + (id / N - 0.5) * n));
@@ -178,7 +178,7 @@ void build_upchirp(gr_complex *chirp, uint32_t id, uint8_t sf) {
 void build_upchirp_os_factor(gr_complex* chirp, uint32_t id, uint8_t sf, uint8_t os_factor = 1){
             double N = (1 << sf)  ;
             int n_fold = N* os_factor - id*os_factor;
-            for(uint n = 0; n < N* os_factor; n++){
+            for(uint16_t n = 0; n < N* os_factor; n++){
                 if(n<n_fold)
                     chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-0.5)*n/os_factor));
                 else

@@ -52,7 +52,7 @@ double double_mod(double a, long b);
  * @param n_bits The output number of bits
  * @return std::vector<bool>
  */
-std::vector<bool> int2bool(uint integer, uint8_t n_bits);
+std::vector<bool> int2bool(uint8_t integer, uint8_t n_bits);
 
 /**
  * @brief Generates a random string of given length
@@ -87,20 +87,6 @@ uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp,
  */
 float determine_energy(const gr_complex *samples,
                        uint32_t m_samples_per_symbol);
-
-/**
- *  @brief  return the modulus a%b between 0 and (b-1)
- */
-long mod(long a, long b);
-
-/**
- * @brief Convert an integer into a MSB first vector of bool
- *
- * @param integer : The integer to convert
- * @param n_bits : The output number of bits
- * @return std::vector<bool>
- */
-std::vector<bool> int2bool(uint integer, uint8_t n_bits);
 
 /**
  * @brief Convert a MSB first vector of bool to a integer

@@ -121,7 +121,7 @@ int interleaver_impl::general_work(int noutput_items,
     // convert to input codewords to binary vector of vector
     for (int i = 0; i < sf_app; i++) {
       if (i >= nitems_to_process) // ninput_items[0])
-        cw_bin[i] = int2bool(0, cw_len);
+        cw_bin[i] = int2bool((uint8_t )0, cw_len);
       else
         cw_bin[i] = int2bool(in[i], cw_len);
       cw_cnt++;
