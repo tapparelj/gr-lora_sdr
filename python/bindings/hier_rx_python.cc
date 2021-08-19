@@ -33,7 +33,7 @@ void bind_hier_rx(py::module& m)
     using hier_rx    = gr::lora_sdr::hier_rx;
 
 
-    py::class_<hier_rx,
+    py::class_<hier_rx,gr::hier_block2,
         std::shared_ptr<hier_rx>>(m, "hier_rx", D(hier_rx))
 
         .def(py::init(&hier_rx::make),

@@ -8,7 +8,7 @@ from loudify import client_async_api
 import pmt
 import time
 import pickle
-from pmt.pmt_swig import length
+from pmt import length
 
 
 class frame_sender(gr.sync_block):

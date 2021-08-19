@@ -1,6 +1,7 @@
 options:
   parameters:
     author: Martyn van Dijke
+    catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: '""'
     comment: ''
@@ -22,7 +23,6 @@ options:
     sizing_mode: fixed
     thread_safe_setters: '1'
     title: Frame detector test with noise and cfo
-    window_size: ''
   states:
     bus_sink: false
     bus_source: false
@@ -452,9 +452,9 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
-    maxoutbuf: '0'
+    maxoutbuf: ''
     mean: time_wait
-    minoutbuf: 2**sf*8
+    minoutbuf: ''
     multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
