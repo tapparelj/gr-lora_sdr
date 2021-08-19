@@ -8,7 +8,6 @@ from loudify import client_async_api
 import pmt
 import time
 import pickle
-from pmt import length
 
 
 class frame_sender(gr.sync_block):
@@ -19,6 +18,7 @@ class frame_sender(gr.sync_block):
     """
 
     def __init__(self, addres, port, modus, reply, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words):
+        print("Init new frame sender")
         verbose = True
         self.modus = modus
         self.reply = reply
@@ -79,15 +79,16 @@ class frame_sender(gr.sync_block):
         # print(self.buffer)
 
         # search for begin and end tags
-        tags = self.get_tags_in_window(0, 0, len(input_items[0]))
+        tags = self.get_tags_in_window(0, 0, len(input_items[0])+100)
         for tag in tags:
             source = pmt.to_python(tag.srcid)
+            print(tags)
             if source == "frame_detector_timeout" or source == "frame_detector_threshold":
                 value = pmt.to_python(tag.value)
                 offset = tag.offset
-
+                print(value)
                 if value == "start":
-                    print("Start offset is ", offset)
+                    print("Start offset is frame_detector ", offset)
                     self.start_index.append(offset)
                 elif value == "end":
                     print("End offset is ", offset)

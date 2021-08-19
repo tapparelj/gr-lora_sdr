@@ -33,7 +33,7 @@ void bind_frame_detector_timeout(py::module& m)
     using frame_detector_timeout    = gr::lora_sdr::frame_detector_timeout;
 
 
-    py::class_<frame_detector_timeout,
+    py::class_<frame_detector_timeout,gr::block,
         std::shared_ptr<frame_detector_timeout>>(m, "frame_detector_timeout", D(frame_detector_timeout))
 
         .def(py::init(&frame_detector_timeout::make),

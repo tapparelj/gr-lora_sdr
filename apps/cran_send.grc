@@ -237,7 +237,7 @@ blocks:
     comment: ''
     display: 'True'
     filter: '""'
-    name: ''
+    name: '"frame_detector_timeout"'
     num_inputs: '1'
     type: complex
     vlen: '1'
@@ -247,7 +247,7 @@ blocks:
     bus_structure: null
     coordinate: [781, 498]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
@@ -452,9 +452,9 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
-    maxoutbuf: ''
+    maxoutbuf: '0'
     mean: time_wait
-    minoutbuf: ''
+    minoutbuf: 2**sf*8
     multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len
