@@ -28,7 +28,7 @@ DOXYFILE_ENCODING      = UTF-8
 # identify the project. Note that if you do not use Doxywizard you need
 # to put quotes around the project name if it contains spaces.
 
-PROJECT_NAME           = "GNU Radio's LoRa_SDR OOT Package"
+PROJECT_NAME           = "GNU Radio's LORA_SDR Package"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -40,7 +40,7 @@ PROJECT_NUMBER         =
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "OOT module that provides PHY LoRa capabilities"
+PROJECT_BRIEF          =
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
@@ -199,13 +199,6 @@ TAB_SIZE               = 8
 
 ALIASES                =
 
-# This tag can be used to specify a number of word-keyword mappings (TCL only).
-# A mapping has the form "name=value". For example adding
-# "class=itcl::class" will allow you to use the command class in the
-# itcl::class meaning.
-
-# TCL_SUBST              =
-
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
 # For instance, some of the names that are used will be different. The list
@@ -356,7 +349,7 @@ EXTRACT_ALL            = YES
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class
 # will be included in the documentation.
 
-EXTRACT_PRIVATE        = YES
+EXTRACT_PRIVATE        = NO
 
 # If the EXTRACT_PACKAGE tag is set to YES all members with package or internal
 # scope will be included in the documentation.
@@ -723,8 +716,6 @@ EXCLUDE_PATTERNS       = */.deps/* \
 
 EXCLUDE_SYMBOLS        = ad9862 \
                          numpy \
-                         *swig* \
-                         *Swig* \
                          *my_top_block* \
                          *my_graph* \
                          *app_top_block* \
@@ -1220,14 +1211,14 @@ FORMULA_TRANSPARENT    = YES
 # output. When enabled you may also need to install MathJax separately and
 # configure the path to it using the MATHJAX_RELPATH option.
 
-USE_MATHJAX            = NO
+USE_MATHJAX            = @enable_mathjax@
 
 # When MathJax is enabled you can set the default output format to be used for
 # the MathJax output. Supported types are HTML-CSS, NativeMML (i.e. MathML) and
 # SVG. The default value is HTML-CSS, which is slower, but has the best
 # compatibility.
 
-MATHJAX_FORMAT         = HTML-CSS
+MATHJAX_FORMAT         = SVG
 
 # When MathJax is enabled you need to specify the location relative to the
 # HTML output directory using the MATHJAX_RELPATH option. The destination
@@ -1239,12 +1230,12 @@ MATHJAX_FORMAT         = HTML-CSS
 # However, it is strongly recommended to install a local
 # copy of MathJax from http://www.mathjax.org before deployment.
 
-MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
+MATHJAX_RELPATH        = @MATHJAX2_PATH@
 
 # The MATHJAX_EXTENSIONS tag can be used to specify one or MathJax extension
 # names that should be enabled during MathJax rendering.
 
-MATHJAX_EXTENSIONS     =
+MATHJAX_EXTENSIONS     = TeX/AMSmath TeX/AMSsymbols
 
 # The MATHJAX_CODEFILE tag can be used to specify a file with javascript
 # pieces of code that will be used on startup of the MathJax code.
@@ -1350,7 +1341,7 @@ COMPACT_LATEX          = NO
 # by the printer. Possible values are: a4, letter, legal and
 # executive. If left blank a4 will be used.
 
-PAPER_TYPE             = a4
+PAPER_TYPE             = letter
 
 # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
 # packages that should be included in the LaTeX output.
@@ -1680,11 +1671,6 @@ EXTERNAL_GROUPS        = YES
 
 EXTERNAL_PAGES         = YES
 
-# The PERL_PATH should be the absolute path and name of the perl script
-# interpreter (i.e. the result of `which perl').
-
-#PERL_PATH              = /usr/bin/perl
-
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool
 #---------------------------------------------------------------------------
@@ -1696,15 +1682,6 @@ EXTERNAL_PAGES         = YES
 # install and use dot, since it yields more powerful graphs.
 
 CLASS_DIAGRAMS         = YES
-
-# You can define message sequence charts within doxygen comments using the \msc
-# command. Doxygen will then run the mscgen tool (see
-# http://www.mcternan.me.uk/mscgen/) to produce the chart and insert it in the
-# documentation. The MSCGEN_PATH tag allows you to specify the directory where
-# the mscgen tool resides. If left empty the tool is assumed to be found in the
-# default search path.
-
-#MSCGEN_PATH            =
 
 # If set to YES, the inheritance and collaboration graphs will hide
 # inheritance and usage relations if the target is undocumented
@@ -1834,7 +1811,7 @@ DIRECTORY_GRAPH        = YES
 # HTML_FILE_EXTENSION to xhtml in order to make the SVG files
 # visible in IE 9+ (other browsers do not have this requirement).
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.

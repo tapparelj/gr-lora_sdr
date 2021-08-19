@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API crc_verif : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<crc_verif> sptr;
+      typedef std::shared_ptr<crc_verif> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::crc_verif.

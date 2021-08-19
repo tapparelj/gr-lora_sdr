@@ -38,7 +38,7 @@ namespace gr {
     class LORA_SDR_API hamming_dec : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<hamming_dec> sptr;
+      typedef std::shared_ptr<hamming_dec> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::hamming_dec.

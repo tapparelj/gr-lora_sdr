@@ -8,11 +8,12 @@
 # Title: Frame detector test with noise and cfo
 # Author: Martyn van Dijke
 # Description: Simulation example LoRa
-# GNU Radio version: 3.8.2.0
+# GNU Radio version: 3.9.2.0
 
 from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
+from gnuradio.fft import window
 import sys
 import signal
 from argparse import ArgumentParser
@@ -22,10 +23,12 @@ import lora_sdr
 import threading
 
 
+
+
 class cran_send(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Frame detector test with noise and cfo")
+        gr.top_block.__init__(self, "Frame detector test with noise and cfo", catch_exceptions=True)
 
         self._lock = threading.RLock()
 
@@ -173,7 +176,6 @@ class cran_send(gr.top_block):
     def set_center_freq(self, center_freq):
         with self._lock:
             self.center_freq = center_freq
-
 
 
 

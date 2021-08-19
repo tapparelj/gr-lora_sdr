@@ -25,7 +25,7 @@ namespace lora_sdr {
  */
 class LORA_SDR_API hier_tx : virtual public gr::hier_block2 {
 public:
-  typedef boost::shared_ptr<hier_tx> sptr;
+  typedef std::shared_ptr<hier_tx> sptr;
 
   /*!
    * \brief Return a shared_ptr to a new instance of lora_sdr::hier_tx.

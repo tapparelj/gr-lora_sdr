@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API partial_ml : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<partial_ml> sptr;
+      typedef std::shared_ptr<partial_ml> sptr;
 
       /*!
        * \brief Calculate the likelihood of the synchronised user symbol as well as the matched filter output of the two overlapping symbols of the non-synchronised user.

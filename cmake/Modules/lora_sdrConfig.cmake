@@ -1,4 +1,6 @@
-INCLUDE(FindPkgConfig)
+if(NOT PKG_CONFIG_FOUND)
+    INCLUDE(FindPkgConfig)
+endif()
 PKG_CHECK_MODULES(PC_LORA_SDR lora_sdr)
 
 FIND_PATH(
@@ -22,9 +24,10 @@ FIND_LIBRARY(
           /usr/local/lib64
           /usr/lib
           /usr/lib64
-)
+          )
+
+include("${CMAKE_CURRENT_LIST_DIR}/lora_sdrTarget.cmake")
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LORA_SDR DEFAULT_MSG LORA_SDR_LIBRARIES LORA_SDR_INCLUDE_DIRS)
 MARK_AS_ADVANCED(LORA_SDR_LIBRARIES LORA_SDR_INCLUDE_DIRS)
-
