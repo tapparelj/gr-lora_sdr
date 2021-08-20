@@ -71,8 +71,8 @@ class frame_reciever(gr.sync_block):
                 # append empty padding after the frame (to fill to entire frame )
                 out[:] = numpy.concatenate((data, zeros), axis=0)
                 print("Reached end of data, closing")
-                # self.socket.close()
-                # self.context.destroy()
+                self.socket.close()
+                self.context.destroy()
                 return -1
                 # self.socket.close()
                 # 

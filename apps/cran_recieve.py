@@ -160,8 +160,8 @@ def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
     while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
         if num_messages >= 1:
+            print("End of the while loop, there is a message")
             tb.stop()
-            tb.wait()
             exit(0)
             # try to get get the message from the store port of the message
             # debug printer and convert to string from pmt message

@@ -69,14 +69,15 @@ def main():
             socket.send(input_data)
             reply = socket.recv()
             print(reply)
-            # for stdout_line in iter(p.stdout.readline, ""):
-            #     print(stdout_line) 
+            if index ==4:
+                for stdout_line in iter(p.stdout.readline, ""):
+                    print(stdout_line) 
             # p.stdout.close()
             # return_code = p.wait()
             # if return_code:
             #     raise subprocess.CalledProcessError(return_code, cmd)]
             try : 
-                out, err = p.communicate(timeout=2)
+                out, err = p.communicate()
                 out2 = out
                 print(out)
                 print(err)          
@@ -85,6 +86,7 @@ def main():
                 print(result)
                 msg = out2.decode("utf-8").split(":")[-1]
                 reply = [msg.encode()]
+                index +=1 
                 p.kill()
             except subprocess.TimeoutExpired:
                 reply = [definitions.W_ERROR]

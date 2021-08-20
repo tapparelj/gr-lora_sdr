@@ -1,0 +1,112 @@
+Connecting to broker
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[004] echo
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[1534116]
+[128] {'sf': 9, 'samp_rate': 250000, 'bw': 250000, 'has_crc': False, 'pay_len': 64, 'cr': 4, 'impl_head': True, 'sync_words': [8, 16]}
+Got a request
+1
+1
+[<_MainThread(MainThread, started 140085174282048)>]
+gASVZwAAAAAAAAB9lCiMAnNmlEsJjAlzYW1wX3JhdGWUSpDQAwCMAmJ3lEqQ0AMAjAdoYXNfY3Jj
+lImMB3BheV9sZW6US0CMAmNylEsEjAlpbXBsX2hlYWSUiIwKc3luY193b3Jkc5RdlChLCEsQZXUu
+
+start
+b'\x03'
+b'\t\nset_min_output_buffer on block 11 to 1024\nGot data, letting runner know\nReached end of data, closing\nEnd of the while loop, there is a message\ngr::log :DEBUG: crc_verif0 - DEBUG:msg:dhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJcX\n'
+b''
+Result
+0
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[065] dhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJcX
+
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[1534116]
+[128] {'sf': 9, 'samp_rate': 250000, 'bw': 250000, 'has_crc': False, 'pay_len': 64, 'cr': 4, 'impl_head': True, 'sync_words': [8, 16]}
+Got a request
+2
+1
+[<_MainThread(MainThread, started 140085174282048)>]
+gASVZwAAAAAAAAB9lCiMAnNmlEsJjAlzYW1wX3JhdGWUSpDQAwCMAmJ3lEqQ0AMAjAdoYXNfY3Jj
+lImMB3BheV9sZW6US0CMAmNylEsEjAlpbXBsX2hlYWSUiIwKc3luY193b3Jkc5RdlChLCEsQZXUu
+
+start
+b'\x03'
+b'\t\nset_min_output_buffer on block 11 to 1024\nGot data, letting runner know\nReached end of data, closing\nEnd of the while loop, there is a message\ngr::log :DEBUG: crc_verif0 - DEBUG:msg:yHZzsRwpC5iUzahEcaYatja7kaqGHss6YhteYQrpJA76AcBAanBtuBoDzF97Vp1H\n'
+b''
+Result
+0
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[065] yHZzsRwpC5iUzahEcaYatja7kaqGHss6YhteYQrpJA76AcBAanBtuBoDzF97Vp1H
+
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[1534116]
+[128] {'sf': 9, 'samp_rate': 250000, 'bw': 250000, 'has_crc': False, 'pay_len': 64, 'cr': 4, 'impl_head': True, 'sync_words': [8, 16]}
+Got a request
+3
+1
+[<_MainThread(MainThread, started 140085174282048)>]
+gASVZwAAAAAAAAB9lCiMAnNmlEsJjAlzYW1wX3JhdGWUSpDQAwCMAmJ3lEqQ0AMAjAdoYXNfY3Jj
+lImMB3BheV9sZW6US0CMAmNylEsEjAlpbXBsX2hlYWSUiIwKc3luY193b3Jkc5RdlChLCEsQZXUu
+
+start
+b'\x03'
+b'\t\nset_min_output_buffer on block 11 to 1024\nGot data, letting runner know\nReached end of data, closing\nEnd of the while loop, there is a message\ngr::log :DEBUG: crc_verif0 - DEBUG:msg:viLhW3uvrsqRsRft4GMp61QtuNod3fLomkv8dOus6I7opdFhJiuD7aXpObsHf3Tr\n'
+b''
+Result
+0
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[065] viLhW3uvrsqRsRft4GMp61QtuNod3fLomkv8dOus6I7opdFhJiuD7aXpObsHf3Tr
+
+----------------------------------------
+[000] 
+[003] W01
+[001] 
+[005] 0x006b8b4568
+[000] 
+[1534116]
+[128] {'sf': 9, 'samp_rate': 250000, 'bw': 250000, 'has_crc': False, 'pay_len': 64, 'cr': 4, 'impl_head': True, 'sync_words': [8, 16]}
+Got a request
+4
+1
+[<_MainThread(MainThread, started 140085174282048)>]
+gASVZwAAAAAAAAB9lCiMAnNmlEsJjAlzYW1wX3JhdGWUSpDQAwCMAmJ3lEqQ0AMAjAdoYXNfY3Jj
+lImMB3BheV9sZW6US0CMAmNylEsEjAlpbXBsX2hlYWSUiIwKc3luY193b3Jkc5RdlChLCEsQZXUu
+
+start
+b'\x03'
+b'\t\n'
+b'set_min_output_buffer on block 11 to 1024\n'
