@@ -1,0 +1,59 @@
+# Contributor: Martyn van Dijke <martijnvdijke600@gmail.com>
+# Maintainer: Martyn van Dijke <martijnvdijke600@gmail.com>
+pkgname=gr-lora_sdr
+pkgver=0.3.4
+pkgrel=0
+pkgdesc="fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver"
+url="https://github.com/martynvdijke/gr-lora_sdr/"
+arch="x86_64"
+license="GPL-3.0-or-later"
+depends="gnuradio"
+makedepends="blas-dev
+        boost-dev
+        cmake
+        doxygen
+        gmp-dev
+        graphviz
+        libvolk-dev
+        log4cpp-dev
+        mpir-dev
+        gnuradio-dev
+        git
+        swig
+        py3-sphinx
+        python3-dev
+        "
+#checkdepends=""
+deps="gnuradio"
+#install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/martynvdijke/gr-lora_sdr/archive/refs/tags/v$pkgver.tar.gz"
+#builddir="$srcdir/"
+
+build() {
+
+        # Replace with proper build command(s)
+        #mkdir build && cd build
+        #cmake ../ -DCMAKE_INSTALL_PREFIX=/usr
+        cmake -B build -DCMAKE_INSTALL_PREFIX=/usr -Wno-dev
+        cd build && make
+
+        #cmake --build build
+
+}
+
+check() {
+        # Replace with proper check command(s)
+        :
+}
+
+package() {
+        # Replace with proper package command(s)
+        cd build
+        make DESTDIR="$pkgdir" install
+        #DESTDIR="$pkgdir" cmake --build build --target install
+        #install -Dm644 swig/lora_sdr_swig.py "$pkgdir"/usr/lib/python3.9/site-packages/lora_sdr/lora_sdr_swig.py
+}
+sha512sums="
+8bf26601ff8e313a839a9c2fffe9b803f6f826b15d29a5f3cbd5eb81408a5d236bfad8bc2c490a1b0944771c4ddc76100d76c03bdb4c417d5859df018ada51eb  gr-lora_sdr-0.3.4.tar.gz
+"

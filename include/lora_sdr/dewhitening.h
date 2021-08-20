@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API dewhitening : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<dewhitening> sptr;
+      typedef std::shared_ptr<dewhitening> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::dewhitening.

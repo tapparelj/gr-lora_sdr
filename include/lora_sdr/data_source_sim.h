@@ -27,7 +27,7 @@ namespace gr {
     class LORA_SDR_API data_source_sim : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<data_source_sim> sptr;
+      typedef std::shared_ptr<data_source_sim> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::data_source.

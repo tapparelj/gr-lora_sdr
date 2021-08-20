@@ -35,7 +35,7 @@ namespace gr {
     class LORA_SDR_API mu_synchro : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<mu_synchro> sptr;
+      typedef std::shared_ptr<mu_synchro> sptr;
 
       /*!
        * \brief Synchronise to the strongest user present

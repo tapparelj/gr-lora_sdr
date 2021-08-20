@@ -296,7 +296,7 @@ int frame_detector_timeout_impl::general_work(
                         GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
                                                      std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
 #endif
-                        add_item_tag(0, nitems_written(0)+1,
+                        add_item_tag(0, nitems_written(0),
                                      pmt::intern("frame"), pmt::intern("end"),
                                      pmt::intern("frame_detector_timeout"));
                         buffer.clear();
@@ -348,7 +348,7 @@ int frame_detector_timeout_impl::general_work(
                 GR_LOG_DEBUG(this->d_logger, "DEBUG:temp found end of frame:" + std::to_string(m_cnt) + " :" +
                                              std::to_string(m_n_bytes) + ":" + std::to_string(m_store_n_bytes));
 #endif
-                add_item_tag(0, nitems_written(0)+1,
+                add_item_tag(0, nitems_written(0),
                              pmt::intern("frame"), pmt::intern("end"),
                              pmt::intern("frame_detector_timeout"));
                 m_state = FIND_PREAMBLE;

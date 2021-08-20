@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API signal_detector : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<signal_detector> sptr;
+      typedef std::shared_ptr<signal_detector> sptr;
   
       /*!
        * \brief This block becomes transparent after detecting a LoRa preamble at his input.

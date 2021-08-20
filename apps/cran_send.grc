@@ -1,6 +1,7 @@
 options:
   parameters:
     author: Martyn van Dijke
+    catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: '""'
     comment: ''
@@ -22,7 +23,6 @@ options:
     sizing_mode: fixed
     thread_safe_setters: '1'
     title: Frame detector test with noise and cfo
-    window_size: ''
   states:
     bus_sink: false
     bus_source: false
@@ -237,7 +237,7 @@ blocks:
     comment: ''
     display: 'True'
     filter: '""'
-    name: ''
+    name: '"frame_detector_timeout"'
     num_inputs: '1'
     type: complex
     vlen: '1'
@@ -247,7 +247,7 @@ blocks:
     bus_structure: null
     coordinate: [781, 498]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle_0_1_0
   id: blocks_throttle
   parameters:
