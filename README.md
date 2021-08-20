@@ -38,7 +38,7 @@ The extended work of this project is to provide a higher level use case for the 
 
 This is done to extend to higher level systems such as:
  - Implementing a simulated multi-stream gateway, this is currently implemented in an experimental version. As desribed in [paper](main.pdf).
--  Implementing an open-source cran implementation, this is currently WIP for more information on this go to [loudify-server](https://github.com/martynvdijke/loudify-server) and [loudify-worker](https://github.com/martynvdijke/loudify-worker)
+-  Implementing an open-source CRAN (Centralised Radio Acces Network) implementation using ZMQ worker <-> broker <-> worker struicture, this is currently WIP for more information on this go to [loudify](https://github.com/martynvdijke/loudify) 
 
 ### About this code
 In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose all the parameters of the transmission, such as the spreading factor, the coding rate, the bandwidth, the presence of a header and a CRC, the message to be transmitted, etc.

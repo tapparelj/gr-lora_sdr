@@ -19,6 +19,28 @@ if(DEFINED ENV{PYBOMBS_PREFIX})
     message(STATUS "PyBOMBS installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{PYBOMBS_PREFIX}")
 endif()
 
+if(DEFINED ENV{CONDA_PREFIX} )
+    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
+    message(STATUS "Conda installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{CONDA_PREFIX}")
+endif()
+
+########################################################################
+# Check if cmake build type is debug and if so add logging and set debug variables
+########################################################################
+########################################################################
+# Setting options for meassurment output and debug -v options
+########################################################################
+option(GRLORA_MEASUREMENTS "Turn on output meassurments (usefull for debugging purpose)" True)
+if(GRLORA_MEASUREMENTS)
+add_definitions(-DGRLORA_MEASUREMENTS)
+message(STATUS "Found setting GRLORA_MEASUREMENTS=True, setting outputting meassurments on")
+endif()
+option(DGRLORA_DEBUGV "More verbose debugging" True)
+if(GDGRLORA_DEBUGV)
+    add_definitions(-DGRLORA_DEBUGV)
+    message(STATUS "Found setting DGRLORA_DEBUGV turning on more verbose logging")
+endif()
+
 # Select the release build type by default to get optimization flags
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
@@ -30,8 +52,8 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # Set the version information here
-set(VERSION_MAJOR 1)
-set(VERSION_API   0)
+set(VERSION_MAJOR 0)
+set(VERSION_API   4)
 set(VERSION_ABI   0)
 set(VERSION_PATCH git)
 
