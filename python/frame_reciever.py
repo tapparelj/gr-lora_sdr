@@ -3,6 +3,7 @@
 
 import numpy
 from gnuradio import gr
+from loudify import definitions
 import zmq
 import time
 import signal
@@ -21,7 +22,7 @@ class frame_reciever(gr.sync_block):
         context = zmq.Context()
         self.context = context
         self.socket = context.socket(zmq.REP)
-        self.socket.bind("ipc://6270")
+        self.socket.bind("tcp://*:6270")
         self.buffer = []
         self.state = 1
         # print("new init")
@@ -44,6 +45,9 @@ class frame_reciever(gr.sync_block):
             self.buffer = data
             out[:] = numpy.transpose([data[0:max_items, 0], data[0:max_items, 1]])
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
+            #send correct recv of files
+            print("Got data, letting runner know")
+            self.socket.send(definitions.W_REPLY)
             # out = output_items[0]
             # # <+signal processing here+>
             # # out[0] = 1+2j
@@ -66,13 +70,12 @@ class frame_reciever(gr.sync_block):
                 # print(zeros.dtype)
                 # append empty padding after the frame (to fill to entire frame )
                 out[:] = numpy.concatenate((data, zeros), axis=0)
-                reply = "done".encode("ascii")
-                print("Reply back to req")
-                self.socket.send(reply)
+                print("Reached end of data, closing")
                 # self.socket.close()
+                # self.context.destroy()
                 return -1
                 # self.socket.close()
-                # self.context.destroy(0)
+                # 
                 self.state = 1
             else:
                 out[:] = self.buffer[0:items_to_use]

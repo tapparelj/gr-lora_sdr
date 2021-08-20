@@ -28,12 +28,12 @@ from loudify import definitions
 import ast
 import pmt
 import time
-
+import os
+import codecs
 class cran_recieve(gr.top_block):
 
     def __init__(self, flowgraph_vars):
         gr.top_block.__init__(self, "Cran reciever")
-
         self._lock = threading.RLock()
 
         ##################################################
@@ -155,17 +155,24 @@ class cran_recieve(gr.top_block):
 def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
     tb = top_block_cls(flowgraph_vars)
     tb.start()
-    print(tb.get_sf())
     time.sleep(1)
-    tb.stop()
+    
     while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
         if num_messages >= 1:
+            tb.stop()
+            tb.wait()
+            exit(0)
             # try to get get the message from the store port of the message
             # debug printer and convert to string from pmt message
             try:
                 msg = pmt.symbol_to_string(
                     tb.blocks_message_debug_0.get_message(0))
+                print("Stopping flwograph")
+                print(msg)
+                # pid = os.getpid() 
+                # print(pid)
+
                 return msg
             except:
                 # if not possible set message to be None
@@ -175,4 +182,7 @@ def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
 
 
 if __name__ == '__main__':
-    main()
+    unpickled = pickle.loads(codecs.decode(sys.argv[1].encode(), "base64"))
+    # input = pickle.load(sys.stdin.buffer)
+    # print(input)
+    main(unpickled)
