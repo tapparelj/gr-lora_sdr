@@ -3,7 +3,6 @@
 
 from gnuradio import gr
 from gnuradio import blocks
-from .lora_sdr_swig import *
 import numpy as np
 from enum import Enum
 import time

@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API noise_est : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<noise_est> sptr;
+      typedef std::shared_ptr<noise_est> sptr;
 
       /*!
        * \brief This block estimate the noise power using the 'n_samples' first sample presented at his input.

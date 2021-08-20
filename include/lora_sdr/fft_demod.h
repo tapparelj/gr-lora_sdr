@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API fft_demod : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<fft_demod> sptr;
+      typedef std::shared_ptr<fft_demod> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::fft_demod.

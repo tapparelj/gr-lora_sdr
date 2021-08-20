@@ -7,6 +7,7 @@ from loudify import worker_api
 from loudify import definitions
 import cran_recieve
 from threading import Thread
+import time
 
 def main():
 
@@ -33,13 +34,14 @@ def main():
     worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
+    socket.connect("ipc://6270")
 
     while True:
         request = worker.recv(reply)
         if request is None:
             print("Worker was interrupted")
         if request:
-            socket.connect("ipc://6270")
+            
             print("Got a request")
             data = request.pop(0)
             input_data = data
@@ -49,6 +51,7 @@ def main():
             threads[index] = Thread(target=start_flowgraph, args=(flowgraph_vars, results, index))
             threads[index].start()
             socket.send(input_data)
+            socket.recv()
             threads[index].join(definitions.Rx_timeout)
             #if there is a result send result back else send back an error code
             if results[index] is not None:

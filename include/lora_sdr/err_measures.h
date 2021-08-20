@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API err_measures : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<err_measures> sptr;
+      typedef std::shared_ptr<err_measures> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::err_measures.

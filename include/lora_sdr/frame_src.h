@@ -35,7 +35,7 @@ namespace gr {
     class LORA_SDR_API frame_src : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<frame_src> sptr;
+      typedef std::shared_ptr<frame_src> sptr;
 
       /*!
        * \brief Produce frames at a regular interval

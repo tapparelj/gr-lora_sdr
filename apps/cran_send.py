@@ -8,11 +8,12 @@
 # Title: Frame detector test with noise and cfo
 # Author: Martyn van Dijke
 # Description: Simulation example LoRa
-# GNU Radio version: 3.8.2.0
+# GNU Radio version: 3.9.2.0
 
 from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
+from gnuradio.fft import window
 import sys
 import signal
 from argparse import ArgumentParser
@@ -22,10 +23,12 @@ import lora_sdr
 import threading
 
 
+
+
 class cran_send(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Frame detector test with noise and cfo")
+        gr.top_block.__init__(self, "Frame detector test with noise and cfo", catch_exceptions=True)
 
         self._lock = threading.RLock()
 
@@ -56,6 +59,8 @@ class cran_send(gr.top_block):
         self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16])
         self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,180,False)
         self.blocks_throttle_0_1_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_gr_complex*1, "frame_detector_timeout", "")
+        self.blocks_tag_debug_0.set_display(True)
 
 
 
@@ -63,6 +68,7 @@ class cran_send(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.blocks_throttle_0_1_0_0, 0), (self.lora_sdr_frame_detector_timeout_0_0, 0))
+        self.connect((self.lora_sdr_frame_detector_timeout_0_0, 0), (self.blocks_tag_debug_0, 0))
         self.connect((self.lora_sdr_frame_detector_timeout_0_0, 0), (self.lora_sdr_frame_sender_0, 0))
         self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0_0, 0))
 
@@ -173,7 +179,6 @@ class cran_send(gr.top_block):
     def set_center_freq(self, center_freq):
         with self._lock:
             self.center_freq = center_freq
-
 
 
 

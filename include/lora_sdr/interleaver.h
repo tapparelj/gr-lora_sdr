@@ -37,7 +37,7 @@ namespace gr {
     class LORA_SDR_API interleaver : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<interleaver> sptr;
+      typedef std::shared_ptr<interleaver> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::interleaver.

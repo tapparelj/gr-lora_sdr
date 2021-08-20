@@ -36,7 +36,7 @@ namespace gr {
     class LORA_SDR_API mu_detection : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<mu_detection> sptr;
+      typedef std::shared_ptr<mu_detection> sptr;
 
       /*!
        * \brief New user detection and parameters estimations

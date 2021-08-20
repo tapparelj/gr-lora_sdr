@@ -13,6 +13,10 @@
 
 #include "helpers.h"
 #include <gnuradio/io_signature.h>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 namespace gr {
 namespace lora_sdr {

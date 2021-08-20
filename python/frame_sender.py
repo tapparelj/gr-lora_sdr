@@ -8,7 +8,6 @@ from loudify import client_async_api
 import pmt
 import time
 import pickle
-from pmt.pmt_swig import length
 
 
 class frame_sender(gr.sync_block):
@@ -35,6 +34,8 @@ class frame_sender(gr.sync_block):
         self.cr = cr
         self.impl_head = impl_head
         self.sync_words = sync_words
+        #Fix for gr3.9 tags_in_window by using in range with own offset
+        self.offset = 0
 
         self.flowgraph_vars = {
             'sf': self.sf,
@@ -79,15 +80,16 @@ class frame_sender(gr.sync_block):
         # print(self.buffer)
 
         # search for begin and end tags
-        tags = self.get_tags_in_window(0, 0, len(input_items[0]))
+        #Fix for GR3.9 tags_in_window by using in range with own offset
+        tags = self.get_tags_in_range(0, self.offset, self.offset+len(input_items[0]))
+        self.offset += len(input_items[0])
         for tag in tags:
             source = pmt.to_python(tag.srcid)
             if source == "frame_detector_timeout" or source == "frame_detector_threshold":
-                value = pmt.to_python(tag.value)
+                value = pmt.to_python(tag.value)                
                 offset = tag.offset
-
                 if value == "start":
-                    print("Start offset is ", offset)
+                    print("Start offset is frame_detector ", offset)
                     self.start_index.append(offset)
                 elif value == "end":
                     print("End offset is ", offset)

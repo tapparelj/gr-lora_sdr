@@ -35,7 +35,7 @@ namespace lora_sdr {
  */
 class LORA_SDR_API whitening : virtual public gr::sync_block {
 public:
-  typedef boost::shared_ptr<whitening> sptr;
+  typedef std::shared_ptr<whitening> sptr;
 
   /*!
    * \brief Return a shared_ptr to a new instance of lora_sdr::whitening.
