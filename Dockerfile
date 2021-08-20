@@ -9,6 +9,8 @@ RUN useradd --system --create-home $user \
 USER $user
 WORKDIR /home/$user
 
+
+
 # Install yay
 RUN git clone https://aur.archlinux.org/yay.git \
   && cd yay \

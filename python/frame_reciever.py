@@ -69,7 +69,7 @@ class frame_reciever(gr.sync_block):
                 reply = "done".encode("ascii")
                 print("Reply back to req")
                 self.socket.send(reply)
-                self.socket.close()
+                # self.socket.close()
                 return -1
                 # self.socket.close()
                 # self.context.destroy(0)
