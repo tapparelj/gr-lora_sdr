@@ -60,10 +60,10 @@ modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
 modulate_impl::~modulate_impl() {}
 
 /**
- * @brief 
- * 
- * @param noutput_items 
- * @param ninput_items_required 
+ * @brief
+ *
+ * @param noutput_items
+ * @param ninput_items_required
  */
 void modulate_impl::forecast(int noutput_items,
                              gr_vector_int &ninput_items_required) {
@@ -72,12 +72,12 @@ void modulate_impl::forecast(int noutput_items,
 
 /**
  * @brief Main function where all the processing happens
- * 
- * @param noutput_items 
- * @param ninput_items 
- * @param input_items 
- * @param output_items 
- * @return int 
+ *
+ * @param noutput_items
+ * @param ninput_items
+ * @param input_items
+ * @param output_items
+ * @return int
  */
 int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
                                 gr_vector_const_void_star &input_items,
@@ -87,7 +87,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
   int nitems_to_process = ninput_items[0];
   int output_offset = 0;
 
-  //search for work_done tags and if found add them to the stream
+  // search for work_done tags and if found add them to the stream
   std::vector<tag_t> work_done_tags;
   get_tags_in_window(work_done_tags, 0, 0, ninput_items[0],
                      pmt::string_to_symbol("work_done"));
@@ -95,8 +95,8 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     add_item_tag(0, nitems_written(0), pmt::intern("work_done"),
                  pmt::intern("done"), pmt::intern("modulate"));
 
-//    boost::this_thread::sleep(boost::posix_time::milliseconds(5));
-//    consume_each(nitems_to_process);
+    //    boost::this_thread::sleep(boost::posix_time::milliseconds(5));
+    //    consume_each(nitems_to_process);
     return 1;
   }
 
@@ -123,7 +123,7 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
             int((m_frame_len + m_inter_frame_padding + n_up + 4.25) *
                 m_samples_per_symbol));
 
-//        add_item_tag(0, tags[0]);
+        //        add_item_tag(0, tags[0]);
 
         symb_cnt = 0;
         preamb_symb_cnt = 0;
@@ -137,11 +137,11 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
     for (int i = 0; i < noutput_items / m_samples_per_symbol; i++) {
       if (preamb_symb_cnt < n_up + 5) // should output preamble part
       {
-          if(preamb_symb_cnt == 1) {
-              //tag the beginning of a new frame
-              add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-                           pmt::intern("start"), pmt::intern("modulate"));
-          }
+        if (preamb_symb_cnt == 1) {
+          // tag the beginning of a new frame
+          add_item_tag(0, nitems_written(0), pmt::intern("frame"),
+                       pmt::intern("start"), pmt::intern("modulate"));
+        }
         if (preamb_symb_cnt < n_up) { // upchirps
           memcpy(&out[output_offset], &m_upchirp[0],
                  m_samples_per_symbol * sizeof(gr_complex));
@@ -176,32 +176,31 @@ int modulate_impl::general_work(int noutput_items, gr_vector_int &ninput_items,
       output_offset += m_samples_per_symbol;
       symb_cnt++;
     }
-      consume_each(nitems_to_process);
-      return output_offset;
+    consume_each(nitems_to_process);
+    return output_offset;
   } else {
     nitems_to_process = 0;
   }
-  if(symb_cnt == m_frame_len){
-      //tag the end of a frame
-      add_item_tag(0, nitems_written(0), pmt::intern("frame"),
-                   pmt::intern("end"), pmt::intern("modulate"));
-                    // std::cout << symb_cnt << std::endl;
-
+  if (symb_cnt == m_frame_len) {
+    // tag the end of a frame
+    add_item_tag(0, nitems_written(0), pmt::intern("frame"), pmt::intern("end"),
+                 pmt::intern("modulate"));
   }
 
   if (symb_cnt >= m_frame_len) // padd frame end with zeros
   {
     for (int i = 0; i < (noutput_items - output_offset) / m_samples_per_symbol;
          i++) {
-              if (symb_cnt >= m_frame_len &&
-                  symb_cnt < m_frame_len + m_inter_frame_padding) {
-                    for (int i = 0; i < m_samples_per_symbol; i++) {
-                      out[output_offset + i] = gr_complex(0.0, 0.0);
-                    }
-                    output_offset += m_samples_per_symbol;
-                    symb_cnt++;
-                    padd_cnt++;
-              }
+      if (symb_cnt >= m_frame_len &&
+          symb_cnt < m_frame_len + m_inter_frame_padding) {
+        for (int i = 0; i < m_samples_per_symbol; i++) {
+          out[output_offset + i] = gr_complex(0.0, 0.0);
+        }
+        output_offset += m_samples_per_symbol;
+        // std::cout << symb_cnt << std::endl;
+        symb_cnt++;
+        padd_cnt++;
+      }
     }
   }
   consume_each(nitems_to_process);

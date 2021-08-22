@@ -17,12 +17,16 @@ class frame_reciever(gr.sync_block):
 
     def __init__(self, addres, port, service, mode):
         verbose = True
-
+        print("New cran")
         # make a worker context
         context = zmq.Context()
         self.context = context
-        self.socket = context.socket(zmq.REP)
-        self.socket.bind("tcp://*:6270")
+        self.socket = context.socket(zmq.PAIR)
+        # self.socket.setsockopt(zmq.REQ_RELAXED,1)
+        try:
+            self.socket.bind("tcp://*:6270")
+        except zmq.error.ZMQError:
+            print("ZMQ error")
         self.buffer = []
         self.state = 1
         # print("new init")
@@ -36,7 +40,10 @@ class frame_reciever(gr.sync_block):
         out = output_items[0]
         max_items = len(output_items[0])
         if self.state == 1:
-            data = self.socket.recv()
+            try:
+                data = self.socket.recv()
+            except zmq.error.ZMQError:
+                print("ZMQ error recv")
             # print("data recv")
             data = pickle.loads(data)
             # print(max_items)
@@ -47,7 +54,10 @@ class frame_reciever(gr.sync_block):
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             #send correct recv of files
             print("Got data, letting runner know")
-            self.socket.send(definitions.W_REPLY)
+            try:
+                self.socket.send(definitions.W_REPLY)
+            except zmq.error.ZMQError:
+                print("ZMQ error send")
             # out = output_items[0]
             # # <+signal processing here+>
             # # out[0] = 1+2j

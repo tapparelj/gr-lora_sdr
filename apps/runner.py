@@ -40,8 +40,10 @@ def main():
     verbose = True
     worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
     context = zmq.Context()
-    socket = context.socket(zmq.REQ)
+    socket = context.socket(zmq.PAIR)
     socket.connect("tcp://localhost:6270")
+    # socket.setsockopt(zmq.REQ_RELAXED,1)
+    # socket.setsockopt(zmq.REQ_CORRELATE,1)
     index = 1
 
     while True:
@@ -69,15 +71,15 @@ def main():
             socket.send(input_data)
             reply = socket.recv()
             print(reply)
-            if index ==4:
-                for stdout_line in iter(p.stdout.readline, ""):
-                    print(stdout_line) 
+            # if index ==4:
+            #     for stdout_line in iter(p.stdout.readline, ""):
+            #         print(stdout_line) 
             # p.stdout.close()
             # return_code = p.wait()
             # if return_code:
             #     raise subprocess.CalledProcessError(return_code, cmd)]
             try : 
-                out, err = p.communicate()
+                out, err = p.communicate(timeout=5)
                 out2 = out
                 print(out)
                 print(err)          
@@ -91,7 +93,8 @@ def main():
             except subprocess.TimeoutExpired:
                 reply = [definitions.W_ERROR]
                 p.kill()
-            
+            p.kill()
+            # time.sleep(10)
             # print(out2.decode("utf-8").split(":"))
             # print(out2.decode("utf-8")[0])
             # pattern = "*:msg:*"

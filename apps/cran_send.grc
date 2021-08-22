@@ -328,7 +328,7 @@ blocks:
     bus_structure: null
     coordinate: [506, 435]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_detector_timeout_0_0
   id: lora_sdr_frame_detector_timeout
   parameters:
@@ -339,7 +339,7 @@ blocks:
     detect_second_packet: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    n_bytes: '180'
+    n_bytes: '200'
     samp_rate: samp_rate
     sf: sf
   states:
@@ -417,7 +417,7 @@ blocks:
     bus_structure: null
     coordinate: [729, 292]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hier_rx_1
   id: lora_sdr_hier_rx
   parameters:
