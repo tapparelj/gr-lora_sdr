@@ -1,0 +1,5 @@
+coloredlogs==15.0.1
+humanfriendly==9.2
+pyzmq==22.1.0
+setuptools-scm==6.0.1
+loudify
