@@ -20,7 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: dev-build
+          ref: dev
+          path: 'dev-build'
 
       - name: Generate Docker image loudify-worker
         # Use a bash shell so we can use the same syntax for environment variable
