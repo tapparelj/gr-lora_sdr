@@ -26,7 +26,7 @@ jobs:
         # Use a bash shell so we can use the same syntax for environment variable
         # access regardless of the host operating system
         shell: bash
-        working-directory: ${{runner.workspace}}/dev-docker
+        working-directory: ${{runner.workspace}}/dev
 
         run: make build_image
 
