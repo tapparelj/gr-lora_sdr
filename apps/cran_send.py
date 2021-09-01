@@ -58,7 +58,7 @@ class cran_send(gr.top_block):
         self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, '', cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(4096)
         self.lora_sdr_hier_rx_0 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16])
+        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('0.0.0.0', 5555, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16])
         self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,200,False)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)

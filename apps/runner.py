@@ -1,3 +1,4 @@
+"""C-RAN Runner file."""
 import threading
 import pickle
 import zmq
@@ -9,127 +10,56 @@ import threading
 import cran_recieve
 import subprocess
 import codecs
-import re
 import time
+import os 
+
 def main():
-
-    # def start_flowgraph(flowgraph_vars, results, threads,index):
-    #     """
-    #     Starts the actual flowgraph (cran_recieve.py) in a seperate thread
-
-    #     :param flowgraph_vars: dict containing the flowgraph vars
-    #     :param results: results list
-    #     :param index: index to store the value of the thread in
-    #     :return:
-    #     """
-    #     # newpid=os.fork()
-    #     # print(newpid)
-    #     # print("new start")
-    #     msg = cran_recieve.main(flowgraph_vars)
-    #     results[index] = msg
-    #     print(msg)
-    #     exit(0)
+    """
+    Main function that starts the C-RAN server."""
 
     reply = None
-    max_threads = 10
-    threads = [None] * max_threads
-    results = [None] * max_threads
-    addres = "localhost"
-    port = 5555
     service = "echo"
     verbose = True
-    worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
+    #connect to the broker using the worker_api
+    if os.environ.get('LISTEN') is not None:
+        worker = worker_api.Worker(os.environ.get('LISTEN'), str(service).encode(), verbose)
+    else:
+        addres = "0.0.0.0"
+        port = 5555
+        worker = worker_api.Worker("tcp://"+addres+":"+str(port), str(service).encode(), verbose)
+    #connec to the flowgraph using zmq pairs
     context = zmq.Context()
     socket = context.socket(zmq.PAIR)
     socket.connect("tcp://localhost:6270")
-    # socket.setsockopt(zmq.REQ_RELAXED,1)
-    # socket.setsockopt(zmq.REQ_CORRELATE,1)
-    index = 1
+
 
     while True:
         request = worker.recv(reply)
         if request is None:
-            print("Worker was interrupted")
+            exit(0)
         if request:
-            
-            print("Got a request")
-            print(index)
-            print(threading.active_count())
-            print(threading.enumerate())
             data = request.pop(0)
             input_data = data
             #convert back to dict
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
             vars = codecs.encode(pickle.dumps(flowgraph_vars), "base64").decode()
-            # vars = 
-            print(vars)
-            print("start")
-            myoutput = open('debug.txt', 'w')
+            #send the vars to the flowgraph and execute it
             p = subprocess.Popen(["./cran_recieve.py", vars], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # pickle.dump(flowgraph_vars, p.stdin)
-            time.sleep(1)
+            #send I/Q data to the flowgraph
             socket.send(input_data)
+            #wait for reply from flowgraph
             reply = socket.recv()
-            print(reply)
-            # if index ==4:
-            #     for stdout_line in iter(p.stdout.readline, ""):
-            #         print(stdout_line) 
-            # p.stdout.close()
-            # return_code = p.wait()
-            # if return_code:
-            #     raise subprocess.CalledProcessError(return_code, cmd)]
             try : 
                 out, err = p.communicate(timeout=5)
-                out2 = out
-                print(out)
-                print(err)          
-                result = p.returncode
-                print("Result")
-                print(result)
+                out2 = out     
+                #send back the last part of the split of the output (decoded msg) from crc_verify
                 msg = out2.decode("utf-8").split(":")[-1]
                 reply = [msg.encode()]
-                index +=1 
                 p.kill()
             except subprocess.TimeoutExpired:
                 reply = [definitions.W_ERROR]
                 p.kill()
             p.kill()
-            # time.sleep(10)
-            # print(out2.decode("utf-8").split(":"))
-            # print(out2.decode("utf-8")[0])
-            # pattern = "*:msg:*"
-            # results = re.match(pattern, out2.decode("utf-8"))
-            # print(results)
-            # threads[index] = threading.Thread(target=start_flowgraph, args=(flowgraph_vars, results, threads,index))
-            # threads[index].start()
-
-
-            # processes = []
-
-            # pid = os.fork()
-            # if pid == 0:
-            #     start_flowgraph(flowgraph_vars, results, threads,index)
-            # else:
-            #     processes.append(pid)
-
-           
-            
-            # reply = socket.recv()
-            # print(reply)
-            # if reply == definitions.W_REPLY:
-            #     print("Recieved back from worker")
-            #     # print(threading.get_native_id())
-            #     # threads[index].join(10)
-            #     # print(threads[index].is_alive())
-            # else:
-            #     print("Error")
-            #     threads[index].terminate()
-            # time.sleep(10)
-            # print(results)
-            # threads[index].kill()
-            # index +=1
-            #if there is a result send result back else send back an error code
-
 
 
 if __name__ == '__main__':

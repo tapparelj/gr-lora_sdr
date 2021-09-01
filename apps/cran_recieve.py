@@ -163,21 +163,6 @@ def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
             print("End of the while loop, there is a message")
             tb.stop()
             exit(0)
-            # try to get get the message from the store port of the message
-            # debug printer and convert to string from pmt message
-            try:
-                msg = pmt.symbol_to_string(
-                    tb.blocks_message_debug_0.get_message(0))
-                print("Stopping flwograph")
-                print(msg)
-                # pid = os.getpid() 
-                # print(pid)
-
-                return msg
-            except:
-                # if not possible set message to be None
-                msg = None
-
 
 
 

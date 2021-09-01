@@ -32,4 +32,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 CMD [ "python", "./runner.py"]
 
 # tell the port number the container should expose
-EXPOSE 5555
+EXPOSE 5555/tcp
