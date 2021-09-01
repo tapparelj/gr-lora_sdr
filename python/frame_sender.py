@@ -89,10 +89,10 @@ class frame_sender(gr.sync_block):
                 value = pmt.to_python(tag.value)                
                 offset = tag.offset
                 if value == "start":
-                    print("Start offset is frame_detector ", offset)
+                    # print("Start offset is frame_detector ", offset)
                     self.start_index.append(offset)
                 elif value == "end":
-                    print("End offset is ", offset)
+                    # print("End offset is ", offset)
                     self.end_index.append(offset)
                 else:
                     print("Error value does not equal start or end")
@@ -115,11 +115,6 @@ class frame_sender(gr.sync_block):
         if self.send_packet:
             if self.modus == True:
                 request = self.data
-                print("Sending request")
-                print(request.dtype)
-                print(request.size)
-                print(request.shape)
-
                 if self.reply:
                     reply = self.client.send(b"echo", pickle.dumps(request), flowgraph_vars=self.flowgraph_vars)
                     if reply:

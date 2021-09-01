@@ -15,7 +15,7 @@ extern "C" {
 #include "kiss_fft.h"
 }
 
-#define GRLORA_DEBUGV
+// #define GRLORA_DEBUGV
 namespace gr {
 namespace lora_sdr {
 

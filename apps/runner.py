@@ -21,8 +21,9 @@ def main():
     service = "echo"
     verbose = True
     #connect to the broker using the worker_api
-    if os.environ.get('LISTEN') is not None:
-        worker = worker_api.Worker(os.environ.get('LISTEN'), str(service).encode(), verbose)
+    if os.environ.get('CONNECT') is not None:
+        print(os.environ.get('CONNECT'))
+        worker = worker_api.Worker(os.environ.get('CONNECT'), str(service).encode(), verbose)
     else:
         addres = "0.0.0.0"
         port = 5555
