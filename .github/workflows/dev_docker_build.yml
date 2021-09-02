@@ -21,18 +21,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: dev
-          path: 'dev-build'
 
       - name: Generate Docker image loudify-worker
         # Use a bash shell so we can use the same syntax for environment variable
         # access regardless of the host operating system
         shell: bash
-        working-directory: ${{runner.workspace}}/dev-build
+        working-directory: ${{runner.workspace}}/gr-lora_sdr
 
-        run: make build_image
-
-      - name: Remove build dir
-        working-directory: ${{runner.workspace}}
-        shell: bash
-        run: |
-          rm -rf dev-build
+        run: sudo make build_image

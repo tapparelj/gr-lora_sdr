@@ -12,7 +12,7 @@ cmake-build-debug/
 cmake-build-debug-system/
 ##Pycharm
 .idea/
-
+*.csv
 Testing/
 
 # Byte-compiled / optimized / DLL files
