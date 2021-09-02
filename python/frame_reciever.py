@@ -48,7 +48,7 @@ class frame_reciever(gr.sync_block):
             out[:] = numpy.transpose([data[0:max_items, 0], data[0:max_items, 1]])
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             #send correct recv of files
-            print("Got data, letting runner know")
+            # print("Got data, letting runner know")
             try:
                 self.socket.send(definitions.W_REPLY)
             except zmq.error.ZMQError:
@@ -67,7 +67,7 @@ class frame_reciever(gr.sync_block):
                 zeros = numpy.zeros((max_items - items_to_use, 2), dtype="float64")
                 # append empty padding after the frame (to fill to entire frame )
                 out[:] = numpy.concatenate((data, zeros), axis=0)
-                print("Reached end of data, closing")
+                # print("Reached end of data, closing")
                 self.socket.close()
                 self.context.destroy()
                 return -1
