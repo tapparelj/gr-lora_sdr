@@ -54,9 +54,9 @@ class cran_send(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, '', cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
+        self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
         self.lora_sdr_hier_tx_1.set_min_output_buffer(4096)
-        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('0.0.0.0', 5555, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16])
+        self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16], "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ")
         self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,200,False)
         self.blocks_throttle_0_1_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
 

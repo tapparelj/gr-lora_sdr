@@ -20,6 +20,7 @@ def main():
     reply = None
     service = "echo"
     verbose = True
+    latency = True
     #connect to the broker using the worker_api
     if os.environ.get('CONNECT') is not None:
         print(os.environ.get('CONNECT'))
@@ -39,6 +40,8 @@ def main():
         if request is None:
             exit(0)
         if request:
+            if latency:
+                time_recieved = time.time_ns()
             data = request.pop(0)
             input_data = data
             #convert back to dict
@@ -51,14 +54,32 @@ def main():
             #wait for reply from flowgraph
             reply = socket.recv()
             try : 
-                out, err = p.communicate(timeout=5)
+                out, err = p.communicate(timeout=definitions.TIMEOUT)
                 out2 = out     
                 #send back the last part of the split of the output (decoded msg) from crc_verify
                 msg = out2.decode("utf-8").split(":")[-1]
-                reply = [msg.encode()]
+
+                if latency:
+                    #if we are messuring the latency put all the latency data and send it
+                    latency_data = {
+                        'time_recieved' : time_recieved,
+                        'time_decoded' : time.time_ns()
+                    }
+                    reply = [msg.encode(), pickle.dumps(latency_data)]
+                else:
+                    reply = [msg.encode()]
                 p.kill()
             except subprocess.TimeoutExpired:
-                reply = [definitions.W_ERROR]
+                #if decoding took to long
+                if latency:
+                    #if we are messuring the latency put all the latency data and send it
+                    latency_data = {
+                        'time_recieved' : time_recieved,
+                        'time_decoded' : time.time_ns()
+                    }
+                    reply = [definitions.W_ERROR, pickle.dumps(latency_data)]
+                else:
+                    reply = [definitions.W_ERROR]
                 p.kill()
             p.kill()
 

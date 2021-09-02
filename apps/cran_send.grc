@@ -371,15 +371,16 @@ blocks:
 - name: lora_sdr_frame_sender_0
   id: lora_sdr_frame_sender
   parameters:
-    addres: 0.0.0.0
+    addres: '''localhost'''
     affinity: ''
     alias: ''
     bw: bw
     comment: ''
-    compress: 'True'
     cr: cr
+    debug_mode: 'True'
     has_crc: has_crc
     impl_head: impl_head
+    input_data: '"PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"'
     mode: 'True'
     pay_len: pay_len
     port: '5555'
@@ -460,7 +461,7 @@ blocks:
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
-    src_data: ''
+    src_data: '"PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ"'
     sync_words: '[8, 16]'
   states:
     bus_sink: false
