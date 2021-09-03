@@ -15,20 +15,13 @@ from gnuradio import filter
 from gnuradio.filter import firdes
 from gnuradio import gr
 import sys
-import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import lora_sdr
 import threading
 import pickle
-import zmq
-from loudify import worker_api
-from loudify import definitions
-import ast
-import pmt
 import time
-import os
 import codecs
 class cran_recieve(gr.top_block):
 
@@ -39,17 +32,17 @@ class cran_recieve(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.bw = bw = 250000
+        self.bw = bw = flowgraph_vars['bw']
         self.time_wait = time_wait = 200
         self.sf = sf = flowgraph_vars['sf']
-        self.samp_rate = samp_rate = bw
-        self.pay_len = pay_len = 64
+        self.samp_rate = samp_rate = flowgraph_vars['samp_rate']
+        self.pay_len = pay_len = flowgraph_vars['pay_len']
         self.n_frame = n_frame = 2
         self.multi_control = multi_control = True
-        self.impl_head = impl_head = True
-        self.has_crc = has_crc = False
+        self.impl_head = impl_head = flowgraph_vars['impl_head']
+        self.has_crc = has_crc = flowgraph_vars['has_crc']
         self.frame_period = frame_period = 2
-        self.cr = cr = 4
+        self.cr = cr = flowgraph_vars['cr']
 
         ##################################################
         # Blocks
