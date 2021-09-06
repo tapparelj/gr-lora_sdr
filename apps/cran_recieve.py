@@ -25,7 +25,7 @@ import time
 import codecs
 class cran_recieve(gr.top_block):
 
-    def __init__(self, flowgraph_vars):
+    def __init__(self, flowgraph_vars, pipe):
         gr.top_block.__init__(self, "Cran reciever")
         self._lock = threading.RLock()
 
@@ -48,7 +48,7 @@ class cran_recieve(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_rx_1 = lora_sdr.hier_rx(samp_rate, bw, sf, impl_head, cr, pay_len, has_crc, [8, 16] , True)
-        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever('localhost', 5555, 'Rx' ,False)
+        self.lora_sdr_frame_reciever_0 = lora_sdr.frame_reciever(pipe, 5555, 'Rx' ,False)
         self.interp_fir_filter_xxx_0_1_0 = filter.interp_fir_filter_ccf(4, (-0.128616616593872,	-0.212206590789194,	-0.180063263231421,	3.89817183251938e-17	,0.300105438719035	,0.636619772367581	,0.900316316157106,	1	,0.900316316157106,	0.636619772367581,	0.300105438719035,	3.89817183251938e-17,	-0.180063263231421,	-0.212206590789194,	-0.128616616593872))
         self.interp_fir_filter_xxx_0_1_0.declare_sample_delay(0)
         self.interp_fir_filter_xxx_0_1_0.set_min_output_buffer(1024)
@@ -145,10 +145,11 @@ class cran_recieve(gr.top_block):
         with self._lock:
             self.cr = cr
 
-def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
-    tb = top_block_cls(flowgraph_vars)
+def main(flowgraph_vars,pipe,top_block_cls=cran_recieve, options=None):
+    tb = top_block_cls(flowgraph_vars, pipe)
     tb.start()
     time.sleep(1)
+    print(pipe)
     
     while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
@@ -161,6 +162,8 @@ def main(flowgraph_vars,top_block_cls=cran_recieve, options=None):
 
 if __name__ == '__main__':
     unpickled = pickle.loads(codecs.decode(sys.argv[1].encode(), "base64"))
+    pipe = sys.argv[2]
+    print(pipe)
     # input = pickle.load(sys.stdin.buffer)
     # print(input)
-    main(unpickled)
+    main(unpickled, pipe)

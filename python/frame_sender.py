@@ -9,7 +9,8 @@ import pmt
 import time
 import pickle
 import pandas as pd
-
+import random
+import string 
 
 class frame_sender(gr.sync_block):
     """Frame sender part of the ZMQ client <-> broker <-> worker setup
@@ -39,6 +40,7 @@ class frame_sender(gr.sync_block):
         # Fix for gr3.9 tags_in_window by using in range with own offset
         self.offset = 0
         self.debug_mode = debug_mode
+        self.filename = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
         self.flowgraph_vars = {
             'sf': self.sf,
@@ -166,14 +168,14 @@ class frame_sender(gr.sync_block):
 
                             # input data for the pandas dataframe
                             data = {
-                                'latency_recieved': latency_recieved,
-                                'latency_decoded': latency_decoded,
-                                'latency_round': latency_round
+                                'latency_recieved': latency_recieved / 10**9,
+                                'latency_decoded': latency_decoded / 10**9,
+                                'latency_round': latency_round / 10**9
                             }
                             self.pd_latency = self.pd_latency.append(
                                 data, ignore_index=True)
                             # TODO : maybe random csv for multiple workers ?
-                            self.pd_latency.to_csv("latency.csv")
+                            self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
                             if reply_msg == self.input_data:
@@ -188,7 +190,7 @@ class frame_sender(gr.sync_block):
                                 'packets_decoded': packets_decoded,
                             }
                             self.pd_packets = self.pd_packets.append(data, ignore_index=True)
-                            self.pd_packets.to_csv('packets.csv')
+                            self.pd_packets.to_csv(self.filename+'_packets.csv')
 
                     else:
                         print("E: no response from broker, make sure it's running")

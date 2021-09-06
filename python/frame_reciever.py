@@ -15,16 +15,17 @@ class frame_reciever(gr.sync_block):
     docstring for block frame_reciever
     """
 
-    def __init__(self, addres, port, service, mode):
+    def __init__(self, address, port, service, mode):
         verbose = True
         print("New cran")
         # make a worker context
         context = zmq.Context()
         self.context = context
         self.socket = context.socket(zmq.PAIR)
+        print(address)
         # self.socket.setsockopt(zmq.REQ_RELAXED,1)
         try:
-            self.socket.bind("tcp://*:6270")
+            self.socket.bind("ipc://"+address)
         except zmq.error.ZMQError:
             print("ZMQ error")
         self.buffer = []
