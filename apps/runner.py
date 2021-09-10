@@ -2,8 +2,7 @@
 import pickle
 import zmq
 import ast
-from loudify import worker_api
-from loudify import definitions
+from loudify import worker_api, definitions
 import subprocess
 import codecs
 import time

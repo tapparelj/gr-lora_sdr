@@ -39,8 +39,8 @@ class cran_send(gr.top_block):
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
         self.sto = sto = 0.0
-        self.snr = snr = -7
-        self.sf = sf = 9
+        self.snr = snr = -1
+        self.sf = sf = 7
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 20
