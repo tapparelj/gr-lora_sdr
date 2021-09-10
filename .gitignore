@@ -8,6 +8,7 @@ apps/profiling/
 ### vscode ###
 .vscode/
 
+*.build
 cmake-build-debug/
 cmake-build-debug-system/
 ##Pycharm

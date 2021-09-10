@@ -12,12 +12,8 @@
 
 from gnuradio import blocks
 from gnuradio import filter
-from gnuradio.filter import firdes
 from gnuradio import gr
 import sys
-from argparse import ArgumentParser
-from gnuradio.eng_arg import eng_float, intx
-from gnuradio import eng_notation
 import lora_sdr
 import threading
 import pickle

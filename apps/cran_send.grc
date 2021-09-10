@@ -60,12 +60,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.2'
+    value: '0.0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1102, 93]
+    coordinate: [1016, 92.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -192,7 +192,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0.3'
+    value: '0.0'
   states:
     bus_sink: false
     bus_source: false
@@ -283,7 +283,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [289, 730]
+    coordinate: [304, 732.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -304,9 +304,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 180.0]
+    coordinate: [488, 692.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: interp_fir_filter_xxx_0_1_0
   id: interp_fir_filter_xxx
   parameters:
@@ -346,7 +346,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [486, 698]
+    coordinate: [720, 700.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_reciever_0
@@ -392,7 +392,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [754, 634]
+    coordinate: [960, 628.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hier_rx_0
@@ -467,13 +467,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [52, 641]
+    coordinate: [56, 644.0]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_throttle_0_1_0, '0', channels_channel_model_0, '0']
-- [blocks_throttle_0_1_0_0, '0', lora_sdr_frame_detector_timeout_0_0, '0']
+- [blocks_throttle_0_1_0_0, '0', channels_channel_model_0, '0']
+- [channels_channel_model_0, '0', lora_sdr_frame_detector_timeout_0_0, '0']
 - [interp_fir_filter_xxx_0_1_0, '0', lora_sdr_hier_rx_0, '0']
 - [lora_sdr_frame_detector_timeout_0_0, '0', blocks_tag_debug_0, '0']
 - [lora_sdr_frame_detector_timeout_0_0, '0', interp_fir_filter_xxx_0_1_0, '0']

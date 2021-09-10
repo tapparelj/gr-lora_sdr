@@ -6,7 +6,13 @@ VER=$(shell git log --pretty=format:'%h' -n 1)
 create_service: ##Create service from docker image
 	docker service create --name loudify-worker martynvandijke/loudify-worker:dev
 
-build_image: ##Build docker image
+compile_runner:
+	nuitka3 --follow-imports apps/cran_send.py
+
+compile_runner:
+	nuitka3 --follow-imports apps/runner.py
+
+build_image: compile_runner ##Build docker image
 	docker build -t martynvandijke/loudify-worker:dev .
 	docker push martynvandijke/loudify-worker:dev
 

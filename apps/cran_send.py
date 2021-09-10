@@ -11,8 +11,9 @@
 # GNU Radio version: 3.9.2.0
 
 from gnuradio import blocks
-from gnuradio import gr
+from gnuradio import channels
 from gnuradio.filter import firdes
+from gnuradio import gr
 from gnuradio.fft import window
 import sys
 import signal
@@ -37,7 +38,7 @@ class cran_send(gr.top_block):
         ##################################################
         self.bw = bw = 250000
         self.time_wait = time_wait = 200
-        self.sto = sto = 0.3
+        self.sto = sto = 0.0
         self.snr = snr = -7
         self.sf = sf = 9
         self.samp_rate = samp_rate = bw
@@ -48,7 +49,7 @@ class cran_send(gr.top_block):
         self.has_crc = has_crc = False
         self.frame_period = frame_period = 200
         self.cr = cr = 4
-        self.cfo = cfo = 0.2
+        self.cfo = cfo = 0.0
         self.center_freq = center_freq = 868.1e6
 
         ##################################################
@@ -58,6 +59,14 @@ class cran_send(gr.top_block):
         self.lora_sdr_hier_tx_1.set_min_output_buffer(4096)
         self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('localhost', 5555, True, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16], "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ")
         self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,200,False)
+        self.channels_channel_model_0 = channels.channel_model(
+            noise_voltage=10**(-snr/20),
+            frequency_offset=cfo,
+            epsilon=1+cfo*samp_rate/center_freq/2**sf,
+            taps=[1.0 + 1.0j],
+            noise_seed=0,
+            block_tags=False)
+        self.channels_channel_model_0.set_min_output_buffer(4096)
         self.blocks_throttle_0_1_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
 
 
@@ -65,7 +74,8 @@ class cran_send(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_throttle_0_1_0_0, 0), (self.lora_sdr_frame_detector_timeout_0_0, 0))
+        self.connect((self.blocks_throttle_0_1_0_0, 0), (self.channels_channel_model_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_detector_timeout_0_0, 0))
         self.connect((self.lora_sdr_frame_detector_timeout_0_0, 0), (self.lora_sdr_frame_sender_0, 0))
         self.connect((self.lora_sdr_hier_tx_1, 0), (self.blocks_throttle_0_1_0_0, 0))
 
@@ -98,6 +108,7 @@ class cran_send(gr.top_block):
     def set_snr(self, snr):
         with self._lock:
             self.snr = snr
+            self.channels_channel_model_0.set_noise_voltage(10**(-self.snr/20))
 
     def get_sf(self):
         return self.sf
@@ -105,6 +116,7 @@ class cran_send(gr.top_block):
     def set_sf(self, sf):
         with self._lock:
             self.sf = sf
+            self.channels_channel_model_0.set_timing_offset(1+self.cfo*self.samp_rate/self.center_freq/2**self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -113,6 +125,7 @@ class cran_send(gr.top_block):
         with self._lock:
             self.samp_rate = samp_rate
             self.blocks_throttle_0_1_0_0.set_sample_rate(self.samp_rate*10)
+            self.channels_channel_model_0.set_timing_offset(1+self.cfo*self.samp_rate/self.center_freq/2**self.sf)
 
     def get_pay_len(self):
         return self.pay_len
@@ -169,6 +182,8 @@ class cran_send(gr.top_block):
     def set_cfo(self, cfo):
         with self._lock:
             self.cfo = cfo
+            self.channels_channel_model_0.set_frequency_offset(self.cfo)
+            self.channels_channel_model_0.set_timing_offset(1+self.cfo*self.samp_rate/self.center_freq/2**self.sf)
 
     def get_center_freq(self):
         return self.center_freq
@@ -176,6 +191,7 @@ class cran_send(gr.top_block):
     def set_center_freq(self, center_freq):
         with self._lock:
             self.center_freq = center_freq
+            self.channels_channel_model_0.set_timing_offset(1+self.cfo*self.samp_rate/self.center_freq/2**self.sf)
 
 
 
