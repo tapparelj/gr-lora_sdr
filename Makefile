@@ -12,7 +12,7 @@ compile_runner:
 compile_runner:
 	nuitka3 --follow-imports apps/runner.py
 
-build_image: compile_runner ##Build docker image
+build_image: 
 	docker build -t martynvandijke/loudify-worker:dev .
 	docker push martynvandijke/loudify-worker:dev
 
