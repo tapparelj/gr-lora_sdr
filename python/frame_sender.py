@@ -20,7 +20,7 @@ class frame_sender(gr.sync_block):
     """
 
     def __init__(self, addres, port, modus, debug_mode, reply, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words, input_data):
-        verbose = True
+        self.verbose = True
         self.modus = modus
         self.reply = reply
         self.send_packet = False
@@ -55,10 +55,10 @@ class frame_sender(gr.sync_block):
 
         if self.modus == True:
             self.client = client_sync_api.Client(
-                "tcp://" + addres + ":" + str(port), verbose)
+                "tcp://" + addres + ":" + str(port), self.verbose)
         else:
             self.client = client_async_api.Client(
-                "tcp://" + addres + ":" + str(port), verbose)
+                "tcp://" + addres + ":" + str(port), self.verbose)
             self.num_request = 0
 
         if self.debug_mode:
@@ -151,10 +151,10 @@ class frame_sender(gr.sync_block):
                     reply = self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)
                     if reply:
-                        print(reply)
                         reply.pop(0)
                         replycode = reply.pop(0)
-                        print("I: Reply from broker {}".format(replycode))
+                        if self.verbose:
+                            print("I: Reply from broker {}".format(replycode))
                         if self.debug_mode:
                             self.num_recieved += 1
                             # if we are in debug mode measure the time it took to receive the reply
@@ -181,13 +181,10 @@ class frame_sender(gr.sync_block):
                             if reply_msg == self.input_data:
                                 self.num_decoded += 1
 
-                            packets_decoded = 1 - \
-                                (self.num_decoded / self.num_send)
-
                             data = {
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
-                                'packets_decoded': packets_decoded,
+                                'packets_decoded': self.num_decoded,
                             }
                             self.pd_packets = self.pd_packets.append(data, ignore_index=True)
                             self.pd_packets.to_csv(self.filename+'_packets.csv')
@@ -201,25 +198,11 @@ class frame_sender(gr.sync_block):
             else:
                 # Async modus
                 request = self.data
-                try:
-                    self.client.send(b"echo", request,
-                                     flowgraph_vars=self.flowgraph_vars)
-                    self.num_request += 1
-                except KeyboardInterrupt:
-                    print("Send interrupted, aborting")
-                    return
-                count = 0
+                #send a request to the broker
+                self.client.send(b"echo", pickle.dumps(
+                    request), flowgraph_vars=self.flowgraph_vars)
+                self.num_request += 1
 
-                while count < self.num_request:
-                    try:
-                        reply = self.client.recv()
-                    except KeyboardInterrupt:
-                        print("send interrupted, aborting")
-                        break
-                    else:
-                        if reply is None:
-                            break
-                        count += 1
 
         in0 = input_items[0]
         # <+signal processing here+>

@@ -49,7 +49,6 @@ def main():
         pipe = generate_pipe()
 
     socket.connect("ipc://"+pipe)
-    print(pipe)
     #Run main function recieve network packets and forward them to GNU Radio
     while True:
         request = worker.recv(reply)
@@ -64,6 +63,7 @@ def main():
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
             vars = codecs.encode(pickle.dumps(
                 flowgraph_vars), "base64").decode()
+ 
             # send the vars to the flowgraph and execute it
             p = subprocess.Popen(["./cran_recieve.py", vars, pipe],
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -73,6 +73,7 @@ def main():
             reply = socket.recv()
             try:
                 out, err = p.communicate(timeout=definitions.TIMEOUT)
+                # print(out,err)
                 out2 = out
                 # send back the last part of the split of the output (decoded msg) from crc_verify
                 msg = out2.decode("utf-8").split(":")[-1]

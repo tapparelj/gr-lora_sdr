@@ -29,6 +29,7 @@ class frame_reciever(gr.sync_block):
         except zmq.error.ZMQError:
             print("ZMQ error")
         self.buffer = []
+        self.socket.send(definitions.W_REPLY)
         self.state = 1
 
         gr.sync_block.__init__(self,
@@ -39,6 +40,7 @@ class frame_reciever(gr.sync_block):
     def work(self, input_items, output_items):
         out = output_items[0]
         max_items = len(output_items[0])
+        print("Test")
         if self.state == 1:
             try:
                 data = self.socket.recv()
@@ -49,7 +51,7 @@ class frame_reciever(gr.sync_block):
             out[:] = numpy.transpose([data[0:max_items, 0], data[0:max_items, 1]])
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             #send correct recv of files
-            # print("Got data, letting runner know")
+            print("Got data, letting runner know")
             try:
                 self.socket.send(definitions.W_REPLY)
             except zmq.error.ZMQError:

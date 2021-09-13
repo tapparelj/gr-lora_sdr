@@ -24,12 +24,11 @@ class cran_recieve(gr.top_block):
     def __init__(self, flowgraph_vars, pipe):
         gr.top_block.__init__(self, "Cran reciever")
         self._lock = threading.RLock()
-
+        print(flowgraph_vars)
         ##################################################
         # Variables
         ##################################################
         self.bw = bw = flowgraph_vars['bw']
-        self.time_wait = time_wait = 200
         self.sf = sf = flowgraph_vars['sf']
         self.samp_rate = samp_rate = flowgraph_vars['samp_rate']
         self.pay_len = pay_len = flowgraph_vars['pay_len']
@@ -69,13 +68,6 @@ class cran_recieve(gr.top_block):
         with self._lock:
             self.bw = bw
             self.set_samp_rate(self.bw)
-
-    def get_time_wait(self):
-        return self.time_wait
-
-    def set_time_wait(self, time_wait):
-        with self._lock:
-            self.time_wait = time_wait
 
     def get_sf(self):
         return self.sf
@@ -144,8 +136,6 @@ class cran_recieve(gr.top_block):
 def main(flowgraph_vars,pipe,top_block_cls=cran_recieve, options=None):
     tb = top_block_cls(flowgraph_vars, pipe)
     tb.start()
-    time.sleep(1)
-    print(pipe)
     
     while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
@@ -159,7 +149,9 @@ def main(flowgraph_vars,pipe,top_block_cls=cran_recieve, options=None):
 if __name__ == '__main__':
     unpickled = pickle.loads(codecs.decode(sys.argv[1].encode(), "base64"))
     pipe = sys.argv[2]
-    print(pipe)
+    # async_mode = False
+    # if async_mode:
+    #     unpickled = unpickled['flowgraph_vars']
     # input = pickle.load(sys.stdin.buffer)
     # print(input)
     main(unpickled, pipe)
