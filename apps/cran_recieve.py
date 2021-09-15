@@ -17,7 +17,6 @@ import sys
 import lora_sdr
 import threading
 import pickle
-import time
 import codecs
 class cran_recieve(gr.top_block):
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 
+import loudify
 import numpy
 from gnuradio import gr
 from loudify import client_sync_api
 from loudify import client_async_api
+from loudify import definitions
 import pmt
 import time
 import pickle
@@ -20,7 +22,7 @@ class frame_sender(gr.sync_block):
     """
 
     def __init__(self, addres, port, modus, debug_mode, reply, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, sync_words, input_data):
-        self.verbose = True
+        self.verbose = False
         self.modus = modus
         self.reply = reply
         self.send_packet = False
@@ -74,6 +76,7 @@ class frame_sender(gr.sync_block):
                 'packets_recieved',
                 'packets_send',
                 'packets_decoded',
+                'packets_error'
             }
             self.pd_packets = pd.DataFrame(columns=colum_names_packets)
             self.num_recieved = 0
@@ -178,13 +181,14 @@ class frame_sender(gr.sync_block):
                             self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
-                            if reply_msg == self.input_data:
+                            if reply_msg != definitions.W_ERROR:
                                 self.num_decoded += 1
 
                             data = {
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
                                 'packets_decoded': self.num_decoded,
+                                'packets_error': self.num_send - self.num_decoded
                             }
                             self.pd_packets = self.pd_packets.append(data, ignore_index=True)
                             self.pd_packets.to_csv(self.filename+'_packets.csv')

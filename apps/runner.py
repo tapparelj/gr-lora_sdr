@@ -28,7 +28,7 @@ def main():
 
     reply = None
     service = "echo"
-    verbose = True
+    verbose = False
     latency = True
     # connect to the broker using the worker_api
     if os.environ.get('CONNECT') is not None:

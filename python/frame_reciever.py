@@ -16,7 +16,7 @@ class frame_reciever(gr.sync_block):
     """
 
     def __init__(self, address, port, service, mode):
-        verbose = True
+        verbose = False
         print("New cran")
         # make a worker context
         context = zmq.Context()
