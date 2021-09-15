@@ -64,8 +64,9 @@ class frame_sender(gr.sync_block):
             self.num_request = 0
 
         if self.debug_mode:
-            print("Debug mode is on")
+            # print("Debug mode is on")
             colum_names_latency = {
+                'time_stamp',
                 'latency_recieved',
                 'latency_decoded',
                 'latency_round'
@@ -73,6 +74,7 @@ class frame_sender(gr.sync_block):
             self.pd_latency = pd.DataFrame(columns=colum_names_latency)
             # Pandas dataframe for packets statistics
             colum_names_packets = {
+                'time_stamp',
                 'packets_recieved',
                 'packets_send',
                 'packets_decoded',
@@ -171,6 +173,7 @@ class frame_sender(gr.sync_block):
 
                             # input data for the pandas dataframe
                             data = {
+                                'time_stamp': pd.Timestamp.now(),
                                 'latency_recieved': latency_recieved / 10**9,
                                 'latency_decoded': latency_decoded / 10**9,
                                 'latency_round': latency_round / 10**9
@@ -181,10 +184,12 @@ class frame_sender(gr.sync_block):
                             self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
-                            if reply_msg != definitions.W_ERROR:
+                            if latency_decoded > 5:
+                                #latency has timeout limit
                                 self.num_decoded += 1
 
                             data = {
+                                'time_stamp': pd.Timestamp.now(),
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
                                 'packets_decoded': self.num_decoded,

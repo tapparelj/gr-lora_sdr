@@ -23,7 +23,7 @@ class cran_recieve(gr.top_block):
     def __init__(self, flowgraph_vars, pipe):
         gr.top_block.__init__(self, "Cran reciever")
         self._lock = threading.RLock()
-        print(flowgraph_vars)
+        # print(flowgraph_vars)
         ##################################################
         # Variables
         ##################################################
@@ -139,7 +139,6 @@ def main(flowgraph_vars,pipe,top_block_cls=cran_recieve, options=None):
     while True:
         num_messages = tb.blocks_message_debug_0.num_messages()
         if num_messages >= 1:
-            print("End of the while loop, there is a message")
             tb.stop()
             exit(0)
 

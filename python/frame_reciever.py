@@ -17,12 +17,11 @@ class frame_reciever(gr.sync_block):
 
     def __init__(self, address, port, service, mode):
         verbose = False
-        print("New cran")
         # make a worker context
         context = zmq.Context()
         self.context = context
         self.socket = context.socket(zmq.PAIR)
-        print(address)
+        # print(address)
         # self.socket.setsockopt(zmq.REQ_RELAXED,1)
         try:
             self.socket.bind("ipc://"+address)
@@ -40,7 +39,6 @@ class frame_reciever(gr.sync_block):
     def work(self, input_items, output_items):
         out = output_items[0]
         max_items = len(output_items[0])
-        print("Test")
         if self.state == 1:
             try:
                 data = self.socket.recv()
@@ -51,7 +49,7 @@ class frame_reciever(gr.sync_block):
             out[:] = numpy.transpose([data[0:max_items, 0], data[0:max_items, 1]])
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             #send correct recv of files
-            print("Got data, letting runner know")
+            # print("Got data, letting runner know")
             try:
                 self.socket.send(definitions.W_REPLY)
             except zmq.error.ZMQError:
