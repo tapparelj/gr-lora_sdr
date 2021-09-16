@@ -43,6 +43,8 @@ class frame_sender(gr.sync_block):
         self.offset = 0
         self.debug_mode = debug_mode
         self.diff_store = 0
+        self.max_retries = 3
+        self.retries = 0
         self.filename = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
         print("Filename :",self.filename)
 
@@ -80,7 +82,7 @@ class frame_sender(gr.sync_block):
                 'packets_recieved',
                 'packets_send',
                 'packets_decoded',
-                'packets_error'
+                'packets_error',
             }
             self.pd_packets = pd.DataFrame(columns=colum_names_packets)
             self.num_recieved = 0
@@ -156,10 +158,10 @@ class frame_sender(gr.sync_block):
 
             # print("Diff from last")
             # print(len(self.buffer))
-            # print(len(self.buffer)-diff)
-            # # print("Len packet" , len(self.data))
-            # # print(self.data)
-            # # print(self.data.shape)
+            # print(diff)
+            # print("Len packet" , len(self.data))
+            # print(self.data)
+            # print(self.data.shape)
             # # #start with fresh buffer
             # # # np.delete(a, index)
             # index_remove = numpy.arange((end-end_index-diff),end_index)
@@ -172,19 +174,22 @@ class frame_sender(gr.sync_block):
             self.end_index.pop(0)
 
         # we have one packet onto sending it onto the network
-        if self.send_packet:
-            if self.modus == True:
+        while self.send_packet and self.retries < self.max_retries:
+            if self.modus == True :
                 # Sync modus
                 request = self.data
                 if self.reply:
                     if self.debug_mode:
                         start_timer = time.time_ns()
                         self.num_send += 1
+                    #send request to broker    
                     reply = self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)
+                    self.retries += 1
                     if reply:
                         reply.pop(0)
                         replycode = reply.pop(0)
+                        
                         if self.verbose:
                             print("I: Reply from broker {}".format(replycode))
                         if self.debug_mode:
@@ -207,17 +212,15 @@ class frame_sender(gr.sync_block):
                             }
                             self.pd_latency = self.pd_latency.append(
                                 data, ignore_index=True)
-                            # TODO : maybe random csv for multiple workers ?
                             self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
                             # print(reply_msg)
                             # print(replycode)
-                            if replycode == definitions.W_ERROR:
-                                #latency has hit timeout limit
-                                self.num_error += 1
-                            else:
+                            if replycode != definitions.W_ERROR:
+                                self.send_packet = False
                                 self.num_decoded += 1
+                                self.retries = 0
 
                             data = {
                                 'time_stamp': pd.Timestamp.now(),
@@ -234,7 +237,6 @@ class frame_sender(gr.sync_block):
                 else:
                     self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)
-                self.send_packet = False
             else:
                 # Async modus
                 request = self.data
@@ -243,6 +245,12 @@ class frame_sender(gr.sync_block):
                     request), flowgraph_vars=self.flowgraph_vars)
                 self.num_request += 1
 
+        if self.retries >= self.max_retries:
+            #latency has hit timeout limit
+            print("Error 3 retires where not enough")
+            self.num_error += 1
+            self.retries = 0
+            self.send_packet = False
 
         in0 = input_items[0]
         # <+signal processing here+>
