@@ -28,7 +28,7 @@ def main():
 
     reply = None
     service = "echo"
-    verbose = True
+    verbose = False
     latency = True
     # connect to the broker using the worker_api
     if os.environ.get('CONNECT') is not None:
@@ -36,7 +36,7 @@ def main():
         worker = worker_api.Worker(os.environ.get(
             'CONNECT'), str(service).encode(), verbose)
     else:
-        addres = "tclcs1.epfl.ch"
+        addres = "localhost"
         port = 5555
         worker = worker_api.Worker(
             "tcp://"+addres+":"+str(port), str(service).encode(), verbose)
@@ -63,7 +63,7 @@ def main():
             flowgraph_vars = ast.literal_eval(request.pop(0).decode('utf-8'))
             vars = codecs.encode(pickle.dumps(
                 flowgraph_vars), "base64").decode()
-            print("Running flowgraph")
+            # print("Running flowgraph")
             # send the vars to the flowgraph and execute it
             p = subprocess.Popen(["./cran_recieve.py", vars, pipe],
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -73,11 +73,15 @@ def main():
             reply = socket.recv()
             try:
                 out, err = p.communicate(timeout=definitions.TIMEOUT)
-                print(out,err)
+                # print(out,err)
                 out2 = out
                 # send back the last part of the split of the output (decoded msg) from crc_verify
-                msg = out2.decode("utf-8").split(":")[-1]
-
+                try:
+                    msg = out2.decode("utf-8").split(":")[-1]
+                except UnicodeDecodeError:
+                    print(msg)
+                    print("Decoding error")
+                    # msg = definitions.W_ERROR
                 if latency:
                     # if we are messuring the latency put all the latency data and send it
                     latency_data = {
@@ -90,7 +94,7 @@ def main():
                 p.kill()
             except subprocess.TimeoutExpired:
                 # if decoding took to long
-                print("Timeout")
+                print("Timeout occurred")
                 if latency:
                     # if we are messuring the latency put all the latency data and send it
                     latency_data = {

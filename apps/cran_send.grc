@@ -132,7 +132,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '20'
+    value: '1000'
   states:
     bus_sink: false
     bus_source: false
@@ -245,7 +245,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [781, 498]
+    coordinate: [960, 532.0]
     rotation: 0
     state: disabled
 - name: blocks_throttle_0_1_0

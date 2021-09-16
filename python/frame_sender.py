@@ -42,7 +42,9 @@ class frame_sender(gr.sync_block):
         # Fix for gr3.9 tags_in_window by using in range with own offset
         self.offset = 0
         self.debug_mode = debug_mode
+        self.diff_store = 0
         self.filename = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
+        print("Filename :",self.filename)
 
         self.flowgraph_vars = {
             'sf': self.sf,
@@ -84,6 +86,7 @@ class frame_sender(gr.sync_block):
             self.num_recieved = 0
             self.num_send = 0
             self.num_decoded = 0
+            self.num_error = 0
 
         gr.sync_block.__init__(self,
                                name="frame_sender",
@@ -132,14 +135,38 @@ class frame_sender(gr.sync_block):
 
         # if the index of one packet is known get this data
         if len(self.start_index) > 0 and len(self.end_index) > 0:
+            # very mem inefficient but works
             start = self.start_index[0]
             end = self.end_index[0]
+            diff = (end - start)
+            # print("Diff:", diff)
+            end_index = self.diff_store
+            self.diff_store += diff 
+
+            self.data = self.buffer[:diff]
+            self.buffer = numpy.empty([0, 2]) 
+            # TODO : This should be fixed with a better algorithm
+            #old algorithm was to resource ineffienct 
+            # -> probs wait for fix in tags with python 3.9
+
+            #+ self.buffer[diff:]
             # print(start, end)
-            # TODO : find out how to package the second packet
-            self.data = self.buffer[start:end]
-            # print("Len packet" , len(self.data))
-            # print(self.data)
-            # print(self.data.shape)
+            # # TODO : find out how to package the second packet
+            # self.data = self.buffer[(end_index-diff):end_index]
+
+            # print("Diff from last")
+            # print(len(self.buffer))
+            # print(len(self.buffer)-diff)
+            # # print("Len packet" , len(self.data))
+            # # print(self.data)
+            # # print(self.data.shape)
+            # # #start with fresh buffer
+            # # # np.delete(a, index)
+            # index_remove = numpy.arange((end-end_index-diff),end_index)
+            # print(index_remove)
+            # self.buffer = numpy.delete(self.buffer, index_remove, axis=0)
+            # print(len(self.buffer))
+            # # self.buffer = numpy.empty([0, 2])
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
@@ -184,8 +211,12 @@ class frame_sender(gr.sync_block):
                             self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
-                            if latency_decoded > 5:
-                                #latency has timeout limit
+                            # print(reply_msg)
+                            # print(replycode)
+                            if replycode == definitions.W_ERROR:
+                                #latency has hit timeout limit
+                                self.num_error += 1
+                            else:
                                 self.num_decoded += 1
 
                             data = {
@@ -193,7 +224,7 @@ class frame_sender(gr.sync_block):
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
                                 'packets_decoded': self.num_decoded,
-                                'packets_error': self.num_send - self.num_decoded
+                                'packets_error': self.num_error
                             }
                             self.pd_packets = self.pd_packets.append(data, ignore_index=True)
                             self.pd_packets.to_csv(self.filename+'_packets.csv')
