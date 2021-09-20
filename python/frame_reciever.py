@@ -16,18 +16,18 @@ class frame_reciever(gr.sync_block):
     """
 
     def __init__(self, address, port, service, mode):
-        verbose = False
-        # make a worker context
+        self.verbose = False
+        # make a zmq context and connect to the ipc port
         context = zmq.Context()
         self.context = context
         self.socket = context.socket(zmq.PAIR)
-        # print(address)
-        # self.socket.setsockopt(zmq.REQ_RELAXED,1)
+
         try:
             self.socket.bind("ipc://"+address)
         except zmq.error.ZMQError:
             print("ZMQ error")
         self.buffer = []
+        #send correct recv of files
         self.socket.send(definitions.W_REPLY)
         self.state = 1
 
@@ -37,19 +37,23 @@ class frame_reciever(gr.sync_block):
                                out_sig=[(numpy.float32, 2)])
 
     def work(self, input_items, output_items):
+        
         out = output_items[0]
         max_items = len(output_items[0])
         if self.state == 1:
+            #get the worker I/Q data
             try:
                 data = self.socket.recv()
             except zmq.error.ZMQError:
                 print("ZMQ error recv")
             data = pickle.loads(data)
+            if self.verbose:
+                print("Got data, len", len(data))
+            #transform the data to the right type and put in the buffer
             self.buffer = data
             out[:] = numpy.transpose([data[0:max_items, 0], data[0:max_items, 1]])
             self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)
             #send correct recv of files
-            # print("Got data, letting runner know")
             try:
                 self.socket.send(definitions.W_REPLY)
             except zmq.error.ZMQError:
@@ -58,21 +62,23 @@ class frame_reciever(gr.sync_block):
             return len(output_items[0])
 
         if self.state == 2:
-            # print("emptying frame")
+            #Empty the buffer in multiple iterations
             items_to_use = max_items
             len_buffer = len(self.buffer)
             if len_buffer < max_items:
+                #edge case if there are less items then we can fit, (the exit case)
+                #fill the output with empty data
                 items_to_use = len_buffer
-                # print(max_items-items_to_use)
                 data = numpy.transpose([self.buffer[0:items_to_use, 0], self.buffer[0:items_to_use, 1]])
                 zeros = numpy.zeros((max_items - items_to_use, 2), dtype="float64")
                 # append empty padding after the frame (to fill to entire frame )
                 out[:] = numpy.concatenate((data, zeros), axis=0)
-                # print("Reached end of data, closing")
+                # close ipc connection
                 self.socket.close()
                 self.context.destroy()
                 return -1
             else:
+                #Empty part of the buffer to the output and delete those items from the buffer
                 out[:] = self.buffer[0:items_to_use]
                 numpy.transpose([self.buffer[0:items_to_use, 0], self.buffer[0:max_items, 1]])
                 self.buffer = numpy.delete(self.buffer, numpy.arange(max_items), axis=0)

@@ -37,10 +37,10 @@ class cran_send(gr.top_block):
         # Variables
         ##################################################
         self.bw = bw = 250000
-        self.time_wait = time_wait = 1000
+        self.time_wait = time_wait = 3000
         self.sto = sto = 0.0
-        self.snr = snr = -1
-        self.sf = sf = 9
+        self.snr = snr = -7
+        self.sf = sf = 12
         self.samp_rate = samp_rate = bw
         self.pay_len = pay_len = 64
         self.n_frame = n_frame = 1006
@@ -56,9 +56,10 @@ class cran_send(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_hier_tx_1 = lora_sdr.hier_tx(pay_len, n_frame, "", cr, sf, impl_head,has_crc, samp_rate, bw, time_wait, [8, 16],False)
-        self.lora_sdr_hier_tx_1.set_min_output_buffer(4096)
+        self.lora_sdr_hier_tx_1.set_min_output_buffer(65536)
         self.lora_sdr_frame_sender_0 = lora_sdr.frame_sender('tclcs1.epfl.ch', 5555, True, True, True, sf, samp_rate, bw, has_crc, pay_len, cr, impl_head, [8, 16], "PKdhtXMmr18n2L9K88eMlGn7CcctT9RwKSB1FebW397VI5uG1yhc3uavuaOb9vyJ")
-        self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,130,False)
+        self.lora_sdr_frame_detector_timeout_0_0 = lora_sdr.frame_detector_timeout(sf,samp_rate,bw,120,False)
+        self.lora_sdr_frame_detector_timeout_0_0.set_min_output_buffer(65536)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=10**(-snr/20),
             frequency_offset=cfo,
@@ -66,8 +67,9 @@ class cran_send(gr.top_block):
             taps=[1.0 + 1.0j],
             noise_seed=0,
             block_tags=False)
-        self.channels_channel_model_0.set_min_output_buffer(4096)
+        self.channels_channel_model_0.set_min_output_buffer(65536)
         self.blocks_throttle_0_1_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        self.blocks_throttle_0_1_0_0.set_min_output_buffer(65536)
 
 
 

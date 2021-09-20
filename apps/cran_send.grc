@@ -168,7 +168,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '9'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
@@ -275,7 +275,7 @@ blocks:
     comment: ''
     ignoretag: 'True'
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: 2**sf*16
     samples_per_second: samp_rate*10
     type: complex
     vlen: '1'
@@ -296,7 +296,7 @@ blocks:
     epsilon: 1+cfo*samp_rate/center_freq/2**sf
     freq_offset: cfo
     maxoutbuf: '0'
-    minoutbuf: 2**sf*8
+    minoutbuf: 2**sf*16
     noise_voltage: 10**(-snr/20)
     seed: '0'
     taps: 1.0 + 1.0j
@@ -315,7 +315,7 @@ blocks:
     comment: ''
     interp: '4'
     maxoutbuf: '0'
-    minoutbuf: 2**sf*8
+    minoutbuf: 2**sf*16
     samp_delay: '0'
     taps: "(-0.128616616593872,\t-0.212206590789194,\t-0.180063263231421,\t3.89817183251938e-17\t\
       ,0.300105438719035\t,0.636619772367581\t,0.900316316157106,\t1\t,0.900316316157106,\t\
@@ -338,8 +338,8 @@ blocks:
     comment: ''
     detect_second_packet: 'False'
     maxoutbuf: '0'
-    minoutbuf: '0'
-    n_bytes: '200'
+    minoutbuf: 2**sf*16
+    n_bytes: '120'
     samp_rate: samp_rate
     sf: sf
   states:
@@ -371,7 +371,7 @@ blocks:
 - name: lora_sdr_frame_sender_0
   id: lora_sdr_frame_sender
   parameters:
-    addres: '''localhost'''
+    addres: '''tclcs1.epfl.ch'''
     affinity: ''
     alias: ''
     bw: bw
@@ -407,7 +407,7 @@ blocks:
     has_crc: has_crc
     impl_head: impl_head
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: 2**sf*16
     pay_len: pay_len
     samp_rate: samp_rate
     sf: sf
@@ -455,7 +455,7 @@ blocks:
     impl_head: impl_head
     maxoutbuf: '0'
     mean: time_wait
-    minoutbuf: 2**sf*8
+    minoutbuf: 2**sf*16
     multi_control: 'False'
     n_frames: n_frame
     pay_len: pay_len

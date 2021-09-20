@@ -13,6 +13,7 @@ import pickle
 import pandas as pd
 import random
 import string 
+import sys
 
 class frame_sender(gr.sync_block):
     """Frame sender part of the ZMQ client <-> broker <-> worker setup
@@ -58,7 +59,7 @@ class frame_sender(gr.sync_block):
             'impl_head': self.impl_head,
             'sync_words': self.sync_words
         }
-
+        #intilize sync or async worker modus
         if self.modus == True:
             self.client = client_sync_api.Client(
                 "tcp://" + addres + ":" + str(port), self.verbose)
@@ -68,7 +69,7 @@ class frame_sender(gr.sync_block):
             self.num_request = 0
 
         if self.debug_mode:
-            # print("Debug mode is on")
+            # Make the csv output files
             colum_names_latency = {
                 'time_stamp',
                 'latency_recieved',
@@ -83,6 +84,7 @@ class frame_sender(gr.sync_block):
                 'packets_send',
                 'packets_decoded',
                 'packets_error',
+                'relpy'
             }
             self.pd_packets = pd.DataFrame(columns=colum_names_packets)
             self.num_recieved = 0
@@ -108,19 +110,13 @@ class frame_sender(gr.sync_block):
         # copy input data to output
         self.buffer = numpy.concatenate((self.buffer, input_items[0]), axis=0)
 
-        # print("Len input items", len(input_items[0]))
-        # print("LEn buffer:", len(self.buffer))
-        # print(input_items[0].dtype)
-        # print(input_items[0])
-        # print(self.buffer.dtype)
-        # print(self.buffer)
-
         # search for begin and end tags
         # Fix for GR3.9 tags_in_window by using in range with own offset
         tags = self.get_tags_in_range(
             0, self.offset, self.offset+len(input_items[0]))
         self.offset += len(input_items[0])
         for tag in tags:
+            #add the tags to the start and end index
             source = pmt.to_python(tag.srcid)
             if source == "frame_detector_timeout" or source == "frame_detector_threshold":
                 # if there is a tag add to the right index
@@ -137,11 +133,9 @@ class frame_sender(gr.sync_block):
 
         # if the index of one packet is known get this data
         if len(self.start_index) > 0 and len(self.end_index) > 0:
-            # very mem inefficient but works
             start = self.start_index[0]
             end = self.end_index[0]
             diff = (end - start)
-            # print("Diff:", diff)
             end_index = self.diff_store
             self.diff_store += diff 
 
@@ -151,29 +145,13 @@ class frame_sender(gr.sync_block):
             #old algorithm was to resource ineffienct 
             # -> probs wait for fix in tags with python 3.9
 
-            #+ self.buffer[diff:]
-            # print(start, end)
-            # # TODO : find out how to package the second packet
-            # self.data = self.buffer[(end_index-diff):end_index]
 
-            # print("Diff from last")
-            # print(len(self.buffer))
-            # print(diff)
-            # print("Len packet" , len(self.data))
-            # print(self.data)
-            # print(self.data.shape)
-            # # #start with fresh buffer
-            # # # np.delete(a, index)
-            # index_remove = numpy.arange((end-end_index-diff),end_index)
-            # print(index_remove)
-            # self.buffer = numpy.delete(self.buffer, index_remove, axis=0)
-            # print(len(self.buffer))
-            # # self.buffer = numpy.empty([0, 2])
             self.send_packet = True
             self.start_index.pop(0)
             self.end_index.pop(0)
 
         # we have one packet onto sending it onto the network
+        # keep sending till we reached the max number of times we are trying
         while self.send_packet and self.retries < self.max_retries:
             if self.modus == True :
                 # Sync modus
@@ -186,6 +164,7 @@ class frame_sender(gr.sync_block):
                     reply = self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)
                     self.retries += 1
+                    #if there is a reply decode it
                     if reply:
                         reply.pop(0)
                         replycode = reply.pop(0)
@@ -193,8 +172,8 @@ class frame_sender(gr.sync_block):
                         if self.verbose:
                             print("I: Reply from broker {}".format(replycode))
                         if self.debug_mode:
-                            self.num_recieved += 1
                             # if we are in debug mode measure the time it took to receive the reply
+                            self.num_recieved += 1
                             end_time = time.time_ns()
                             latency_round = end_time - start_timer
                             latency_data = pickle.loads(reply.pop(0))
@@ -215,25 +194,28 @@ class frame_sender(gr.sync_block):
                             self.pd_latency.to_csv(self.filename+'_latency.csv')
                             #decode reply code as string and check if reply is same as input
                             reply_msg = str(replycode, "utf-8")[:-1]
-                            # print(reply_msg)
-                            # print(replycode)
+                            if self.verbose:
+                                print(reply_msg)
+                                print(replycode)
                             if replycode != definitions.W_ERROR:
                                 self.send_packet = False
                                 self.num_decoded += 1
                                 self.retries = 0
-
+                            #save data to the pandas dataframe
                             data = {
                                 'time_stamp': pd.Timestamp.now(),
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
                                 'packets_decoded': self.num_decoded,
-                                'packets_error': self.num_error
+                                'packets_error': self.num_error,
+                                'reply' : reply_msg
                             }
                             self.pd_packets = self.pd_packets.append(data, ignore_index=True)
                             self.pd_packets.to_csv(self.filename+'_packets.csv')
 
                     else:
                         print("E: no response from broker, make sure it's running")
+                        sys.exit(0)
                 else:
                     self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)

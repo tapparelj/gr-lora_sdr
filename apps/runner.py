@@ -28,7 +28,7 @@ def main():
 
     reply = None
     service = "echo"
-    verbose = False
+    verbose = False 
     latency = True
     run = 0
     # connect to the broker using the worker_api
@@ -81,17 +81,21 @@ def main():
                 socket.send(input_data)
                 # wait for reply from flowgraph
                 reply = socket.recv()
+                if verbose:
+                    for stdout_line in iter(p.stdout.readline, ""):
+                        print(stdout_line) 
                 try:
                     out, err = p.communicate(timeout=definitions.TIMEOUT)
-                    # print(out,err)
+                    if verbose:
+                        print(out,err)
                     out2 = out
                     # send back the last part of the split of the output (decoded msg) from crc_verify
                     try:
                         msg = out2.decode("utf-8").split(":")[-1]
                     except UnicodeDecodeError:
-                        print(msg)
                         print("Decoding error")
                         print("At run", run)
+                        msg = "decode_error"
                         # msg = definitions.W_ERROR
                     if latency:
                         # if we are messuring the latency put all the latency data and send it
