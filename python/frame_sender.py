@@ -31,6 +31,7 @@ class frame_sender(gr.sync_block):
         self.end_index = []
         self.data = numpy.empty([0, 2])
         self.buffer = numpy.empty([0, 2])
+        self.old_buffer = numpy.empty([0, 2])
         self.sf = sf
         self.samp_rate = samp_rate
         self.bw = bw
@@ -139,8 +140,9 @@ class frame_sender(gr.sync_block):
             end_index = self.diff_store
             self.diff_store += diff 
 
-            self.data = self.buffer[:diff]
-            self.buffer = numpy.empty([0, 2]) 
+            self.data = numpy.concatenate((self.old_buffer, self.buffer[:diff]), axis=0)
+            self.old_buffer = self.buffer[diff:]
+            self.buffer = numpy.empty([0, 2])
             # TODO : This should be fixed with a better algorithm
             #old algorithm was to resource ineffienct 
             # -> probs wait for fix in tags with python 3.9
