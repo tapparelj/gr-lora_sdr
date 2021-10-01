@@ -12,8 +12,9 @@ import time
 import pickle
 import pandas as pd
 import random
-import string 
+import string
 import sys
+
 
 class frame_sender(gr.sync_block):
     """Frame sender part of the ZMQ client <-> broker <-> worker setup
@@ -45,10 +46,11 @@ class frame_sender(gr.sync_block):
         self.offset = 0
         self.debug_mode = debug_mode
         self.diff_store = 0
-        self.max_retries = 3
+        self.max_retries = 1
         self.retries = 0
-        self.filename = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
-        print("Filename :",self.filename)
+        self.filename = "".join(random.choices(
+            string.ascii_uppercase + string.digits, k=5))
+        print("Filename :", self.filename)
 
         self.flowgraph_vars = {
             'sf': self.sf,
@@ -60,7 +62,7 @@ class frame_sender(gr.sync_block):
             'impl_head': self.impl_head,
             'sync_words': self.sync_words
         }
-        #intilize sync or async worker modus
+        # intilize sync or async worker modus
         if self.modus == True:
             self.client = client_sync_api.Client(
                 "tcp://" + addres + ":" + str(port), self.verbose)
@@ -117,7 +119,7 @@ class frame_sender(gr.sync_block):
             0, self.offset, self.offset+len(input_items[0]))
         self.offset += len(input_items[0])
         for tag in tags:
-            #add the tags to the start and end index
+            # add the tags to the start and end index
             source = pmt.to_python(tag.srcid)
             if source == "frame_detector_timeout" or source == "frame_detector_threshold":
                 # if there is a tag add to the right index
@@ -138,15 +140,15 @@ class frame_sender(gr.sync_block):
             end = self.end_index[0]
             diff = (end - start)
             end_index = self.diff_store
-            self.diff_store += diff 
+            self.diff_store += diff
 
-            self.data = numpy.concatenate((self.old_buffer, self.buffer[:diff]), axis=0)
+            self.data = numpy.concatenate(
+                (self.old_buffer, self.buffer[:diff]), axis=0)
             self.old_buffer = self.buffer[diff:]
             self.buffer = numpy.empty([0, 2])
             # TODO : This should be fixed with a better algorithm
-            #old algorithm was to resource ineffienct 
+            # old algorithm was to resource ineffienct
             # -> probs wait for fix in tags with python 3.9
-
 
             self.send_packet = True
             self.start_index.pop(0)
@@ -155,22 +157,22 @@ class frame_sender(gr.sync_block):
         # we have one packet onto sending it onto the network
         # keep sending till we reached the max number of times we are trying
         while self.send_packet and self.retries < self.max_retries:
-            if self.modus == True :
+            if self.modus == True:
                 # Sync modus
                 request = self.data
                 if self.reply:
                     if self.debug_mode:
                         start_timer = time.time_ns()
                         self.num_send += 1
-                    #send request to broker    
+                    # send request to broker
                     reply = self.client.send(b"echo", pickle.dumps(
                         request), flowgraph_vars=self.flowgraph_vars)
                     self.retries += 1
-                    #if there is a reply decode it
+                    # if there is a reply decode it
                     if reply:
                         reply.pop(0)
                         replycode = reply.pop(0)
-                        
+
                         if self.verbose:
                             print("I: Reply from broker {}".format(replycode))
                         if self.debug_mode:
@@ -193,9 +195,13 @@ class frame_sender(gr.sync_block):
                             }
                             self.pd_latency = self.pd_latency.append(
                                 data, ignore_index=True)
-                            self.pd_latency.to_csv(self.filename+'_latency.csv')
-                            #decode reply code as string and check if reply is same as input
-                            reply_msg = str(replycode, "utf-8")[:-1]
+                            self.pd_latency.to_csv(
+                                self.filename+'_latency.csv')
+                            # decode reply code as string and check if reply is same as input
+                            try:
+                                reply_msg = str(replycode, "utf-8")[:-1]
+                            except:
+                                reply_msg = "Wrong decode"
                             if self.verbose:
                                 print(reply_msg)
                                 print(replycode)
@@ -203,17 +209,21 @@ class frame_sender(gr.sync_block):
                                 self.send_packet = False
                                 self.num_decoded += 1
                                 self.retries = 0
-                            #save data to the pandas dataframe
+                            else:
+                                reply_msg = "Error"
+                            # save data to the pandas dataframe
                             data = {
                                 'time_stamp': pd.Timestamp.now(),
                                 'packets_recieved': self.num_recieved,
                                 'packets_send': self.num_send,
                                 'packets_decoded': self.num_decoded,
                                 'packets_error': self.num_error,
-                                'reply' : reply_msg
+                                'reply': reply_msg
                             }
-                            self.pd_packets = self.pd_packets.append(data, ignore_index=True)
-                            self.pd_packets.to_csv(self.filename+'_packets.csv')
+                            self.pd_packets = self.pd_packets.append(
+                                data, ignore_index=True)
+                            self.pd_packets.to_csv(
+                                self.filename+'_packets.csv')
 
                     else:
                         print("E: no response from broker, make sure it's running")
@@ -224,14 +234,14 @@ class frame_sender(gr.sync_block):
             else:
                 # Async modus
                 request = self.data
-                #send a request to the broker
+                # send a request to the broker
                 self.client.send(b"echo", pickle.dumps(
                     request), flowgraph_vars=self.flowgraph_vars)
                 self.num_request += 1
 
         if self.retries >= self.max_retries:
-            #latency has hit timeout limit
-            print("Error 3 retires where not enough")
+            # latency has hit timeout limit
+            print("Error retires where not enough")
             self.num_error += 1
             self.retries = 0
             self.send_packet = False

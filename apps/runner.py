@@ -56,7 +56,7 @@ def main():
         #sleep for 5 seconds and restarts the process
         if run == 250:
             print("Restarting the process")
-            time.sleep(10)
+            time.sleep(20)
             os.execv(sys.executable, ['python'] + [sys.argv[0]])
 
         else:
@@ -75,7 +75,7 @@ def main():
                     flowgraph_vars), "base64").decode()
                 # print("Running flowgraph")
                 # send the vars to the flowgraph and execute it
-                p = subprocess.Popen(["./cran_recieve.py", vars, pipe],
+                p = subprocess.Popen(["./cran_recieve12.py", vars, pipe],
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 # send I/Q data to the flowgraph
                 socket.send(input_data)
