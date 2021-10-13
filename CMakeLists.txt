@@ -53,7 +53,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # Set the version information here
 set(VERSION_MAJOR 0)
-set(VERSION_API   4)
+set(VERSION_API   5)
 set(VERSION_ABI   0)
 set(VERSION_PATCH git)
 
