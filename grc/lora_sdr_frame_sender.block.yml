@@ -4,8 +4,8 @@ category: '[LoRa]/CRAN'
 
 templates:
   imports: import lora_sdr
-  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode}, ${reply}, ${sf}, ${samp_rate}, ${bw}, ${has_crc},
-   ${pay_len}, ${cr}, ${impl_head}, ${sync_words})
+  make: lora_sdr.frame_sender(${addres}, ${port}, ${mode}, ${debug_mode}, ${reply}, ${sf}, ${samp_rate}, ${bw}, ${has_crc},
+   ${pay_len}, ${cr}, ${impl_head}, ${sync_words}, ${input_data})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -33,12 +33,12 @@ parameters:
   default : 'True'
   options: ['True', 'False']
   option_labels: ['Yes', 'No']
-- id: compress
-  label : Compress data
+- id: debug_mode
+  label : Debug mode
   dtype: enum
   default : 'True'
   options: ['True', 'False']
-  option_labels: ['Yes', 'No']
+  option_labels: ['True', 'False']
 - id: sf
   label: Sf
   dtype: int
@@ -69,6 +69,11 @@ parameters:
   label: Sync words
   dtype: int_vector
   default: [8, 16]
+  optional: true
+- id: input_data
+  label: Input string
+  dtype: string
+  default: ""
   optional: true
 
 asserts:
