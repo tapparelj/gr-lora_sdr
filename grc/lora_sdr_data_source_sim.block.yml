@@ -25,13 +25,6 @@ parameters:
     dtype: bool
     default: False
 
-inputs:
-
-assert:
-  - ${ pay_len > 1 }
-  - ${ n_frames > 1}
-  - ${ mean >1}
-
 outputs:
   - domain: message
     id: msg
