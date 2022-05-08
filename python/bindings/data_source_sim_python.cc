@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_data_source_sim(py::module& m)
 {
 
-    using data_source_sim    = gr::lora_sdr::data_source_sim;
+    using data_source_sim    = ::gr::lora_sdr::data_source_sim;
 
 
-    py::class_<data_source_sim,
+    py::class_<data_source_sim, gr::block, gr::basic_block,
         std::shared_ptr<data_source_sim>>(m, "data_source_sim", D(data_source_sim))
 
         .def(py::init(&data_source_sim::make),

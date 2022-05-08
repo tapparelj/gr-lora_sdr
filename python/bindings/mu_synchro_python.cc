@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_mu_synchro(py::module& m)
 {
 
-    using mu_synchro    = gr::lora_sdr::mu_synchro;
+    using mu_synchro    = ::gr::lora_sdr::mu_synchro;
 
 
-    py::class_<mu_synchro,
+    py::class_<mu_synchro, gr::block, gr::basic_block,
         std::shared_ptr<mu_synchro>>(m, "mu_synchro", D(mu_synchro))
 
         .def(py::init(&mu_synchro::make),

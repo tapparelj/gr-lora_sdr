@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_mu_detection(py::module& m)
 {
 
-    using mu_detection    = gr::lora_sdr::mu_detection;
+    using mu_detection    = ::gr::lora_sdr::mu_detection;
 
 
-    py::class_<mu_detection,
+    py::class_<mu_detection, gr::block, gr::basic_block,
         std::shared_ptr<mu_detection>>(m, "mu_detection", D(mu_detection))
 
         .def(py::init(&mu_detection::make),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_interleaver(py::module& m)
 {
 
-    using interleaver    = gr::lora_sdr::interleaver;
+    using interleaver    = ::gr::lora_sdr::interleaver;
 
 
-    py::class_<interleaver,
+    py::class_<interleaver, gr::block, gr::basic_block,
         std::shared_ptr<interleaver>>(m, "interleaver", D(interleaver))
 
         .def(py::init(&interleaver::make),

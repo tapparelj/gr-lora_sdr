@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_hamming_dec(py::module& m)
 {
 
-    using hamming_dec    = gr::lora_sdr::hamming_dec;
+    using hamming_dec    = ::gr::lora_sdr::hamming_dec;
 
 
-    py::class_<hamming_dec,
+    py::class_<hamming_dec, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<hamming_dec>>(m, "hamming_dec", D(hamming_dec))
 
         .def(py::init(&hamming_dec::make),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -17,6 +17,9 @@
 
  
  static const char *__doc_gr_lora_sdr_frame_detector_sequence = R"doc()doc";
+
+
+ static const char *__doc_gr_lora_sdr_frame_detector_sequence_frame_detector_sequence = R"doc()doc";
 
 
  static const char *__doc_gr_lora_sdr_frame_detector_sequence_make = R"doc()doc";

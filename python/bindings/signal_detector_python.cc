@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_signal_detector(py::module& m)
 {
 
-    using signal_detector    = gr::lora_sdr::signal_detector;
+    using signal_detector    = ::gr::lora_sdr::signal_detector;
 
 
-    py::class_<signal_detector,
+    py::class_<signal_detector, gr::block, gr::basic_block,
         std::shared_ptr<signal_detector>>(m, "signal_detector", D(signal_detector))
 
         .def(py::init(&signal_detector::make),

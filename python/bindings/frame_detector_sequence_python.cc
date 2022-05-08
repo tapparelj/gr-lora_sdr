@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_frame_detector_sequence(py::module& m)
 {
 
-    using frame_detector_sequence    = gr::lora_sdr::frame_detector_sequence;
+    using frame_detector_sequence    = ::gr::lora_sdr::frame_detector_sequence;
 
 
-    py::class_<frame_detector_sequence,
+    py::class_<frame_detector_sequence, gr::block, gr::basic_block,
         std::shared_ptr<frame_detector_sequence>>(m, "frame_detector_sequence", D(frame_detector_sequence))
 
         .def(py::init(&frame_detector_sequence::make),

@@ -43,6 +43,7 @@ namespace py = pybind11;
     void bind_hier_rx(py::module& m);
     void bind_hier_tx(py::module& m);
     void bind_interleaver(py::module& m);
+    void bind_modulate(py::module& m);
     void bind_RH_RF95_header(py::module& m);
     void bind_signal_detector(py::module& m);
     void bind_whitening(py::module& m);
@@ -96,6 +97,7 @@ PYBIND11_MODULE(lora_sdr_python, m)
         bind_hier_rx( m);
         bind_hier_tx( m);
         bind_interleaver( m);
+        bind_modulate( m);
         bind_RH_RF95_header( m);
         bind_signal_detector( m);
         bind_whitening( m);

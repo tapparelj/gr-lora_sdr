@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_whitening(py::module& m)
 {
 
-    using whitening    = gr::lora_sdr::whitening;
+    using whitening    = ::gr::lora_sdr::whitening;
 
 
-    py::class_<whitening,
+    py::class_<whitening, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<whitening>>(m, "whitening", D(whitening))
 
         .def(py::init(&whitening::make),

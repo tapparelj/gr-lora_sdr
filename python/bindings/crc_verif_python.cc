@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_crc_verif(py::module& m)
 {
 
-    using crc_verif    = gr::lora_sdr::crc_verif;
+    using crc_verif    = ::gr::lora_sdr::crc_verif;
 
 
-    py::class_<crc_verif,
+    py::class_<crc_verif, gr::block, gr::basic_block,
         std::shared_ptr<crc_verif>>(m, "crc_verif", D(crc_verif))
 
         .def(py::init(&crc_verif::make),

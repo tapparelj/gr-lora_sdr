@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_partial_ml(py::module& m)
 {
 
-    using partial_ml    = gr::lora_sdr::partial_ml;
+    using partial_ml    = ::gr::lora_sdr::partial_ml;
 
 
-    py::class_<partial_ml,
+    py::class_<partial_ml, gr::block, gr::basic_block,
         std::shared_ptr<partial_ml>>(m, "partial_ml", D(partial_ml))
 
         .def(py::init(&partial_ml::make),

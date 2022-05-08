@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_frame_src(py::module& m)
 {
 
-    using frame_src    = gr::lora_sdr::frame_src;
+    using frame_src    = ::gr::lora_sdr::frame_src;
 
 
-    py::class_<frame_src,
+    py::class_<frame_src, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<frame_src>>(m, "frame_src", D(frame_src))
 
         .def(py::init(&frame_src::make),

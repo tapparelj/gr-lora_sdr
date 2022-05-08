@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_RH_RF95_header(py::module& m)
 {
 
-    using RH_RF95_header    = gr::lora_sdr::RH_RF95_header;
+    using RH_RF95_header    = ::gr::lora_sdr::RH_RF95_header;
 
 
-    py::class_<RH_RF95_header,
+    py::class_<RH_RF95_header, gr::block, gr::basic_block,
         std::shared_ptr<RH_RF95_header>>(m, "RH_RF95_header", D(RH_RF95_header))
 
         .def(py::init(&RH_RF95_header::make),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_hier_tx(py::module& m)
 {
 
-    using hier_tx    = gr::lora_sdr::hier_tx;
+    using hier_tx    = ::gr::lora_sdr::hier_tx;
 
 
-    py::class_<hier_tx,gr::hier_block2,
+    py::class_<hier_tx, gr::hier_block2,
         std::shared_ptr<hier_tx>>(m, "hier_tx", D(hier_tx))
 
         .def(py::init(&hier_tx::make),

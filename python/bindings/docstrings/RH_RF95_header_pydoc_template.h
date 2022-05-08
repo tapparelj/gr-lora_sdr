@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -17,6 +17,9 @@
 
  
  static const char *__doc_gr_lora_sdr_RH_RF95_header = R"doc()doc";
+
+
+ static const char *__doc_gr_lora_sdr_RH_RF95_header_RH_RF95_header = R"doc()doc";
 
 
  static const char *__doc_gr_lora_sdr_RH_RF95_header_make = R"doc()doc";
