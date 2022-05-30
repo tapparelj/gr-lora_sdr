@@ -24,9 +24,6 @@ inputs:
     dtype: complex
     vlen: ${ 2**sf }
 
-assert:
-  - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-
 outputs:
   - domain: stream
     dtype: int

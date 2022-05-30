@@ -52,29 +52,23 @@ parameters:
   label: Has_crc
   dtype: bool
   default: "False"
-  optional: true
 - id: pay_len
   label: Pay_len
   dtype: int
-  optional: true
 - id: cr
   label: Cr
   dtype: int
-  optional: true
 - id: impl_head
   label: Impl_head
   dtype: bool
-  optional: true
 - id: sync_words
   label: Sync words
   dtype: int_vector
   default: [8, 16]
-  optional: true
 - id: input_data
   label: Input string
   dtype: string
   default: ""
-  optional: true
 
 asserts:
   - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
