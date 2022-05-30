@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_gray_decode(py::module& m)
 {
 
-    using gray_decode    = gr::lora_sdr::gray_decode;
+    using gray_decode    = ::gr::lora_sdr::gray_decode;
 
 
-    py::class_<gray_decode,
+    py::class_<gray_decode, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<gray_decode>>(m, "gray_decode", D(gray_decode))
 
         .def(py::init(&gray_decode::make),

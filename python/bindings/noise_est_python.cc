@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_noise_est(py::module& m)
 {
 
-    using noise_est    = gr::lora_sdr::noise_est;
+    using noise_est    = ::gr::lora_sdr::noise_est;
 
 
-    py::class_<noise_est,
+    py::class_<noise_est, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<noise_est>>(m, "noise_est", D(noise_est))
 
         .def(py::init(&noise_est::make),

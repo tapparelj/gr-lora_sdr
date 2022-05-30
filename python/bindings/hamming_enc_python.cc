@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_hamming_enc(py::module& m)
 {
 
-    using hamming_enc    = gr::lora_sdr::hamming_enc;
+    using hamming_enc    = ::gr::lora_sdr::hamming_enc;
 
 
-    py::class_<hamming_enc,
+    py::class_<hamming_enc, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<hamming_enc>>(m, "hamming_enc", D(hamming_enc))
 
         .def(py::init(&hamming_enc::make),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_header_decoder(py::module& m)
 {
 
-    using header_decoder    = gr::lora_sdr::header_decoder;
+    using header_decoder    = ::gr::lora_sdr::header_decoder;
 
 
-    py::class_<header_decoder,
+    py::class_<header_decoder, gr::block, gr::basic_block,
         std::shared_ptr<header_decoder>>(m, "header_decoder", D(header_decoder))
 
         .def(py::init(&header_decoder::make),

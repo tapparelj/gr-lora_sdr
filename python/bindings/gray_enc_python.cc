@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_gray_enc(py::module& m)
 {
 
-    using gray_enc    = gr::lora_sdr::gray_enc;
+    using gray_enc    = ::gr::lora_sdr::gray_enc;
 
 
-    py::class_<gray_enc,
+    py::class_<gray_enc, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<gray_enc>>(m, "gray_enc", D(gray_enc))
 
         .def(py::init(&gray_enc::make),

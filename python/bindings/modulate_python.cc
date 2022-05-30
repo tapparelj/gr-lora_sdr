@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_modulate(py::module& m)
 {
 
-    using modulate    = gr::lora_sdr::modulate;
+    using modulate    = ::gr::lora_sdr::modulate;
 
 
-    py::class_<modulate,
+    py::class_<modulate, gr::block, gr::basic_block,
         std::shared_ptr<modulate>>(m, "modulate", D(modulate))
 
         .def(py::init(&modulate::make),

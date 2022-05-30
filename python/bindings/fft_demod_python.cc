@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_fft_demod(py::module& m)
 {
 
-    using fft_demod    = gr::lora_sdr::fft_demod;
+    using fft_demod    = ::gr::lora_sdr::fft_demod;
 
 
-    py::class_<fft_demod,
+    py::class_<fft_demod, gr::block, gr::basic_block,
         std::shared_ptr<fft_demod>>(m, "fft_demod", D(fft_demod))
 
         .def(py::init(&fft_demod::make),

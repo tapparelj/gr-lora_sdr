@@ -6,7 +6,7 @@ import re
 
 class PybindHeaderParser:
     def __init__(self, pathname):
-        with open(pathname,'r') as f:
+        with open(pathname, 'r') as f:
             self.file_txt = f.read()
 
     def get_flag_automatic(self):
@@ -17,8 +17,8 @@ class PybindHeaderParser:
             return True
         else:
             return False
-        
-    def get_flag_pygccxml(self):    
+
+    def get_flag_pygccxml(self):
         # p = re.compile(r'BINDTOOL_USE_PYGCCXML\(([^\s])\)')
         # m = p.search(self.file_txt)
         m = re.search(r'BINDTOOL_USE_PYGCCXML\(([^\s])\)', self.file_txt)
@@ -49,16 +49,18 @@ class PybindHeaderParser:
         return f'{self.get_flag_automatic()};{self.get_flag_pygccxml()};{self.get_header_filename()};{self.get_header_file_hash()};'
 
 
-
 def argParse():
     """Parses commandline args."""
-    desc='Reads the parameters from the comment block in the pybind files'
+    desc = 'Reads the parameters from the comment block in the pybind files'
     parser = ArgumentParser(description=desc)
-    
-    parser.add_argument("function", help="Operation to perform on comment block of pybind file", choices=["flag_auto","flag_pygccxml","header_filename","header_file_hash","all"])
-    parser.add_argument("pathname", help="Pathname of pybind c++ file to read, e.g. blockname_python.cc")
+
+    parser.add_argument("function", help="Operation to perform on comment block of pybind file", choices=[
+                        "flag_auto", "flag_pygccxml", "header_filename", "header_file_hash", "all"])
+    parser.add_argument(
+        "pathname", help="Pathname of pybind c++ file to read, e.g. blockname_python.cc")
 
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     # Parse command line options and set up doxyxml.
@@ -73,6 +75,6 @@ if __name__ == "__main__":
     elif args.function == "header_filename":
         print(pbhp.get_header_filename())
     elif args.function == "header_file_hash":
-        print(pbhp.get_header_file_hash()) 
+        print(pbhp.get_header_file_hash())
     elif args.function == "all":
         print(pbhp.get_flags())

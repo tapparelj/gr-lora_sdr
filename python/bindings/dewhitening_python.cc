@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_dewhitening(py::module& m)
 {
 
-    using dewhitening    = gr::lora_sdr::dewhitening;
+    using dewhitening    = ::gr::lora_sdr::dewhitening;
 
 
-    py::class_<dewhitening,
+    py::class_<dewhitening, gr::block, gr::basic_block,
         std::shared_ptr<dewhitening>>(m, "dewhitening", D(dewhitening))
 
         .def(py::init(&dewhitening::make),

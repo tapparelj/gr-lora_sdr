@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_frame_detector_timeout(py::module& m)
 {
 
-    using frame_detector_timeout    = gr::lora_sdr::frame_detector_timeout;
+    using frame_detector_timeout    = ::gr::lora_sdr::frame_detector_timeout;
 
 
-    py::class_<frame_detector_timeout,gr::block,
+    py::class_<frame_detector_timeout, gr::block, gr::basic_block,
         std::shared_ptr<frame_detector_timeout>>(m, "frame_detector_timeout", D(frame_detector_timeout))
 
         .def(py::init(&frame_detector_timeout::make),

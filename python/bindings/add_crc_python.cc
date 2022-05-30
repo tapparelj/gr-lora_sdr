@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_add_crc(py::module& m)
 {
 
-    using add_crc    = gr::lora_sdr::add_crc;
+    using add_crc    = ::gr::lora_sdr::add_crc;
 
 
-    py::class_<add_crc,
+    py::class_<add_crc, gr::block, gr::basic_block,
         std::shared_ptr<add_crc>>(m, "add_crc", D(add_crc))
 
         .def(py::init(&add_crc::make),

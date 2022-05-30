@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Free Software Foundation, Inc.
+ * Copyright 2022 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -30,10 +30,10 @@ namespace py = pybind11;
 void bind_err_measures(py::module& m)
 {
 
-    using err_measures    = gr::lora_sdr::err_measures;
+    using err_measures    = ::gr::lora_sdr::err_measures;
 
 
-    py::class_<err_measures,
+    py::class_<err_measures, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<err_measures>>(m, "err_measures", D(err_measures))
 
         .def(py::init(&err_measures::make),
