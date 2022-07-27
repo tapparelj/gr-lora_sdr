@@ -3,7 +3,7 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-import lora_sdr_swig as lora_sdr
+import lora_sdr_python as lora_sdr
 import numpy as np
 
 from scipy.special import i0

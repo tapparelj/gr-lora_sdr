@@ -19,7 +19,6 @@ makedepends="blas-dev
         mpir-dev
         gnuradio-dev
         git
-        swig
         py3-sphinx
         python3-dev
         "
@@ -52,7 +51,6 @@ package() {
         cd build
         make DESTDIR="$pkgdir" install
         #DESTDIR="$pkgdir" cmake --build build --target install
-        #install -Dm644 swig/lora_sdr_swig.py "$pkgdir"/usr/lib/python3.9/site-packages/lora_sdr/lora_sdr_swig.py
 }
 sha512sums="
 8bf26601ff8e313a839a9c2fffe9b803f6f826b15d29a5f3cbd5eb81408a5d236bfad8bc2c490a1b0944771c4ddc76100d76c03bdb4c417d5859df018ada51eb  gr-lora_sdr-0.3.4.tar.gz

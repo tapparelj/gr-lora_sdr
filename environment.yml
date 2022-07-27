@@ -163,7 +163,6 @@ dependencies:
   - setuptools=49.6.0=py39hf3d152e_3
   - six=1.16.0=pyh6c4a22f_0
   - sqlite=3.35.5=h74cdb3f_0
-  - swig=4.0.2=hd3c618e_2
   - sysroot_linux-64=2.12=h77966d4_13
   - tk=8.6.10=h21135ba_1
   - tzdata=2021a=he74cb21_0

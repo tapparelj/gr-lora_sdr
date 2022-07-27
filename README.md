@@ -103,7 +103,6 @@ Similarly to any GNU Radio OOT module, it can be build using Cmake and make.
     - Gnuradio 3.8
     - python >2.7
     - cmake >3.8
-    - swig  >4.0
     - libvolk
     - UHD 
     - doxygen (optional for documentation)

@@ -22,7 +22,7 @@
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from gnuradio import channels
-import lora_sdr_swig as lora_sdr
+import lora_sdr_python as lora_sdr
 import pmt
 import time
 import filecmp
