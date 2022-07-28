@@ -19,6 +19,9 @@ namespace gr {
         #define RESET   "\033[0m"
         #define RED     "\033[31m"      /* Red */
 
+        typedef double LLR;    ///< Log-Likelihood Ratio type
+        //typedef long double LLR; // 16 Bytes 
+
         enum Symbol_type {
             VOID,
             UPCHIRP,

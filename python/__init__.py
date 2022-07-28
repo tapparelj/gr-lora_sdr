@@ -31,6 +31,6 @@ except ImportError:
 	pass
 
 # import any pure python here
-from .mu_demod import mu_demod
+
 
 #

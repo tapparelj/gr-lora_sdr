@@ -13,20 +13,21 @@ namespace gr
     {
 
         header_decoder::sptr
-        header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
+        header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header)
         {
-            return gnuradio::get_initial_sptr(new header_decoder_impl(impl_head, cr, pay_len, has_crc));
+            return gnuradio::get_initial_sptr(new header_decoder_impl(impl_head, cr, pay_len, has_crc, print_header));
         }
 
         /*
      * The private constructor
      */
-        header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc)
+        header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header)
             : gr::block("header_decoder",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
                         gr::io_signature::make(1, 1, sizeof(uint8_t)))
         {
             m_impl_header = impl_head;
+            m_print_header = print_header;
             m_cr = cr;
             m_payload_len = pay_len;
             m_has_crc = has_crc;
@@ -36,10 +37,7 @@ namespace gr
             set_tag_propagation_policy(TPP_DONT);
             message_port_register_out(pmt::mp("frame_info"));
 
-            // message_port_register_out(pmt::mp("CR"));
-            // message_port_register_out(pmt::mp("pay_len"));
-            // message_port_register_out(pmt::mp("CRC"));
-            // message_port_register_out(pmt::mp("err"));
+
         }
         /*
      * Our virtual destructor.
@@ -127,7 +125,7 @@ namespace gr
                 }
                 else
                 { //explicit header to decode
-                    std::cout << "\n--------Header--------" << std::endl;
+                    
 
                     m_payload_len = (in[0] << 4) + in[1];
                     
@@ -142,22 +140,24 @@ namespace gr
                     bool c2 = (in[0] & 0b0100) >> 2 ^ (in[1] & 0b1000) >> 3 ^ (in[1] & 0b0001) ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0010) >> 1;
                     bool c1 = (in[0] & 0b0010) >> 1 ^ (in[1] & 0b0100) >> 2 ^ (in[1] & 0b0001) ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
                     bool c0 = (in[0] & 0b0001) ^ (in[1] & 0b0010) >> 1 ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
-
-                    std::cout << "Payload length: " << (int)m_payload_len << std::endl;
-                    std::cout << "CRC presence: " << (int)m_has_crc << std::endl;
-                    std::cout << "Coding rate: " << (int)m_cr << std::endl;
+                    if(m_print_header){
+                        std::cout << "\n--------Header--------" << std::endl;
+                        std::cout << "Payload length: " << (int)m_payload_len << std::endl;
+                        std::cout << "CRC presence: " << (int)m_has_crc << std::endl;
+                        std::cout << "Coding rate: " << (int)m_cr << std::endl;
+                    }
                     int head_err = 0;
                     if (header_chk - ((int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0))
                     {
-                        std::cout <<RED<< "Header checksum invalid!" <<RESET<< std::endl<< std::endl;
+                        if(m_print_header)
+                            std::cout <<RED<< "Header checksum invalid!" <<RESET<< std::endl<< std::endl;
                         // message_port_pub(pmt::intern("err"),pmt::mp(true));
                         head_err = 1;
                         noutput_items = 0;
                     }
                     else
                     {
-                        std::cout << "Header checksum valid!" << std::endl
-                                  << std::endl;
+                        if(m_print_header) std::cout << "Header checksum valid!" << std::endl<< std::endl;
 #ifdef GRLORA_DEBUG
                         std::cout << "should have " << (int)header_chk << std::endl;
                         std::cout << "got: " << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0 << std::endl;

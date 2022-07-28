@@ -20,6 +20,10 @@ namespace gr {
       interleaver_impl(uint8_t cr, uint8_t sf);
       ~interleaver_impl();
 
+      void set_cr(uint8_t cr);
+      uint8_t get_cr();
+      void set_sf(uint8_t sf);
+
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
       int general_work(int noutput_items,

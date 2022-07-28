@@ -8,13 +8,14 @@ namespace gr {
 
     class hamming_dec_impl : public hamming_dec
     {
-     private:
+     private:        
         uint8_t m_cr;   ///< Transmission coding rate
         uint8_t cr_app; ///< Coding rate use for the block
         bool is_header;  ///< Indicate that it is the first block
+        bool m_soft_decoding;   ///< Hard/Soft decoding
 
      public:
-      hamming_dec_impl( );
+      hamming_dec_impl(bool soft_decoding);
       ~hamming_dec_impl();
 
       int work(

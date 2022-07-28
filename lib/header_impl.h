@@ -25,6 +25,10 @@ namespace gr {
       header_impl(bool impl_head, bool has_crc, uint8_t cr);
       ~header_impl();
 
+      void set_cr(uint8_t cr);
+      uint8_t get_cr();
+
+
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
       int general_work(int noutput_items,

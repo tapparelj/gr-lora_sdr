@@ -3,6 +3,9 @@
 #define INCLUDED_LORA_SDR_FFT_DEMOD_IMPL_H
 // #define GRLORA_DEBUG
 // #define GRLORA_MEASUREMENTS
+//#define GRLORA_SNR_MEASUREMENTS_SAVE
+//#define GRLORA_BESSEL_MEASUREMENTS_SAVE
+//#define GRLORA_LLR_MEASUREMENTS_SAVE
 
 #include <lora_sdr/fft_demod.h>
 #include <iostream>
@@ -12,6 +15,7 @@
 #include <lora_sdr/utilities.h>
 #include <lora_sdr/fft_demod.h>
 #include<lora_sdr/utilities.h>
+
 namespace gr {
   namespace lora_sdr {
 
@@ -20,6 +24,9 @@ namespace gr {
     private:
       uint8_t m_sf;           ///< Spreading factor
       uint8_t m_cr;           ///< Coding rate
+      bool m_soft_decoding;   ///< Hard/Soft decoding
+      bool max_log_approx;     ///< use Max-log approximation in LLR formula
+      bool m_new_frame;       ///< To be notify when receive a new frame to estimate SNR
 
       uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
       int CFOint; ///< integer part of the CFO
@@ -30,8 +37,8 @@ namespace gr {
       std::vector<gr_complex> m_dechirped; ///< Dechirped symbol
       std::vector<gr_complex> m_fft;       ///< Result of the FFT
 
-
       std::vector<uint32_t> output;   ///< Stores the value to be outputted once a full bloc has been received
+      std::vector< std::vector<LLR> > LLRs_block; ///< Stores the LLRs to be outputted once a full bloc has been received
       bool is_header;                  ///< Indicate that the first block hasn't been fully received
       uint8_t block_size;             ///< The number of lora symbol in one block
      
@@ -40,6 +47,12 @@ namespace gr {
       #endif
       #ifdef GRLORA_DEBUG
       std::ofstream idx_file;
+      #endif
+      #ifdef GRLORA_SNR_MEASUREMENTS_SAVE
+      std::ofstream SNRestim_file;
+      #endif
+      #ifdef GRLORA_BESSEL_MEASUREMENTS_SAVE
+      std::ofstream bessel_file;
       #endif
 
       /**
@@ -60,8 +73,18 @@ namespace gr {
        */
       void header_cr_handler(pmt::pmt_t cr);
 
+      /**
+       *  \brief  Compute the FFT and fill the class attributes
+       */
+      float* compute_fft_mag(const gr_complex *samples);
+
+      /**
+       *  \brief  Compute the Log-Likelihood Ratios of the SF nbr of bits
+       */
+      std::vector<LLR> get_LLRs(const gr_complex *samples);
+
      public:
-      fft_demod_impl( uint8_t sf, bool impl_head);
+      fft_demod_impl( uint8_t sf, bool impl_head, bool soft_decoding, bool max_log_approx);
       ~fft_demod_impl();
 
       // Where all the action really happens

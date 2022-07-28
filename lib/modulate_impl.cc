@@ -55,6 +55,20 @@ namespace gr
             set_tag_propagation_policy(TPP_DONT);
             set_output_multiple(m_samples_per_symbol);
         }
+        void modulate_impl::set_sf(uint8_t sf){
+            m_sf = sf;
+            m_number_of_bins = (uint32_t)(1u << m_sf);
+            m_os_factor = m_samp_rate / m_bw;
+            m_samples_per_symbol = (uint32_t)(m_number_of_bins*m_os_factor);
+
+
+            m_downchirp.resize(m_samples_per_symbol);
+            m_upchirp.resize(m_samples_per_symbol);
+
+            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf,m_os_factor);
+
+
+        } 
 
         /*
      * Our virtual destructor.
@@ -173,7 +187,9 @@ namespace gr
             {
                 symb_cnt++;
                 frame_cnt++;
+#ifdef GR_LORA_PRINT_INFO              
                 std::cout << "Frame " << frame_cnt << " sent\n";
+#endif
             }
             // if (nitems_to_process)
             //     std::cout << ninput_items[0] << " " << nitems_to_process << " " << output_offset << " " << noutput_items << std::endl;

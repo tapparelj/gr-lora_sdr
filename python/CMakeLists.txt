@@ -31,7 +31,6 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    mu_demod.py
     DESTINATION ${GR_PYTHON_DIR}/lora_sdr
 )
 
@@ -42,9 +41,5 @@ include(GrTest)
 
 set(GR_TEST_TARGET_DEPS gnuradio-lora_sdr)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
-GR_ADD_TEST(qa_mu_detection ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_detection.py)
-GR_ADD_TEST(qa_mu_synchro ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_synchro.py)
-GR_ADD_TEST(qa_partial_ml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_partial_ml.py)
-GR_ADD_TEST(qa_mu_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mu_demod.py)
 GR_ADD_TEST(qa_noise_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_noise_est.py)
 GR_ADD_TEST(qa_frame_src ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_frame_src.py)

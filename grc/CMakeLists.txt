@@ -20,8 +20,8 @@ install(FILES
     lora_sdr_add_crc.block.yml
     lora_sdr_crc_verif.block.yml
     lora_sdr_dewhitening.block.yml
-    lora_sdr_gray_decode.block.yml
-    lora_sdr_gray_enc.block.yml
+    lora_sdr_gray_demap.block.yml
+    lora_sdr_gray_mapping.block.yml
     lora_sdr_hamming_dec.block.yml
     lora_sdr_hamming_enc.block.yml
     lora_sdr_header_decoder.block.yml
@@ -34,11 +34,5 @@ install(FILES
     lora_sdr_data_source.block.yml
     lora_sdr_frame_sync.block.yml
     lora_sdr_deinterleaver.block.yml
-    lora_sdr_mu_detection.block.yml
-    lora_sdr_mu_synchro.block.yml
-    lora_sdr_partial_ml.block.yml
-    lora_sdr_mu_demod.block.yml
-    lora_sdr_noise_est.block.yml
-    lora_sdr_frame_src.block.yml
-    lora_sdr_signal_detector.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora_sdr_payload_id_inc.block.yml DESTINATION share/gnuradio/grc/blocks
 )

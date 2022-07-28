@@ -38,6 +38,9 @@ namespace gr {
      public:
       typedef boost::shared_ptr<interleaver> sptr;
 
+      virtual void set_cr(uint8_t cr)=0;
+      virtual uint8_t get_cr()=0;
+      virtual void set_sf(uint8_t sf)=0;
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::interleaver.
        *

@@ -2,6 +2,7 @@
 #ifndef INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
 #define INCLUDED_LORA_SDR_FRAME_SYNC_IMPL_H
 // #define GRLORA_DEBUG
+// #define GRLORA_PRINT_DEBUG
 // #define GRLORA_SAVE_PRE_DATA //it will save every sample of the packets (preamble + payload)
 #define GRLORA_MEASUREMENTS
 

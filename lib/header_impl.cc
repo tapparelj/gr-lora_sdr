@@ -35,6 +35,14 @@ namespace gr
             m_cnt_header_nibbles = 0;
         }
 
+        void header_impl::set_cr(uint8_t cr){
+            m_cr = cr;
+        }
+
+        uint8_t header_impl::get_cr(){
+            return m_cr;
+        }
+
         /*
      * Our virtual destructor.
      */

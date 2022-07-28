@@ -12,13 +12,15 @@ namespace gr {
     class whitening_impl : public whitening
     {
      private:
+         bool m_is_hex; ///< indicate that the payload is given by a string of hex values
          std::vector<uint8_t> m_payload; ///< store the payload bytes
          std::vector<std::string> payload_str;
          bool m_file_source; ///< indicate that the payload are provided by a file through an input stream
          void msg_handler(pmt::pmt_t message);
+         
 
      public:
-      whitening_impl();
+      whitening_impl(bool is_hex);
       ~whitening_impl();
 
       // Where all the action really happens

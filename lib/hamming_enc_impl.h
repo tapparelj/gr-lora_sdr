@@ -17,6 +17,12 @@ namespace gr {
       hamming_enc_impl(uint8_t cr, uint8_t sf);
       ~hamming_enc_impl();
 
+
+      void set_cr(uint8_t cr);
+      uint8_t get_cr();
+      void set_sf(uint8_t sf);
+
+
       // Where all the action really happens
       int work(
               int noutput_items,

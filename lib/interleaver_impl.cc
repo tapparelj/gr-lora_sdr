@@ -33,6 +33,18 @@ namespace gr
       set_tag_propagation_policy(TPP_DONT);
     }
 
+    void interleaver_impl::set_cr(uint8_t cr){
+      m_cr = cr;
+    } 
+
+    void interleaver_impl::set_sf(uint8_t sf){
+      m_sf = sf;
+    } 
+
+    uint8_t interleaver_impl::get_cr(){
+      return m_cr;
+    } 
+
     /*
      * Our virtual destructor.
      */

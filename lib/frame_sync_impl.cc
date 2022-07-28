@@ -33,7 +33,7 @@ namespace gr {
         
         up_symb_to_use      = 6;
 
-        usFactor = 4;
+        usFactor = (int)m_samp_rate/m_bw;
         lambda_sto = 0;
 
         m_impl_head = impl_head;
@@ -49,13 +49,13 @@ namespace gr {
         m_number_of_bins     = (uint32_t)(1u << m_sf);
         m_samples_per_symbol = (uint32_t)(m_samp_rate * m_number_of_bins/ m_bw);
 
-        m_upchirp.resize(m_samples_per_symbol);
-        m_downchirp.resize(m_samples_per_symbol);
-        preamble_up.resize(n_up*m_samples_per_symbol);
-        CFO_frac_correc.resize(m_samples_per_symbol);
-        symb_corr.resize(m_samples_per_symbol);
+        m_upchirp.resize(m_number_of_bins);
+        m_downchirp.resize(m_number_of_bins);
+        preamble_up.resize(n_up*m_number_of_bins);
+        CFO_frac_correc.resize(m_number_of_bins);
+        symb_corr.resize(m_number_of_bins);
         in_down.resize(m_number_of_bins);
-        preamble_raw.resize(n_up*m_samples_per_symbol);
+        preamble_raw.resize(n_up*m_number_of_bins);
 
         build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
@@ -63,8 +63,8 @@ namespace gr {
         symbol_cnt = 1;
         k_hat = 0;
 
-        cx_in = new kiss_fft_cpx[m_samples_per_symbol];
-        cx_out = new kiss_fft_cpx[m_samples_per_symbol];
+        cx_in = new kiss_fft_cpx[m_number_of_bins];
+        cx_out = new kiss_fft_cpx[m_number_of_bins];
         //register message ports
         message_port_register_in(pmt::mp("frame_info"));
         set_msg_handler(pmt::mp("frame_info"), [this](pmt::pmt_t msg) { this->frame_info_handler(msg); });
@@ -81,7 +81,7 @@ namespace gr {
         #endif
         #ifdef GRLORA_DEBUG
         numb_symbol_to_save=80;//number of symbol per erroneous frame to save
-        last_frame.resize(m_samples_per_symbol*numb_symbol_to_save);
+        last_frame.resize(m_number_of_bins*numb_symbol_to_save);
         samples_file.open("../../matlab/err_symb.txt", std::ios::out | std::ios::trunc );
         #endif
         #ifdef GRLORA_SAVE_PRE_DATA
@@ -97,7 +97,7 @@ namespace gr {
     {}
 
     void frame_sync_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required){
-            ninput_items_required[0] = usFactor*(m_samples_per_symbol+2);
+            ninput_items_required[0] = m_samples_per_symbol+(2*usFactor);
     }
 
     void frame_sync_impl::estimate_CFO(gr_complex* samples){
@@ -105,11 +105,11 @@ namespace gr {
         double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
         std::vector<gr_complex> CFO_frac_correc_aug(up_symb_to_use*m_number_of_bins); ///< CFO frac correction vector
         std::vector<gr_complex> dechirped(up_symb_to_use*m_number_of_bins);
-        kiss_fft_cpx* cx_in_cfo = new kiss_fft_cpx[2*up_symb_to_use*m_samples_per_symbol];
-        kiss_fft_cpx* cx_out_cfo = new kiss_fft_cpx[2*up_symb_to_use*m_samples_per_symbol];
+        kiss_fft_cpx* cx_in_cfo = new kiss_fft_cpx[2*up_symb_to_use*m_number_of_bins];
+        kiss_fft_cpx* cx_out_cfo = new kiss_fft_cpx[2*up_symb_to_use*m_number_of_bins];
 
         float fft_mag_sq[2*up_symb_to_use*m_number_of_bins];
-        kiss_fft_cfg cfg_cfo =  kiss_fft_alloc(2*up_symb_to_use*m_samples_per_symbol,0,0,0);
+        kiss_fft_cfg cfg_cfo =  kiss_fft_alloc(2*up_symb_to_use*m_number_of_bins,0,0,0);
         //create longer downchirp
         std::vector<gr_complex> downchirp_aug(up_symb_to_use*m_number_of_bins);
         for (int i = 0; i < up_symb_to_use; i++) {
@@ -117,10 +117,10 @@ namespace gr {
         }
 
         //Dechirping
-        volk_32fc_x2_multiply_32fc(&dechirped[0],samples,&downchirp_aug[0],up_symb_to_use*m_samples_per_symbol);
+        volk_32fc_x2_multiply_32fc(&dechirped[0],samples,&downchirp_aug[0],up_symb_to_use*m_number_of_bins);
         //prepare FFT
-        for (int i = 0; i < 2*up_symb_to_use*m_samples_per_symbol; i++) {
-            if(i<up_symb_to_use*m_samples_per_symbol){
+        for (int i = 0; i < 2*up_symb_to_use*m_number_of_bins; i++) {
+            if(i<up_symb_to_use*m_number_of_bins){
                 cx_in_cfo[i].r = dechirped[i].real();
                 cx_in_cfo[i].i = dechirped[i].imag();
             }
@@ -132,7 +132,7 @@ namespace gr {
         //do the FFT
         kiss_fft(cfg_cfo,cx_in_cfo,cx_out_cfo);
         // Get magnitude
-        for (uint32_t i = 0u; i < 2*up_symb_to_use*m_samples_per_symbol; i++) {
+        for (uint32_t i = 0u; i < 2*up_symb_to_use*m_number_of_bins; i++) {
             fft_mag_sq[i] = cx_out_cfo[i].r*cx_out_cfo[i].r+cx_out_cfo[i].i*cx_out_cfo[i].i;
         }
         free(cfg_cfo);
@@ -165,19 +165,19 @@ namespace gr {
         std::vector<gr_complex> fft_val(up_symb_to_use*m_number_of_bins);
 
         std::vector<gr_complex> dechirped(m_number_of_bins);
-        kiss_fft_cpx* cx_in_cfo = new kiss_fft_cpx[m_samples_per_symbol];
-        kiss_fft_cpx* cx_out_cfo = new kiss_fft_cpx[m_samples_per_symbol];
+        kiss_fft_cpx* cx_in_cfo = new kiss_fft_cpx[m_number_of_bins];
+        kiss_fft_cpx* cx_out_cfo = new kiss_fft_cpx[m_number_of_bins];
         float fft_mag_sq[m_number_of_bins];
         for (size_t i = 0; i < m_number_of_bins; i++) {
             fft_mag_sq[i] = 0;
         }
-        kiss_fft_cfg cfg_cfo = kiss_fft_alloc(m_samples_per_symbol,0,0,0);
+        kiss_fft_cfg cfg_cfo = kiss_fft_alloc(m_number_of_bins,0,0,0);
 
         for (int i = 0; i < up_symb_to_use; i++) {
             //Dechirping
-            volk_32fc_x2_multiply_32fc(&dechirped[0],&preamble_raw[(m_number_of_bins-k_hat)+m_number_of_bins*i],&m_downchirp[0],m_samples_per_symbol);
+            volk_32fc_x2_multiply_32fc(&dechirped[0],&preamble_raw[(m_number_of_bins-k_hat)+m_number_of_bins*i],&m_downchirp[0],m_number_of_bins);
             //prepare FFT
-            for (int i = 0; i < m_samples_per_symbol; i++) {
+            for (int i = 0; i < m_number_of_bins; i++) {
                 cx_in_cfo[i].r = dechirped[i].real();
                 cx_in_cfo[i].i = dechirped[i].imag();
             }
@@ -185,9 +185,9 @@ namespace gr {
             kiss_fft(cfg_cfo,cx_in_cfo,cx_out_cfo);
             // Get magnitude
 
-            for (uint32_t j = 0u; j < m_samples_per_symbol; j++) {
+            for (uint32_t j = 0u; j < m_number_of_bins; j++) {
                 fft_mag_sq[j] = cx_out_cfo[j].r*cx_out_cfo[j].r+cx_out_cfo[j].i*cx_out_cfo[j].i;
-                fft_val[j+i*m_samples_per_symbol] = gr_complex(cx_out_cfo[j].r, cx_out_cfo[j].i);
+                fft_val[j+i*m_number_of_bins] = gr_complex(cx_out_cfo[j].r, cx_out_cfo[j].i);
             }
             k0[i] = std::max_element(fft_mag_sq, fft_mag_sq + m_number_of_bins) - fft_mag_sq;
 
@@ -211,22 +211,22 @@ namespace gr {
         double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
 
         std::vector<gr_complex> dechirped(m_number_of_bins);
-        kiss_fft_cpx* cx_in_sto = new kiss_fft_cpx[2*m_samples_per_symbol];
-        kiss_fft_cpx* cx_out_sto = new kiss_fft_cpx[2*m_samples_per_symbol];
+        kiss_fft_cpx* cx_in_sto = new kiss_fft_cpx[2*m_number_of_bins];
+        kiss_fft_cpx* cx_out_sto = new kiss_fft_cpx[2*m_number_of_bins];
 
         float fft_mag_sq[2*m_number_of_bins];
         for (size_t i = 0; i < 2*m_number_of_bins; i++) {
             fft_mag_sq[i] = 0;
         }
-        kiss_fft_cfg cfg_sto =  kiss_fft_alloc(2*m_samples_per_symbol,0,0,0);
+        kiss_fft_cfg cfg_sto =  kiss_fft_alloc(2*m_number_of_bins,0,0,0);
 
         for (int i = 0; i < up_symb_to_use; i++) {
             //Dechirping
-            volk_32fc_x2_multiply_32fc(&dechirped[0],&preamble_up[m_number_of_bins*i],&m_downchirp[0],m_samples_per_symbol);
+            volk_32fc_x2_multiply_32fc(&dechirped[0],&preamble_up[m_number_of_bins*i],&m_downchirp[0],m_number_of_bins);
             
             //prepare FFT
-            for (int i = 0; i < 2*m_samples_per_symbol; i++) {
-                if(i<m_samples_per_symbol){
+            for (int i = 0; i < 2*m_number_of_bins; i++) {
+                if(i<m_number_of_bins){
                     cx_in_sto[i].r = dechirped[i].real();
                     cx_in_sto[i].i = dechirped[i].imag();
                 }
@@ -238,7 +238,7 @@ namespace gr {
             //do the FFT
             kiss_fft(cfg_sto,cx_in_sto,cx_out_sto);
             // Get magnitude
-            for (uint32_t i = 0u; i < 2*m_samples_per_symbol; i++) {
+            for (uint32_t i = 0u; i < 2*m_number_of_bins; i++) {
                 
                 fft_mag_sq[i] = cx_out_sto[i].r*cx_out_sto[i].r+cx_out_sto[i].i*cx_out_sto[i].i;
             }
@@ -270,12 +270,12 @@ namespace gr {
         float fft_mag[m_number_of_bins];
         std::vector<gr_complex> dechirped(m_number_of_bins);
 
-        kiss_fft_cfg cfg =  kiss_fft_alloc(m_samples_per_symbol,0,0,0);
+        kiss_fft_cfg cfg =  kiss_fft_alloc(m_number_of_bins,0,0,0);
 
         // Multiply with ideal downchirp
-        volk_32fc_x2_multiply_32fc(&dechirped[0],samples,ref_chirp,m_samples_per_symbol);
+        volk_32fc_x2_multiply_32fc(&dechirped[0],samples,ref_chirp,m_number_of_bins);
 
-        for (int i = 0; i < m_samples_per_symbol; i++) {
+        for (int i = 0; i < m_number_of_bins; i++) {
           cx_in[i].r = dechirped[i].real();
           cx_in[i].i = dechirped[i].imag();
         }
@@ -332,25 +332,27 @@ namespace gr {
     {
         const gr_complex *in = (const gr_complex *) input_items[0];
         gr_complex *out = (gr_complex *) output_items[0];
-        int items_to_output=0;
-
+        int items_to_output = 0;
         //downsampling
         for (int ii=0;ii<m_number_of_bins;ii++)
-            in_down[ii]=in[(int)(usFactor-1+usFactor*ii-round(lambda_sto*usFactor))];
+            in_down[ii] = in[(int)(usFactor-1+usFactor*ii-round(lambda_sto*usFactor))];
         switch (m_state) {
           case DETECT: {
               bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
+            //  if(symbol_cnt > 2){
+              //    std::cout << "upchirp :" << symbol_cnt <<"  "<< bin_idx_new <<std::endl;
+              //} 
               if(std::abs(bin_idx_new-bin_idx)<=1 && bin_idx_new!=-1){//look for consecutive reference upchirps(with a margin of ±1)
                   if(symbol_cnt==1)//we should also add the first symbol value
                       k_hat+=bin_idx;
 
                   k_hat+=bin_idx_new;
-                  memcpy(&preamble_raw[m_samples_per_symbol*symbol_cnt],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+                  memcpy(&preamble_raw[m_number_of_bins*symbol_cnt],&in_down[0],m_number_of_bins*sizeof(gr_complex));
                   symbol_cnt++;
               }
               else{
-                  memcpy(&preamble_raw[0],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+                  memcpy(&preamble_raw[0],&in_down[0],m_number_of_bins*sizeof(gr_complex));
                   symbol_cnt = 1;
                   k_hat = 0;
               }
@@ -363,10 +365,12 @@ namespace gr {
                   k_hat = round(k_hat/(n_up-1));
 
                   //perform the coarse synchronization
-                  items_to_consume = usFactor*(m_samples_per_symbol-k_hat);
+                  items_to_consume = usFactor*(m_number_of_bins-k_hat);
+                  
               }
-              else
-                  items_to_consume = usFactor*m_samples_per_symbol;
+              else{
+                  items_to_consume = m_samples_per_symbol;
+              }
               items_to_output = 0;
               break;
           }
@@ -380,9 +384,9 @@ namespace gr {
                   }
                   cfo_sto_est=true;
               }
-              items_to_consume = usFactor*m_samples_per_symbol;
+              items_to_consume = m_samples_per_symbol;
               //apply cfo correction
-              volk_32fc_x2_multiply_32fc(&symb_corr[0],&in_down[0],&CFO_frac_correc[0],m_samples_per_symbol);
+              volk_32fc_x2_multiply_32fc(&symb_corr[0],&in_down[0],&CFO_frac_correc[0],m_number_of_bins);
 
               bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
               switch (symbol_cnt) {
@@ -392,7 +396,9 @@ namespace gr {
                         if(bin_idx==0||bin_idx==1||bin_idx==m_number_of_bins-1){// look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         }
                         else if (abs(bin_idx-(int32_t)m_sync_words[0])>1){ //wrong network identifier
-
+#ifdef GRLORA_PRINT_DEBUG 
+                            std::cout<<"NETID 1: "<<bin_idx<<std::endl; 
+#endif
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;
@@ -407,7 +413,9 @@ namespace gr {
                     }
                     case NET_ID2:{                        
                         if (abs(bin_idx-(int32_t)m_sync_words[1])>1){ //wrong network identifier
-
+#ifdef GRLORA_PRINT_DEBUG 
+                            std::cout<<"NETID 2: "<<bin_idx<<std::endl; 
+#endif
                             m_state = DETECT;
                             symbol_cnt = 1;
                             items_to_output = 0;
@@ -468,7 +476,7 @@ namespace gr {
                         add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"),frame_info);
 
                         m_received_head = false;
-                        items_to_consume = usFactor*m_samples_per_symbol/4+usFactor*CFOint;
+                        items_to_consume = m_samples_per_symbol/4+usFactor*CFOint;
                         symbol_cnt = 0;
                         
                         m_state = FRAC_CFO_CORREC;
@@ -492,15 +500,15 @@ namespace gr {
                   payload_file<<std::endl;
                   #endif
                   //apply fractional cfo correction
-                  volk_32fc_x2_multiply_32fc(out,&in_down[0],&CFO_frac_correc[0],m_samples_per_symbol);
+                  volk_32fc_x2_multiply_32fc(out,&in_down[0],&CFO_frac_correc[0],m_number_of_bins);
                   #ifdef GRLORA_MEASUREMENTS
                   sync_log<< std::fixed<<std::setprecision(10)<<determine_energy(&in_down[0])<<",";
                   #endif
                   #ifdef GRLORA_DEBUG
                   if(symbol_cnt<numb_symbol_to_save)
-                    memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_samples_per_symbol*sizeof(gr_complex));
+                    memcpy(&last_frame[symbol_cnt*m_number_of_bins],&in_down[0],m_number_of_bins*sizeof(gr_complex));
                   #endif
-                  items_to_consume = usFactor*m_samples_per_symbol;
+                  items_to_consume = m_samples_per_symbol;
                   items_to_output = 1;
                   symbol_cnt++;
               }
@@ -511,7 +519,7 @@ namespace gr {
               else{
                       m_state = DETECT;
                       symbol_cnt = 1;
-                      items_to_consume = usFactor*m_samples_per_symbol;
+                      items_to_consume = m_samples_per_symbol;
                       items_to_output = 0;
                       k_hat = 0;
                       lambda_sto = 0;

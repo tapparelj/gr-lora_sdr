@@ -2,7 +2,6 @@
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
 #include <lora_sdr/crc_verif.h>
-#include <lora_sdr/utilities.h>
 
 // #define GRLORA_DEBUG
 
@@ -19,6 +18,7 @@ namespace gr {
         char m_char;///< A new char of the payload
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
+        bool print_rx_msg;  ///< print received message in terminal or not
 
         uint32_t cnt=0;///< count the number of frame
 
@@ -41,7 +41,7 @@ namespace gr {
         unsigned int crc16(uint8_t* data, uint32_t len);
 
      public:
-      crc_verif_impl( );
+      crc_verif_impl(bool print_rx_msg);
       ~crc_verif_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

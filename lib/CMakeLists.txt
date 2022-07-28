@@ -28,8 +28,8 @@ list(APPEND lora_sdr_sources
     add_crc_impl.cc
     crc_verif_impl.cc
     dewhitening_impl.cc
-    gray_decode_impl.cc
-    gray_enc_impl.cc
+    gray_demap_impl.cc
+    gray_mapping_impl.cc
     hamming_dec_impl.cc
     hamming_enc_impl.cc
     header_decoder_impl.cc
@@ -43,12 +43,7 @@ list(APPEND lora_sdr_sources
     data_source_impl.cc
     frame_sync_impl.cc
     deinterleaver_impl.cc
-    mu_detection_impl.cc
-    mu_synchro_impl.cc
-    partial_ml_impl.cc
-    noise_est_impl.cc
-    frame_src_impl.cc
-    signal_detector_impl.cc )
+    payload_id_inc_impl.cc )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)
 if(NOT lora_sdr_sources)

@@ -3,7 +3,10 @@
 #endif
 
 #include <gnuradio/io_signature.h>
+#include <chrono>
 #include "crc_verif_impl.h"
+
+#include <lora_sdr/utilities.h> // for print color
 
 namespace gr
 {
@@ -11,18 +14,19 @@ namespace gr
     {
 
         crc_verif::sptr
-        crc_verif::make()
+        crc_verif::make(bool print_rx_msg)
         {
-            return gnuradio::get_initial_sptr(new crc_verif_impl());
+            return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg));
         }
 
         /*
      * The private constructor
      */
-        crc_verif_impl::crc_verif_impl()
+        crc_verif_impl::crc_verif_impl(bool print_rx_msg)
             : gr::block("crc_verif",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
-                        gr::io_signature::make(0, 1, sizeof(uint8_t)))
+                        gr::io_signature::make(0, 1, sizeof(uint8_t))),
+            print_rx_msg(print_rx_msg)
         {
             message_port_register_out(pmt::mp("msg"));
         }
@@ -61,7 +65,6 @@ namespace gr
             }
             return crc;
         }
-
 
         int crc_verif_impl::general_work(int noutput_items,
                                          gr_vector_int &ninput_items,
@@ -128,16 +131,18 @@ namespace gr
                         if(output_items.size())
                             out[i] = in[i];
                     }
-                    
                     cnt++;
-                    std::cout << "msg "<<cnt<<": " << message_str << std::endl
-                              << std::endl;
-                    if (!(in[m_payload_len] + (in[m_payload_len + 1] << 8) - m_crc))
-                        std::cout << "CRC valid!" << std::endl
-                                  << std::endl;
-                    else
-                        std::cout << RED << "CRC invalid" << RESET << std::endl
-                                  << std::endl;
+
+                    if (print_rx_msg) {
+                        std::cout << "rx msg: " << message_str << std::endl << std::endl;
+
+                        if (!(in[m_payload_len] + (in[m_payload_len + 1] << 8) - m_crc))
+                            std::cout << "CRC valid!" << std::endl
+                                    << std::endl;
+                        else
+                            std::cout << RED << "CRC invalid" << RESET << std::endl
+                                    << std::endl;
+                    }
                     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
                     consume_each(m_payload_len+2);
                     return m_payload_len;
@@ -155,7 +160,8 @@ namespace gr
                         out[i] = in[i];
                 }
                 cnt++;
-                std::cout << "msg "<<cnt<<": " << message_str << std::endl;
+                if (print_rx_msg)
+                    std::cout << "rx msg: " << message_str << std::endl;
                 message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
                 consume_each(m_payload_len);
                 return m_payload_len;

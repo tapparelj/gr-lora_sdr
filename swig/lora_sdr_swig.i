@@ -11,8 +11,8 @@
 #include "lora_sdr/add_crc.h"
 #include "lora_sdr/crc_verif.h"
 #include "lora_sdr/dewhitening.h"
-#include "lora_sdr/gray_decode.h"
-#include "lora_sdr/gray_enc.h"
+#include "lora_sdr/gray_demap.h"
+#include "lora_sdr/gray_mapping.h"
 #include "lora_sdr/hamming_dec.h"
 #include "lora_sdr/hamming_enc.h"
 #include "lora_sdr/header_decoder.h"
@@ -25,12 +25,7 @@
 #include "lora_sdr/data_source.h"
 #include "lora_sdr/frame_sync.h"
 #include "lora_sdr/deinterleaver.h"
-#include "lora_sdr/mu_detection.h"
-#include "lora_sdr/mu_synchro.h"
-#include "lora_sdr/partial_ml.h"
-#include "lora_sdr/noise_est.h"
-#include "lora_sdr/frame_src.h"
-#include "lora_sdr/signal_detector.h"
+#include "lora_sdr/payload_id_inc.h"
 %}
 
 
@@ -42,10 +37,10 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, crc_verif);
 %include "lora_sdr/dewhitening.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, dewhitening);
 
-%include "lora_sdr/gray_decode.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, gray_decode);
-%include "lora_sdr/gray_enc.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, gray_enc);
+%include "lora_sdr/gray_demap.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, gray_demap);
+%include "lora_sdr/gray_mapping.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, gray_mapping);
 %include "lora_sdr/hamming_dec.h"
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, hamming_dec);
 %include "lora_sdr/hamming_enc.h"
@@ -76,17 +71,5 @@ GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_sync);
 GR_SWIG_BLOCK_MAGIC2(lora_sdr, deinterleaver);
 
 
-%include "lora_sdr/mu_detection.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, mu_detection);
-
-%include "lora_sdr/mu_synchro.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, mu_synchro);
-%include "lora_sdr/partial_ml.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, partial_ml);
-
-%include "lora_sdr/noise_est.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, noise_est);
-%include "lora_sdr/frame_src.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, frame_src);
-%include "lora_sdr/signal_detector.h"
-GR_SWIG_BLOCK_MAGIC2(lora_sdr, signal_detector);
+%include "lora_sdr/payload_id_inc.h"
+GR_SWIG_BLOCK_MAGIC2(lora_sdr, payload_id_inc);

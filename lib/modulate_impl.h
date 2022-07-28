@@ -8,6 +8,8 @@
 
 #include <lora_sdr/utilities.h>
 
+// #define GR_LORA_PRINT_INFO
+
 namespace gr {
   namespace lora_sdr {
 
@@ -26,12 +28,9 @@ namespace gr {
         int m_inter_frame_padding; ///< length in samples of zero append to each frame
 
         int m_frame_len;///< leng of the frame in number of items
-       
 
         std::vector<gr_complex> m_upchirp; ///< reference upchirp
         std::vector<gr_complex> m_downchirp; ///< reference downchirp
-
-        
 
         uint n_up; ///< number of upchirps in the preamble
         int32_t symb_cnt; ///< counter of the number of lora symbols sent
@@ -43,6 +42,8 @@ namespace gr {
      public:
       modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words);
       ~modulate_impl();
+
+      void set_sf(uint8_t sf);
 
       // Where all the action really happens
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::hamming_dec::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(bool soft_decoding);
     };
 
   } // namespace lora_sdr

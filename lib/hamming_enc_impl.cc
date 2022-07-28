@@ -30,6 +30,20 @@ namespace gr
       set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
+
+        void hamming_enc_impl::set_cr(uint8_t cr){
+            m_cr = cr;
+        } 
+
+      void hamming_enc_impl::set_sf(uint8_t sf){
+          m_sf = sf;
+      } 
+
+        uint8_t hamming_enc_impl::get_cr(){
+            return m_cr;
+        } 
+
+
     /*
      * Our virtual destructor.
      */

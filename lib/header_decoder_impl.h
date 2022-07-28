@@ -13,6 +13,7 @@ namespace gr {
         const uint8_t header_len = 5; ///< size of the header in nibbles
 
         bool m_impl_header;///< Specify if we use an explicit or implicit header
+        bool m_print_header; ///< print or not header information in terminal
         uint8_t m_payload_len;///< The payload length in bytes
         bool m_has_crc;///< Specify the usage of a payload CRC
         uint8_t m_cr;///< Coding rate
@@ -33,7 +34,7 @@ namespace gr {
         void publish_frame_info(int cr, int pay_len, int crc, int err);
 
      public:
-      header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc);
+      header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header);
       ~header_decoder_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

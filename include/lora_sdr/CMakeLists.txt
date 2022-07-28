@@ -25,8 +25,8 @@ install(FILES
     add_crc.h
     crc_verif.h
     dewhitening.h
-    gray_decode.h
-    gray_enc.h
+    gray_demap.h
+    gray_mapping.h
     hamming_dec.h
     hamming_enc.h
     header_decoder.h
@@ -39,10 +39,5 @@ install(FILES
     data_source.h
     frame_sync.h
     deinterleaver.h
-    mu_detection.h
-    mu_synchro.h
-    partial_ml.h
-    noise_est.h
-    frame_src.h
-    signal_detector.h DESTINATION include/lora_sdr
+    payload_id_inc.h DESTINATION include/lora_sdr
 )
