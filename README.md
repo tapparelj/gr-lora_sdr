@@ -10,9 +10,10 @@ This is the fully-functional GNU Radio software-defined radio (SDR) implementati
 In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose all the parameters of the transmission, such as the spreading factor, the coding rate, the bandwidth, the sync word, the presence of an explicit header and CRC.
 
 -   In the Tx chain, the implementation contains all the main blocks of the LoRa transceiver: the header- and the CRC-insertion blocks, the whitening block, the Hamming encoder block, the interleaver block, the Gray demapping block, and the modulation block.
-![image](https://user-images.githubusercontent.com/66671413/114680408-718af580-9d0d-11eb-960b-61afa49bee48.png)
+![lora_tx_usrp](https://user-images.githubusercontent.com/66671413/181521190-03d16d5e-5029-48a5-b57d-9f1b4f7ccd01.png)
+
 -   On the receiver side there is the packet synchronization block, which performs all the necessary tasks needed for the synchronization, such as the necessary STO and CFO estimation and correction. The demodulation block follows, along with the Gray mapping block, the deinterleaving block, the Hamming decoder block and the dewhitening block, as well as a CRC verification block.
-![image](https://user-images.githubusercontent.com/66671413/114680801-d5152300-9d0d-11eb-84eb-2a9889464cee.png)
+![lora_rx_usrp](https://user-images.githubusercontent.com/66671413/181521275-159a2671-f474-41ba-b924-cabf1cd63e40.png)
 
 -   The implementation can be used for fully end-to-end experimental performance results of a LoRa SDR receiver at low SNRs.
 
