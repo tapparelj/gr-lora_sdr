@@ -1,8 +1,8 @@
 #ifndef INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 #define INCLUDED_LORA_SDR_DATA_SOURCE_IMPL_H
 
-#include <lora_sdr/data_source.h>
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/data_source.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr {
   namespace lora_sdr {

@@ -23,7 +23,7 @@ outputs:
     dtype: int
 
 templates:
-    imports: import lora_sdr
+    imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.interleaver(${cr}, ${sf})
     callbacks:
         - set_cr(${cr})

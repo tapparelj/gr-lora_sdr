@@ -4,8 +4,8 @@
 #define INCLUDED_LORA_WHITENING_IMPL_H
 
 
-#include <lora_sdr/whitening.h>
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/whitening.h>
+#include <gnuradio/lora_sdr/utilities.h>
 namespace gr {
   namespace lora_sdr {
 

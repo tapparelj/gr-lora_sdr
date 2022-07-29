@@ -2,7 +2,7 @@
 #define INCLUDED_LORA_DEINTERLEAVER_IMPL_H
 
 // #define GRLORA_DEBUG
-#include <lora_sdr/deinterleaver.h>
+#include <gnuradio/lora_sdr/deinterleaver.h>
 
 namespace gr {
   namespace lora_sdr {

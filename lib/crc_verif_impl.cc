@@ -6,7 +6,7 @@
 #include <chrono>
 #include "crc_verif_impl.h"
 
-#include <lora_sdr/utilities.h> // for print color
+#include <gnuradio/lora_sdr/utilities.h> // for print color
 
 namespace gr
 {

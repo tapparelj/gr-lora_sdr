@@ -7,14 +7,14 @@
 //#define GRLORA_BESSEL_MEASUREMENTS_SAVE
 //#define GRLORA_LLR_MEASUREMENTS_SAVE
 
-#include <lora_sdr/fft_demod.h>
+#include <gnuradio/lora_sdr/fft_demod.h>
 #include <iostream>
 #include <fstream>
 #include <volk/volk.h>
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/utilities.h>
-#include <lora_sdr/fft_demod.h>
-#include<lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/fft_demod.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr {
   namespace lora_sdr {

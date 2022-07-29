@@ -3,7 +3,7 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 #include "gray_mapping_impl.h"
 

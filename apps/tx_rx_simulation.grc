@@ -1,6 +1,7 @@
 options:
   parameters:
     author: ''
+    catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
     comment: ''
@@ -173,7 +174,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/jtappare/Documents/github/gr-lora_sdr/data/GRC_default/example_tx_source.txt
+    file: /home/hydra/gnuradio/src/modules/gr-lora_sdr.new/README.md
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -250,7 +251,6 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: filename_rx_log
     maxoutbuf: '0'
     minoutbuf: '0'
     print_rx_msg: 'True'
@@ -512,3 +512,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: v3.11.0.0git-207-gcaa7e7f1

@@ -21,7 +21,7 @@
 #ifndef INCLUDED_LORA_SDR_PAYLOAD_ID_INC_IMPL_H
 #define INCLUDED_LORA_SDR_PAYLOAD_ID_INC_IMPL_H
 
-#include <lora_sdr/payload_id_inc.h>
+#include <gnuradio/lora_sdr/payload_id_inc.h>
 
 namespace gr {
   namespace lora_sdr {

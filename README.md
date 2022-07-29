@@ -39,10 +39,9 @@ J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
 ## Prerequisites
-- Gnuradio 3.8.2
+- Gnuradio 3.10/3.11
 - python 3
 - cmake
-- swig
 - libvolk
 - Boost
 - UHD

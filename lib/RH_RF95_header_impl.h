@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_SDR_RH_RF95_HEADER_IMPL_H
 #define INCLUDED_LORA_SDR_RH_RF95_HEADER_IMPL_H
 
-#include <lora_sdr/RH_RF95_header.h>
+#include <gnuradio/lora_sdr/RH_RF95_header.h>
 
 namespace gr {
   namespace lora_sdr {
