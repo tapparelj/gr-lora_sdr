@@ -2,52 +2,44 @@
 
 id: lora_sdr_header
 label: Add header
-category: "[LoRa]/Tx"
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 parameters:
-  - id: impl_head
+-   id: impl_head
     label: Impl_head
     dtype: bool
-  - id: has_crc
+-   id: has_crc
     label: Has_crc
     dtype: bool
-    default: "False"
-  - id: cr
-    label: Cr
+    default: 'False'
+-   id: cr
+    label: CR
     dtype: int
-    default: "3"
-
-asserts:
-  - ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
+    default: 'cr'
 
 inputs:
-  - domain: stream
+-   domain: stream
     dtype: byte
 
 outputs:
-  - domain: stream
+-   domain: stream
     dtype: byte
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.header(${impl_head}, ${has_crc}, ${cr})
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.header(${impl_head}, ${has_crc}, ${cr})
+    callbacks:
+        - set_cr(${cr})
 
-cpp_templates:
-  includes: ["#include <lora_sdr/header.h>"]
-  declarations: "lora_sdr::header::sptr ${id};"
-  make: "this->${id} = lora_sdr::header::make(${impl_head}, ${has_crc}, ${cr});"
-  link: ["gnuradio-lora_sdr"]
 documentation: |-
-  Add the explicit header in the beginning of a frame if this mode is specified.
-      Parameters:
-          impl_head: indicate to use the implicit header mode (explicit otherwise)
-          has_crc: indicate the presence of a payload crc
-          CR: coding rate
-      Input:
-          in: stream of payload nibbles
-          msg: payload as a string
-      Output:
-          out: stream of header and payload nibbles
+    Add the explicit header in the beginning of a frame if this mode is specified.
+        Parameters:
+            impl_head: indicate to use the implicit header mode (explicit otherwise)
+            has_crc: indicate the presence of a payload crc
+            CR: coding rate
+        Input:
+            in: stream of payload nibbles
+        Output:
+            out: stream of header and payload nibbles
 
 file_format: 1

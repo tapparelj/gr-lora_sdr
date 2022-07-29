@@ -1,11 +1,10 @@
 #ifndef INCLUDED_LORA_CRC_VERIF_IMPL_H
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
-#include <lora_sdr/crc_verif.h>
-#include "helpers.h"
+#include <gnuradio/lora_sdr/crc_verif.h>
 
-//#define  GRLORA_DEBUGV
-#define GRLORA_DEBUG
+// #define GRLORA_DEBUG
+
 namespace gr {
   namespace lora_sdr {
 
@@ -19,14 +18,10 @@ namespace gr {
         char m_char;///< A new char of the payload
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
-        std::chrono::high_resolution_clock::time_point t1;
-        /**
-         * @brief Boolean value to tell if we should close the program if "work_done" signal is received
-         * 
-         */
-        bool m_exit;
+        bool print_rx_msg;  ///< print received message in terminal or not
 
         uint32_t cnt=0;///< count the number of frame
+
         /**
          *  \brief  Handles the payload length received from the header_decoder block.
          */
@@ -46,7 +41,7 @@ namespace gr {
         unsigned int crc16(uint8_t* data, uint32_t len);
 
      public:
-      crc_verif_impl(bool exit);
+      crc_verif_impl(bool print_rx_msg);
       ~crc_verif_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

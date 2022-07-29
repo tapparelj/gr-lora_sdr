@@ -1,149 +1,60 @@
 #ifndef INCLUDED_LORA_MODULATE_IMPL_H
 #define INCLUDED_LORA_MODULATE_IMPL_H
 
-#include <fstream>
+#include <gnuradio/lora_sdr/modulate.h>
 #include <gnuradio/io_signature.h>
 #include <iostream>
-#include <lora_sdr/modulate.h>
+#include <fstream>
 
-#include "helpers.h"
+#include <gnuradio/lora_sdr/utilities.h>
+
+// #define GR_LORA_PRINT_INFO
 
 namespace gr {
-namespace lora_sdr {
+  namespace lora_sdr {
 
-class modulate_impl : public modulate {
-private:
-  /**
-   * @briefTransmission spreading factor
-   *
-   */
-  uint8_t m_sf;
-  /**
-   * @brief Transmission sampling rate
-   *
-   */
-  uint32_t m_samp_rate;
+    class modulate_impl : public modulate
+    {
+     private:
+        uint8_t m_sf; ///< Transmission spreading factor
+        uint32_t m_samp_rate; ///< Transmission sampling rate
+        uint32_t m_bw; ///< Transmission bandwidth (Works only for samp_rate=bw)
+        uint32_t m_number_of_bins; ///< number of bin per loar symbol
+        uint32_t m_samples_per_symbol; ///< samples per symbols(Works only for 2^sf)
+        std::vector<uint16_t> m_sync_words; ///< sync words (network id) 
 
-  /**
-   * @brief Transmission bandwidth (Works only for samp_rate=bw)
-   *
-   */
-  uint32_t m_bw;
+        int m_os_factor; ///< ovesampling factor based on sampling rate and bandwidth
 
-  /**
-   * @brief number of bin per loar symbol
-   *
-   */
-  uint32_t m_number_of_bins;
+        int m_inter_frame_padding; ///< length in samples of zero append to each frame
 
-  /**
-   * @brief lora symbols per second
-   *
-   */
-  double m_symbols_per_second;
+        int m_frame_len;///< leng of the frame in number of items
 
-  /**
-   * @brief samples per symbols(Works only for 2^sf)
-   *
-   */
-  uint32_t m_samples_per_symbol;
+        std::vector<gr_complex> m_upchirp; ///< reference upchirp
+        std::vector<gr_complex> m_downchirp; ///< reference downchirp
 
-  /**
-   * @brief sync words (network id)
-   *
-   */
-  std::vector<uint16_t> m_sync_words;
+        uint n_up; ///< number of upchirps in the preamble
+        int32_t symb_cnt; ///< counter of the number of lora symbols sent
+        uint32_t preamb_symb_cnt; ///< counter of the number of preamble symbols output
+        uint32_t padd_cnt; ///< counter of the number of null symbols output after each frame
+        uint64_t frame_cnt; ///< counter of the number of frame sent
 
-  /**
-   * @brief length in samples of zero append to each frame
-   *
-   */
-  int m_inter_frame_padding;
 
-  /**
-   * @brief length of the frame in number of items
-   *
-   */
-  int m_frame_len;
+     public:
+      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words);
+      ~modulate_impl();
 
-  /**
-   * @briefreference upchirp
-   *
-   */
-  std::vector<gr_complex> m_upchirp;
+      void set_sf(uint8_t sf);
 
-  /**
-   * @brief reference downchirp
-   *
-   */
-  std::vector<gr_complex> m_downchirp;
+      // Where all the action really happens
+      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-  /**
-   * @brief number of upchirps in the preamble
-   *
-   */
-  uint n_up;
+      int general_work(int noutput_items,
+           gr_vector_int &ninput_items,
+           gr_vector_const_void_star &input_items,
+           gr_vector_void_star &output_items);
+    };
 
-  /**
-   * @brief counter of the number of lora symbols sent
-   *
-   */
-  uint32_t symb_cnt;
-
-  /**
-   * @brief  counter of the number of preamble symbols output
-   *
-   */
-  uint32_t preamb_symb_cnt;
-
-  /**
-   * @brief counter of the number of null symbols output after each frame
-   *
-   */
-  uint32_t padd_cnt;
-
-public:
-  /**
-   * @brief Construct a new modulate impl object
-   *
-   * @param sf
-   * @param samp_rate
-   * @param bw
-   * @param sync_words
-   * @param create_zeros
-   */
-  modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw,
-                std::vector<uint16_t> sync_words, bool create_zeros);
-
-  /**
-   * @brief Destroy the modulate impl object
-   *
-   */
-  ~modulate_impl();
-
-  /**
-   * @brief
-   *
-   * @param noutput_items
-   * @param ninput_items_required
-   */
-  void forecast(int noutput_items, gr_vector_int &ninput_items_required);
-
-  /**
-   * @brief
-   *
-   * @param noutput_items
-   * @param ninput_items
-   * @param input_items
-   * @param output_items
-   * @return int
-   */
-  int general_work(int noutput_items, gr_vector_int &ninput_items,
-                   gr_vector_const_void_star &input_items,
-                   gr_vector_void_star &output_items);
-};
-
-} // namespace lora_sdr
+  } // namespace lora
 } // namespace gr
 
 #endif /* INCLUDED_LORA_MODULATE_IMPL_H */

@@ -2,41 +2,39 @@
 
 id: lora_sdr_deinterleaver
 label: Deinterleaver
-category: "[LoRa]/Rx"
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
-  - id: sf
+-   id: sf
     label: Sf
     dtype: int
+-   id: soft_decoding
+    label: Soft_Decoding
+    dtype: bool
+    default: 'soft_decoding'
+    options: [False, True]
 
 inputs:
-  - domain: stream
-    dtype: int
+-   domain: stream
+    dtype: ${ 'f64' if soft_decoding else 'int'}
+    vlen: ${ sf if soft_decoding else 1}
 
 outputs:
-  - domain: stream
-    dtype: byte
+-   domain: stream
+    dtype: ${ 'f64' if soft_decoding else 'byte'}
+    vlen: ${ 8 if soft_decoding else 1}
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.deinterleaver(${sf})
-
-cpp_templates:
-  includes: ["#include <lora_sdr/deinterleaver.h>"]
-  declarations: "lora_sdr::deinterleaver.::sptr ${id};"
-  make: "this->${id} = lora_sdr::deinterleaver.::make(${sf});"
-  link: ["gnuradio-lora_sdr"]
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.deinterleaver(${sf}, ${soft_decoding})
 
 documentation: |-
-  Deinterleave the received codewords.
-      Parameters:
-          sf: spreading factor
-      Input:
-          in: stream of received (gray demapped) decimal values
-          new_frame: begining of a new frame
-          CR: coding rate
-      Output:
-          out: stream of deinterleaved codewords (one per byte)
+    Deinterleave the received codewords.
+        Parameters:
+            sf: spreading factor
+        Input:
+            in: stream of received (gray demapped) decimal values
+        Output:
+            out: stream of deinterleaved codewords (one per byte)
 
 file_format: 1

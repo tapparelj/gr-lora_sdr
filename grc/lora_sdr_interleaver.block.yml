@@ -2,48 +2,41 @@
 
 id: lora_sdr_interleaver
 label: Interleaver
-category: "[LoRa]/Tx"
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 parameters:
-  - id: cr
-    label: Cr
+-   id: cr
+    label: CR
     dtype: int
-  - id: sf
-    label: Sf
+    default: 'cr'
+-   id: sf
+    label: SF
     dtype: int
+    default: 'sf'
 
 inputs:
-  - domain: stream
+-   domain: stream
     dtype: byte
 
-asserts:
-  - ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
-  - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
-
 outputs:
-  - domain: stream
+-   domain: stream
     dtype: int
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.interleaver(${cr}, ${sf})
-
-cpp_templates:
-  includes: ["#include <lora_sdr/interleaver.h>"]
-  declarations: "lora_sdr::interleaver::sptr ${id};"
-  make: "this->${id} = lora_sdr::interleaver::make(${cr}, ${sf});"
-  link: ["gnuradio-lora_sdr"]
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.interleaver(${cr}, ${sf})
+    callbacks:
+        - set_cr(${cr})
+        - set_sf(${sf})
 
 documentation: |-
-  Interleaves multiple sf codewords together
-      Parameters:
-          cr: coding rate
-          sf: spreading factor
-      Input:
-          in: stream of bytes containing a codeword each
-          msg: payload as a string
-      Output:
-          out: stream of interleaved codewords as decimal values
+    Interleaves 'sf' codewords together following a diagonal interleaving pattern
+        Parameters:
+            CR: coding rate
+            SF: spreading factor
+        Input:
+            in: stream of bytes containing a codeword each
+        Output:
+            out: stream of interleaved codewords as decimal values
 
 file_format: 1

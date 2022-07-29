@@ -1,0 +1,26 @@
+id: lora_sdr_payload_id_inc
+label: payload id inc
+category: '[LoRa_TX]'
+templates:
+  imports: import gnuradio.lora_sdr as lora_sdr
+  make: lora_sdr.payload_id_inc(${separator})
+parameters:
+- id: separator
+  label: Separator
+  dtype: string
+  default: ':'
+inputs: 
+-   domain: message
+    id: msg_in
+outputs: 
+-   domain: message
+    id: msg_out
+documentation: |-
+  Increment the number following the separator by one and output it as a new message.
+    Parameters:
+      Separator: the string separating the payload from the frame number. It should be unique in the meassage!
+    Input:
+            msg_in: payload as a string
+        Output:
+            msg_out: payload with ending index incremented by one
+file_format: 1

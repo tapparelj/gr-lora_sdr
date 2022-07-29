@@ -1,7 +1,0 @@
-[submodule "testcase-generator"]
-	path = testcase-generator
-	url = git@github.com:martynvdijke/gr-lora_sdr-testcase-generator.git
-[submodule "lora_profiler"]
-	path = lora_profiler
-	url = git@github.com:martynvdijke/gr-lora_sdr-profiler.git
-

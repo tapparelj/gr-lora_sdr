@@ -2,62 +2,60 @@
 
 id: lora_sdr_header_decoder
 label: Header decoder
-category: "[LoRa]/Rx"
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
-  - id: impl_head
+-   id: impl_head
     label: Impl_head
     dtype: bool
-  - id: cr
-    label: Cr
+-   id: print_header
+    label: print_header 
+    dtype: enum
+    options: ['True','False']
+    option_labels: [ 'Yes','No']
+-   id: cr
+    label: CR
     dtype: int
-    default: "3"
-  - id: pay_len
+    default: '3'
+    hide: ${ 'none' if impl_head else 'all' }
+-   id: pay_len
     label: Pay_len
     dtype: int
-    default: "255"
-  - id: has_crc
+    default: '255'
+    hide: ${ 'none' if impl_head else 'all' }
+-   id: has_crc
     label: Has_crc
     dtype: bool
-    default: "False"
+    default: 'False'
+    hide: ${ 'none' if impl_head else 'all' }
 
-asserts:
-  - ${ cr ==0 or cr ==2 or cr ==3 or cr ==4 }
 
 inputs:
-  - domain: stream
+-   domain: stream
     dtype: byte
 
 outputs:
-  - domain: stream
+-   domain: stream
     dtype: byte
-  - domain: message
+-   domain: message
     id: frame_info
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.header_decoder(${impl_head}, ${cr}, ${pay_len}, ${has_crc})
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.header_decoder(${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${print_header})
 
-cpp_templates:
-  includes: ["#include <lora_sdr/header_decoderh>"]
-  declarations: "lora_sdr::header_decoder::sptr ${id};"
-  make: "this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${cr}, ${pay_len}, ${has_crc});"
-  link: ["gnuradio-lora_sdr"]
-
-documentation:
-  "Recover information present in the header of a frame and send them\
-  \ to the other blocks in the receiver chain.\nIn implicit header mode, the values\
-  \ given as parameters will be transmitted to the other blocks. \n    Parameters:\n\
-  \        impl_head: indicate the usage of implicit header mode (explicit otherwise)\n\
-  \        cr: coding rate(will be ignored in explicit header mode)\n        pay_len:\
-  \ payload length in bytes(will be ignored in explicit header mode)\n        has_crc:\
-  \ indicate the presence of a payload CRC(will be ignored in explicit header mode)\n\
-  \    Input:\n        in: stream of nibbles containing the header, payload (and\
-  \ CRC if used)\n        new_frame: indicate the beginning of a new frame\n   \
-  \ Output:\n        out: stream of nibbles containing payload (and CRC)\n     \
-  \   CR: coding rate of the frame\n        pay_len: payload length of the frame\n\
-  \        CRC: presence of a payload CRC\n        err: error in the explicit header\
-  \ (checksum incorrect)"
+documentation: |-
+    Recover information present in the header of a frame and send them to the frame synchronization block, which forwards them to each other blocks.
+    In implicit header mode, the values given as parameters will be transmitted to the other blocks.     
+    Parameters:
+        impl_head: indicate the usage of implicit header mode (explicit otherwise)
+        CR: coding rate        
+        pay_len: payload length in bytes       
+        has_crc: indicate the presence of a payload CRC
+    Input:        
+        in: stream of nibbles containing the header, payload (and CRC if used)        
+    Output:        
+        out: stream of nibbles containing payload (and CRC)   
+        frame_info: info of the frame contained in the header such as coding rate, CRC presence, and payload length
 
 file_format: 1

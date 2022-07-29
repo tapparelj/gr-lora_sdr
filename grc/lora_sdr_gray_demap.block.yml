@@ -1,0 +1,33 @@
+id: lora_sdr_gray_demap
+label: Gray demapping
+category: '[LoRa_TX]'
+
+parameters:
+-   id: sf
+    label: SF
+    dtype: int
+    default: 'sf'
+inputs:
+-   domain: stream
+    dtype: int
+
+outputs:
+-   domain: stream
+    dtype: int
+
+templates:
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.gray_demap(${sf})
+    callbacks:
+        - set_sf(${sf})
+
+documentation: |-
+    Apply the gray mapping operation. (Corresponding to a reverse gray encoding with a shift)
+        Parameters:
+            sf: spreading factor
+        Input:
+            in: decimal value
+        Output:
+            out: decimal value mapped
+
+file_format: 1

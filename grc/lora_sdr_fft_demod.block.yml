@@ -2,50 +2,51 @@
 
 id: lora_sdr_fft_demod
 label: fft_demod
-category: "[LoRa]/Rx"
-flags: [python, cpp]
+category: '[LoRa_RX]'
 
 parameters:
-  - id: samp_rate
-    label: Samp_rate
-    dtype: float
-  - id: bandwidth
-    label: Bandwidth
-    dtype: int
-  - id: sf
+-   id: sf
     label: Sf
     dtype: int
-  - id: impl_head
+-   id: impl_head
     label: Impl_head
     dtype: bool
+-   id: soft_decoding
+    label: Soft_Decoding
+    dtype: bool
+    default: 'soft_decoding'
+    options: [False, True]
+-   id: max_log_approx
+    label: Max Log approx
+    dtype: enum
+    default: True
+    options: ['False', 'True']
+    option_labels: ['No', 'Yes']
+    hide: ${ 'all' if not soft_decoding else 'part' }
 
 inputs:
-  - domain: stream
+-   domain: stream
     dtype: complex
     vlen: ${ 2**sf }
 
 outputs:
-  - domain: stream
-    dtype: int
+-   domain: stream
+    dtype: ${ 'f64' if soft_decoding else 'int'}
+    vlen: ${ sf if soft_decoding else 1}
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.fft_demod(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head})
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.fft_demod( ${sf}, ${impl_head}, ${soft_decoding}, ${max_log_approx})
 
-cpp_templates:
-  includes: ["#include <lora_sdr/fft_demod.h>"]
-  declarations: "lora_sdr::fft_demod::sptr ${id};"
-  make: "this->${id} = lora_sdr::fft_demod::make(${samp_rate}, ${bandwidth}, ${sf}, ${impl_head});"
-  link: ["gnuradio-lora_sdr"]
-
-documentation:
-  "Recover the value of a lora symbol using argmax(DFT(lora_symbol \u2A00\
-  \ ref_downchirp)\n    Parameters:\n        Samp_rate: Sampling rate (should be\
-  \ equal to the bandwidth in the current implementation)\n        Bandwidth: Bandwidth\n\
-  \        sf: spreading factor\n        impl_head: usage of an implicit header\
-  \ (explicit will be used otherwise)\n    Input:\n        in: vector of 2^sf complex\
-  \ samples\n        CR: coding rate\n        new_frame: indicate beginning of a\
-  \ new frame with the value of the reference downchirp (to compensate CFO integer\
-  \ part)\n    Output:\n        out: stream of lora symbol decimal values"
+documentation: |-
+    Recover the value of a lora symbol using argmax(DFT(lora_symbol * ref_downchirp)
+        Parameters: 
+           sf: spreading factor        
+           impl_head: usage of an implicit header (explicit will be used otherwise) 
+           soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax   
+        Input:        
+            in: vector of 2^sf complex samples        
+        Output:        
+            out: stream of lora symbol decimal values or bits LLRs if soft-decision decoding is selected
 
 file_format: 1

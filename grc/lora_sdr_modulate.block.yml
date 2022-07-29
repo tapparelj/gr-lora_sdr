@@ -2,60 +2,50 @@
 
 id: lora_sdr_modulate
 label: Modulate
-category: "[LoRa]/Tx"
-flags: [python, cpp]
+category: '[LoRa_TX]'
 
 parameters:
-  - id: sf
-    label: Sf
+-   id: sf
+    label: SF
     dtype: int
-  - id: samp_rate
+    default: 'sf'
+-   id: samp_rate
     label: Samp_rate
     dtype: int
-  - id: bw
+-   id: bw
     label: Bw
     dtype: int
-  - id: sync_words
+-   id: sync_words
     label: Sync words
     dtype: int_vector
-    default: [8, 16]
-  - id: create_zeros
-    label: Create zero padding
-    dtype: bool
-    default: False
-
-asserts:
-  - ${ sf ==7 or sf == 8 or sf ==9 or sf == 10 or sf == 11 or sf ==12 }
+    hide: part
+    default: 0x12
 
 inputs:
-  - domain: stream
+-   domain: stream
     dtype: int
 
 outputs:
-  - domain: stream
+-   domain: stream
     dtype: complex
 
 templates:
-  imports: import lora_sdr
-  make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words},${create_zeros})
-
-cpp_templates:
-  includes: ["#include <lora_sdr/modulate.h>"]
-  declarations: "lora_sdr::modulate::sptr ${id};std::vector<uint16_t> sync_words {8,16};"
-  make: "this->${id} = lora_sdr::modulate::make(${sf}, ${samp_rate}, ${bw}, sync_words,${create_zeros});"
-  link: ["gnuradio-lora_sdr"]
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words})
+    callbacks:
+        - set_sf(${sf})
+asserts:
+- ${ (samp_rate/bw).is_integer()}
 
 documentation: |-
-  Add the preamble to the frame and modulate lora symbols accordingly to the input decimal values.
-      Parameters:
-          sf: spreading factor
-          samp_rate: sampling rate (has to be the same as bw)
-          bw: bandwidth
-          sync_words : words to sync with
-          create_zeros : boolean to tell the system if we should output extra zeros
-      Input:
-          in: stream of decimal symbol values
-      Output:
-          out: stream of complex valued samples
+    Add the preamble to the frame and modulate lora symbols according to the input decimal values.
+        Parameters:
+            sf: spreading factor
+            samp_rate: sampling rate (need to be a integer multiple of the bandwidth)
+            Bw: LoRa bandwidth
+        Input:
+            in: stream of decimal symbol values
+        Output:
+            out: stream of complex valued samples
 
 file_format: 1
