@@ -1,3 +1,7 @@
+# v0.4
+- Port to GNU Radio 3.10
+- move sample flowgraphs from apps to examples
+
 # v0.3
 - Added soft-decision decoding as an option
 - Added choice of different sampling rate and bandwidth for both transmitter and receiver

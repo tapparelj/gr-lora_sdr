@@ -6,6 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Functionnality Check
+# Author: Tapparel Joachim@EPFL,TCL
 # GNU Radio version: 3.10.3.0
 
 from gnuradio import blocks

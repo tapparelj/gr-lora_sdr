@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: ''
+    author: 'Tapparel Joachim@EPFL,TCL'
     catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
@@ -11,7 +11,7 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: tx_rx_simulation
+    id: tx_rx_functionnality_check
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -28,71 +28,33 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [10, 15]
+    coordinate: [8, 8]
     rotation: 0
     state: enabled
 
 blocks:
-- name: CFO
-  id: variable
-  parameters:
-    comment: ''
-    value: 0/2**sf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [274, 214]
-    rotation: 0
-    state: enabled
-- name: SNRdB
-  id: variable
-  parameters:
-    comment: ''
-    value: '-5'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [197, 214]
-    rotation: 0
-    state: enabled
 - name: bw
   id: variable
   parameters:
-    comment: Bandwidth
+    comment: ''
     value: '125000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 105]
+    coordinate: [312, 20.0]
     rotation: 0
     state: enabled
 - name: cr
   id: variable
   parameters:
-    comment: 'Coding
-
-      Rate'
-    value: '2'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [364, 104]
-    rotation: 0
-    state: enabled
-- name: frame_period_us
-  id: variable
-  parameters:
     comment: ''
-    value: '100000'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 12.0]
+    coordinate: [576, 20]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -104,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 12.0]
+    coordinate: [648, 20.0]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -116,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 12.0]
+    coordinate: [488, 20]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -128,65 +90,103 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 12.0]
+    coordinate: [912, 20.0]
     rotation: 0
     state: true
 - name: samp_rate
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: '500000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [193, 17]
+    coordinate: [232, 20]
     rotation: 0
     state: enabled
 - name: sf
   id: variable
   parameters:
-    comment: "Spreading \nFactor"
+    comment: ''
     value: '7'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [285, 104]
+    coordinate: [992, 20.0]
+    rotation: 0
+    state: enabled
+- name: snr_dB
+  id: variable
+  parameters:
+    comment: ''
+    value: '-5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1168, 20.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
   id: variable
   parameters:
     comment: ''
-    value: 'True'
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [443, 104]
+    coordinate: [1248, 20.0]
     rotation: 0
     state: enabled
-- name: blocks_file_source_0_0
-  id: blocks_file_source
+- name: sync_word
+  id: variable
+  parameters:
+    comment: ''
+    value: '0x12'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1072, 20.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0
+  id: blocks_delay
   parameters:
     affinity: ''
     alias: ''
-    begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/hydra/gnuradio/src/modules/gr-lora_sdr.new/README.md
-    length: '0'
+    delay: int(2**sf*samp_rate/bw*10.1)
     maxoutbuf: '0'
     minoutbuf: '0'
-    offset: '0'
-    repeat: 'False'
-    type: byte
+    num_ports: '1'
+    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 364.0]
+    coordinate: [1312, 216.0]
+    rotation: 0
+    state: true
+- name: blocks_message_strobe_0_0
+  id: blocks_message_strobe
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg: 'pmt.intern("Hello world: 0")'
+    period: '2000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 200.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -205,7 +205,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 412.0]
+    coordinate: [1448, 224.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -216,19 +216,32 @@ blocks:
     block_tags: 'True'
     comment: ''
     epsilon: '1.0'
-    freq_offset: CFO
+    freq_offset: 0.0/2**sf
     maxoutbuf: '0'
-    minoutbuf: '0'
-    noise_voltage: 10**(-SNRdB/20)
-    seed: '0'
+    minoutbuf: int(np.ceil(samp_rate/bw*(2**sf+2)))
+    noise_voltage: 10**(-snr_dB/20)
+    seed: '1'
     taps: 1.0 + 0.0j
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1436.0, 480]
+    coordinate: [1568.0, 272]
     rotation: 270
     state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy as np
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 92.0]
+    rotation: 0
+    state: true
 - name: lora_sdr_add_crc_0
   id: lora_sdr_add_crc
   parameters:
@@ -242,7 +255,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 412.0]
+    coordinate: [632, 208.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_crc_verif_0
@@ -258,9 +271,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 632.0]
+    coordinate: [176, 400.0]
     rotation: 180
-    state: enabled
+    state: true
 - name: lora_sdr_deinterleaver_0
   id: lora_sdr_deinterleaver
   parameters:
@@ -275,7 +288,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 652.0]
+    coordinate: [800, 420.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -290,7 +303,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 648.0]
+    coordinate: [328, 416.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -300,7 +313,7 @@ blocks:
     alias: ''
     comment: ''
     impl_head: impl_head
-    max_log_approx: 'False'
+    max_log_approx: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -309,7 +322,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 644.0]
+    coordinate: [1136, 412.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -324,12 +337,12 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     sf: sf
-    sync_words: '18'
+    sync_words: sync_word
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 636.0]
+    coordinate: [1304, 404.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_demap_0
@@ -345,7 +358,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [984, 412.0]
+    coordinate: [1016, 208.0]
     rotation: 0
     state: true
 - name: lora_sdr_gray_mapping_0
@@ -362,7 +375,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 652.0]
+    coordinate: [968, 420.0]
     rotation: 180
     state: true
 - name: lora_sdr_hamming_dec_0
@@ -378,7 +391,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 660.0]
+    coordinate: [632, 428.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -395,7 +408,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 404.0]
+    coordinate: [760, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_0
@@ -413,7 +426,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 396.0]
+    coordinate: [488, 192.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -433,7 +446,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 648.0]
+    coordinate: [472, 416.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -450,7 +463,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 404.0]
+    coordinate: [896, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -462,15 +475,31 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '10000000'
-    samp_rate: samp_rate
+    samp_rate: int(samp_rate)
     sf: sf
-    sync_words: '0x12'
+    sync_words: sync_word
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 396.0]
+    coordinate: [1168, 192.0]
     rotation: 0
+    state: enabled
+- name: lora_sdr_payload_id_inc_0
+  id: lora_sdr_payload_id_inc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    separator: ':'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 148.0]
+    rotation: 180
     state: enabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
@@ -481,17 +510,19 @@ blocks:
     is_hex: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    source_type: file_source
+    source_type: message_strobe
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 400.0]
+    coordinate: [280, 208.0]
     rotation: 0
     state: enabled
 
 connections:
-- [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
+- [blocks_delay_0, '0', blocks_throttle_0, '0']
+- [blocks_message_strobe_0_0, strobe, lora_sdr_payload_id_inc_0, msg_in]
+- [blocks_message_strobe_0_0, strobe, lora_sdr_whitening_0, msg]
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
@@ -507,9 +538,10 @@ connections:
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_demap_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
+- [lora_sdr_modulate_0, '0', blocks_delay_0, '0']
+- [lora_sdr_payload_id_inc_0, msg_out, blocks_message_strobe_0_0, set_msg]
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 
 metadata:
   file_format: 1
-  grc_version: v3.11.0.0git-207-gcaa7e7f1
+  grc_version: 3.10.3.0
