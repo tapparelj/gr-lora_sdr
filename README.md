@@ -39,14 +39,15 @@ J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
 ## Prerequisites
-- Gnuradio 3.10/3.11
+- Gnuradio 3.10.3
 - python 3
 - cmake
 - libvolk
 - Boost
 - UHD
-- gcc
+- gcc > 9.3.0
 - gxx
+- pybind11
 
 The conda environment used to develop this module is described by the environment.yml file. 
 ## Installation
