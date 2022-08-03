@@ -9,18 +9,6 @@
 # Author: Tapparel Joachim@EPFL,TCL
 # GNU Radio version: 3.10.3.0
 
-from packaging.version import Version as StrictVersion
-
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print("Warning: failed to XInitThreads()")
-
 from gnuradio import blocks
 import pmt
 from gnuradio import gr
@@ -28,7 +16,6 @@ from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
-from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
@@ -38,40 +25,11 @@ import gnuradio.lora_sdr as lora_sdr
 
 
 
-from gnuradio import qtgui
 
-class lora_TX(gr.top_block, Qt.QWidget):
+class lora_TX(gr.top_block):
 
     def __init__(self):
         gr.top_block.__init__(self, "Lora Tx", catch_exceptions=True)
-        Qt.QWidget.__init__(self)
-        self.setWindowTitle("Lora Tx")
-        qtgui.util.check_set_qss()
-        try:
-            self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
-        except:
-            pass
-        self.top_scroll_layout = Qt.QVBoxLayout()
-        self.setLayout(self.top_scroll_layout)
-        self.top_scroll = Qt.QScrollArea()
-        self.top_scroll.setFrameStyle(Qt.QFrame.NoFrame)
-        self.top_scroll_layout.addWidget(self.top_scroll)
-        self.top_scroll.setWidgetResizable(True)
-        self.top_widget = Qt.QWidget()
-        self.top_scroll.setWidget(self.top_widget)
-        self.top_layout = Qt.QVBoxLayout(self.top_widget)
-        self.top_grid_layout = Qt.QGridLayout()
-        self.top_layout.addLayout(self.top_grid_layout)
-
-        self.settings = Qt.QSettings("GNU Radio", "lora_TX")
-
-        try:
-            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-                self.restoreGeometry(self.settings.value("geometry").toByteArray())
-            else:
-                self.restoreGeometry(self.settings.value("geometry"))
-        except:
-            pass
 
         ##################################################
         # Variables
@@ -105,15 +63,15 @@ class lora_TX(gr.top_block, Qt.QWidget):
         self.uhd_usrp_sink_0.set_antenna('TX/RX', 0)
         self.uhd_usrp_sink_0.set_bandwidth(bw, 0)
         self.uhd_usrp_sink_0.set_gain(TX_gain, 0)
-        self.lora_tx_0 = lora_sdr.lora_sdr_lora_tx(
-            bw=125000,
-            cr=1,
-            has_crc=True,
-            impl_head=False,
-            samp_rate=250000,
-            sf=7,
-        )
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16])
+        self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
+        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
+        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
+        self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
+        self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern("hello world: 0"), frame_period)
 
 
@@ -121,24 +79,26 @@ class lora_TX(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
-        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_tx_0, 'in'))
+        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.lora_sdr_whitening_0, 'msg'))
         self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0, 'set_msg'))
-        self.connect((self.lora_tx_0, 0), (self.uhd_usrp_sink_0, 0))
+        self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
+        self.connect((self.lora_sdr_gray_demap_0, 0), (self.lora_sdr_modulate_0, 0))
+        self.connect((self.lora_sdr_hamming_enc_0, 0), (self.lora_sdr_interleaver_0, 0))
+        self.connect((self.lora_sdr_header_0, 0), (self.lora_sdr_add_crc_0, 0))
+        self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_demap_0, 0))
+        self.connect((self.lora_sdr_modulate_0, 0), (self.uhd_usrp_sink_0, 0))
+        self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
 
-
-    def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "lora_TX")
-        self.settings.setValue("geometry", self.saveGeometry())
-        self.stop()
-        self.wait()
-
-        event.accept()
 
     def get_sf(self):
         return self.sf
 
     def set_sf(self, sf):
         self.sf = sf
+        self.lora_sdr_gray_demap_0.set_sf(self.sf)
+        self.lora_sdr_hamming_enc_0.set_sf(self.sf)
+        self.lora_sdr_interleaver_0.set_sf(self.sf)
+        self.lora_sdr_modulate_0.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -171,6 +131,9 @@ class lora_TX(gr.top_block, Qt.QWidget):
 
     def set_cr(self, cr):
         self.cr = cr
+        self.lora_sdr_hamming_enc_0.set_cr(self.cr)
+        self.lora_sdr_header_0.set_cr(self.cr)
+        self.lora_sdr_interleaver_0.set_cr(self.cr)
 
     def get_center_freq(self):
         return self.center_freq
@@ -197,32 +160,26 @@ class lora_TX(gr.top_block, Qt.QWidget):
 
 
 def main(top_block_cls=lora_TX, options=None):
-
-    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-        style = gr.prefs().get_string('qtgui', 'style', 'raster')
-        Qt.QApplication.setGraphicsSystem(style)
-    qapp = Qt.QApplication(sys.argv)
-
     tb = top_block_cls()
-
-    tb.start()
-
-    tb.show()
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
         tb.wait()
 
-        Qt.QApplication.quit()
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
 
-    timer = Qt.QTimer()
-    timer.start(500)
-    timer.timeout.connect(lambda: None)
+    tb.start()
 
-    qapp.exec_()
+    try:
+        input('Press Enter to quit: ')
+    except EOFError:
+        pass
+    tb.stop()
+    tb.wait()
+
 
 if __name__ == '__main__':
     main()

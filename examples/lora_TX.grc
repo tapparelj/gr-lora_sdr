@@ -9,7 +9,7 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: lora_TX
     max_nouts: '0'
@@ -173,7 +173,7 @@ blocks:
     bus_structure: null
     coordinate: [600, 200.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_demap_0
   id: lora_sdr_gray_demap
   parameters:
@@ -189,7 +189,7 @@ blocks:
     bus_structure: null
     coordinate: [992, 200.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_enc_0
   id: lora_sdr_hamming_enc
   parameters:
@@ -206,7 +206,7 @@ blocks:
     bus_structure: null
     coordinate: [728, 192.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_0
   id: lora_sdr_header
   parameters:
@@ -224,7 +224,7 @@ blocks:
     bus_structure: null
     coordinate: [456, 184.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -241,7 +241,7 @@ blocks:
     bus_structure: null
     coordinate: [864, 192.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_modulate_0
   id: lora_sdr_modulate
   parameters:
@@ -260,7 +260,7 @@ blocks:
     bus_structure: null
     coordinate: [1152, 184.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_payload_id_inc_0
   id: lora_sdr_payload_id_inc
   parameters:
@@ -293,28 +293,7 @@ blocks:
     bus_structure: null
     coordinate: [256, 200.0]
     rotation: 0
-    state: disabled
-- name: lora_tx_0
-  id: lora_tx
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: '125000'
-    comment: ''
-    cr: '1'
-    has_crc: 'True'
-    impl_head: 'False'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: '250000'
-    sf: '7'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [616, 336.0]
-    rotation: 0
-    state: true
+    state: enabled
 - name: uhd_usrp_sink_0
   id: uhd_usrp_sink
   parameters:
@@ -595,7 +574,7 @@ blocks:
 
 connections:
 - [blocks_message_strobe_0, strobe, lora_sdr_payload_id_inc_0, msg_in]
-- [blocks_message_strobe_0, strobe, lora_tx_0, in]
+- [blocks_message_strobe_0, strobe, lora_sdr_whitening_0, msg]
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
 - [lora_sdr_gray_demap_0, '0', lora_sdr_modulate_0, '0']
 - [lora_sdr_hamming_enc_0, '0', lora_sdr_interleaver_0, '0']
@@ -604,7 +583,6 @@ connections:
 - [lora_sdr_modulate_0, '0', uhd_usrp_sink_0, '0']
 - [lora_sdr_payload_id_inc_0, msg_out, blocks_message_strobe_0, set_msg]
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
-- [lora_tx_0, '0', uhd_usrp_sink_0, '0']
 
 metadata:
   file_format: 1

@@ -5,7 +5,7 @@
 
 
 ## Summary
-This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.8. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
+This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
 In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose all the parameters of the transmission, such as the spreading factor, the coding rate, the bandwidth, the sync word, the presence of an explicit header and CRC.
 
@@ -39,7 +39,7 @@ J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
 ## Prerequisites
-- Gnuradio 3.10.3
+- Gnuradio 3.10
 - python 3
 - cmake
 - libvolk
