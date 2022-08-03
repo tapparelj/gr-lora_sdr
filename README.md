@@ -87,9 +87,9 @@ The conda environment used to develop this module is described by the environmen
 		```sh
 		conda env create -f environment.yml 
 		```
-	- Start the conda environment GNU Radio 3.8 you just created
+	- Start the conda environment GNU Radio 3.10 you just created
 		```sh
-		conda activate gr38
+		conda activate gr310
 		```
 - To build the code, create an appropriate folder and go in it:
 	```sh
