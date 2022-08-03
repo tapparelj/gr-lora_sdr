@@ -12,9 +12,9 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 
 - The module contains convenient hierarchical blocks for both Tx and Rx.
 <p float="center">
-  <img src="https://user-images.githubusercontent.com/66671413/182565519-e1ad1455-ac44-4aca-b339-00c1f3ba54aa.png" height="150" />
+  <img src="https://user-images.githubusercontent.com/66671413/182565519-e1ad1455-ac44-4aca-b339-00c1f3ba54aa.png" height="130" />
   
-  <img src="https://user-images.githubusercontent.com/66671413/182562660-ea7c42fc-da74-4ebb-a269-d8ab944468f6.png" height="150" /> 
+  <img src="https://user-images.githubusercontent.com/66671413/182562660-ea7c42fc-da74-4ebb-a269-d8ab944468f6.png" height="130" /> 
 </p>
 
 -   In the Tx chain, the implementation contains all the main blocks of the LoRa transceiver: the header- and the CRC-insertion blocks, the whitening block, the Hamming encoder block, the interleaver block, the Gray demapping block, and the modulation block.
