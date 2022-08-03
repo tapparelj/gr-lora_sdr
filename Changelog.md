@@ -1,6 +1,7 @@
 # v0.4
 - Port to GNU Radio 3.10
 - Added hierarchical blocks for easy Tx and Rx utilisation
+- fixed issue with buffer sizes for spreading factor 12
 - move sample flowgraphs from apps to examples
 
 # v0.3

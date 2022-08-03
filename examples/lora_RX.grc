@@ -141,6 +141,19 @@ blocks:
     coordinate: [776, 4.0]
     rotation: 0
     state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy as np
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 88.0]
+    rotation: 0
+    state: true
 - name: lora_sdr_crc_verif_0
   id: lora_sdr_crc_verif
   parameters:
@@ -651,7 +664,7 @@ blocks:
     lo_source8: internal
     lo_source9: internal
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: int(np.ceil(samp_rate/bw*(2**sf+2)))
     nchan: '1'
     num_mboards: '1'
     otw: ''

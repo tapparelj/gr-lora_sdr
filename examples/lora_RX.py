@@ -20,6 +20,7 @@ from gnuradio import eng_notation
 from gnuradio import uhd
 import time
 import gnuradio.lora_sdr as lora_sdr
+import numpy as np
 
 
 
@@ -59,6 +60,7 @@ class lora_RX(gr.top_block):
         self.uhd_usrp_source_0.set_center_freq(center_freq, 0)
         self.uhd_usrp_source_0.set_antenna('TX/RX', 0)
         self.uhd_usrp_source_0.set_gain(0, 0)
+        self.uhd_usrp_source_0.set_min_output_buffer((int(np.ceil(samp_rate/bw*(2**sf+2)))))
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, True)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(sf, soft_decoding)

@@ -37,7 +37,7 @@ class tx_rx_functionnality_check(gr.top_block):
         self.sync_word = sync_word = 0x12
         self.soft_decoding = soft_decoding = False
         self.snr_dB = snr_dB = -5
-        self.sf = sf = 7
+        self.sf = sf = 12
         self.samp_rate = samp_rate = 500000
         self.pay_len = pay_len = 255
         self.impl_head = impl_head = False

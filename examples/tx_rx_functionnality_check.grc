@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: 'Tapparel Joachim@EPFL,TCL'
+    author: Tapparel Joachim@EPFL,TCL
     catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
@@ -109,7 +109,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
