@@ -22,6 +22,8 @@ add_subdirectory(bindings)
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
+    lora_sdr_lora_tx.py
+    lora_sdr_lora_rx.py
     DESTINATION ${GR_PYTHON_DIR}/gnuradio/lora_sdr
 )
 

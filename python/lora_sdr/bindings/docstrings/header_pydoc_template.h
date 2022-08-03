@@ -14,20 +14,14 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_header = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_header = R"doc()doc";
+static const char *__doc_gr_lora_sdr_header_header_0 = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_header_header_1 = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_header_header_0 = R"doc()doc";
+static const char *__doc_gr_lora_sdr_header_set_cr = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_header_get_cr = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_header_header_1 = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_header_set_cr = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_header_get_cr = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_header_make = R"doc()doc";
+static const char *__doc_gr_lora_sdr_header_make = R"doc()doc";

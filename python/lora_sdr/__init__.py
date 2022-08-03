@@ -21,3 +21,5 @@ except ModuleNotFoundError:
 
 # import any pure python here
 #
+from .lora_sdr_lora_tx import lora_sdr_lora_tx
+from .lora_sdr_lora_rx import lora_sdr_lora_rx

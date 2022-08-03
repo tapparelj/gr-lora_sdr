@@ -1,0 +1,108 @@
+id: lora_rx
+label: LoRa Rx
+category: '[LoRa_RX]'
+flags: [python]
+
+parameters:
+-   id: samp_rate
+    label: Input sampling rate
+    dtype: int
+    default: '250000'
+    hide: none
+-   id: bw
+    label: Bandwidth
+    dtype: int
+    default: '125000'
+    hide: none
+-   id: sf
+    label: Spreading factor
+    dtype: int
+    default: '7'
+    hide: none
+-   id: impl_head
+    label: Implicit header
+    dtype: enum
+    options: ['True','False']
+    option_labels: ['Yes','No']
+    default: 'False'
+    hide: none
+-   id: cr
+    label: Coding rate
+    dtype: enum
+    options: ['0','1','2','3','4']
+    option_labels: ['4/4','4/5','4/6','4/7','4/8']
+    default: '1'
+    hide: ${ 'none' if str(impl_head) == "True" else 'all' }
+-   id: has_crc
+    label: CRC presence
+    dtype: enum
+    options: ['True','False']
+    option_labels: ['Yes','No']
+    default: 'True'
+    hide: ${ 'none' if str(impl_head) == "True" else 'all' }
+-   id: pay_len
+    label: Payload length
+    dtype: int
+    default: '255'
+    hide: ${ 'none' if str(impl_head) == "True" else 'all' }
+-   id: soft_decoding
+    label: Use soft-decision decoding
+    dtype: enum
+    options: ['True','False']
+    option_labels: ['Yes','No']
+    default: 'True'
+-   id: print_rx
+    label: Print info 
+    dtype: enum
+    options: ['[True,True]','[False,True]','[True,False]','[False,False]']
+    option_labels: ['Header & Payload','Payload','Header','None']
+    default: '[True,True]'
+    
+
+inputs:
+-   label: in
+    dtype: complex
+    vlen: 1
+
+outputs:
+-   label: out
+    domain: message
+    dtype: message
+    optional: true
+-   label: out
+    dtype: byte
+    vlen: 1
+    optional: true
+
+templates:
+    imports: 'import gnuradio.lora_sdr as lora_sdr'
+    make: "lora_sdr.lora_sdr_lora_rx( bw=${ bw }, cr=${ cr }, has_crc=${ has_crc},
+     impl_head=${ impl_head }, pay_len=${ pay_len }, samp_rate=${samp_rate },
+      sf=${ sf }, soft_decoding=${ soft_decoding },print_rx=${print_rx})"
+asserts:
+- ${ (samp_rate/bw).is_integer()}
+
+documentation: |-
+    Complete LoRa receiver
+    Hierarchical block containing a complete LoRa receiver.
+
+    Parameters:
+        - Input sampling rate: Input sampling rate (Should be an integer multiple of Bandwidth)
+        - Bandwidth: bandwidth of the LoRa signal
+        - Spreading factor
+        - Implicit header: Use implicit header mode, else use explicit
+        - Coding rate: coding rate to use (only for implicit mode)
+        - CRC presence: Payload contains a CRC (only for implicit mode)
+        - Payload length: Length of the payload in bytes (only for implicit mode)
+        - Use soft-decision decoding: Use soft-decision decoding
+        - Print info: Print received payload/header in the terminal
+    Inputs:
+        - in: Stream of complex samples
+    Outputs
+        - out(msg): Message containing the received payload (optional)
+        - out(bytes): Stream of char of the received payloads (optional)
+    
+    
+
+
+file_format: 1

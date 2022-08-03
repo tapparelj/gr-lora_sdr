@@ -14,23 +14,16 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_interleaver = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_interleaver = R"doc()doc";
+static const char *__doc_gr_lora_sdr_interleaver_interleaver_0 = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_interleaver_interleaver_1 = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_interleaver_interleaver_0 = R"doc()doc";
+static const char *__doc_gr_lora_sdr_interleaver_set_cr = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_interleaver_get_cr = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_interleaver_interleaver_1 = R"doc()doc";
+static const char *__doc_gr_lora_sdr_interleaver_set_sf = R"doc()doc";
 
-
-static const char* __doc_gr_lora_sdr_interleaver_set_cr = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_interleaver_get_cr = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_interleaver_set_sf = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_interleaver_make = R"doc()doc";
+static const char *__doc_gr_lora_sdr_interleaver_make = R"doc()doc";

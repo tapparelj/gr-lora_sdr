@@ -14,17 +14,12 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_gray_demap = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_gray_demap = R"doc()doc";
+static const char *__doc_gr_lora_sdr_gray_demap_gray_demap_0 = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_gray_demap_gray_demap_1 = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_gray_demap_gray_demap_0 = R"doc()doc";
+static const char *__doc_gr_lora_sdr_gray_demap_set_sf = R"doc()doc";
 
-
-static const char* __doc_gr_lora_sdr_gray_demap_gray_demap_1 = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_gray_demap_set_sf = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_gray_demap_make = R"doc()doc";
+static const char *__doc_gr_lora_sdr_gray_demap_make = R"doc()doc";

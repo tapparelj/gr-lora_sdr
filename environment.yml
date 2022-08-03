@@ -27,6 +27,8 @@ dependencies:
   - certifi=2022.6.15=py310hff52083_0
   - cffi=1.15.1=py310h255011f_0
   - charset-normalizer=2.1.0=pyhd8ed1ab_0
+  - clang-format=14.0.6=default_h2e3cab8_0
+  - clang-format-14=14.0.6=default_h2e3cab8_0
   - click=8.1.3=py310hff52083_0
   - click-plugins=1.1.1=py_0
   - cmake=3.23.3=h5432695_0
@@ -48,9 +50,9 @@ dependencies:
   - fonttools=4.34.4=py310h5764c6d_0
   - freetype=2.10.4=h0708190_1
   - fribidi=1.0.10=h36c2ea0_0
-  - gcc=12.1.0=h9ea6d83_10
-  - gcc_impl_linux-64=12.1.0=hea43390_16
-  - gcc_linux-64=12.1.0=h3bb4806_10
+  - gcc=10.4.0=hb92f740_10
+  - gcc_impl_linux-64=10.4.0=h7ee1905_16
+  - gcc_linux-64=10.4.0=h9215b83_10
   - gdk-pixbuf=2.42.8=hff1cb4f_0
   - gettext=0.19.8.1=h73d1719_1008
   - giflib=5.2.1=h36c2ea0_2
@@ -73,8 +75,8 @@ dependencies:
   - gstreamer=1.20.3=hd4edc92_0
   - gstreamer-orc=0.4.32=h7f98852_1
   - gtk3=3.24.34=h4d20fae_1
-  - gxx_impl_linux-64=12.1.0=hea43390_16
-  - gxx_linux-64=12.1.0=h1f501c1_10
+  - gxx_impl_linux-64=10.4.0=h7ee1905_16
+  - gxx_linux-64=10.4.0=h6e491c6_10
   - harfbuzz=5.1.0=hf9f4e7c_0
   - hicolor-icon-theme=0.17=ha770c72_2
   - icu=70.1=h27087fc_0
@@ -101,6 +103,7 @@ dependencies:
   - libcap=2.64=ha37c62d_0
   - libcblas=3.9.0=15_linux64_openblas
   - libclang=14.0.6=default_h2e3cab8_0
+  - libclang-cpp14=14.0.6=default_h2e3cab8_0
   - libclang13=14.0.6=default_h3a83d3e_0
   - libcodec2=1.0.3=h7f98852_0
   - libcups=2.3.3=hf5a7f15_1
@@ -113,7 +116,7 @@ dependencies:
   - libevent=2.1.10=h9b69904_4
   - libffi=3.4.2=h7f98852_5
   - libflac=1.3.4=h27087fc_0
-  - libgcc-devel_linux-64=12.1.0=h1ec3361_16
+  - libgcc-devel_linux-64=10.4.0=h74af60c_16
   - libgcc-ng=12.1.0=h8d9b700_16
   - libgfortran-ng=12.1.0=h69a702a_16
   - libgfortran5=12.1.0=hdcd56e2_16
@@ -134,11 +137,11 @@ dependencies:
   - libpng=1.6.37=h753d276_3
   - libpq=14.4=hd77ab85_0
   - librsvg=2.54.4=h7abd40a_0
-  - libsanitizer=12.1.0=ha89aaad_16
+  - libsanitizer=10.4.0=hde28e3b_16
   - libsndfile=1.0.31=h9c3ff4c_1
   - libsodium=1.0.18=h36c2ea0_1
   - libssh2=1.10.0=ha56f1ee_2
-  - libstdcxx-devel_linux-64=12.1.0=h1ec3361_16
+  - libstdcxx-devel_linux-64=10.4.0=h74af60c_16
   - libstdcxx-ng=12.1.0=ha89aaad_16
   - libtasn1=4.18.0=h166bdaf_1
   - libthrift=0.16.0=h519c5ea_1
@@ -261,3 +264,7 @@ dependencies:
   - zipp=3.8.1=pyhd8ed1ab_0
   - zlib=1.2.12=h166bdaf_2
   - zstd=1.5.2=h8a70e8d_2
+  - pip:
+    - castxml==0.4.3
+    - pygccxml==2.2.1
+

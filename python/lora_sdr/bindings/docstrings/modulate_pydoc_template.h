@@ -14,17 +14,12 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_modulate = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_modulate = R"doc()doc";
+static const char *__doc_gr_lora_sdr_modulate_modulate_0 = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_modulate_modulate_1 = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_modulate_modulate_0 = R"doc()doc";
+static const char *__doc_gr_lora_sdr_modulate_set_sf = R"doc()doc";
 
-
-static const char* __doc_gr_lora_sdr_modulate_modulate_1 = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_modulate_set_sf = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_modulate_make = R"doc()doc";
+static const char *__doc_gr_lora_sdr_modulate_make = R"doc()doc";

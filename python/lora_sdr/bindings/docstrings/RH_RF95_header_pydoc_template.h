@@ -14,11 +14,9 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_RH_RF95_header = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_RH_RF95_header = R"doc()doc";
+static const char *__doc_gr_lora_sdr_RH_RF95_header_RH_RF95_header =
+    R"doc()doc";
 
-
-static const char* __doc_gr_lora_sdr_RH_RF95_header_RH_RF95_header = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_RH_RF95_header_make = R"doc()doc";
+static const char *__doc_gr_lora_sdr_RH_RF95_header_make = R"doc()doc";

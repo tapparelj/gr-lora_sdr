@@ -5,25 +5,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-
-install(FILES
-    lora_sdr_add_crc.block.yml
-    lora_sdr_crc_verif.block.yml
-    lora_sdr_dewhitening.block.yml
-    lora_sdr_gray_demap.block.yml
-    lora_sdr_gray_mapping.block.yml
-    lora_sdr_hamming_dec.block.yml
-    lora_sdr_hamming_enc.block.yml
-    lora_sdr_header_decoder.block.yml
-    lora_sdr_header.block.yml
-    lora_sdr_interleaver.block.yml
-    lora_sdr_modulate.block.yml
-    lora_sdr_whitening.block.yml
-    lora_sdr_RH_RF95_header.block.yml
-    lora_sdr_fft_demod.block.yml
-    lora_sdr_data_source.block.yml
-    lora_sdr_frame_sync.block.yml
-    lora_sdr_deinterleaver.block.yml
-    lora_sdr_payload_id_inc.block.yml
+file(GLOB yml_files "*.yml")
+install(FILES ${yml_files}
     DESTINATION share/gnuradio/grc/blocks
 )

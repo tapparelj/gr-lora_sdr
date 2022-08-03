@@ -1,0 +1,81 @@
+id: lora_tx
+label: LoRa Tx
+category: '[LoRa_TX]'
+flags: [python]
+
+parameters:
+-   id: samp_rate
+    label: Output sampling rate
+    dtype: int
+    default: '250000'
+    hide: none
+-   id: bw
+    label: Bandwidth
+    dtype: int
+    default: '125000'
+    hide: none
+-   id: sf
+    label: Spreading factor
+    dtype: int
+    default: '7'
+    hide: none
+-   id: impl_head
+    label: Implicit header
+    dtype: enum
+    options: ['True','False']
+    option_labels: ['Yes','No']
+    default: 'False'
+    hide: none
+-   id: cr
+    label: Coding rate
+    dtype: int
+    options: ['0','1','2','3','4']
+    option_labels: ['4/4','4/5','4/6','4/7','4/8']
+    default: '1'
+    hide: none
+-   id: has_crc
+    label: CRC presence
+    dtype: enum
+    options: ['True','False']
+    option_labels: ['Yes','No']
+    default: 'True'
+    hide: none
+
+inputs:
+-   label: in
+    domain: message
+    dtype: message
+
+outputs:
+-   label: out
+    dtype: complex
+    vlen: 1
+
+templates:
+    imports: 'import gnuradio.lora_sdr as lora_sdr'
+    make: "lora_sdr.lora_sdr_lora_tx(\n    bw=${ bw },\n    cr=${ cr },\n    has_crc=${ has_crc\
+        \ },\n    impl_head=${ impl_head },\n    samp_rate=${ samp_rate },\n    sf=${\
+        \ sf },\n)"
+    callbacks:
+    - set_cr(${ cr })
+    - set_sf(${ sf })
+asserts:
+- ${ (samp_rate/bw).is_integer()}
+
+documentation: |-
+    Complete LoRa transmitter
+    Hierarchical block containing a complete LoRa transmitter.
+
+    Parameters:
+        - Output sampling rate: Output sampling rate (Should be an integer multiple of Bandwidth)
+        - Bandwidth: bandwidth of the LoRa signal
+        - Spreading factor
+        - Implicit header: Use implicit header mode, else use explicit
+        - Coding rate: coding rate to use
+        - CRC presence: Payload contains a CRC
+    Inputs:
+        - in: Message of the payload to transmitt
+    Outputs
+        - out: Stream of baseband complex samples that can be fed to the SDR frontend
+
+file_format: 1
