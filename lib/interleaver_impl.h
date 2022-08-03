@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_INTERLEAVER_IMPL_H
 #define INCLUDED_LORA_INTERLEAVER_IMPL_H
 
-#include <lora_sdr/interleaver.h>
+#include <gnuradio/lora_sdr/interleaver.h>
 // #define GRLORA_DEBUG
 
 namespace gr {

@@ -4,7 +4,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "interleaver_impl.h"
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr
 {

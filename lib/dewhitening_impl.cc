@@ -5,7 +5,7 @@
 #include <gnuradio/io_signature.h>
 #include "dewhitening_impl.h"
 #include "tables.h"
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr
 {

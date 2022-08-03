@@ -30,7 +30,7 @@ outputs:
     dtype: complex
 
 templates:
-    imports: import lora_sdr
+    imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words})
     callbacks:
         - set_sf(${sf})

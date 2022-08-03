@@ -4,7 +4,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "hamming_enc_impl.h"
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr
 {

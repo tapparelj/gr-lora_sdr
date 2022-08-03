@@ -2,8 +2,8 @@
 #define INCLUDED_LORA_ADD_CRC_IMPL_H
 
 
-#include <lora_sdr/add_crc.h>
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/add_crc.h>
+#include <gnuradio/lora_sdr/utilities.h>
 namespace gr {
   namespace lora_sdr {
 

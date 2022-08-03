@@ -25,7 +25,7 @@ outputs:
     vlen: ${ sf if soft_decoding else 1}
 
 templates:
-    imports: import lora_sdr
+    imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.gray_mapping(${sf}, ${soft_decoding})
 
 documentation: |-

@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_CRC_VERIF_IMPL_H
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
-#include <lora_sdr/crc_verif.h>
+#include <gnuradio/lora_sdr/crc_verif.h>
 
 // #define GRLORA_DEBUG
 

@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_GRAY_MAPPING_IMPL_H
 #define INCLUDED_LORA_GRAY_MAPPING_IMPL_H
 // #define GRLORA_DEBUG
-#include <lora_sdr/gray_mapping.h>
+#include <gnuradio/lora_sdr/gray_mapping.h>
 
 
 namespace gr {

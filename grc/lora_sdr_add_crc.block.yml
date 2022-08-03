@@ -20,7 +20,7 @@ outputs:
     dtype: byte
 
 templates:
-    imports: import lora_sdr
+    imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.add_crc(${has_crc})
 
 documentation: |-

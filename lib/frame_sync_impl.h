@@ -7,11 +7,11 @@
 #define GRLORA_MEASUREMENTS
 
 
-#include <lora_sdr/frame_sync.h>
+#include <gnuradio/lora_sdr/frame_sync.h>
 #include <iostream>
 #include <fstream>
 #include <volk/volk.h>
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 #include <gnuradio/io_signature.h>
 extern "C" {
   #include "kiss_fft.h"

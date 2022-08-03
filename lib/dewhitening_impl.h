@@ -2,7 +2,7 @@
 #define INCLUDED_LORA_DEWHITENING_IMPL_H
 
 // #define GRLORA_DEBUG
-#include <lora_sdr/dewhitening.h>
+#include <gnuradio/lora_sdr/dewhitening.h>
 
 namespace gr {
   namespace lora_sdr {

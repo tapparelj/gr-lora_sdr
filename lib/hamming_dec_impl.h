@@ -1,7 +1,7 @@
 #ifndef INCLUDED_LORA_hamming_dec_IMPL_H
 #define INCLUDED_LORA_hamming_dec_IMPL_H
 
-#include <lora_sdr/hamming_dec.h>
+#include <gnuradio/lora_sdr/hamming_dec.h>
 
 namespace gr {
   namespace lora_sdr {

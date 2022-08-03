@@ -1,12 +1,12 @@
 #ifndef INCLUDED_LORA_MODULATE_IMPL_H
 #define INCLUDED_LORA_MODULATE_IMPL_H
 
-#include <lora_sdr/modulate.h>
+#include <gnuradio/lora_sdr/modulate.h>
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <fstream>
 
-#include <lora_sdr/utilities.h>
+#include <gnuradio/lora_sdr/utilities.h>
 
 // #define GR_LORA_PRINT_INFO
 
