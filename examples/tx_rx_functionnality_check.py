@@ -36,11 +36,12 @@ class tx_rx_functionnality_check(gr.top_block):
         ##################################################
         self.sync_word = sync_word = 0x12
         self.soft_decoding = soft_decoding = False
-        self.snr_dB = snr_dB = -5
-        self.sf = sf = 12
+        self.snr_dB = snr_dB = 50
+        self.sf = sf = 5
         self.samp_rate = samp_rate = 500000
-        self.pay_len = pay_len = 255
-        self.impl_head = impl_head = False
+        self.pay_len = pay_len = 11
+        self.ldro = ldro = False
+        self.impl_head = impl_head = True
         self.has_crc = has_crc = True
         self.cr = cr = 0
         self.bw = bw = 125000
@@ -49,11 +50,10 @@ class tx_rx_functionnality_check(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
-        self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word])
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf,ldro)
+        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
@@ -63,7 +63,7 @@ class tx_rx_functionnality_check(gr.top_block):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head, soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf, soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-snr_dB/20)),
@@ -74,17 +74,15 @@ class tx_rx_functionnality_check(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int(np.ceil(samp_rate/bw*(2**sf+2)))))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
+        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world"), 2000)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, (int(2**sf*samp_rate/bw*10.1)))
 
 
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
         self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_whitening_0, 'msg'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
-        self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0_0, 'set_msg'))
         self.connect((self.blocks_delay_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_sync_0, 0))
@@ -148,6 +146,12 @@ class tx_rx_functionnality_check(gr.top_block):
 
     def set_pay_len(self, pay_len):
         self.pay_len = pay_len
+
+    def get_ldro(self):
+        return self.ldro
+
+    def set_ldro(self, ldro):
+        self.ldro = ldro
 
     def get_impl_head(self):
         return self.impl_head

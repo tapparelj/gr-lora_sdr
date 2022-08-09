@@ -30,8 +30,9 @@ namespace gr
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_os_factor = m_samp_rate / m_bw;
             m_samples_per_symbol = (uint32_t)(m_number_of_bins*m_os_factor);
+            m_samples_required = 1;
 
-            m_inter_frame_padding = 20; // add some empty symbols at the end of a frame important for transmission with LimeSDR Mini
+            m_inter_frame_padding = 40; // add some empty symbols at the end of a frame important for transmission with LimeSDR Mini
 
             m_downchirp.resize(m_samples_per_symbol);
             m_upchirp.resize(m_samples_per_symbol);
@@ -80,7 +81,7 @@ namespace gr
         void
         modulate_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
         {
-            ninput_items_required[0] = 1;
+            ninput_items_required[0] = m_samples_required;
         }
 
         int modulate_impl::general_work(int noutput_items,
@@ -169,6 +170,7 @@ namespace gr
 
             if (symb_cnt >= m_frame_len) //padd frame end with zeros
             {
+                m_samples_required = 0;
                 for (int i = 0; i < (noutput_items - output_offset) / m_samples_per_symbol; i++)
                 {
                     if (symb_cnt < m_frame_len + m_inter_frame_padding)
@@ -187,6 +189,7 @@ namespace gr
             {
                 symb_cnt++;
                 frame_cnt++;
+                m_samples_required = 1;
 #ifdef GR_LORA_PRINT_INFO              
                 std::cout << "Frame " << frame_cnt << " sent\n";
 #endif

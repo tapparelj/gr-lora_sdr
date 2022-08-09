@@ -1,3 +1,9 @@
+# v0.5
+- add low datarate optimisation support
+- add support of spreading factors 5 and 6 (for implicit header mode)
+- Add PRR simulation script in apps/ 
+
+
 # v0.4
 - Port to GNU Radio 3.10
 - Added hierarchical blocks for easy Tx and Rx utilisation

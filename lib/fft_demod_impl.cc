@@ -31,6 +31,7 @@ namespace gr {
                         m_new_frame(true) {
 
             m_samples_per_symbol = (uint32_t)(1u << m_sf);
+            m_ldro = false;
             m_upchirp.resize(m_samples_per_symbol);
             m_downchirp.resize(m_samples_per_symbol);
 
@@ -150,8 +151,7 @@ namespace gr {
             double LLs[m_samples_per_symbol];   // 2**sf  Log-Likelihood
             std::vector<LLR> LLRs(m_sf);        // sf     Log-Likelihood Ratios
 
-            static double Ps_est = 0;   // Signal Power estimation updated at each rx symbol
-            static double Pn_est = 0;   // Signal Power estimation updated at each rx symbo
+            
             //static double Ps_frame = 0; // Signal Power estimation updated at each rx new frame
             //static double Pn_frame = 0; // Signal Power estimation updated at each rx new frame
 
@@ -176,11 +176,11 @@ namespace gr {
             //Ps_est = p*Ps_est + (1-p)*  signal_energy / m_samples_per_symbol;
             //Pn_est = p*Pn_est + (1-p)* noise_energy / (m_samples_per_symbol-1-2*n_adjacent_bins); // remove used bins for better estimation
             // Signal and noise power estimation for each received symbol
-            Ps_est = signal_energy / m_samples_per_symbol;
-            Pn_est = noise_energy / (m_samples_per_symbol-1-2*n_adjacent_bins);
+            m_Ps_est = signal_energy / m_samples_per_symbol;
+            m_Pn_est = noise_energy / (m_samples_per_symbol-1-2*n_adjacent_bins);
             
 #ifdef GRLORA_SNR_MEASUREMENTS_SAVE
-            SNRestim_file << std::setprecision(6) << Ps_est << "," << Pn_est << std::endl;
+            SNRestim_file << std::setprecision(6) << m_Ps_est << "," << m_Pn_est << std::endl;
 #endif
             /*static int num_frames = 0;
             if (m_new_frame) { 
@@ -197,7 +197,7 @@ namespace gr {
             }            
 #endif
             //double SNRdB_estimate = 10*std::log10(Ps_frame/Pn_frame);
-            double SNRdB_estimate = 10*std::log10(Ps_est/Pn_est);
+            double SNRdB_estimate = 10*std::log10(m_Ps_est/m_Pn_est);
             //std::cout << "SNR " << SNRdB_estimate << std::endl;
             //  Normalize fft_mag to 1 to avoid Bessel overflow
             for (int i = 0; i < m_samples_per_symbol; i++) {  // upgrade to avoid for loop
@@ -207,7 +207,7 @@ namespace gr {
 
             bool clipping = false;
             for (uint32_t n = 0; n < m_samples_per_symbol; n++) {
-                double bessel_arg = std::sqrt(Ps_est) / Pn_est * std::sqrt(m_fft_mag_sq[n]);
+                double bessel_arg = std::sqrt(m_Ps_est) / m_Pn_est * std::sqrt(m_fft_mag_sq[n]);
                 // Manage overflow of Bessel function
                 if (bessel_arg < 713)  // 713 ~ log(std::numeric_limits<LLR>::max())
                     LLs[n] = boost::math::cyl_bessel_i(0, bessel_arg);  // compute Bessel safely
@@ -229,7 +229,7 @@ namespace gr {
                     double max_X1(0), max_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
                         // LoRa: shift by -1 and use reduce rate if first block (header)
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / (is_header ? 4 : 1);
+                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
                         s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
                         if (s & (1u << i)) {  // if i-th bit of symbol n is '1'
                             if (LLs[n] > max_X1) max_X1 = LLs[n];
@@ -244,7 +244,7 @@ namespace gr {
                 for (uint32_t i = 0; i < m_sf; i++) {
                     double sum_X1(0), sum_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / (is_header ? 4 : 1);
+                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro)? 4 : 1);
                         s = (s ^ (s >> 1u));  // Gray demap
                         if (s & (1u << i)) sum_X1 += LLs[n]; // Likelihood
                         else sum_X0 += LLs[n];
@@ -295,6 +295,7 @@ namespace gr {
                     // std::cout<<"\nfft_header "<<tags[0].offset<<" - cfo:"<<cfo_int<<"\n";
                 } else {
                     m_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
+                    m_ldro = pmt::to_bool(pmt::dict_ref(tags[0].value,pmt::string_to_symbol("ldro"),err));
 
                     // std::cout<<"\nfft_cr "<<tags[0].offset<<" - cr: "<<(int)m_cr<<"\n";
                 }
@@ -308,7 +309,7 @@ namespace gr {
                 LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
             } else {                                 // Hard decoding
                 // shift by -1 and use reduce rate if first block (header)
-                output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / (is_header ? 4 : 1));
+                output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header||m_ldro) ? 4 : 1));
             }
 
             if (output.size() == block_size || LLRs_block.size() == block_size) {

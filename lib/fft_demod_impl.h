@@ -14,7 +14,6 @@
 #include <gnuradio/io_signature.h>
 #include <gnuradio/lora_sdr/utilities.h>
 #include <gnuradio/lora_sdr/fft_demod.h>
-#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr {
   namespace lora_sdr {
@@ -27,6 +26,10 @@ namespace gr {
       bool m_soft_decoding;   ///< Hard/Soft decoding
       bool max_log_approx;     ///< use Max-log approximation in LLR formula
       bool m_new_frame;       ///< To be notify when receive a new frame to estimate SNR
+      bool m_ldro; ///< use low datarate optimisation
+
+      double m_Ps_est = 0;   // Signal Power estimation updated at each rx symbol
+      double m_Pn_est = 0;   // Signal Power estimation updated at each rx symbo
 
       uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
       int CFOint; ///< integer part of the CFO

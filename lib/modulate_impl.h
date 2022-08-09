@@ -23,6 +23,8 @@ namespace gr {
         uint32_t m_samples_per_symbol; ///< samples per symbols(Works only for 2^sf)
         std::vector<uint16_t> m_sync_words; ///< sync words (network id) 
 
+        int m_samples_required; ///< number of samples required to call this block (forecast)
+
         int m_os_factor; ///< ovesampling factor based on sampling rate and bandwidth
 
         int m_inter_frame_padding; ///< length in samples of zero append to each frame

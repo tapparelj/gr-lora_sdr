@@ -17,6 +17,7 @@ namespace gr {
         uint8_t m_payload_len;///< The payload length in bytes
         bool m_has_crc;///< Specify the usage of a payload CRC
         uint8_t m_cr;///< Coding rate
+        bool m_ldro; ///< use low datarate optimisation
 
         uint8_t header_chk; ///< The header checksum received in the header
 
@@ -31,10 +32,10 @@ namespace gr {
         /**
          *  \brief publish decoding information contained in the header or provided to the block   
          */
-        void publish_frame_info(int cr, int pay_len, int crc, int err);
+        void publish_frame_info(int cr, int pay_len, int crc,bool ldro, int err);
 
      public:
-      header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header);
+      header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool ldro, bool print_header);
       ~header_decoder_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

@@ -13,7 +13,6 @@ parameters:
     dtype: bool
     default: 'soft_decoding'
     options: [False, True]
-
 inputs:
 -   domain: stream
     dtype: ${ 'f64' if soft_decoding else 'int'}
@@ -31,6 +30,7 @@ templates:
 documentation: |-
     Deinterleave the received codewords.
         Parameters:
+            sodt_decoding: use soft-decision decoding
             sf: spreading factor
         Input:
             in: stream of received (gray demapped) decimal values

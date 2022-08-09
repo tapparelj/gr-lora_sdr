@@ -14,6 +14,12 @@ parameters:
     dtype: int
     default: 'sf'
 
+-   id: ldro
+    label: LDRO
+    dtype: bool
+    options: ['True','False','ldro']
+    default: 'ldro'
+
 inputs:
 -   domain: stream
     dtype: byte
@@ -24,7 +30,7 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.interleaver(${cr}, ${sf})
+    make: lora_sdr.interleaver(${cr}, ${sf},${ldro})
     callbacks:
         - set_cr(${cr})
         - set_sf(${sf})
@@ -34,6 +40,7 @@ documentation: |-
         Parameters:
             CR: coding rate
             SF: spreading factor
+            LDRO: une Low datarate optimisation
         Input:
             in: stream of bytes containing a codeword each
         Output:

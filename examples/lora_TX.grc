@@ -49,7 +49,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '125000'
+    value: '250000'
   states:
     bus_sink: false
     bus_source: false
@@ -133,7 +133,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '12'
   states:
     bus_sink: false
     bus_source: false
@@ -171,7 +171,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 200.0]
+    coordinate: [664, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_demap_0
@@ -187,7 +187,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 200.0]
+    coordinate: [1056, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -204,7 +204,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 192.0]
+    coordinate: [792, 192.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_0
@@ -222,7 +222,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 184.0]
+    coordinate: [520, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -232,6 +232,7 @@ blocks:
     alias: ''
     comment: ''
     cr: cr
+    ldro: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -239,7 +240,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 192.0]
+    coordinate: [928, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -258,7 +259,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 184.0]
+    coordinate: [1216, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_payload_id_inc_0
@@ -291,7 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [256, 200.0]
+    coordinate: [320, 200.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0
@@ -568,7 +569,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 124.0]
+    coordinate: [1352, 124.0]
     rotation: 0
     state: enabled
 

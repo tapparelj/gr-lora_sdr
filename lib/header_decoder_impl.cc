@@ -13,15 +13,15 @@ namespace gr
     {
 
         header_decoder::sptr
-        header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header)
+        header_decoder::make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool ldro, bool print_header)
         {
-            return gnuradio::get_initial_sptr(new header_decoder_impl(impl_head, cr, pay_len, has_crc, print_header));
+            return gnuradio::get_initial_sptr(new header_decoder_impl(impl_head, cr, pay_len, has_crc, ldro, print_header));
         }
 
         /*
      * The private constructor
      */
-        header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, bool print_header)
+        header_decoder_impl::header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc,bool ldro, bool print_header)
             : gr::block("header_decoder",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
                         gr::io_signature::make(1, 1, sizeof(uint8_t)))
@@ -31,6 +31,7 @@ namespace gr
             m_cr = cr;
             m_payload_len = pay_len;
             m_has_crc = has_crc;
+            m_ldro = ldro;
 
             pay_cnt = 0;
 
@@ -52,7 +53,7 @@ namespace gr
             ninput_items_required[0] = noutput_items;
         }
 
-        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, int err)
+        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, bool ldro, int err)
         {
 
             pmt::pmt_t header_content = pmt::make_dict();
@@ -60,6 +61,7 @@ namespace gr
             header_content = pmt::dict_add(header_content, pmt::intern("cr"), pmt::from_long(cr));
             header_content = pmt::dict_add(header_content, pmt::intern("pay_len"), pmt::from_long(pay_len));
             header_content = pmt::dict_add(header_content, pmt::intern("crc"), pmt::from_long(crc));
+            header_content = pmt::dict_add(header_content, pmt::intern("ldro"), pmt::from_bool(ldro));
             header_content = pmt::dict_add(header_content, pmt::intern("err"), pmt::from_long(err));
             message_port_pub(pmt::intern("frame_info"), header_content);
             if(!err) //don't propagate downstream that a frame was detected
@@ -82,7 +84,6 @@ namespace gr
             {
                 if (tags[0].offset != nitems_read(0))
                 {
-
                     nitem_to_process = tags[0].offset - nitems_read(0);
                 }
                 else
@@ -90,6 +91,7 @@ namespace gr
                     if (tags.size() >= 2)
                     {
                         nitem_to_process = tags[1].offset - tags[0].offset;
+                        // std::cout<<tags[1].offset <<" " <<tags[1].offset<<std::endl;
                     }
                     else
                     {
@@ -103,18 +105,18 @@ namespace gr
                     }
                 }
             }
-            if (is_header && nitem_to_process < 5) //ensure to have a full PHY header to process
+            if (is_header && nitem_to_process < 5 && !m_impl_header) //ensure to have a full PHY header to process
                 nitem_to_process = 0;
             if (is_header)
             {
                 if (m_impl_header)
                 { //implicit header, all parameters should have been provided
-                    publish_frame_info(m_cr, m_payload_len, m_has_crc, 0);
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro, 0);
 
                     for (int i = 0; i < nitem_to_process; i++)
                     {
                         //only output payload or CRC
-                        if (pay_cnt < m_payload_len * 2 + (m_has_crc ? 4 : 0))
+                        if (pay_cnt < (uint32_t)m_payload_len * 2 + (m_has_crc ? 4 : 0))
                         {
                             out[i] = in[i];
                             pay_cnt++;
@@ -146,11 +148,13 @@ namespace gr
                         std::cout << "CRC presence: " << (int)m_has_crc << std::endl;
                         std::cout << "Coding rate: " << (int)m_cr << std::endl;
                     }
-                    int head_err = 0;
-                    if (header_chk - ((int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0))
+                    int head_err = header_chk - ((int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0);
+                    if (head_err||m_payload_len==0)
                     {
-                        if(m_print_header)
+                        if(m_print_header && head_err)
                             std::cout <<RED<< "Header checksum invalid!" <<RESET<< std::endl<< std::endl;
+                        if(m_print_header && m_payload_len==0)
+                            std::cout <<RED<< "Frame can not be empty!" <<RESET<< std::endl<< std::endl;
                         // message_port_pub(pmt::intern("err"),pmt::mp(true));
                         head_err = 1;
                         noutput_items = 0;
@@ -164,7 +168,7 @@ namespace gr
 #endif
                         noutput_items = nitem_to_process - header_len;
                     }
-                    publish_frame_info(m_cr, m_payload_len, m_has_crc, head_err);
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro, head_err);
                     for (int i = header_len, j = 0; i < nitem_to_process; i++, j++)
                     {
                         out[j] = in[i];
@@ -179,7 +183,7 @@ namespace gr
                 nout = 0;
                 for (int i = 0; i < nitem_to_process; i++)
                 {
-                    if (pay_cnt < m_payload_len * 2 + (m_has_crc ? 4 : 0))
+                    if (pay_cnt < (uint32_t)m_payload_len * 2 + (m_has_crc ? 4 : 0))
                     { //only output usefull value (payload and CRC if any)
                         nout++;
                         pay_cnt++;

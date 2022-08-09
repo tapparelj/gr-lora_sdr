@@ -37,7 +37,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '125000'
+    value: '250000'
   states:
     bus_sink: false
     bus_source: false
@@ -73,7 +73,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -85,7 +85,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -121,7 +121,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '6'
   states:
     bus_sink: false
     bus_source: false
@@ -162,6 +162,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
+    output_crc_check: 'False'
     print_rx_msg: 'True'
   states:
     bus_sink: false
@@ -283,6 +284,7 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
+    ldro: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     pay_len: pay_len
@@ -291,7 +293,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 216.0]
+    coordinate: [1104, 184.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0

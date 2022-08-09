@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(header_decoder.h) */
-/* BINDTOOL_HEADER_FILE_HASH(865a6cfca080ce15f26322302d8ab69c) */
+/* BINDTOOL_HEADER_FILE_HASH(08dc2f8a4741348985a472d93e7d653e) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,8 +38,8 @@ void bind_header_decoder(py::module &m) {
                                               D(header_decoder))
 
       .def(py::init(&header_decoder::make), py::arg("impl_head"), py::arg("cr"),
-           py::arg("pay_len"), py::arg("has_crc"), py::arg("print_header"),
-           D(header_decoder, make))
+           py::arg("pay_len"), py::arg("has_crc"), py::arg("ldro"),
+           py::arg("print_header"), D(header_decoder, make))
 
       ;
 }

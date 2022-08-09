@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: 'Tapparel Joachim@EPFL,TCL'
+    author: Tapparel Joachim@EPFL,TCL
     catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
@@ -83,18 +83,6 @@ blocks:
     coordinate: [364, 104]
     rotation: 0
     state: enabled
-- name: frame_period_us
-  id: variable
-  parameters:
-    comment: ''
-    value: '100000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [312, 12.0]
-    rotation: 0
-    state: enabled
 - name: has_crc
   id: variable
   parameters:
@@ -117,6 +105,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [416, 12.0]
+    rotation: 0
+    state: enabled
+- name: ldro
+  id: variable
+  parameters:
+    comment: ''
+    value: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [664, 16.0]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -179,7 +179,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    repeat: 'True'
     type: byte
     vlen: '1'
   states:
@@ -218,7 +218,7 @@ blocks:
     epsilon: '1.0'
     freq_offset: CFO
     maxoutbuf: '0'
-    minoutbuf: '0'
+    minoutbuf: int(2**sf*samp_rate/bw*1.1)
     noise_voltage: 10**(-SNRdB/20)
     seed: '0'
     taps: 1.0 + 0.0j
@@ -253,12 +253,13 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
+    output_crc_check: 'False'
     print_rx_msg: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 632.0]
+    coordinate: [88, 632.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -425,6 +426,7 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
+    ldro: ldro
     maxoutbuf: '0'
     minoutbuf: '0'
     pay_len: pay_len
@@ -433,7 +435,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 648.0]
+    coordinate: [384, 640.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -443,6 +445,7 @@ blocks:
     alias: ''
     comment: ''
     cr: cr
+    ldro: ldro
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -450,7 +453,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 400.0]
+    coordinate: [864, 392.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -461,7 +464,7 @@ blocks:
     bw: bw
     comment: ''
     maxoutbuf: '0'
-    minoutbuf: '10000000'
+    minoutbuf: '0'
     samp_rate: samp_rate
     sf: sf
     sync_words: '0x12'

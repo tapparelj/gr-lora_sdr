@@ -37,9 +37,9 @@ class tx_rx_simulation(gr.top_block):
         self.soft_decoding = soft_decoding = True
         self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 255
+        self.ldro = ldro = False
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
-        self.frame_period_us = frame_period_us = 100000
         self.cr = cr = 2
         self.bw = bw = 125000
         self.SNRdB = SNRdB = -5
@@ -50,9 +50,8 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12])
-        self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf,ldro)
+        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
@@ -62,7 +61,7 @@ class tx_rx_simulation(gr.top_block):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head, soft_decoding, False)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf, soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
@@ -71,8 +70,9 @@ class tx_rx_simulation(gr.top_block):
             taps=[1.0 + 0.0j],
             noise_seed=0,
             block_tags=True)
+        self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/github/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/github/gr-lora_sdr/data/GRC_default/example_tx_source.txt', True, 0, 0)
         self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -129,6 +129,12 @@ class tx_rx_simulation(gr.top_block):
     def set_pay_len(self, pay_len):
         self.pay_len = pay_len
 
+    def get_ldro(self):
+        return self.ldro
+
+    def set_ldro(self, ldro):
+        self.ldro = ldro
+
     def get_impl_head(self):
         return self.impl_head
 
@@ -140,12 +146,6 @@ class tx_rx_simulation(gr.top_block):
 
     def set_has_crc(self, has_crc):
         self.has_crc = has_crc
-
-    def get_frame_period_us(self):
-        return self.frame_period_us
-
-    def set_frame_period_us(self, frame_period_us):
-        self.frame_period_us = frame_period_us
 
     def get_cr(self):
         return self.cr
