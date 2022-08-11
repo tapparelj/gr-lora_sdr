@@ -1,6 +1,6 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
-[![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.3-important)
-[![version](https://img.shields.io/badge/Version-0.4.0-brightgreen)
+![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.3-important)
+![version](https://img.shields.io/badge/Version-0.5.0-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftapparelj%2Fgr-lora_sdr&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
@@ -133,13 +133,17 @@ The conda environment used to develop this module is described by the environmen
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
-- Port to GNU Radio 3.10
-- Added hierarchical blocks for easy Tx and Rx utilisation
+- add low datarate optimisation support
 
-- Fixed issue of buffer sizes for spreading factor 12
-- move sample flowgraphs from apps to examples
+- add support of spreading factors smaller than 7
 
- 	<font size="6"> [...](./Changelog.md)</font>
+- add sampling frequency offset estimation and compensation
+    - Estimation leverages the relation between CFO and SFO, both caused by the same reference clock
+    - The compensation method consists in a two step refinement of the estimates in the preamble and a puncturing/insertion of samples during the payload
+
+- Add frame error rate simulation script in apps/simulation
+
+ 	<font size="10"> [...](./Changelog.md)</font>
 
 ## Credit
 This work was inspired from [https://github.com/rpp0/gr-lora](https://github.com/rpp0/gr-lora) by Pieter Robyns, Peter Quax, Wim Lamotte and William Thenaers. Which architecture and functionalities have been improved to better emulate the physical layer of LoRa. 

@@ -9,7 +9,7 @@ options:
     description: ''
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: tx_rx_simulation
     max_nouts: '0'
@@ -191,7 +191,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'True'
+    repeat: 'False'
     type: byte
     vlen: '1'
   states:
@@ -336,13 +336,13 @@ blocks:
     minoutbuf: '0'
     os_factor: int(samp_rate/bw)
     sf: sf
-    show_log_port: 'True'
+    show_log_port: 'False'
     sync_word: '18'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 552.0]
+    coordinate: [1168, 536.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_gray_demap_0

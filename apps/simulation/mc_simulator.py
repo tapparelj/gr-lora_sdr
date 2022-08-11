@@ -12,15 +12,15 @@ import time
 #-----------------------------------------
 #            Parameters Settings
 #-----------------------------------------
-sf = 8                  # Spreading factor
+sf = 7                  # Spreading factor
 cr = 0                  # Coding rate
-snrs = np.arange(-14,0,1) -3*(sf-7) # List of SNR to evaluate
-n_frames = 100000       # Number of frames trnasmitted per SNR
-samp_rate = 1000000     # Sample rate !Should be at least 4 time the bandwidth to avoid issue with the MMSE fractional resampler in the channel model!
-bw = 250000             # LoRa bandwidth
+snrs = np.arange(-13,0,1.5) -3*(sf-7) # List of SNR to evaluate
+n_frames = 1000         # Number of frames trnasmitted per SNR
+samp_rate = 500000      # Sample rate !Should be at least 4 time the bandwidth to avoid issue with the MMSE fractional resampler in the channel model!
+bw = 125000             # LoRa bandwidth
 center_freq = 868.1     # Center frequency in MHz
 clk_offset_ppm = 0      # crystal offset in ppm
-pay_len = 22            # in bytes
+pay_len = 32            # in bytes
 ldro = False            # usage of low datarate optimisation mode
 soft_decoding = False   # usage of soft-decision decoding in hte receiver
 

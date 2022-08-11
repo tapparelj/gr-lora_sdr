@@ -33,7 +33,7 @@ options:
     state: enabled
 
 blocks:
-- name: SNRdB
+- name: Att_dB
   id: variable
   parameters:
     comment: ''
@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [197, 214]
+    coordinate: [632, 16.0]
     rotation: 0
     state: enabled
 - name: bw
@@ -54,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 105]
+    coordinate: [448, 104.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -66,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [420, 214]
+    coordinate: [192, 144.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -80,7 +80,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [364, 104]
+    coordinate: [384, 104.0]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -104,7 +104,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [591, 17]
+    coordinate: [488, 16.0]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -116,7 +116,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [499, 17]
+    coordinate: [408, 16.0]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -128,10 +128,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 17]
+    coordinate: [560, 16.0]
     rotation: 0
     state: enabled
-- name: samp_rate
+- name: samp_rate_rx
+  id: variable
+  parameters:
+    comment: ''
+    value: '250000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 80.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate_tx
   id: variable
   parameters:
     comment: ''
@@ -152,7 +164,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [285, 104]
+    coordinate: [320, 104.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
@@ -164,7 +176,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [443, 104]
+    coordinate: [632, 112.0]
     rotation: 0
     state: enabled
 - name: blocks_message_strobe_0_0_0
@@ -190,7 +202,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: 10**((SNRdB)/20)
+    const: 10**((Att_dB)/20)
     maxoutbuf: '0'
     minoutbuf: '10000000'
     type: complex
@@ -226,6 +238,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
+    output_crc_check: 'False'
     print_rx_msg: 'True'
   states:
     bus_sink: false
@@ -242,13 +255,12 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 648.0]
+    coordinate: [728, 656.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -276,13 +288,12 @@ blocks:
     max_log_approx: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 640.0]
+    coordinate: [440, 648.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -291,18 +302,20 @@ blocks:
     affinity: ''
     alias: ''
     bandwidth: bw
+    center_freq: int(center_freq)
     comment: ''
     impl_head: impl_head
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: samp_rate
+    os_factor: int(samp_rate_rx/bw)
     sf: sf
-    sync_words: '0x12'
+    show_log_port: 'False'
+    sync_word: '18'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 632.0]
+    coordinate: [288, 624.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_demap_0
@@ -329,13 +342,12 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 648.0]
+    coordinate: [584, 656.0]
     rotation: 0
     state: true
 - name: lora_sdr_hamming_dec_0
@@ -398,6 +410,7 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
+    ldro: '2'
     maxoutbuf: '0'
     minoutbuf: '0'
     pay_len: pay_len
@@ -406,7 +419,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 648.0]
+    coordinate: [1016, 640.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -414,8 +427,10 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    bw: '125000'
     comment: ''
     cr: cr
+    ldro: '2'
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -423,7 +438,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 392.0]
+    coordinate: [952, 376.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -435,7 +450,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '10000000'
-    samp_rate: samp_rate
+    samp_rate: samp_rate_tx
     sf: sf
     sync_words: '0x12'
   states:
@@ -725,7 +740,7 @@ blocks:
     nchan: '1'
     num_mboards: '1'
     otw: ''
-    samp_rate: samp_rate
+    samp_rate: samp_rate_tx
     sd_spec0: ''
     sd_spec1: ''
     sd_spec2: ''
@@ -1161,7 +1176,7 @@ blocks:
     rx_agc7: Default
     rx_agc8: Default
     rx_agc9: Default
-    samp_rate: samp_rate
+    samp_rate: samp_rate_rx
     sd_spec0: ''
     sd_spec1: ''
     sd_spec2: ''

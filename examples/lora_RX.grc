@@ -37,7 +37,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: '125000'
   states:
     bus_sink: false
     bus_source: false
@@ -85,7 +85,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'True'
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -109,7 +109,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: '500000'
   states:
     bus_sink: false
     bus_source: false
@@ -231,7 +231,7 @@ blocks:
     impl_head: impl_head
     maxoutbuf: '0'
     minoutbuf: '0'
-    os_factor: '4'
+    os_factor: int(samp_rate/bw)
     sf: sf
     show_log_port: 'False'
     sync_word: '18'
@@ -292,7 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 176.0]
+    coordinate: [1104, 200.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
