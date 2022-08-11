@@ -14,7 +14,6 @@
 #include <gnuradio/io_signature.h>
 #include <gnuradio/lora_sdr/utilities.h>
 #include <gnuradio/lora_sdr/fft_demod.h>
-#include <gnuradio/lora_sdr/utilities.h>
 
 namespace gr {
   namespace lora_sdr {
@@ -27,6 +26,12 @@ namespace gr {
       bool m_soft_decoding;   ///< Hard/Soft decoding
       bool max_log_approx;     ///< use Max-log approximation in LLR formula
       bool m_new_frame;       ///< To be notify when receive a new frame to estimate SNR
+      bool m_ldro; ///< use low datarate optimisation
+      uint m_symb_numb; ///< number of symbols in the frame
+      uint m_symb_cnt; ///< number of symbol already output in current frame
+
+      double m_Ps_est = 0;   // Signal Power estimation updated at each rx symbol
+      double m_Pn_est = 0;   // Signal Power estimation updated at each rx symbo
 
       uint32_t m_samples_per_symbol;  ///< Number of samples received per lora symbols
       int CFOint; ///< integer part of the CFO
@@ -37,7 +42,7 @@ namespace gr {
       std::vector<gr_complex> m_dechirped; ///< Dechirped symbol
       std::vector<gr_complex> m_fft;       ///< Result of the FFT
 
-      std::vector<uint32_t> output;   ///< Stores the value to be outputted once a full bloc has been received
+      std::vector<uint16_t> output;   ///< Stores the value to be outputted once a full bloc has been received
       std::vector< std::vector<LLR> > LLRs_block; ///< Stores the LLRs to be outputted once a full bloc has been received
       bool is_header;                  ///< Indicate that the first block hasn't been fully received
       uint8_t block_size;             ///< The number of lora symbol in one block
@@ -61,7 +66,13 @@ namespace gr {
        *  \param  samples
        *          The pointer to the symbol beginning.
        */
-      int32_t get_symbol_val(const gr_complex *samples);
+      uint16_t get_symbol_val(const gr_complex *samples);
+
+      /**
+       * @brief Set spreading factor and init vector sizes accordingly
+       * 
+       */
+      void set_sf(int sf);
 
       /**
        *  \brief  Reset the block variables when a new lora packet needs to be decoded.
@@ -84,7 +95,7 @@ namespace gr {
       std::vector<LLR> get_LLRs(const gr_complex *samples);
 
      public:
-      fft_demod_impl( uint8_t sf, bool impl_head, bool soft_decoding, bool max_log_approx);
+      fft_demod_impl( bool soft_decoding, bool max_log_approx);
       ~fft_demod_impl();
 
       // Where all the action really happens

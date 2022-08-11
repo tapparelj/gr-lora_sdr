@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::gray_mapping::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t sf, bool soft_decoding);
+      static sptr make( bool soft_decoding);
     };
 
   } // namespace lora_sdr

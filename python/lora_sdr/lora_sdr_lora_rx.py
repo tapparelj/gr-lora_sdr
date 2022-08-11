@@ -15,20 +15,15 @@ import sys
 import signal
 from . import lora_sdr_python as lora_sdr
 
-
-
-
-
-
-
 class lora_sdr_lora_rx(gr.hier_block2):
-    def __init__(self, bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=250000, sf=7, soft_decoding=False, print_rx=[True,True]):
+    def __init__(self, center_freq=868100000, bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=250000, sf=7,sync_word=[0x12], soft_decoding=False, ldro_mode=2, print_rx=[True,True]):
         gr.hier_block2.__init__(
             self, "lora_sdr_lora_rx",
                 gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
                 gr.io_signature(1, 1, gr.sizeof_char*1),
         )
         self.message_port_register_hier_out("out")
+
 
         ##################################################
         # Parameters
@@ -42,20 +37,22 @@ class lora_sdr_lora_rx(gr.hier_block2):
         self.sf = sf
         self.soft_decoding = soft_decoding
         self.print_header = print_rx[0]
-        self.print_payload= print_rx[1]
+        self.print_payload = print_rx[1]
+        self.center_freq = center_freq
+        self.sync_word = sync_word
 
 
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, self.print_header)
+        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc,ldro_mode ,self.print_header)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
-        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(sf, soft_decoding)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head, [18])
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head, soft_decoding, True)
+        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(soft_decoding)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(center_freq, bw, sf, impl_head, sync_word,int(samp_rate/bw))
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf, soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( self.print_payload)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(soft_decoding)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( self.print_payload, False)
 
 
         ##################################################

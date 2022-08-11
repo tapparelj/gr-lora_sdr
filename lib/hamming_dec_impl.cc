@@ -131,8 +131,9 @@ namespace gr {
                     // and reversed bit order MSB<=>LSB
                     out[i] = ((bool)(data_nibble_soft & 0b0001) << 3) + ((bool)(data_nibble_soft & 0b0010) << 2) + ((bool)(data_nibble_soft & 0b0100) << 1) + (bool)(data_nibble_soft & 0b1000);
 
-                    // Hard decoding
-                } else {
+                    
+                } 
+                else {// Hard decoding
                     std::vector<bool> data_nibble(4, 0);
                     bool s0, s1, s2 = 0;
                     int syndrom = 0;
@@ -175,12 +176,10 @@ namespace gr {
                             s1 = codeword[1] ^ codeword[2] ^ codeword[3] ^ codeword[5];
 
                             if (s0 | s1) {
-                                // TODO inform user of erroneous nibble
                             }
                             break;
                         case 1:
                             if (!(count(codeword.begin(), codeword.end(), true) % 2)) {
-                                // TODO inform user of erroneous nibble
                             }
                             break;
                     }

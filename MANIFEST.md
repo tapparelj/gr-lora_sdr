@@ -1,7 +1,8 @@
 title: The LORA_SDR OOT Module
-brief: Short description of gr-lora_sdr
-tags: # Tags are arbitrary, but look at CGRAN what other authors are using
-  - sdr
+brief: OOT Module containing all blocks requiring for a functional LoRa transceiver.
+tags: 
+  - SDR
+  - LoRa
 author:
   - Tapparel Joachim <joachim.tapparel@epfl.ch>
 copyright_owner:
@@ -12,6 +13,3 @@ gr_supported_version: 3.10.3# Put a comma separated list of supported GR version
 #website: <module_website> # If you have a separate project website, put it here
 #icon: <icon_url> # Put a URL to a square image here that will be used as an icon on CGRAN
 ---
-A longer, multi-line description of gr-lora_sdr.
-You may use some *basic* Markdown here.
-If left empty, it will try to find a README file instead.

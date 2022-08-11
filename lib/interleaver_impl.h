@@ -15,9 +15,12 @@ namespace gr {
 
         uint32_t cw_cnt; ///< count the number of codewords
         int m_frame_len; ///<length of the frame in number of items
+        bool m_ldro; ///< use the low datarate optimisation mode
+        int m_bw;
+
 
      public:
-      interleaver_impl(uint8_t cr, uint8_t sf);
+      interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro_mode, int bw);
       ~interleaver_impl();
 
       void set_cr(uint8_t cr);

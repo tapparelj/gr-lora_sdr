@@ -16,9 +16,10 @@ namespace gr {
       uint8_t cw_len;   ///< Length of a codeword
       bool m_is_header;    ///< Indicate that we need to deinterleave the first block with the default header parameters (cr=4/8, reduced rate)
       bool m_soft_decoding;   ///< Hard/Soft decoding
+      bool m_ldro; ///< use low datarate optimization mode
 
      public:
-      deinterleaver_impl(uint8_t sf, bool soft_decoding);
+      deinterleaver_impl(bool soft_decoding);
       ~deinterleaver_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

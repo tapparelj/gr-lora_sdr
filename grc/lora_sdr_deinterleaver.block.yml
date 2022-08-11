@@ -5,19 +5,15 @@ label: Deinterleaver
 category: '[LoRa_RX]'
 
 parameters:
--   id: sf
-    label: Sf
-    dtype: int
 -   id: soft_decoding
     label: Soft_Decoding
     dtype: bool
     default: 'soft_decoding'
     options: [False, True]
-
 inputs:
 -   domain: stream
-    dtype: ${ 'f64' if soft_decoding else 'int'}
-    vlen: ${ sf if soft_decoding else 1}
+    dtype: ${ 'f64' if soft_decoding else 'short'}
+    vlen: ${ 12 if soft_decoding else 1} #12 is the max number of bits per symbol
 
 outputs:
 -   domain: stream
@@ -26,11 +22,12 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.deinterleaver(${sf}, ${soft_decoding})
+    make: lora_sdr.deinterleaver( ${soft_decoding})
 
 documentation: |-
     Deinterleave the received codewords.
         Parameters:
+            sodt_decoding: use soft-decision decoding
             sf: spreading factor
         Input:
             in: stream of received (gray demapped) decimal values

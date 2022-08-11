@@ -12,21 +12,26 @@ namespace gr
   {
 
     interleaver::sptr
-    interleaver::make(uint8_t cr, uint8_t sf)
+    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
     {
-      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf));
+      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw));
     }
 
     /*
      * The private constructor
      */
-    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf)
+    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
         : gr::block("interleaver",
                     gr::io_signature::make(1, 1, sizeof(uint8_t)),
                     gr::io_signature::make(1, 1, sizeof(uint32_t)))
     {
       m_sf = sf;
       m_cr = cr;
+      m_bw = bw;
+      if (ldro == AUTO)
+        m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+      else
+        m_ldro = ldro;
 
       cw_cnt = 0;
 
@@ -66,7 +71,7 @@ namespace gr
     {
       const uint8_t *in = (const uint8_t *)input_items[0];
       uint32_t *out = (uint32_t *)output_items[0];
-      int nitems_to_process=ninput_items[0];
+      int nitems_to_process = ninput_items[0];
 
       // read tags
       std::vector<tag_t> tags;
@@ -82,7 +87,7 @@ namespace gr
           }
           cw_cnt = 0;
           m_frame_len = pmt::to_long(tags[0].value);
-          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / m_sf) * (m_cr + 4), 0)); //get number of items in frame
+          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
           tags[0].offset = nitems_written(0); 
         }
       }
@@ -92,7 +97,7 @@ namespace gr
       // nitems_to_process = std::min(nitems_to_process)
       // handle the first interleaved block special case
       uint8_t cw_len = 4 + ((cw_cnt < m_sf - 2) ? 4 : m_cr);
-      uint8_t sf_app = (cw_cnt < m_sf - 2) ? m_sf - 2 : m_sf;
+      uint8_t sf_app = ((cw_cnt < m_sf - 2) ||m_ldro) ? m_sf - 2 : m_sf;
 
       nitems_to_process = std::min(nitems_to_process,(int)sf_app);
       if(std::floor((float)noutput_items/cw_len)==0)
@@ -141,7 +146,7 @@ namespace gr
             inter_bin[i][j] = cw_bin[mod((i - j - 1), sf_app)][i];
           }
           //For the first bloc we add a parity bit and a zero in the end of the lora symbol(reduced rate)
-          if (cw_cnt == m_sf - 2)
+          if ((cw_cnt == m_sf - 2)||m_ldro)
             inter_bin[i][sf_app] = accumulate(inter_bin[i].begin(), inter_bin[i].end(), 0) % 2;
 
           out[i] = bool2int(inter_bin[i]);

@@ -28,6 +28,12 @@ parameters:
     dtype: bool
     default: 'False'
     hide: ${ 'none' if impl_head else 'all' }
+-   id: ldro
+    label: LDRO
+    dtype: int
+    options: ['0','1','2']
+    option_labels: ['Disable','Enable','Auto']
+    default: '2'
 
 
 inputs:
@@ -42,7 +48,7 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.header_decoder(${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${print_header})
+    make: lora_sdr.header_decoder(${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${ldro}, ${print_header})
 
 documentation: |-
     Recover information present in the header of a frame and send them to the frame synchronization block, which forwards them to each other blocks.
@@ -52,6 +58,8 @@ documentation: |-
         CR: coding rate        
         pay_len: payload length in bytes       
         has_crc: indicate the presence of a payload CRC
+        LDRO: Use of low datarate optimisation mode ('Auto': enabled for symbols durations > 16ms)
+
     Input:        
         in: stream of nibbles containing the header, payload (and CRC if used)        
     Output:        

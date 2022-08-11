@@ -14,7 +14,7 @@ namespace gr {
       bool m_soft_decoding;   ///< Hard/Soft decoding
 
      public:
-      gray_mapping_impl(uint8_t sf, bool soft_decoding);
+      gray_mapping_impl(bool soft_decoding);
       ~gray_mapping_impl();
 
       int work(

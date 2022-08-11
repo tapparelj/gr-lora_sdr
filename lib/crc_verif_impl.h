@@ -19,6 +19,7 @@ namespace gr {
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
         bool print_rx_msg;  ///< print received message in terminal or not
+        bool output_crc_check; ///< output the result of the payload CRC check
 
         uint32_t cnt=0;///< count the number of frame
 
@@ -41,7 +42,7 @@ namespace gr {
         unsigned int crc16(uint8_t* data, uint32_t len);
 
      public:
-      crc_verif_impl(bool print_rx_msg);
+      crc_verif_impl(bool print_rx_msg, bool output_crc_check);
       ~crc_verif_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

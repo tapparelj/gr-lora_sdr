@@ -14,23 +14,18 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_lora_sdr_mod = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_mod = R"doc()doc";
+static const char *__doc_gr_lora_sdr_double_mod = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_int2bool = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_double_mod = R"doc()doc";
+static const char *__doc_gr_lora_sdr_bool2int = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_build_upchirp = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_int2bool = R"doc()doc";
+static const char *__doc_gr_lora_sdr_build_ref_chirps = R"doc()doc";
 
+static const char *__doc_gr_lora_sdr_most_frequent = R"doc()doc";
 
-static const char* __doc_gr_lora_sdr_bool2int = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_build_upchirp = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_build_ref_chirps = R"doc()doc";
-
-
-static const char* __doc_gr_lora_sdr_random_string = R"doc()doc";
+static const char *__doc_gr_lora_sdr_random_string = R"doc()doc";

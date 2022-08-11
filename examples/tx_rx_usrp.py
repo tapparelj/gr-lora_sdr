@@ -36,7 +36,8 @@ class tx_rx_usrp(gr.top_block):
         ##################################################
         self.soft_decoding = soft_decoding = True
         self.sf = sf = 7
-        self.samp_rate = samp_rate = 250000
+        self.samp_rate_tx = samp_rate_tx = 250000
+        self.samp_rate_rx = samp_rate_rx = 250000
         self.pay_len = pay_len = 255
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
@@ -44,7 +45,7 @@ class tx_rx_usrp(gr.top_block):
         self.cr = cr = 2
         self.center_freq = center_freq = 868.1e6
         self.bw = bw = 125000
-        self.SNRdB = SNRdB = 0
+        self.Att_dB = Att_dB = 0
 
         ##################################################
         # Blocks
@@ -57,7 +58,7 @@ class tx_rx_usrp(gr.top_block):
                 channels=list(range(0,1)),
             ),
         )
-        self.uhd_usrp_source_0_0.set_samp_rate(samp_rate)
+        self.uhd_usrp_source_0_0.set_samp_rate(samp_rate_rx)
         # No synchronization enforced.
 
         self.uhd_usrp_source_0_0.set_center_freq(center_freq, 0)
@@ -74,7 +75,7 @@ class tx_rx_usrp(gr.top_block):
             ),
             'frame_len',
         )
-        self.uhd_usrp_sink_0_0.set_samp_rate(samp_rate)
+        self.uhd_usrp_sink_0_0.set_samp_rate(samp_rate_tx)
         # No synchronization enforced.
 
         self.uhd_usrp_sink_0_0.set_center_freq(center_freq, 0)
@@ -83,22 +84,22 @@ class tx_rx_usrp(gr.top_block):
         self.uhd_usrp_sink_0_0.set_gain(0, 0)
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate_tx, bw, [0x12])
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf)
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, True)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 2, 125000)
+        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, 2, True)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
-        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(sf, soft_decoding)
+        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head, [0x12])
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head, soft_decoding, False)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], (int(samp_rate_rx/bw)))
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, False)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf, soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(10**((SNRdB)/20))
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(10**((Att_dB)/20))
         self.blocks_multiply_const_vxx_0.set_min_output_buffer(10000000)
         self.blocks_message_strobe_0_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), frame_period)
 
@@ -144,13 +145,19 @@ class tx_rx_usrp(gr.top_block):
         self.lora_sdr_interleaver_0.set_sf(self.sf)
         self.lora_sdr_modulate_0.set_sf(self.sf)
 
-    def get_samp_rate(self):
-        return self.samp_rate
+    def get_samp_rate_tx(self):
+        return self.samp_rate_tx
 
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
-        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate)
-        self.uhd_usrp_source_0_0.set_samp_rate(self.samp_rate)
+    def set_samp_rate_tx(self, samp_rate_tx):
+        self.samp_rate_tx = samp_rate_tx
+        self.uhd_usrp_sink_0_0.set_samp_rate(self.samp_rate_tx)
+
+    def get_samp_rate_rx(self):
+        return self.samp_rate_rx
+
+    def set_samp_rate_rx(self, samp_rate_rx):
+        self.samp_rate_rx = samp_rate_rx
+        self.uhd_usrp_source_0_0.set_samp_rate(self.samp_rate_rx)
 
     def get_pay_len(self):
         return self.pay_len
@@ -204,12 +211,12 @@ class tx_rx_usrp(gr.top_block):
         self.uhd_usrp_source_0_0.set_bandwidth(self.bw, 0)
         self.uhd_usrp_source_0_0.set_bandwidth(self.bw, 1)
 
-    def get_SNRdB(self):
-        return self.SNRdB
+    def get_Att_dB(self):
+        return self.Att_dB
 
-    def set_SNRdB(self, SNRdB):
-        self.SNRdB = SNRdB
-        self.blocks_multiply_const_vxx_0.set_k(10**((self.SNRdB)/20))
+    def set_Att_dB(self, Att_dB):
+        self.Att_dB = Att_dB
+        self.blocks_multiply_const_vxx_0.set_k(10**((self.Att_dB)/20))
 
 
 

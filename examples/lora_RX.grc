@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 4]
+    coordinate: [424, 88.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -54,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 80.0]
+    coordinate: [280, 8.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -66,19 +66,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 4]
+    coordinate: [672, 8.0]
     rotation: 0
     state: enabled
 - name: has_crc
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 4]
+    coordinate: [536, 8.0]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -90,7 +90,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 4]
+    coordinate: [456, 8.0]
     rotation: 0
     state: enabled
 - name: pay_len
@@ -102,19 +102,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 4]
+    coordinate: [608, 8.0]
     rotation: 0
     state: enabled
 - name: samp_rate
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: '500000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 4]
+    coordinate: [200, 8.0]
     rotation: 0
     state: enabled
 - name: sf
@@ -126,7 +126,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [360, 4]
+    coordinate: [368, 88.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
@@ -138,7 +138,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 4.0]
+    coordinate: [528, 88.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -151,9 +151,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [296, 88.0]
+    coordinate: [200, 80.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora_sdr_crc_verif_0
   id: lora_sdr_crc_verif
   parameters:
@@ -162,12 +162,13 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
+    output_crc_check: 'False'
     print_rx_msg: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 200.0]
+    coordinate: [1384, 192.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -178,7 +179,6 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
@@ -199,7 +199,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 216.0]
+    coordinate: [1264, 208.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -208,17 +208,15 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    impl_head: impl_head
     max_log_approx: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 208.0]
+    coordinate: [416, 216.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -227,18 +225,20 @@ blocks:
     affinity: ''
     alias: ''
     bandwidth: bw
+    center_freq: int(center_freq)
     comment: ''
     impl_head: impl_head
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: samp_rate
+    os_factor: int(samp_rate/bw)
     sf: sf
-    sync_words: '18'
+    show_log_port: 'False'
+    sync_word: '18'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 200.0]
+    coordinate: [256, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_mapping_0
@@ -249,7 +249,6 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    sf: sf
     soft_decoding: soft_decoding
   states:
     bus_sink: false
@@ -271,7 +270,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 224.0]
+    coordinate: [928, 216.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -283,6 +282,7 @@ blocks:
     cr: cr
     has_crc: has_crc
     impl_head: impl_head
+    ldro: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     pay_len: pay_len
@@ -291,7 +291,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 216.0]
+    coordinate: [1104, 200.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -727,7 +727,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 156.0]
+    coordinate: [48, 148.0]
     rotation: 0
     state: enabled
 

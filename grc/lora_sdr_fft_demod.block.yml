@@ -5,12 +5,6 @@ label: fft_demod
 category: '[LoRa_RX]'
 
 parameters:
--   id: sf
-    label: Sf
-    dtype: int
--   id: impl_head
-    label: Impl_head
-    dtype: bool
 -   id: soft_decoding
     label: Soft_Decoding
     dtype: bool
@@ -27,21 +21,19 @@ parameters:
 inputs:
 -   domain: stream
     dtype: complex
-    vlen: ${ 2**sf }
 
 outputs:
 -   domain: stream
-    dtype: ${ 'f64' if soft_decoding else 'int'}
-    vlen: ${ sf if soft_decoding else 1}
+    dtype: ${ 'f64' if soft_decoding else 'short'}
+    vlen: ${ 12 if soft_decoding else 1} #maximum bit per symbol is 12
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.fft_demod( ${sf}, ${impl_head}, ${soft_decoding}, ${max_log_approx})
+    make: lora_sdr.fft_demod( ${soft_decoding}, ${max_log_approx})
 
 documentation: |-
     Recover the value of a lora symbol using argmax(DFT(lora_symbol * ref_downchirp)
         Parameters: 
-           sf: spreading factor        
            impl_head: usage of an implicit header (explicit will be used otherwise) 
            soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax   
         Input:        
