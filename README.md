@@ -18,7 +18,7 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 </p>
 
 -   In the Tx chain, the implementation contains all the main blocks of the LoRa transceiver: the header- and the CRC-insertion blocks, the whitening block, the Hamming encoder block, the interleaver block, the Gray demapping block, and the modulation block.
-![tx_flow](https://user-images.githubusercontent.com/66671413/184138772-18b00b6e-4440-4a71-a34d-03726f087432.png)
+![tx_flow](https://user-images.githubusercontent.com/66671413/184139150-a14a0417-7098-46ea-b6ad-ca8ba6709904.png)
 
 -   On the receiver side there is the packet synchronization block, which performs all the necessary tasks needed for the synchronization, such as the necessary STO and CFO estimation and correction. The demodulation block follows, along with the Gray mapping block, the deinterleaving block, the Hamming decoder block and the dewhitening block, as well as a CRC verification block.
 ![rx_flow](https://user-images.githubusercontent.com/66671413/184138776-2e41efc0-78b4-434b-8958-3bed2443cbc4.png)
