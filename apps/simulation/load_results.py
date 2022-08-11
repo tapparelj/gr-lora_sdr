@@ -5,15 +5,28 @@ import pickle
 
 plt.figure()
 
+# results folder path
 folder = "results/"
-file_list=["samp250000_bw125000_sf7_cr2_payLen32_cfo0_softTrue_ldroFalse.pkl","samp250000_bw125000_sf7_cr2_payLen32_cfo0_softFalse_ldroFalse.pkl"]
-for file in file_list:
-    snrs, FER, Glob_FER = pickle.load(open(folder+file,"rb"))
-    plt.semilogy(snrs,Glob_FER,'-d',label=file)
+
+#-----------------------------------------
+# Results to load and plot
+#-----------------------------------------
+file_list=[""]
+
+colors = plt.cm.rainbow(np.linspace(0,1,len(file_list)))
+for idx,file in enumerate(file_list):
+    
+    snrs, FER, Glob_FER = pickle.load(open(folder+file+".pkl","rb"))
+    # Plot FER of frame which preamble has been detected
+    plt.semilogy(snrs,FER,'-d',label=file_list[idx], color=colors[idx])
+    # Plot FER over all transmitted frames
+    plt.semilogy(snrs,Glob_FER,'--d',label=file_list[idx], color=colors[idx])
 
 plt.grid()
 plt.xlabel('SNR [dB]')
-plt.ylabel('Error rate')
+plt.ylabel('Frame Error rate')
 plt.ylim([1e-4,1.05])
 plt.legend(loc='upper right')
+plt.title("")
 plt.show()
+

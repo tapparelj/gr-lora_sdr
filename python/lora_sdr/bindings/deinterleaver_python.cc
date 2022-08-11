@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(deinterleaver.h) */
-/* BINDTOOL_HEADER_FILE_HASH(e4413e32e1d5dee301a4ddd485a9a2cb) */
+/* BINDTOOL_HEADER_FILE_HASH(65d663d2dd00415de5989550a4b1fb3e) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,8 +37,8 @@ void bind_deinterleaver(py::module &m) {
              std::shared_ptr<deinterleaver>>(m, "deinterleaver",
                                              D(deinterleaver))
 
-      .def(py::init(&deinterleaver::make), py::arg("sf"),
-           py::arg("soft_decoding"), D(deinterleaver, make))
+      .def(py::init(&deinterleaver::make), py::arg("soft_decoding"),
+           D(deinterleaver, make))
 
       ;
 }

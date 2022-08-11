@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to redo all python binding in case there is a version mismatch
+# Script to redo all python bindings in case there is a version mismatch
 
 gr_modtool bind add_crc
 gr_modtool bind crc_verif
@@ -18,5 +18,6 @@ gr_modtool bind interleaver
 gr_modtool bind modulate
 gr_modtool bind payload_id_inc
 gr_modtool bind RH_RF95_header
+gr_modtool bind utilities
 gr_modtool bind whitening
 

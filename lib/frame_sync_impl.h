@@ -50,6 +50,7 @@ namespace gr
       bool m_impl_head;                   ///< use implicit header mode
       uint8_t m_os_factor;                ///< oversampling factor
       std::vector<uint16_t> m_sync_words; ///< vector containing the two sync words (network identifiers)
+      bool m_ldro;                       ///< use of low datarate optimisation mode
 
       uint32_t m_number_of_bins;     ///< Number of bins in each lora Symbol
       uint32_t m_samples_per_symbol; ///< Number of samples received per lora symbols

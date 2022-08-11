@@ -19,7 +19,7 @@ namespace gr {
       bool m_ldro; ///< use low datarate optimization mode
 
      public:
-      deinterleaver_impl(uint8_t sf, bool soft_decoding);
+      deinterleaver_impl(bool soft_decoding);
       ~deinterleaver_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

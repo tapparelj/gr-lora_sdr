@@ -20,6 +20,9 @@ namespace gr {
         #define RESET   "\033[0m"
         #define RED     "\033[31m"      /* Red */
 
+        #define MIN_SF  5 //minimum and maximum SF
+        #define MAX_SF  12 
+
         typedef double LLR;    ///< Log-Likelihood Ratio type
         //typedef long double LLR; // 16 Bytes 
 
@@ -31,6 +34,12 @@ namespace gr {
             QUARTER_DOWN,
             PAYLOAD,
             UNDETERMINED
+        };
+        #define LDRO_MAX_DURATION_MS 16
+        enum ldro_mode {
+            DISABLE,
+            ENABLE,
+            AUTO
         };
         /**
          *  \brief  return the modulus a%b between 0 and (b-1)

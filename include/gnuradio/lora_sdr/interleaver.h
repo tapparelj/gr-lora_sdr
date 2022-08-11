@@ -49,7 +49,7 @@ namespace gr {
        * class. lora_sdr::interleaver::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t cr, uint8_t sf, bool ldro);
+      static sptr make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw);
     };
 
   } // namespace lora_sdr

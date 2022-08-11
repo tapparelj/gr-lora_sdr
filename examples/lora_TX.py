@@ -34,14 +34,14 @@ class lora_TX(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.sf = sf = 12
+        self.sf = sf = 7
         self.samp_rate = samp_rate = 250000
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
         self.frame_period = frame_period = 1000
         self.cr = cr = 1
         self.center_freq = center_freq = 868.1e6
-        self.bw = bw = 250000
+        self.bw = bw = 125000
         self.TX_gain = TX_gain = 0
 
         ##################################################
@@ -67,7 +67,7 @@ class lora_TX(gr.top_block):
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16])
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf,False)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 0, 125000)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)

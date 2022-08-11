@@ -3,10 +3,6 @@ label: Gray mapping
 category: '[LoRa_RX]'
 
 parameters:
--   id: sf
-    label: SF
-    default: 'sf'
-    dtype: int
 -   id: soft_decoding
     label: Soft_Decoding
     dtype: bool
@@ -15,18 +11,18 @@ parameters:
 
 inputs:
 -   domain: stream
-    dtype: ${ 'f64' if soft_decoding else 'int'}
-    vlen: ${ sf if soft_decoding else 1}
+    dtype: ${ 'f64' if soft_decoding else 'short'}
+    vlen: ${ 12 if soft_decoding else 1} #max bin per symbol is 12
 
 outputs:
 -   domain: stream
     dtype: int
-    dtype: ${ 'f64' if soft_decoding else 'int'}
-    vlen: ${ sf if soft_decoding else 1}
+    dtype: ${ 'f64' if soft_decoding else 'short'}
+    vlen: ${ 12 if soft_decoding else 1} #max bin per symbol is 12
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.gray_mapping(${sf}, ${soft_decoding})
+    make: lora_sdr.gray_mapping( ${soft_decoding})
 
 documentation: |-
     Apply the gray demapping operation. (Corresponding to a gray encoding with a shift)

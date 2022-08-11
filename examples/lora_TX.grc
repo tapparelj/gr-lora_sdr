@@ -28,7 +28,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 4]
+    coordinate: [8, 8.0]
     rotation: 0
     state: enabled
 
@@ -42,19 +42,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [704, 4]
+    coordinate: [680, 8.0]
     rotation: 0
     state: enabled
 - name: bw
   id: variable
   parameters:
     comment: ''
-    value: '250000'
+    value: '125000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 4]
+    coordinate: [264, 8.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -66,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 68.0]
+    coordinate: [184, 72.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -78,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 4]
+    coordinate: [520, 8.0]
     rotation: 0
     state: enabled
 - name: frame_period
@@ -90,7 +90,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 4]
+    coordinate: [768, 8.0]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -102,7 +102,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [592, 4]
+    coordinate: [576, 8.0]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -114,7 +114,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 4]
+    coordinate: [440, 8.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -126,19 +126,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 4]
+    coordinate: [184, 8.0]
     rotation: 0
     state: enabled
 - name: sf
   id: variable
   parameters:
     comment: ''
-    value: '12'
+    value: '7'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 4]
+    coordinate: [352, 8.0]
     rotation: 0
     state: enabled
 - name: blocks_message_strobe_0
@@ -171,7 +171,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 200.0]
+    coordinate: [648, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_demap_0
@@ -187,7 +187,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 200.0]
+    coordinate: [1040, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -204,7 +204,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 192.0]
+    coordinate: [776, 192.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_0
@@ -222,7 +222,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 184.0]
+    coordinate: [504, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -230,9 +230,10 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
+    bw: '125000'
     comment: ''
     cr: cr
-    ldro: 'False'
+    ldro: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -240,7 +241,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 184.0]
+    coordinate: [912, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -259,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 184.0]
+    coordinate: [1192, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_payload_id_inc_0
@@ -292,7 +293,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 200.0]
+    coordinate: [296, 200.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0
@@ -569,7 +570,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1352, 124.0]
+    coordinate: [1376, 124.0]
     rotation: 0
     state: enabled
 

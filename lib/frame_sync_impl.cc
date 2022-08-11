@@ -28,6 +28,7 @@ namespace gr
             m_center_freq = center_freq;
             m_bw = bandwidth;
             m_sf = sf;
+            
             m_sync_words = sync_word;
             m_os_factor = os_factor;
             n_up = 8;
@@ -382,6 +383,7 @@ namespace gr
             m_cr = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("cr"), err));
             m_pay_len = pmt::to_double(pmt::dict_ref(frame_info, pmt::string_to_symbol("pay_len"), err));
             m_has_crc = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("crc"), err));
+            uint8_t ldro_mode = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("ldro_mode"), err));
             m_invalid_header = pmt::to_double(pmt::dict_ref(frame_info, pmt::string_to_symbol("err"), err));
 
             if (m_invalid_header)
@@ -392,11 +394,19 @@ namespace gr
                 m_sto_frac = 0;
             }
             else
-            {
-                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / m_sf) * (4 + m_cr);
+            {   
+                if (ldro_mode == AUTO)
+                    m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
+                else
+                    m_ldro = ldro_mode;
+            
+                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf-2*m_ldro)) * (4 + m_cr);
                 m_received_head = true;
                 frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(false));
                 frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
+                frame_info = pmt::dict_delete(frame_info, pmt::intern("ldro_mode"));
+
+                frame_info = pmt::dict_add(frame_info, pmt::intern("ldro"), pmt::from_bool(m_ldro));
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), frame_info);
             }
         }
@@ -430,6 +440,11 @@ namespace gr
             const gr_complex *in = (const gr_complex *)input_items[0];
             gr_complex *out = (gr_complex *)output_items[0];
             int items_to_output = 0;
+
+            // check if there is enough space in the output buffer
+            if(noutput_items < m_number_of_bins) {
+                return 0;
+            }
 
             float *sync_log_out = NULL;
             if (output_items.size() == 2)
@@ -516,7 +531,7 @@ namespace gr
                 items_to_output = 0;
                 if (!cfo_frac_sto_frac_est)
                 {
-                    m_cfo_frac = estimate_CFO_frac(&preamble_raw[m_number_of_bins - k_hat]);
+                    m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
                     m_sto_frac = estimate_STO_frac();
                     // create correction vector
                     for (int n = 0; n < m_number_of_bins; n++)
@@ -749,27 +764,23 @@ namespace gr
                                     //     preamb_file << out[i].real() << (out[i].imag() < 0 ? "-" : "+") << std::abs(out[i].imag()) << "i,";
                                     // }
 
-                                    items_to_output = 1;
+                                    items_to_output = m_number_of_bins;
 
                                     m_state = SFO_COMPENSATION;
-                                    std::cout << "netid1 mistaken as upchirp\n";
+                                    // std::cout << "netid1 mistaken as an upchirp\n";
+                                    symbol_cnt = 1;
                                     frame_cnt++;
 
                                 }
                             }
                             if (!one_symbol_off)
                             {
-                                // detect_file << 000000 << ",";
                                 m_state = DETECT;
                                 symbol_cnt = 1;
                                 items_to_output = 0;
                                 k_hat = 0;
                                 m_sto_frac = 0;
                                 items_to_consume = 0;
-                                // for (int i = 0; i < m_number_of_bins * 2; i++)
-                                // {
-                                //     netid_corr_file << net_ids_samp_dec[i].real() << (net_ids_samp_dec[i].imag() < 0 ? "-" : "+") << std::abs(net_ids_samp_dec[i].imag()) << "i,";
-                                // }
                             }
                         }
                         else
@@ -839,13 +850,16 @@ namespace gr
                             snr_est2 /= up_symb_to_use;
                             float cfo_log = m_cfo_int + m_cfo_frac;
                             float sto_log = k_hat - m_cfo_int + m_sto_frac;
-                            float srn_log = snr_est; // todo remove 10 * log10((determine_energy(&preamble_upchirps[0], 6) - m_noise_est) / m_noise_est);
+                            float srn_log = snr_est; 
+                            float sfo_log = sfo_hat;
+                            // todo remove 10 * log10((determine_energy(&preamble_upchirps[0], 6) - m_noise_est) / m_noise_est);
                             // std::cout<<"snr_est1 "<<snr_est<<"  snr_est2 "<<snr_est2<<std::endl;
                             sync_log_out[0] = srn_log;
                             sync_log_out[1] = cfo_log;
                             sync_log_out[2] = sto_log;
-                            sync_log_out[3] = off_by_one_id;
-                            produce(1, 4);
+                            sync_log_out[3] = sfo_log;
+                            sync_log_out[4] = off_by_one_id;
+                            produce(1, 5);
                         }
                         #ifdef PRINT_INFO
                     
@@ -867,10 +881,9 @@ namespace gr
                 //  if(symbol_cnt==0){
                 //      start_off_file<<nitems_read(0)<<",";
                 //  }
-
+                
                 if (symbol_cnt < 8 || (symbol_cnt < m_symb_numb && m_received_head))
                 {
-
                     // output downsampled signal (with no STO but with CFO)
                     memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
                     items_to_consume = m_samples_per_symbol;
@@ -909,6 +922,8 @@ namespace gr
                 break;
             }
             }
+            // if(items_to_consume)
+            //     print("consume: "<<items_to_consume<<" produce: "<<items_to_output);
             consume_each(items_to_consume);
             produce(0, items_to_output);
             return WORK_CALLED_PRODUCE;

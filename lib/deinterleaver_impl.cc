@@ -11,18 +11,17 @@ namespace gr {
     namespace lora_sdr {
 
         deinterleaver::sptr
-        deinterleaver::make(uint8_t sf, bool soft_decoding) {
-            return gnuradio::get_initial_sptr(new deinterleaver_impl(sf, soft_decoding));
+        deinterleaver::make(bool soft_decoding) {
+            return gnuradio::get_initial_sptr(new deinterleaver_impl( soft_decoding));
         }
 
         /*
          * The private constructor
          */
-        deinterleaver_impl::deinterleaver_impl(uint8_t sf, bool soft_decoding)
+        deinterleaver_impl::deinterleaver_impl( bool soft_decoding)
             : gr::block("deinterleaver",
-                        gr::io_signature::make(1, 1, soft_decoding ? sf * sizeof(LLR) : sizeof(uint32_t)),  // In reality: sf_app               < sf
+                        gr::io_signature::make(1, 1, soft_decoding ? MAX_SF * sizeof(LLR) : sizeof(uint16_t)),  // In reality: sf_app               < sf
                         gr::io_signature::make(1, 1, soft_decoding ? 8 * sizeof(LLR) : sizeof(uint8_t))),   // In reality: cw_len = cr_app + 4  < 8
-              m_sf(sf),
               m_soft_decoding(soft_decoding)
                {
             set_tag_propagation_policy(TPP_DONT);
@@ -41,7 +40,7 @@ namespace gr {
                                              gr_vector_int &ninput_items,
                                              gr_vector_const_void_star &input_items,
                                              gr_vector_void_star &output_items) {
-            const uint32_t *in1 = (const uint32_t *)input_items[0];
+            const uint16_t *in1 = (const uint16_t *)input_items[0];
             const LLR *in2 = (const LLR *)input_items[0];
             uint8_t *out1 = (uint8_t *)output_items[0];
             LLR *out2 = (LLR *)output_items[0];
@@ -53,6 +52,7 @@ namespace gr {
                 m_is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));
                 
                 if (m_is_header) {
+                    m_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
                     // std::cout<<"deinterleaver_header "<<tags[0].offset<<std::endl;
                     // is_first = true;
                 } else {
@@ -65,7 +65,6 @@ namespace gr {
                 add_item_tag(0, tags[0]);
 
             }
-
             sf_app = (m_is_header||m_ldro) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block
             cw_len = m_is_header ? 8 : m_cr + 4;
             // std::cout << "sf_app " << +sf_app << " cw_len " << +cw_len << std::endl;

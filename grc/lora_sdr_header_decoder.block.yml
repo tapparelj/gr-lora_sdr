@@ -30,9 +30,10 @@ parameters:
     hide: ${ 'none' if impl_head else 'all' }
 -   id: ldro
     label: LDRO
-    dtype: bool
-    options: ['True','False','ldro']
-    default: 'ldro'
+    dtype: int
+    options: ['0','1','2']
+    option_labels: ['Disable','Enable','Auto']
+    default: '2'
 
 
 inputs:
@@ -57,7 +58,7 @@ documentation: |-
         CR: coding rate        
         pay_len: payload length in bytes       
         has_crc: indicate the presence of a payload CRC
-        ldro: use low datarate optimisation
+        LDRO: Use of low datarate optimisation mode ('Auto': enabled for symbols durations > 16ms)
 
     Input:        
         in: stream of nibbles containing the header, payload (and CRC if used)        

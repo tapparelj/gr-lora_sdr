@@ -34,7 +34,7 @@ class lora_RX(gr.top_block):
         # Variables
         ##################################################
         self.soft_decoding = soft_decoding = True
-        self.sf = sf = 6
+        self.sf = sf = 7
         self.samp_rate = samp_rate = 250000
         self.pay_len = pay_len = 11
         self.impl_head = impl_head = True
@@ -63,11 +63,11 @@ class lora_RX(gr.top_block):
         self.uhd_usrp_source_0.set_min_output_buffer((int(np.ceil(samp_rate/bw*(2**sf+2)))))
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, False, True)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
-        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(sf, soft_decoding)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(samp_rate, bw, sf, impl_head, [18])
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( sf, impl_head, soft_decoding, True)
+        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], 4)
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(sf, soft_decoding)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
 
 

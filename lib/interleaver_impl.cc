@@ -12,22 +12,26 @@ namespace gr
   {
 
     interleaver::sptr
-    interleaver::make(uint8_t cr, uint8_t sf, bool ldro)
+    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
     {
-      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro));
+      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw));
     }
 
     /*
      * The private constructor
      */
-    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, bool ldro)
+    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
         : gr::block("interleaver",
                     gr::io_signature::make(1, 1, sizeof(uint8_t)),
                     gr::io_signature::make(1, 1, sizeof(uint32_t)))
     {
       m_sf = sf;
       m_cr = cr;
-      m_ldro = ldro;
+      m_bw = bw;
+      if (ldro == AUTO)
+        m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+      else
+        m_ldro = ldro;
 
       cw_cnt = 0;
 

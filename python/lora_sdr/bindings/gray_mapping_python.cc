@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(gray_mapping.h) */
-/* BINDTOOL_HEADER_FILE_HASH(93cf3a27fd2e6667e18a71a74aa606d8) */
+/* BINDTOOL_HEADER_FILE_HASH(42acb0b27196fd81600dab69004410d4) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,8 +36,8 @@ void bind_gray_mapping(py::module &m) {
   py::class_<gray_mapping, gr::sync_block, gr::block, gr::basic_block,
              std::shared_ptr<gray_mapping>>(m, "gray_mapping", D(gray_mapping))
 
-      .def(py::init(&gray_mapping::make), py::arg("sf"),
-           py::arg("soft_decoding"), D(gray_mapping, make))
+      .def(py::init(&gray_mapping::make), py::arg("soft_decoding"),
+           D(gray_mapping, make))
 
       ;
 }

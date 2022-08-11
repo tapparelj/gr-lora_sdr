@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::header_decoder::make is the public interface for
        * creating new instances.
        */
-      static sptr make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc,bool ldro, bool print_header);
+      static sptr make(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, uint8_t ldro, bool print_header);
     };
 
   } // namespace lora_sdr
