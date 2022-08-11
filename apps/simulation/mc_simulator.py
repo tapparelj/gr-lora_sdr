@@ -82,7 +82,6 @@ def main():
     #-----------------------------------------
     #                Plot results
     #-----------------------------------------
-    print("FER: {}".format(Glob_FER))
     plt.figure()
     plt.semilogy(snrs,FER,'-d',label='FER')
     plt.semilogy(snrs,Glob_FER,'-d',label='FER including frame miss')

@@ -24,6 +24,7 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 ![lora_rx_usrp](https://user-images.githubusercontent.com/66671413/181521275-159a2671-f474-41ba-b924-cabf1cd63e40.png)
 
 -   The implementation can be used for fully end-to-end experimental performance results of a LoRa SDR receiver at low SNRs.
+-	A simple simulation framework is available in the apps/simulation folder.
 
 
 
@@ -32,13 +33,14 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 - Sending and receiving LoRa packets between USRP-USRP and USRP-commercial LoRa transceiver (tested for Adafruit Feather 32u4 RFM95 and dragino LoRa/GPS HAT).
 
 - Parameters available:
-	- Spreading factors: 7-12 (without reduce rate mode)
+	- Spreading factors: 5-12
 	- Coding rates: 0-4
 	- Implicit and explicit header mode
 	- Payload length: 1-255 bytes
-	- sync word selection (network ID)
+	- Sync word selection (network ID)
 	- Verification of payload CRC
 	- Verification of explicit header checksum
+	- Low datarate optimisation mode 
 	- Utilisation of soft-decision decoding for improved performances
 
 ## Reference

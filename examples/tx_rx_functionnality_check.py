@@ -73,7 +73,7 @@ class tx_rx_functionnality_check(gr.top_block):
             taps=[1.0 + 0.0j],
             noise_seed=0,
             block_tags=True)
-        self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
+        self.channels_channel_model_0.set_min_output_buffer((int((2**sf+2)*samp_rate/bw)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
         self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, (int(2**sf*samp_rate/bw*10.1)))

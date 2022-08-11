@@ -150,7 +150,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 88.0]
+    coordinate: [552, 88.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
@@ -174,7 +174,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 88.0]
+    coordinate: [616, 88.0]
     rotation: 0
     state: enabled
 - name: blocks_delay_0
@@ -242,7 +242,7 @@ blocks:
     epsilon: 1.0+clk_offset*1e-6
     freq_offset: center_freq*clk_offset*1e-6/samp_rate
     maxoutbuf: '0'
-    minoutbuf: int(2**sf*samp_rate/bw*1.1)
+    minoutbuf: int((2**sf+2)*samp_rate/bw)
     noise_voltage: 10**(-SNRdB/20)
     seed: '0'
     taps: 1.0 + 0.0j
@@ -285,7 +285,7 @@ blocks:
     bus_structure: null
     coordinate: [160, 408.0]
     rotation: 180
-    state: true
+    state: enabled
 - name: lora_sdr_deinterleaver_0
   id: lora_sdr_deinterleaver
   parameters:
@@ -323,7 +323,6 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    impl_head: impl_head
     max_log_approx: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -332,7 +331,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1128, 424.0]
+    coordinate: [1128, 432.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -372,7 +371,7 @@ blocks:
     bus_structure: null
     coordinate: [1016, 208.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora_sdr_gray_mapping_0
   id: lora_sdr_gray_mapping
   parameters:
@@ -388,7 +387,7 @@ blocks:
     bus_structure: null
     coordinate: [960, 432.0]
     rotation: 180
-    state: true
+    state: enabled
 - name: lora_sdr_hamming_dec_0
   id: lora_sdr_hamming_dec
   parameters:
