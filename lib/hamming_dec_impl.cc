@@ -104,7 +104,6 @@ namespace gr {
                             // Select correct bit            from correct LUT          crop table (cr)    bit position mask
                             bool bit = (((cr_app != 1) ? cw_LUT[n] : cw_LUT_cr5[n]) >> (8 - cw_len)) & (1u << (cw_len - 1 - j));
                             // if LLR > 0 --> 1     if LLR < 0 --> 0
-                            if (codeword_LLR[j] == 0) std::cout << RED << ":-( LLR = 0 can't decide" << RESET << std::endl;
                             if ((bit and codeword_LLR[j] > 0) or (!bit and codeword_LLR[j] < 0)) {  // if correct bit 1-->1 or 0-->0
                                 cw_proba[n] += abs(codeword_LLR[j]);
                             } else {                                  // if incorrect bit 0-->1 or 1-->0

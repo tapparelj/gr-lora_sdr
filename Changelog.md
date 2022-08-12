@@ -1,3 +1,6 @@
+# v0.5.1
+- Fixed an issue when running simulations on multiple threads while using soft-decision decoding
+
 # v0.5.0
 - add low datarate optimisation support
     - Can be enabled, disabled or used automatically for configuration using symbols longer than 16ms

@@ -13,8 +13,8 @@ import time
 #            Parameters Settings
 #-----------------------------------------
 sf = 7                  # Spreading factor
-cr = 0                  # Coding rate
-snrs = np.arange(-13,0,1.5) -3*(sf-7) # List of SNR to evaluate
+cr = 2                  # Coding rate
+snrs = np.arange(-13,0,1) -3*(sf-7) # List of SNR to evaluate
 n_frames = 1000         # Number of frames trnasmitted per SNR
 samp_rate = 500000      # Sample rate !Should be at least 4 time the bandwidth to avoid issue with the MMSE fractional resampler in the channel model!
 bw = 125000             # LoRa bandwidth
@@ -22,10 +22,10 @@ center_freq = 868.1     # Center frequency in MHz
 clk_offset_ppm = 0      # crystal offset in ppm
 pay_len = 32            # in bytes
 ldro = False            # usage of low datarate optimisation mode
-soft_decoding = False   # usage of soft-decision decoding in hte receiver
+soft_decoding = True   # usage of soft-decision decoding in hte receiver
 
 
-# Variable initialisation
+# Result variables initialisation
 FER = [0]*len(snrs) 
 Glob_FER = [0]*len(snrs)  #paquet reception ratio
 
@@ -85,11 +85,12 @@ def main():
     plt.figure()
     plt.semilogy(snrs,FER,'-d',label='FER')
     plt.semilogy(snrs,Glob_FER,'-d',label='FER including frame miss')
-    plt.grid()
+   
     plt.xlabel('SNR [dB]')
     plt.ylabel('Error rate')
-    plt.ylim([1e-4,1.05])
+    plt.ylim([10/n_frames,1.05])
     plt.xlim([min(snrs),max(snrs)])
+    plt.grid('minor')
     plt.legend(loc='upper right')
     # Save results
     curve_name = "samp{}_bw{}_sf{}_cr{}_payLen{}_clk_offset_ppm{}_soft{}_ldro{}".format(samp_rate, bw, sf, cr, pay_len, clk_offset_ppm ,soft_decoding, ldro)

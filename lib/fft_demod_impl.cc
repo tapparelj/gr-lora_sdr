@@ -134,7 +134,7 @@ namespace gr {
 
             // Compute LLRs of the SF bits
             double LLs[m_samples_per_symbol];   // 2**sf  Log-Likelihood
-            std::vector<LLR> LLRs(m_sf);        // sf     Log-Likelihood Ratios
+            std::vector<LLR> LLRs(MAX_SF,0);        //      Log-Likelihood Ratios
 
             
             //static double Ps_frame = 0; // Signal Power estimation updated at each rx new frame
@@ -252,7 +252,6 @@ namespace gr {
 #endif
 
             delete[] m_fft_mag_sq; // release memory
-
             return LLRs;
         }
 
@@ -338,9 +337,13 @@ namespace gr {
                 }
             }
             else{
-                print("only "<<ninput_items[0]<< " samples...");
                 to_output = 0;
             }
+            if (noutput_items < to_output)
+            {
+                print(RED<<"fft_demod not enough space in output buffer!!"<<RESET);
+            }
+            
             return to_output;
         }
 

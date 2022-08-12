@@ -64,15 +64,15 @@ namespace gr {
 
             for (int i = 0; i < nitems_to_process; i++) {
                 if (m_soft_decoding) {
-                    // No gray demapping as already done in fft_demod block => block "bypass"
-                    memcpy(out2 + i * m_sf, in2 + i * m_sf, m_sf * sizeof(LLR));
+                    // No gray mapping , it has as been done directly in fft_demod block => block "bypass"
+                    memcpy(out2 + i * MAX_SF, in2 + i * MAX_SF, MAX_SF * sizeof(LLR));
                 } else {
                     out1[i] = (in1[i] ^ (in1[i] >> 1u));  // Gray Demap
                 }
 
 #ifdef GRLORA_DEBUG
                 std::cout << std::hex << "0x" << in[i] << " ---> "
-                          << "0x" << out[i] << std::dec << std::endl;  // TODO change in out !!
+                          << "0x" << out[i] << std::dec << std::endl; 
 #endif
             }
             return nitems_to_process;

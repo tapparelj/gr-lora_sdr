@@ -284,7 +284,6 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    impl_head: impl_head
     max_log_approx: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -293,7 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 648.0]
+    coordinate: [440, 656.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_sync_0
