@@ -39,13 +39,15 @@ def run_exp(lock,snr_idx,tx_payload_file,rx_payload_file,rx_crc_file):
     #Get Frame error rate 
     
     lock.acquire()
-    rx_crc = np.fromfile(open(rx_crc_file), dtype=np.uint8)
+    f = open(rx_crc_file)
+    rx_crc = np.fromfile(f, dtype=np.uint8)
     if len(rx_crc) == 0:
         FER[snr_idx] = np.nan
         Glob_FER[snr_idx] = np.nan
     else:
         FER[snr_idx] = (1-sum(rx_crc)/len(rx_crc))
         Glob_FER[snr_idx] = (1-sum(rx_crc)/n_frames)
+    f.close()
     lock.release()
     print("SNR {} done".format(SNRdB))
 
