@@ -135,7 +135,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '255'
+    value: '16'
   states:
     bus_sink: false
     bus_source: false
@@ -474,6 +474,7 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
+    frame_zero_padd: int(20*2**sf*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '0'
     samp_rate: samp_rate

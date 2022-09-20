@@ -111,7 +111,8 @@ namespace gr
 #endif
       // std::ofstream start_off_file;
       // std::ofstream netid_file;
-
+      int my_roundf(float number);
+      
       /**
           *  \brief  Estimate the value of fractional part of the CFO using RCTSL and correct the received preamble accordingly
           *  \param  samples

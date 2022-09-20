@@ -251,6 +251,7 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
+    frame_zero_padd: int(20*2**sf*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '10000000'
     samp_rate: samp_rate

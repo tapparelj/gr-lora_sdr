@@ -13,13 +13,18 @@ parameters:
     label: Samp_rate
     dtype: int
 -   id: bw
-    label: Bw
+    label: BW
     dtype: int
 -   id: sync_words
     label: Sync words
     dtype: int_vector
     hide: part
     default: 0x12
+-   id: frame_zero_padd
+    label: Frame zero padding
+    hide: part
+    dtype: int
+    default: int(20*2**sf*samp_rate/bw)
 
 inputs:
 -   domain: stream
@@ -31,11 +36,12 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words})
+    make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words}, ${frame_zero_padd})
     callbacks:
         - set_sf(${sf})
 asserts:
 - ${ (samp_rate/bw).is_integer()}
+- ${frame_zero_padd>=0}
 
 documentation: |-
     Add the preamble to the frame and modulate lora symbols according to the input decimal values.
@@ -43,6 +49,7 @@ documentation: |-
             sf: spreading factor
             samp_rate: sampling rate (need to be a integer multiple of the bandwidth)
             Bw: LoRa bandwidth
+            Frame zero padding: zero padding append after each frame. Value given in number of samples with a minimum of 1
         Input:
             in: stream of decimal symbol values
         Output:

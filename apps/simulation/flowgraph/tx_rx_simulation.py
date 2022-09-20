@@ -51,7 +51,7 @@ class tx_rx_simulation(gr.top_block):
         # Blocks
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12],0)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro,bw)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, False)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
@@ -70,7 +70,7 @@ class tx_rx_simulation(gr.top_block):
             frequency_offset = center_freq*clk_offset_ppm/samp_rate,
             epsilon=(1.0 + clk_offset_ppm*1e-6),
             taps=[1.0 + 0.0j],
-            noise_seed=42,
+            noise_seed=1,
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer(int(2**sf*samp_rate/bw*1.1))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)

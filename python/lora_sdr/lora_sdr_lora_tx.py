@@ -16,7 +16,7 @@ import signal
 from . import lora_sdr_python as lora_sdr
 
 class lora_sdr_lora_tx(gr.hier_block2):
-    def __init__(self, bw=125000, cr=1, has_crc=True, impl_head=False, samp_rate=250000, sf=7, ldro_mode=2):
+    def __init__(self, bw=125000, cr=1, has_crc=True, impl_head=False, samp_rate=250000, sf=7, ldro_mode=2, frame_zero_padd=2**7, ):
         gr.hier_block2.__init__(
             self, "lora_sdr_lora_tx",
                 gr.io_signature(0, 0, 0),
@@ -33,12 +33,13 @@ class lora_sdr_lora_tx(gr.hier_block2):
         self.impl_head = impl_head
         self.samp_rate = samp_rate
         self.sf = sf
+        self.frame_zero_padd = frame_zero_padd
 
         ##################################################
         # Blocks
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16],frame_zero_padd)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro_mode, bw)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)

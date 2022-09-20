@@ -79,7 +79,7 @@ namespace gr
             {
                 out = (uint8_t *)output_items[0];
                 if (output_crc_check)
-                    out_crc = (bool *)output_items[1];
+                    out_crc = (bool *)output_items[1]; 
             }
 
             std::vector<tag_t> tags;
@@ -92,11 +92,19 @@ namespace gr
                 // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
                 // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 
+                
             }
+            //append received bytes to buffer
+            for (int i = 0; i < ninput_items[0]; i++)
+            {
+                in_buff.push_back(in[i]);
+            }
+            consume_each(ninput_items[0]);
+            
 
-            if ((ninput_items[0] >= (int)m_payload_len + 2) && m_crc_presence)
+            if ((in_buff.size() >= (int)m_payload_len + 2) && m_crc_presence)
             { // wait for all the payload to come
-
+                
                 if (m_payload_len < 2)
                 { // undefined CRC
                     std::cout << "CRC not supported for payload smaller than 2 bytes" << std::endl;
@@ -105,29 +113,29 @@ namespace gr
                 else
                 {
                     // calculate CRC on the N-2 firsts data bytes
-                    m_crc = crc16(&in[0], m_payload_len - 2);
+                    m_crc = crc16(&in_buff[0], m_payload_len - 2);
 
                     // XOR the obtained CRC with the last 2 data bytes
-                    m_crc = m_crc ^ in[m_payload_len - 1] ^ (in[m_payload_len - 2] << 8);
+                    m_crc = m_crc ^ in_buff[m_payload_len - 1] ^ (in_buff[m_payload_len - 2] << 8);
 #ifdef GRLORA_DEBUG
                     for (int i = 0; i < (int)m_payload_len + 2; i++)
-                        std::cout << std::hex << (int)in[i] << std::dec << std::endl;
+                        std::cout << std::hex << (int)in_buff[i] << std::dec << std::endl;
                     std::cout << "Calculated " << std::hex << m_crc << std::dec << std::endl;
-                    std::cout << "Got " << std::hex << (in[m_payload_len] + (in[m_payload_len + 1] << 8)) << std::dec << std::endl;
+                    std::cout << "Got " << std::hex << (in_buff[m_payload_len] + (in_buff[m_payload_len + 1] << 8)) << std::dec << std::endl;
 #endif
 
                     // get payload as string
                     message_str.clear();
                     for (int i = 0; i < (int)m_payload_len; i++)
                     {
-                        m_char = (char)in[i];
+                        m_char = (char)in_buff[i];
                         message_str = message_str + m_char;
                         if (output_items.size())
-                            out[i] = in[i];
+                            out[i] = in_buff[i];
                     }
                     cnt++;
                     uint8_t crc_valid;
-                    if (!(in[m_payload_len] + (in[m_payload_len + 1] << 8) - m_crc))
+                    if (!(in_buff[m_payload_len] + (in_buff[m_payload_len + 1] << 8) - m_crc))
                         crc_valid = 1;
                     else
                         crc_valid = 0;
@@ -150,7 +158,7 @@ namespace gr
                                       << std::endl;
                     }
                     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
-                    consume_each(m_payload_len + 2);
+                    in_buff.erase(in_buff.begin(), in_buff.begin()+m_payload_len + 2);
                     if(output_crc_check){
                         produce(0,m_payload_len);
                         return WORK_CALLED_PRODUCE;
@@ -159,26 +167,29 @@ namespace gr
                         return m_payload_len;
                 }
             }
-            else if ((ninput_items[0] >= (int)m_payload_len) && !m_crc_presence)
+            else if ((in_buff.size()>= (int)m_payload_len) && !m_crc_presence)
             {
+                
                 // get payload as string
                 message_str.clear();
                 for (uint i = 0; i < m_payload_len; i++)
                 {
-                    m_char = (char)in[i];
+                    m_char = (char)in_buff[i];
                     message_str = message_str + m_char;
                     if (output_items.size())
-                        out[i] = in[i];
+                        out[i] = in_buff[i];
                 }
                 cnt++;
+                in_buff.erase(in_buff.begin(), in_buff.begin() + m_payload_len );
                 if (print_rx_msg)
                     std::cout << "rx msg: " << message_str << std::endl;
                 message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
-                consume_each(m_payload_len);
+                
                 return m_payload_len;
             }
             else
                 return 0;
+            
         }
     } /* namespace lora */
 } /* namespace gr */

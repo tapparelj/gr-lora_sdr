@@ -21,6 +21,8 @@ namespace gr {
         bool print_rx_msg;  ///< print received message in terminal or not
         bool output_crc_check; ///< output the result of the payload CRC check
 
+        
+
         uint32_t cnt=0;///< count the number of frame
 
         /**

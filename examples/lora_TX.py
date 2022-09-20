@@ -65,7 +65,7 @@ class lora_TX(gr.top_block):
         self.uhd_usrp_sink_0.set_gain(TX_gain, 0)
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16], (int(20*2**sf*samp_rate/bw)))
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 0, 125000)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)

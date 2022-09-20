@@ -90,7 +90,7 @@ namespace gr
                         char chr = (char) (int)strtol(byte.c_str(), NULL, 16);
                         newString.push_back(chr);
                     }
-                    payload_str.front()=newString;
+                    payload_str.front() = newString;
                 }
                 pmt::pmt_t frame_len = pmt::from_long(2*payload_str.front().length());
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_len"), frame_len);

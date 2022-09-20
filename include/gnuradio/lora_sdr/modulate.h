@@ -47,7 +47,7 @@ namespace gr {
        * class. lora_sdr::modulate::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words);
+      static sptr make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words,uint32_t inter_frame_padd);
     };
 
   } // namespace lora_sdr

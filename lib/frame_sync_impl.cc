@@ -98,10 +98,13 @@ namespace gr
         frame_sync_impl::~frame_sync_impl()
         {
         }
-
+        int frame_sync_impl::my_roundf(float number){
+            int ret_val = (int) (number>0?int(number+0.5):std::ceil(number-0.5));
+            return ret_val;
+         }
         void frame_sync_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
         {
-            ninput_items_required[0] = m_os_factor * (m_number_of_bins + 2);
+            ninput_items_required[0] = (m_os_factor * (m_number_of_bins + 2));
         }
 
         float frame_sync_impl::estimate_CFO_frac(gr_complex *samples)
@@ -431,6 +434,7 @@ namespace gr
 
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
+            set_output_multiple(m_number_of_bins);
         }
 
         int frame_sync_impl::general_work(int noutput_items,
@@ -483,7 +487,7 @@ namespace gr
 
             // downsampling
             for (int ii = 0; ii < m_number_of_bins; ii++)
-                in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - round(m_sto_frac * m_os_factor))];
+                in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
 
             switch (m_state)
             {
@@ -647,7 +651,7 @@ namespace gr
                     // apply sto correction
                     for (int i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
                     {
-                        corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(round(m_os_factor * m_sto_frac))];
+                        corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
                     }
                     std::rotate(corr_preamb.begin(), corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end());
                     // apply cfo correction
@@ -678,7 +682,7 @@ namespace gr
                     std::vector<gr_complex> net_ids_samp_dec;
                     net_ids_samp_dec.resize(2 * m_number_of_bins, 0);
                     // start_off gives the offset in the net_id_samp vector required to be aligned in time (CFOint is equivalent to STOint since upchirp_val was forced to 0)
-                    int start_off = (int)m_os_factor / 2 - (round(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
+                    int start_off = (int)m_os_factor / 2 - (my_roundf(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
                     for (int i = 0; i < m_number_of_bins * 2; i++)
                     {
                         net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
@@ -712,7 +716,7 @@ namespace gr
                                     items_to_consume = -m_os_factor * net_id_off;
                                     // the first symbol was mistaken for the end of the downchirp. we should correct and output it.
 
-                                    int start_off = (int)m_os_factor / 2 - round(m_sto_frac * m_os_factor) + m_os_factor * (0.25 * m_number_of_bins + m_cfo_int);
+                                    int start_off = (int)m_os_factor / 2 - my_roundf(m_sto_frac * m_os_factor) + m_os_factor * (0.25 * m_number_of_bins + m_cfo_int);
                                     for (int i = start_off; i < 1.25 * m_samples_per_symbol; i += m_os_factor)
                                     {
 
@@ -772,7 +776,7 @@ namespace gr
                     {
                         // update sto_frac to its value at the payload beginning
                         m_sto_frac += sfo_hat * 4.25;
-                        sfo_cum = ((m_sto_frac * m_os_factor) - round(m_sto_frac * m_os_factor)) / m_os_factor;
+                        sfo_cum = ((m_sto_frac * m_os_factor) - my_roundf(m_sto_frac * m_os_factor)) / m_os_factor;
 
                         pmt::pmt_t frame_info = pmt::make_dict();
                         frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(true));

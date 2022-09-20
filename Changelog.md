@@ -1,3 +1,6 @@
+# v0.5.2
+- added parameter for frame zero-padding
+
 # v0.5.1
 - Fixed an issue when running simulations on multiple threads while using soft-decision decoding
 

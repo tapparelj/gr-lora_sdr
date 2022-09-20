@@ -15,7 +15,7 @@ import time
 sf = 7                  # Spreading factor
 cr = 2                  # Coding rate
 snrs = np.arange(-13,0,1) -3*(sf-7) # List of SNR to evaluate
-n_frames = 1000         # Number of frames trnasmitted per SNR
+n_frames = 100         # Number of frames transmitted per SNR
 samp_rate = 500000      # Sample rate !Should be at least 4 time the bandwidth to avoid issue with the MMSE fractional resampler in the channel model!
 bw = 125000             # LoRa bandwidth
 center_freq = 868.1     # Center frequency in MHz
