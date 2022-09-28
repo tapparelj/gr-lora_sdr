@@ -23,12 +23,12 @@ inputs:
     dtype: byte
 outputs:
 -   domain: stream
-    id: payload char
+    label: payload_char
     dtype: byte
     optional: ${True if str(output_crc_check)=='False' else False}
 -   domain: stream
     dtype: byte
-    id: crc_check
+    label: crc_check
     optional: ${True if str(output_crc_check)=='False' else False}
     hide: ${False if str(output_crc_check)=='True' else True}
 -   domain: message
