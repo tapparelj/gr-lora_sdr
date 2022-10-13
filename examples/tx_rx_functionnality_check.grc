@@ -348,7 +348,7 @@ blocks:
     os_factor: int(samp_rate/bw)
     sf: sf
     show_log_port: 'False'
-    sync_word: '18'
+    sync_word: sync_word
   states:
     bus_sink: false
     bus_source: false
