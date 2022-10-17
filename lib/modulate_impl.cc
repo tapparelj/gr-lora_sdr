@@ -113,7 +113,7 @@ namespace gr
                         m_frame_len = pmt::to_long(tags[0].value);
                         tags[0].offset = nitems_written(0);
 
-                        tags[0].value = pmt::from_long(int((m_frame_len + m_inter_frame_padding + n_up + 4.25) * m_samples_per_symbol));
+                        tags[0].value = pmt::from_long(int((m_frame_len + n_up + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
 
                         add_item_tag(0, tags[0]);
 
