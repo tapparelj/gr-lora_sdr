@@ -34,7 +34,7 @@ namespace gr {
         std::vector<gr_complex> m_upchirp; ///< reference upchirp
         std::vector<gr_complex> m_downchirp; ///< reference downchirp
 
-        uint n_up; ///< number of upchirps in the preamble
+        uint16_t m_preamb_len; ///< number of upchirps in the preamble
         int32_t samp_cnt; ///< counter of the number of lora samples sent
         uint32_t preamb_samp_cnt; ///< counter of the number of preamble symbols output
         uint32_t padd_cnt; ///< counter of the number of null symbols output after each frame
@@ -43,7 +43,7 @@ namespace gr {
 
 
      public:
-      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd);
+      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len);
       ~modulate_impl();
 
       void set_sf(uint8_t sf);

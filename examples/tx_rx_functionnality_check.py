@@ -38,6 +38,7 @@ class tx_rx_functionnality_check(gr.top_block):
         self.soft_decoding = soft_decoding = False
         self.sf = sf = 7
         self.samp_rate = samp_rate = bw*4
+        self.preamb_len = preamb_len = 8
         self.pay_len = pay_len = 255
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
@@ -51,7 +52,7 @@ class tx_rx_functionnality_check(gr.top_block):
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word])
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 2, bw)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, 2, True)
@@ -60,7 +61,7 @@ class tx_rx_functionnality_check(gr.top_block):
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], (int(samp_rate/bw)))
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [sync_word], (int(samp_rate/bw)),preamb_len)
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
@@ -144,6 +145,12 @@ class tx_rx_functionnality_check(gr.top_block):
         self.blocks_delay_0.set_dly((int(2**self.sf*self.samp_rate/self.bw*10.1)))
         self.blocks_throttle_0.set_sample_rate((self.samp_rate*10))
         self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
+
+    def get_preamb_len(self):
+        return self.preamb_len
+
+    def set_preamb_len(self, preamb_len):
+        self.preamb_len = preamb_len
 
     def get_pay_len(self):
         return self.pay_len

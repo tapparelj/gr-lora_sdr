@@ -143,6 +143,18 @@ blocks:
     coordinate: [552, 16.0]
     rotation: 0
     state: true
+- name: preamb_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 104.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -334,6 +346,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     os_factor: int(samp_rate/bw)
+    preamb_len: preamb_len
     sf: sf
     show_log_port: 'False'
     sync_word: '18'
@@ -477,6 +490,7 @@ blocks:
     frame_zero_padd: int(20*2**sf*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '0'
+    preamb_len: preamb_len
     samp_rate: samp_rate
     sf: sf
     sync_words: '0x12'

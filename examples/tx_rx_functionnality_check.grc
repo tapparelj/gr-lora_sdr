@@ -129,6 +129,18 @@ blocks:
     coordinate: [680, 16.0]
     rotation: 0
     state: true
+- name: preamb_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 16.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -346,6 +358,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     os_factor: int(samp_rate/bw)
+    preamb_len: preamb_len
     sf: sf
     show_log_port: 'False'
     sync_word: sync_word
@@ -486,8 +499,10 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
+    frame_zero_padd: int(20*2**sf*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '10000000'
+    preamb_len: preamb_len
     samp_rate: int(samp_rate)
     sf: sf
     sync_words: sync_word
@@ -495,7 +510,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 192.0]
+    coordinate: [1152, 192.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_payload_id_inc_0

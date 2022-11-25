@@ -69,7 +69,7 @@ namespace gr
       int32_t bin_idx;     ///< value of previous lora symbol
       int32_t bin_idx_new; ///< value of newly demodulated symbol
 
-      uint32_t n_up; ///< Number of consecutive upchirps in preamble
+      uint16_t m_preamb_len; ///< Number of consecutive upchirps in preamble
       uint8_t additional_upchirps; ///< indicate the number of additional upchirps found in preamble (in addition to the minimum required to trigger a detection)
 
       kiss_fft_cpx *cx_in;  ///<input of the FFT
@@ -170,7 +170,7 @@ namespace gr
       float determine_snr(const gr_complex *samples);
 
     public:
-      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor);
+      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamb_len);
       ~frame_sync_impl();
 
       // Where all the action really happens

@@ -10,14 +10,14 @@ namespace gr
     {
 
         modulate::sptr
-        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd)
+        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len = 8)
         {
-            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd));
+            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd, preamble_len));
         }
         /*
      * The private constructor
      */
-        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd)
+        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len)
             : gr::block("modulate",
                         gr::io_signature::make(1, 1, sizeof(uint32_t)),
                         gr::io_signature::make(1, 1, sizeof(gr_complex)))
@@ -48,8 +48,11 @@ namespace gr
                 m_sync_words[0] = ((tmp&0xF0)>>4)<<3;
                 m_sync_words[1] = (tmp&0x0F)<<3;
             }
-
-            n_up = 8;
+            if (preamble_len<5)
+            {
+               std::cerr<<RED<<" Preamble length should be greater than 5!"<<RESET<<std::endl;
+            }
+            m_preamb_len = preamble_len;
             samp_cnt = -1;
             preamb_samp_cnt = 0;
             frame_cnt = 0;
@@ -113,7 +116,7 @@ namespace gr
                         m_frame_len = pmt::to_long(tags[0].value);
                         tags[0].offset = nitems_written(0);
 
-                        tags[0].value = pmt::from_long(int((m_frame_len + n_up + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
+                        tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
 
                         add_item_tag(0, tags[0]);
 
@@ -130,19 +133,19 @@ namespace gr
                 
                 for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
                 {
-                    if (preamb_samp_cnt < (n_up + 5)*m_samples_per_symbol) //should output preamble part
+                    if (preamb_samp_cnt < (m_preamb_len + 5)*m_samples_per_symbol) //should output preamble part
                     {
-                        if (preamb_samp_cnt < (n_up*m_samples_per_symbol))
+                        if (preamb_samp_cnt < (m_preamb_len*m_samples_per_symbol))
                         { //upchirps
                             memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));
                         }
-                        else if (preamb_samp_cnt == (n_up*m_samples_per_symbol)) //sync words
+                        else if (preamb_samp_cnt == (m_preamb_len*m_samples_per_symbol)) //sync words
                             build_upchirp(&out[output_offset], m_sync_words[0], m_sf,m_os_factor);
-                        else if (preamb_samp_cnt == (n_up + 1)*m_samples_per_symbol)
+                        else if (preamb_samp_cnt == (m_preamb_len + 1)*m_samples_per_symbol)
                             build_upchirp(&out[output_offset], m_sync_words[1], m_sf,m_os_factor);
-                        else if (preamb_samp_cnt < (n_up + 4)*m_samples_per_symbol) //2.25 downchirps
+                        else if (preamb_samp_cnt < (m_preamb_len + 4)*m_samples_per_symbol) //2.25 downchirps
                             memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol * sizeof(gr_complex));
-                        else if (preamb_samp_cnt == (n_up + 4)*m_samples_per_symbol)
+                        else if (preamb_samp_cnt == (m_preamb_len + 4)*m_samples_per_symbol)
                         {
                             memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol / 4 * sizeof(gr_complex));
                             //correct offset dur to quarter of downchirp

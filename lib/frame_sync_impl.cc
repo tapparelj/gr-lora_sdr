@@ -11,15 +11,15 @@ namespace gr
     {
 
         frame_sync::sptr
-        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor)
+        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8)
         {
-            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor));
+            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len));
         }
 
         /*
          * The private constructor
          */
-        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor)
+        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len)
             : gr::block("frame_sync",
                         gr::io_signature::make(1, 1, sizeof(gr_complex)),
                         gr::io_signature::make2(1, 2, sizeof(gr_complex), sizeof(float)))
@@ -28,14 +28,19 @@ namespace gr
             m_center_freq = center_freq;
             m_bw = bandwidth;
             m_sf = sf;
-            
+
             m_sync_words = sync_word;
             m_os_factor = os_factor;
-            n_up = 8;
+            if (preamble_len < 5)
+            {
+                std::cerr << RED << " Preamble length should be greater than 5!" << RESET << std::endl;
+            }
+
+            m_preamb_len = preamble_len;
             net_ids.resize(2, 0);
 
-            m_n_up_req = n_up-3;
-            up_symb_to_use = m_n_up_req-1;
+            m_n_up_req = preamble_len - 3;
+            up_symb_to_use = m_n_up_req - 1;
 
             m_sto_frac = 0.0;
 
@@ -55,13 +60,13 @@ namespace gr
             additional_symbol_samp.resize(2 * m_samples_per_symbol);
             m_upchirp.resize(m_number_of_bins);
             m_downchirp.resize(m_number_of_bins);
-            preamble_upchirps.resize(n_up * m_number_of_bins);
-            preamble_raw_up.resize((n_up + 3) * m_samples_per_symbol);
+            preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
+            preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
-            preamble_raw.resize(n_up * m_number_of_bins);
+            preamble_raw.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
 
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
@@ -98,10 +103,11 @@ namespace gr
         frame_sync_impl::~frame_sync_impl()
         {
         }
-        int frame_sync_impl::my_roundf(float number){
-            int ret_val = (int) (number>0?int(number+0.5):std::ceil(number-0.5));
+        int frame_sync_impl::my_roundf(float number)
+        {
+            int ret_val = (int)(number > 0 ? int(number + 0.5) : std::ceil(number - 0.5));
             return ret_val;
-         }
+        }
         void frame_sync_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
         {
             ninput_items_required[0] = (m_os_factor * (m_number_of_bins + 2));
@@ -372,7 +378,7 @@ namespace gr
             free(cfg);
 
             int max_idx = (std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag);
-            float sig_en = fft_mag[max_idx]; 
+            float sig_en = fft_mag[max_idx];
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
 
@@ -398,13 +404,13 @@ namespace gr
                 m_sto_frac = 0;
             }
             else
-            {   
+            {
                 if (ldro_mode == AUTO)
-                    m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
+                    m_ldro = (float)(1u << m_sf) * 1e3 / m_bw > LDRO_MAX_DURATION_MS;
                 else
                     m_ldro = ldro_mode;
-            
-                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf-2*m_ldro)) * (4 + m_cr);
+
+                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
                 m_received_head = true;
                 frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(false));
                 frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
@@ -415,20 +421,21 @@ namespace gr
             }
         }
 
-        void frame_sync_impl::set_sf(int sf){
+        void frame_sync_impl::set_sf(int sf)
+        {
             m_sf = sf;
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_samples_per_symbol = m_number_of_bins * m_os_factor;
             additional_symbol_samp.resize(2 * m_samples_per_symbol);
             m_upchirp.resize(m_number_of_bins);
             m_downchirp.resize(m_number_of_bins);
-            preamble_upchirps.resize(n_up * m_number_of_bins);
-            preamble_raw_up.resize((n_up + 3) * m_samples_per_symbol);
+            preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
+            preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
-            preamble_raw.resize(n_up * m_number_of_bins);
+            preamble_raw.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
@@ -447,7 +454,8 @@ namespace gr
             int items_to_output = 0;
 
             // check if there is enough space in the output buffer
-            if(noutput_items < m_number_of_bins) {
+            if (noutput_items < m_number_of_bins)
+            {
                 return 0;
             }
 
@@ -461,7 +469,6 @@ namespace gr
                 m_should_log = false;
             int nitems_to_process = ninput_items[0];
 
-            
             std::vector<tag_t> tags;
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("new_frame"));
             if (tags.size())
@@ -475,15 +482,13 @@ namespace gr
                         nitems_to_process = tags[1].offset - tags[0].offset;
 
                     pmt::pmt_t err = pmt::string_to_symbol("error");
-                
+
                     int sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
                     set_sf(sf);
 
                     // std::cout<<"\nhamming_cr "<<tags[0].offset<<" - cr: "<<(int)m_cr<<"\n";
-                    
                 }
             }
-
 
             // downsampling
             for (int ii = 0; ii < m_number_of_bins; ii++)
@@ -496,8 +501,8 @@ namespace gr
                 bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
                 if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
-                {                                                                                             
-                    if (symbol_cnt == 1 && bin_idx != -1)                                                     
+                {
+                    if (symbol_cnt == 1 && bin_idx != -1)
                         preamb_up_vals[0] = bin_idx;
 
                     preamb_up_vals[symbol_cnt] = bin_idx_new;
@@ -578,11 +583,11 @@ namespace gr
                 }
                 case NET_ID2:
                 {
-                    
+
                     symbol_cnt = DOWNCHIRP1;
                     memcpy(&net_id_samp[1.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * (m_number_of_bins + 1) * m_os_factor);
                     net_ids[1] = bin_idx;
-                    
+
                     break;
                 }
                 case DOWNCHIRP1:
@@ -672,7 +677,7 @@ namespace gr
                     snr_est /= up_symb_to_use;
 
                     // update sto_frac to its value at the beginning of the net id
-                    m_sto_frac += sfo_hat * n_up;
+                    m_sto_frac += sfo_hat * m_preamb_len;
                     // ensure that m_sto_frac is in [-0.5,0.5]
                     if (abs(m_sto_frac) > 0.5)
                     {
@@ -696,15 +701,15 @@ namespace gr
                     int netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
                     int netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     one_symbol_off = 0;
-                    
+
                     if (abs(netid1 - (int32_t)m_sync_words[0]) > 2) // wrong id 1, (we allow an offset of 2)
                     {
-                       
+
                         // check if we are in fact checking the second net ID and that the first one was considered as a preamble upchirp
                         if (abs(netid1 - (int32_t)m_sync_words[1]) <= 2)
                         {
                             net_id_off = netid1 - (int32_t)m_sync_words[1];
-                            for (int i = n_up - 2; i < (m_n_up_req + additional_upchirps); i++)
+                            for (int i = m_preamb_len - 2; i < (m_n_up_req + additional_upchirps); i++)
                             {
                                 if (get_symbol_val(&corr_preamb[i * m_number_of_bins], &m_downchirp[0]) + net_id_off == m_sync_words[0]) // found the first netID
                                 {
@@ -769,7 +774,6 @@ namespace gr
                             items_to_consume = -m_os_factor * net_id_off;
                             m_state = SFO_COMPENSATION;
                             frame_cnt++;
-                            
                         }
                     }
                     if (m_state != DETECT)
@@ -790,7 +794,7 @@ namespace gr
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
                         symbol_cnt = one_symbol_off;
                         float snr_est2 = 0;
-                        
+
                         if (m_should_log)
                         {
                             // estimate SNR
@@ -802,7 +806,7 @@ namespace gr
                             snr_est2 /= up_symb_to_use;
                             float cfo_log = m_cfo_int + m_cfo_frac;
                             float sto_log = k_hat - m_cfo_int + m_sto_frac;
-                            float srn_log = snr_est; 
+                            float srn_log = snr_est;
                             float sfo_log = sfo_hat;
 
                             sync_log_out[0] = srn_log;
@@ -812,10 +816,10 @@ namespace gr
                             sync_log_out[4] = off_by_one_id;
                             produce(1, 5);
                         }
-                        #ifdef PRINT_INFO
-                    
+#ifdef PRINT_INFO
+
                         std::cout << "[frame_sync_impl.cc] " << frame_cnt << " CFO estimate: " << m_cfo_int + m_cfo_frac << ", STO estimate: " << k_hat - m_cfo_int + m_sto_frac << " snr est: " << snr_est << std::endl;
-                        #endif
+#endif
                     }
                 }
                 }
@@ -825,7 +829,7 @@ namespace gr
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
-              
+
                 if (symbol_cnt < 8 || (symbol_cnt < m_symb_numb && m_received_head))
                 {
                     // output downsampled signal (with no STO but with CFO)
@@ -838,7 +842,7 @@ namespace gr
                         items_to_consume -= (-2 * signbit(sfo_cum) + 1);
                         sfo_cum -= (-2 * signbit(sfo_cum) + 1) * 1.0 / m_os_factor;
                     }
-                    
+
                     sfo_cum += sfo_hat;
 
                     items_to_output = m_number_of_bins;

@@ -307,6 +307,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     os_factor: int(samp_rate_rx/bw)
+    preamb_len: '8'
     sf: sf
     show_log_port: 'False'
     sync_word: '18'
@@ -447,8 +448,10 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
+    frame_zero_padd: int(20*2**sf*samp_rate_tx/bw)
     maxoutbuf: '0'
     minoutbuf: '10000000'
+    preamb_len: '8'
     samp_rate: samp_rate_tx
     sf: sf
     sync_words: '0x12'
