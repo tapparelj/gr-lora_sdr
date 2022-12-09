@@ -39,7 +39,7 @@ class lora_sdr_lora_tx(gr.hier_block2):
         # Blocks
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16],frame_zero_padd)
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16],frame_zero_padd,8)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro_mode, bw)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)

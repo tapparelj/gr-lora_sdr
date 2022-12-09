@@ -48,7 +48,7 @@ class lora_sdr_lora_rx(gr.hier_block2):
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc,ldro_mode ,self.print_header)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(soft_decoding)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(center_freq, bw, sf, impl_head, sync_word,int(samp_rate/bw))
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(center_freq, bw, sf, impl_head, sync_word,int(samp_rate/bw),8)
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(soft_decoding)
