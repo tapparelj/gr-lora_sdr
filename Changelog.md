@@ -1,3 +1,5 @@
+# v0.5.3
+- added parameter for preamble length
 # v0.5.2
 - added parameter for frame zero-padding
 
