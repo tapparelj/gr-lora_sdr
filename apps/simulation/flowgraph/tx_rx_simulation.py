@@ -28,7 +28,7 @@ import gnuradio.lora_sdr as lora_sdr
 
 class tx_rx_simulation(gr.top_block):
 
-    def __init__(self,tx_payload_file, rx_payload_file, rx_crc_file, impl_head=False, soft_decoding=False, SNRdB=0, samp_rate=250000, bw=125000, center_freq=868.1, sf=7, cr=1, pay_len=32, clk_offset_ppm=0, ldro=0):
+    def __init__(self,tx_payload_file, rx_payload_file, rx_crc_file, impl_head=False, soft_decoding=False, SNRdB=0, samp_rate=250000, bw=125000, center_freq=868.1, sf=7, cr=1, pay_len=32, clk_offset_ppm=0, ldro=0,preamb_len=8):
         gr.top_block.__init__(self, "Tx Rx Simulation", catch_exceptions=True)
 
         ##################################################
@@ -46,12 +46,13 @@ class tx_rx_simulation(gr.top_block):
         self.SNRdB = SNRdB 
         self.clk_offset_ppm = clk_offset_ppm
         self.os_factor = int(samp_rate/bw)
+        self.preamb_len = preamb_len 
 
         ##################################################
         # Blocks
         ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12],0)
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12],0,preamb_len)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro,bw)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, False)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
@@ -59,7 +60,7 @@ class tx_rx_simulation(gr.top_block):
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping(soft_decoding)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq*1e6), bw, sf, impl_head, [0x12],self.os_factor)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq*1e6), bw, sf, impl_head, [0x12],self.os_factor,preamb_len)
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(soft_decoding)
