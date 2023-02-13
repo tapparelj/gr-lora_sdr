@@ -8,6 +8,11 @@ parameters:
     default: message_strobe
     options: ['message_strobe', 'file_source']
     option_labels: ['Message strobe', 'File source']
+-   id: separator
+    label: Separator
+    dtype: raw
+    default: "','"
+    hide: ${ ( 'none' if str(source_type) == "file_source" else 'all') }
 -   id: is_hex
     label: is_hex
     dtype: bool
@@ -29,17 +34,17 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.whitening(${is_hex})
+    make: lora_sdr.whitening(${is_hex},${separator})
 
 documentation: |-
     Whiten the payload data with a pseudo random sequence
         Parameters:
             Source type: choose the input mode: message or file
-            is_hex: the input file already contains the bits to transmitt as hexadecimal digits, else it contains ascii characters.
+            is_hex: If True, the input file contains hex values as sequence of digits, with frames separated with the separator. e.g(6669727374207061636b6574,7365636f6e64207061636b6574,). Else the file contains sequence of chars with frames separated by the separator. e.g(first packet,second packet).
         Input:
             msg: the payload as a PMT message string
                 or
-            in: a file source with comma separated payloads.
+            in: a file source with payloads separated by separator.
         Output:
             out: Stream of whitened payload nibbles
 

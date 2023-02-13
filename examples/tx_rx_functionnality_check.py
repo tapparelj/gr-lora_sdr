@@ -50,7 +50,7 @@ class tx_rx_functionnality_check(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,",")
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)

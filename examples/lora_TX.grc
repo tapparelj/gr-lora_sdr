@@ -254,6 +254,7 @@ blocks:
     frame_zero_padd: int(20*2**sf*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '10000000'
+    preamb_len: '8'
     samp_rate: samp_rate
     sf: sf
     sync_words: '[8,16]'
@@ -289,6 +290,7 @@ blocks:
     is_hex: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
+    separator: ''','''
     source_type: message_strobe
   states:
     bus_sink: false

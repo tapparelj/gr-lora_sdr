@@ -1,3 +1,5 @@
+# v0.5.4
+- added separator option for file input
 # v0.5.3
 - added parameter for preamble length
 # v0.5.2

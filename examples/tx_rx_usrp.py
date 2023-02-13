@@ -82,7 +82,7 @@ class tx_rx_usrp(gr.top_block):
         self.uhd_usrp_sink_0_0.set_antenna('TX/RX', 0)
         self.uhd_usrp_sink_0_0.set_bandwidth(bw, 0)
         self.uhd_usrp_sink_0_0.set_gain(0, 0)
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,',')
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate_tx, bw, [0x12], (int(20*2**sf*samp_rate_tx/bw)),8)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)

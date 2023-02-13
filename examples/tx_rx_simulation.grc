@@ -510,6 +510,7 @@ blocks:
     is_hex: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
+    separator: ''','''
     source_type: file_source
   states:
     bus_sink: false

@@ -487,6 +487,7 @@ blocks:
     is_hex: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
+    separator: ''','''
     source_type: message_strobe
   states:
     bus_sink: false

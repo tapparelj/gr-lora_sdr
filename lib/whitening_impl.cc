@@ -14,20 +14,21 @@ namespace gr
     {
 
         whitening::sptr
-        whitening::make(bool is_hex)
+        whitening::make(bool is_hex, char separator)
         {
-            return gnuradio::get_initial_sptr(new whitening_impl(is_hex));
+            return gnuradio::get_initial_sptr(new whitening_impl(is_hex, separator));
         }
 
         /*
      * The private constructor
      */
-        whitening_impl::whitening_impl(bool is_hex)
+        whitening_impl::whitening_impl(bool is_hex, char separator)
             : gr::sync_interpolator("whitening",
                                     gr::io_signature::make(0, 1, sizeof(uint8_t)),
-                                    gr::io_signature::make(1, 1, sizeof(uint8_t)), 2)
+                                    gr::io_signature::make(1, 1, sizeof(uint8_t)), is_hex?1:2)
         {
             m_is_hex = is_hex;
+            m_separator = separator;
             m_file_source = false;
             message_port_register_in(pmt::mp("msg"));
             set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg)
@@ -62,11 +63,11 @@ namespace gr
                 m_file_source = true;
                 in = (uint8_t *)input_items[0];
                 std::string s;
-                for (int i = 0; i < noutput_items / 2; i++) //read payload
+                for (int i = 0; i < noutput_items / m_is_hex?1:2; i++) //read payload
                 {
-                    if (in[i] == ',')
+                    if (in[i] == m_separator)
                     {
-                        consume_each(1); //consume the ',' character
+                        consume_each(sizeof(m_separator)); //consume the m_separator character
                         payload_str.push_back(s);
                         break;
                     }
@@ -104,9 +105,6 @@ namespace gr
                     out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
                     out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
                 }
-
-                // Store the transmitted data and timestamp
-
                 noutput_items = 2 * m_payload.size();
                 m_payload.clear();
                 payload_str.erase(payload_str.begin());

@@ -50,7 +50,7 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False)
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,',')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)

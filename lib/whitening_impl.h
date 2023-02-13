@@ -13,6 +13,7 @@ namespace gr {
     {
      private:
          bool m_is_hex; ///< indicate that the payload is given by a string of hex values
+         char m_separator; ///< the separator for file inputs
          std::vector<uint8_t> m_payload; ///< store the payload bytes
          std::vector<std::string> payload_str;
          bool m_file_source; ///< indicate that the payload are provided by a file through an input stream
@@ -20,7 +21,7 @@ namespace gr {
          
 
      public:
-      whitening_impl(bool is_hex);
+      whitening_impl(bool is_hex, char separator);
       ~whitening_impl();
 
       // Where all the action really happens

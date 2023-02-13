@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2023 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(whitening.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(1bfeb397b939e1731d455b87dd0783d5) */
+/* BINDTOOL_HEADER_FILE_HASH(1d9c1f82a08480f16b35e2d7055b5f60) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,8 @@ void bind_whitening(py::module &m) {
   py::class_<whitening, gr::sync_interpolator, std::shared_ptr<whitening>>(
       m, "whitening", D(whitening))
 
-      .def(py::init(&whitening::make), py::arg("is_hex"), D(whitening, make))
+      .def(py::init(&whitening::make), py::arg("is_hex"),
+           py::arg("separator") = ',', D(whitening, make))
 
       ;
 }
