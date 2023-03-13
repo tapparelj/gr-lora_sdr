@@ -33,7 +33,7 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 - Sending and receiving LoRa packets between USRP-USRP and USRP-commercial LoRa transceiver (tested for Adafruit Feather 32u4 RFM95 and dragino LoRa/GPS HAT).
 
 - Parameters available:
-	- Spreading factors: 5-12
+	- Spreading factors: 5-12*
 	- Coding rates: 0-4
 	- Implicit and explicit header mode
 	- Payload length: 1-255 bytes
@@ -43,6 +43,7 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 	- Low datarate optimisation mode 
 	- Utilisation of soft-decision decoding for improved performances
 
+\* Spreading factors 5 and 6 not compatible with SX1261/2.
 ## Reference
 J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “An Open-Source LoRa Physical Layer Prototype on GNU Radio”
 
