@@ -1,0 +1,95 @@
+{% set oot_name = "lora_sdr" %}
+{% set name = "gnuradio-" + oot_name %}
+# Set package version from cleaned up git tags if possible,
+# otherwise fall back to date-based version.
+{% set tag_version = environ.get("GIT_DESCRIBE_TAG", "")|string|replace("-","_")|replace("v","")|replace("git","") %}
+{% set post_commit = environ.get("GIT_DESCRIBE_NUMBER", 0)|string %}
+{% set hash = environ.get("GIT_DESCRIBE_HASH", "local")|string %}
+{% set fallback_version = "0.0.0.{0}.dev+g{1}".format(datetime.datetime.now().strftime("%Y%m%d"), environ.get("GIT_FULL_HASH", "local")[:9]) %}
+{% set version = (tag_version if post_commit == "0" else "{0}.post{1}+{2}".format(tag_version, post_commit, hash)) if tag_version else fallback_version %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # use local path or git repository depending on if the build is local or done on CI
+  path: "../.."  # [not os.environ.get("CI")]
+  git_url: {{ environ.get('FEEDSTOCK_ROOT', "../..") }}  # [os.environ.get("CI")]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - cmake
+    - git
+    - ninja
+    - pkg-config
+    # cross-compilation requirements
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    - numpy                               # [build_platform != target_platform]
+    - pybind11                            # [build_platform != target_platform]
+    # Add extra build tool dependencies here
+
+  host:
+    - gmp  # [linux]
+    # the following two entries are for generating builds against specific GR versions
+    - gnuradio-core  # [not gnuradio_extra_pin]
+    - gnuradio-core {{ gnuradio_extra_pin }}.*  # [gnuradio_extra_pin]
+    - pip  # [win]
+    - pybind11
+    - python
+    - numpy
+    - volk
+    # Add/remove library dependencies here
+
+  run:
+    - numpy
+    - python
+    # Add/remove runtime dependencies here
+
+test:
+  commands:
+    ## verify that commands run
+    #- COMMAND --help
+
+    # verify that (some) headers get installed
+    - test -f $PREFIX/include/gnuradio/{{ oot_name }}/api.h  # [not win]
+    - if not exist %PREFIX%\\Library\\include\\gnuradio\\{{ oot_name }}\\api.h exit 1  # [win]
+
+    # verify that libraries get installed
+    - test -f $PREFIX/lib/lib{{ name }}${SHLIB_EXT}  # [not win]
+    - if not exist %PREFIX%\\Library\\bin\\{{ name }}.dll exit 1  # [win]
+    - if not exist %PREFIX%\\Library\\lib\\{{ name }}.lib exit 1  # [win]
+
+    # verify that (some) GRC blocks get installed
+    {% set blocks = ["lora_rx", "lora_tx", "header", "header_decoder", "modulate"] %}
+    {% for block in blocks %}
+    - test -f $PREFIX/share/gnuradio/grc/blocks/{{ oot_name }}_{{ block }}.block.yml  # [not win]
+    - if not exist %PREFIX%\\Library\\share\\gnuradio\\grc\\blocks\\{{ oot_name }}_{{ block }}.block.yml exit 1  # [win]
+    {% endfor %}
+
+  imports:
+    # verify that the python module imports
+    - gnuradio.{{ oot_name }}
+
+about:
+  home: https://github.com/tapparelj/gr-lora_sdr
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver
+  description: >
+    This is the fully-functional GNU Radio software-defined radio (SDR)
+    implementation of a LoRa transceiver with all the necessary receiver
+    components to operate correctly even at very low SNRs. The transceiver is
+    available as a module for GNU Radio 3.10. This work has been conducted at
+    the Telecommunication Circuits Laboratory, EPFL.
+
+    In the GNU Radio implementation of the LoRa Tx and Rx chains the user can
+    choose all the parameters of the transmission, such as the spreading
+    factor, the coding rate, the bandwidth, the sync word, the presence of an
+    explicit header and CRC.
