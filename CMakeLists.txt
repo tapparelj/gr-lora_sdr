@@ -20,13 +20,13 @@ enable_testing()
 
 # Install to PyBOMBS target prefix if defined
 if(DEFINED ENV{PYBOMBS_PREFIX})
-    set(CMAKE_INSTALL_PREFIX $ENV{PYBOMBS_PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{PYBOMBS_PREFIX} CACHE PATH "")
     message(STATUS "PyBOMBS installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{PYBOMBS_PREFIX}")
 endif()
 
 #install to conda if prefix defined
 if(DEFINED ENV{CONDA_PREFIX} )
-    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX} CACHE PATH "")
     message(STATUS "Conda installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{CONDA_PREFIX}")
 endif()
 
