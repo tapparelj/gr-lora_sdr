@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <numeric>
 #include <gnuradio/expj.h>
-#include <sys/resource.h>
-#include <sys/syscall.h>
 #include <volk/volk.h>
 #include <algorithm>
 
