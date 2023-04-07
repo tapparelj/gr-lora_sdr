@@ -47,7 +47,7 @@ namespace gr
         {
 
             uint16_t crc = 0x0000;
-            for (uint i = 0; i < len; i++)
+            for (unsigned int i = 0; i < len; i++)
             {
                 uint8_t newByte = data[i];
 
@@ -172,7 +172,7 @@ namespace gr
                 
                 // get payload as string
                 message_str.clear();
-                for (uint i = 0; i < m_payload_len; i++)
+                for (unsigned int i = 0; i < m_payload_len; i++)
                 {
                     m_char = (char)in_buff[i];
                     message_str = message_str + m_char;

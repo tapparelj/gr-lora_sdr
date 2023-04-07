@@ -128,7 +128,7 @@ namespace gr {
                     }
 
                     // transform codewords from binary vector to dec
-                    for (uint i = 0; i < sf_app; i++) {
+                    for (unsigned int i = 0; i < sf_app; i++) {
                         out1[i] = bool2int(deinter_bin[i]);  // bool2int return uint32_t Maybe explicit conversion to uint8_t
                     }
 

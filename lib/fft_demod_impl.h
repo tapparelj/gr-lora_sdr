@@ -27,8 +27,8 @@ namespace gr {
       bool max_log_approx;     ///< use Max-log approximation in LLR formula
       bool m_new_frame;       ///< To be notify when receive a new frame to estimate SNR
       bool m_ldro; ///< use low datarate optimisation
-      uint m_symb_numb; ///< number of symbols in the frame
-      uint m_symb_cnt; ///< number of symbol already output in current frame
+      unsigned int m_symb_numb; ///< number of symbols in the frame
+      unsigned int m_symb_cnt; ///< number of symbol already output in current frame
 
       double m_Ps_est = 0;   // Signal Power estimation updated at each rx symbol
       double m_Pn_est = 0;   // Signal Power estimation updated at each rx symbo

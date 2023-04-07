@@ -13,8 +13,8 @@ namespace gr {
       bool m_has_crc; ///< indicate the presence of a payload crc
       uint8_t m_cr; ///< Transmission coding rate
       uint8_t m_payload_len; ///< Payload length
-      uint m_cnt_nibbles; ///< count the processes nibbles in a frame
-      uint m_cnt_header_nibbles; ///< count the number of explicit header nibbles output
+      unsigned int m_cnt_nibbles; ///< count the processes nibbles in a frame
+      unsigned int m_cnt_header_nibbles; ///< count the number of explicit header nibbles output
       std::vector<uint8_t> m_header; ///< contain the header to prepend
 
 

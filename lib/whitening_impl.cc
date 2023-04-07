@@ -100,7 +100,7 @@ namespace gr
 
                 std::copy(payload_str.front().begin(), payload_str.front().end(), std::back_inserter(m_payload));
 
-                for (uint i = 0; i < m_payload.size(); i++)
+                for (unsigned int i = 0; i < m_payload.size(); i++)
                 {
                     out[2 * i] = (m_payload[i] ^ whitening_seq[i]) & 0x0F;
                     out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
