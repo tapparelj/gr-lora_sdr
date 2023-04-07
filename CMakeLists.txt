@@ -65,6 +65,11 @@ include(GrMinReq)
 
 include(GrCompilerSettings)
 
+if(MSVC)
+    # set flag for standards conformance to use "and" and "or" keywords
+    add_compile_options(/permissive-)
+endif(MSVC)
+
 ########################################################################
 # Install directories
 ########################################################################
