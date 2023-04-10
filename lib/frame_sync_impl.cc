@@ -2,7 +2,10 @@
 #include "config.h"
 #endif
 
+#include <algorithm>
+#include <vector>
 #include <gnuradio/io_signature.h>
+#include <volk/volk_alloc.hh>
 #include "frame_sync_impl.h"
 
 namespace gr
@@ -123,7 +126,7 @@ namespace gr
             kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[2 * up_symb_to_use * m_number_of_bins];
             kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * up_symb_to_use * m_number_of_bins];
 
-            float fft_mag_sq[2 * up_symb_to_use * m_number_of_bins];
+            std::vector<float> fft_mag_sq(2 * up_symb_to_use * m_number_of_bins);
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * up_symb_to_use * m_number_of_bins, 0, 0, 0);
             // create longer downchirp
             std::vector<gr_complex> downchirp_aug(up_symb_to_use * m_number_of_bins);
@@ -159,7 +162,7 @@ namespace gr
             delete[] cx_in_cfo;
             delete[] cx_out_cfo;
             // get argmax here
-            k0 = ((std::max_element(fft_mag_sq, fft_mag_sq + 2 * up_symb_to_use * m_number_of_bins) - fft_mag_sq));
+            k0 = std::distance(std::begin(fft_mag_sq), std::max_element(std::begin(fft_mag_sq), std::end(fft_mag_sq)));
 
             // get three spectral lines
             Y_1 = fft_mag_sq[mod(k0 - 1, 2 * up_symb_to_use * m_number_of_bins)];
@@ -185,16 +188,16 @@ namespace gr
         }
         float frame_sync_impl::estimate_CFO_frac_Bernier(gr_complex *samples)
         {
-            int k0[up_symb_to_use];
+            std::vector<int> k0(up_symb_to_use);
             float cfo_frac;
             std::vector<gr_complex> CFO_frac_correc_aug(up_symb_to_use * m_number_of_bins); ///< CFO frac correction vector
-            double k0_mag[up_symb_to_use];
+            std::vector<double> k0_mag(up_symb_to_use);
             std::vector<gr_complex> fft_val(up_symb_to_use * m_number_of_bins);
 
             std::vector<gr_complex> dechirped(m_number_of_bins);
             kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[m_number_of_bins];
             kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[m_number_of_bins];
-            float fft_mag_sq[m_number_of_bins];
+            std::vector<float> fft_mag_sq(m_number_of_bins);
             for (size_t i = 0; i < m_number_of_bins; i++)
             {
                 fft_mag_sq[i] = 0;
@@ -219,7 +222,7 @@ namespace gr
                     fft_mag_sq[j] = cx_out_cfo[j].r * cx_out_cfo[j].r + cx_out_cfo[j].i * cx_out_cfo[j].i;
                     fft_val[j + i * m_number_of_bins] = gr_complex(cx_out_cfo[j].r, cx_out_cfo[j].i);
                 }
-                k0[i] = std::max_element(fft_mag_sq, fft_mag_sq + m_number_of_bins) - fft_mag_sq;
+                k0[i] = std::distance(std::begin(fft_mag_sq), std::max_element(std::begin(fft_mag_sq), std::end(fft_mag_sq)));
 
                 k0_mag[i] = fft_mag_sq[k0[i]];
             }
@@ -227,7 +230,7 @@ namespace gr
             delete[] cx_in_cfo;
             delete[] cx_out_cfo;
             // get argmax
-            int idx_max = k0[std::max_element(k0_mag, k0_mag + up_symb_to_use) - k0_mag];
+            int idx_max = k0[std::distance(std::begin(k0_mag), std::max_element(std::begin(k0_mag), std::end(k0_mag)))];
             gr_complex four_cum(0.0f, 0.0f);
             for (int i = 0; i < up_symb_to_use - 1; i++)
             {
@@ -253,7 +256,7 @@ namespace gr
             kiss_fft_cpx *cx_in_sto = new kiss_fft_cpx[2 * m_number_of_bins];
             kiss_fft_cpx *cx_out_sto = new kiss_fft_cpx[2 * m_number_of_bins];
 
-            float fft_mag_sq[2 * m_number_of_bins];
+            std::vector<float> fft_mag_sq(2 * m_number_of_bins);
             for (size_t i = 0; i < 2 * m_number_of_bins; i++)
             {
                 fft_mag_sq[i] = 0;
@@ -292,7 +295,7 @@ namespace gr
             delete[] cx_out_sto;
 
             // get argmax here
-            k0 = std::max_element(fft_mag_sq, fft_mag_sq + 2 * m_number_of_bins) - fft_mag_sq;
+            k0 = std::distance(std::begin(fft_mag_sq), std::max_element(std::begin(fft_mag_sq), std::end(fft_mag_sq)));
 
             // get three spectral lines
             Y_1 = fft_mag_sq[mod(k0 - 1, 2 * m_number_of_bins)];
@@ -314,8 +317,8 @@ namespace gr
         uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
         {
             double sig_en = 0;
-            float fft_mag[m_number_of_bins];
-            std::vector<gr_complex> dechirped(m_number_of_bins);
+            std::vector<float> fft_mag(m_number_of_bins);
+            volk::vector<gr_complex> dechirped(m_number_of_bins);
 
             kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
 
@@ -339,21 +342,21 @@ namespace gr
             free(cfg);
             // Return argmax here
 
-            return sig_en ? ((std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag)) : -1;
+            return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
 
         float frame_sync_impl::determine_energy(const gr_complex *samples, int length = 1)
         {
-            float magsq_chirp[m_number_of_bins * length];
+            volk::vector<float> magsq_chirp(m_number_of_bins * length);
             float energy_chirp = 0;
-            volk_32fc_magnitude_squared_32f(magsq_chirp, samples, m_number_of_bins * length);
-            volk_32f_accumulator_s32f(&energy_chirp, magsq_chirp, m_number_of_bins * length);
+            volk_32fc_magnitude_squared_32f(&magsq_chirp[0], samples, m_number_of_bins * length);
+            volk_32f_accumulator_s32f(&energy_chirp, &magsq_chirp[0], m_number_of_bins * length);
             return energy_chirp / m_number_of_bins / length;
         }
         float frame_sync_impl::determine_snr(const gr_complex *samples)
         {
             double tot_en = 0;
-            float fft_mag[m_number_of_bins];
+            std::vector<float> fft_mag(m_number_of_bins);
             std::vector<gr_complex> dechirped(m_number_of_bins);
 
             kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
@@ -377,7 +380,7 @@ namespace gr
             }
             free(cfg);
 
-            int max_idx = (std::max_element(fft_mag, fft_mag + m_number_of_bins) - fft_mag);
+            int max_idx = std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)));
             float sig_en = fft_mag[max_idx];
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
