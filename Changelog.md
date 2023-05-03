@@ -1,3 +1,5 @@
+# v0.5.5
+- added tags to crc verification output stream indication frame start, length and CRC result.
 # v0.5.4
 - added separator option for file input
 # v0.5.3
