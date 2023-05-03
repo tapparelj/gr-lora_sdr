@@ -30,6 +30,7 @@ namespace gr
                   output_crc_check(output_crc_check)
         {
             message_port_register_out(pmt::mp("msg"));
+            set_tag_propagation_policy(TPP_DONT);
         }
 
         /*
@@ -89,6 +90,7 @@ namespace gr
                 pmt::pmt_t err = pmt::string_to_symbol("error");
                 m_crc_presence = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
                 m_payload_len = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err));
+                curent_tag = tags[0];
                 // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
                 // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 
@@ -100,11 +102,11 @@ namespace gr
                 in_buff.push_back(in[i]);
             }
             consume_each(ninput_items[0]);
-            
+
 
             if ((in_buff.size() >= (int)m_payload_len + 2) && m_crc_presence)
             { // wait for all the payload to come
-                
+
                 if (m_payload_len < 2)
                 { // undefined CRC
                     std::cout << "CRC not supported for payload smaller than 2 bytes" << std::endl;
@@ -145,6 +147,10 @@ namespace gr
                         produce(1,1);
                     }
 
+                    curent_tag.value = pmt::dict_add(curent_tag.value, pmt::string_to_symbol("crc_valid"), pmt::from_bool(crc_valid == 1));
+                    curent_tag.offset = nitems_written(0);
+                    add_item_tag(0, curent_tag);
+
                     if (print_rx_msg)
                     {
                         std::cout << "rx msg: " << message_str << std::endl
@@ -170,6 +176,9 @@ namespace gr
             else if ((in_buff.size()>= (int)m_payload_len) && !m_crc_presence)
             {
                 
+                curent_tag.offset = nitems_written(0);
+                add_item_tag(0, curent_tag);
+
                 // get payload as string
                 message_str.clear();
                 for (uint i = 0; i < m_payload_len; i++)
