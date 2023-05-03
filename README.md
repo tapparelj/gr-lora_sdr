@@ -1,6 +1,6 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
 ![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.3-important)
-![version](https://img.shields.io/badge/Version-0.5.4-brightgreen)
+![version](https://img.shields.io/badge/Version-0.5.5-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftapparelj%2Fgr-lora_sdr&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
@@ -45,9 +45,9 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 
 \* Spreading factors 5 and 6 not compatible with SX1261/2.
 ## Reference
-J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming, and A. Burg, “An Open-Source LoRa Physical Layer Prototype on GNU Radio”
+J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming and A. Burg, "An Open-Source LoRa Physical Layer Prototype on GNU Radio," 2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC), Atlanta, GA, USA, 2020, pp. 1-5.
 
-[https://arxiv.org/abs/2002.08208](https://arxiv.org/abs/2002.08208)
+[IEEE link](https://ieeexplore.ieee.org/document/9154273), [arXiv link](https://arxiv.org/abs/2002.08208)
 
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
@@ -136,6 +136,7 @@ The conda environment used to develop this module is described by the environmen
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- added tags to crc verification output stream indication frame start, length and CRC result.
 - added separator option for file input
 - added preamble length option
 - added parameter for frame zero-padding
