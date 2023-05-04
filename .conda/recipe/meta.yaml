@@ -93,3 +93,6 @@ about:
     choose all the parameters of the transmission, such as the spreading
     factor, the coding rate, the bandwidth, the sync word, the presence of an
     explicit header and CRC.
+
+    If you find this module useful for your project, please consider citing the
+    publication https://arxiv.org/abs/2002.08208.
