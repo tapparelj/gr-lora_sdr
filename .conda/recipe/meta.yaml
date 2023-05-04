@@ -53,6 +53,9 @@ requirements:
     # Add/remove runtime dependencies here
 
 test:
+  requires:
+    - gnuradio-grc
+    - gnuradio-uhd
   commands:
     ## verify that commands run
     #- COMMAND --help
@@ -71,6 +74,13 @@ test:
     {% for block in blocks %}
     - test -f $PREFIX/share/gnuradio/grc/blocks/{{ oot_name }}_{{ block }}.block.yml  # [not win]
     - if not exist %PREFIX%\\Library\\share\\gnuradio\\grc\\blocks\\{{ oot_name }}_{{ block }}.block.yml exit 1  # [win]
+    {% endfor %}
+
+    # verify that examples get installed
+    {% set example_grcs = ["lora_RX", "lora_TX", "tx_rx_functionnality_check", "tx_rx_simulation", "tx_rx_usrp"] %}
+    {% for eg in example_grcs %}
+    - grcc $PREFIX/share/gr-{{ oot_name }}/examples/{{ eg }}.grc  # [not win]
+    - grcc %PREFIX%\\Library\\share\\gr-{{ oot_name}}\\examples\\{{ eg }}.grc  # [win]
     {% endfor %}
 
   imports:
@@ -93,6 +103,11 @@ about:
     choose all the parameters of the transmission, such as the spreading
     factor, the coding rate, the bandwidth, the sync word, the presence of an
     explicit header and CRC.
+
+    Example flowgraphs are installed with the package and can be found in:
+
+        - (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
+        - (Windows) `%CONDA_PREFIX%\share\gr-lora_sdr\examples`
 
     If you find this module useful for your project, please consider citing the
     publication https://arxiv.org/abs/2002.08208.
