@@ -20,13 +20,13 @@ enable_testing()
 
 # Install to PyBOMBS target prefix if defined
 if(DEFINED ENV{PYBOMBS_PREFIX})
-    set(CMAKE_INSTALL_PREFIX $ENV{PYBOMBS_PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{PYBOMBS_PREFIX} CACHE PATH "")
     message(STATUS "PyBOMBS installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{PYBOMBS_PREFIX}")
 endif()
 
 #install to conda if prefix defined
 if(DEFINED ENV{CONDA_PREFIX} )
-    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX} CACHE PATH "")
     message(STATUS "Conda installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{CONDA_PREFIX}")
 endif()
 
@@ -64,6 +64,11 @@ include(GrMinReq)
 ########################################################################
 
 include(GrCompilerSettings)
+
+if(MSVC)
+    # set flag for standards conformance to use "and" and "or" keywords
+    add_compile_options(/permissive-)
+endif(MSVC)
 
 ########################################################################
 # Install directories
@@ -141,6 +146,7 @@ if(ENABLE_PYTHON)
   message(STATUS "PYTHON and GRC components are enabled")
   add_subdirectory(python/lora_sdr)
   add_subdirectory(grc)
+  add_subdirectory(examples)
 else(ENABLE_PYTHON)
   message(STATUS "PYTHON and GRC components are disabled")
 endif(ENABLE_PYTHON)

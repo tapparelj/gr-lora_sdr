@@ -64,7 +64,7 @@ namespace gr
       std::vector<gr_complex> m_downchirp; ///< Reference downchirp
       std::vector<gr_complex> m_upchirp;   ///< Reference upchirp
 
-      uint frame_cnt;      ///< Number of frame received
+      unsigned int frame_cnt;      ///< Number of frame received
       int32_t symbol_cnt;  ///< Number of symbols already received
       int32_t bin_idx;     ///< value of previous lora symbol
       int32_t bin_idx_new; ///< value of newly demodulated symbol

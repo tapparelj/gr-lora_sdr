@@ -133,7 +133,7 @@ namespace gr {
             float *m_fft_mag_sq = compute_fft_mag(samples); // from dynamic memory alloc
 
             // Compute LLRs of the SF bits
-            double LLs[m_samples_per_symbol];   // 2**sf  Log-Likelihood
+            std::vector<double> LLs(m_samples_per_symbol);   // 2**sf  Log-Likelihood
             std::vector<LLR> LLRs(MAX_SF,0);        //      Log-Likelihood Ratios
 
             

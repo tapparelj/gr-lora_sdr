@@ -6,12 +6,15 @@
 #include <iomanip>
 #include <numeric>
 #include <gnuradio/expj.h>
-#include <sys/resource.h>
-#include <sys/syscall.h>
 #include <volk/volk.h>
 #include <algorithm>
 
-#define print(message) std::cout<< message <<std::endl 
+// Undefine VOID macro (happens on Windows) so we can use VOID as a symbol type below
+#ifdef VOID
+#undef VOID
+#endif
+
+#define print(message) std::cout<< message <<std::endl
 namespace gr {
     namespace lora_sdr {
 
@@ -58,7 +61,7 @@ namespace gr {
          *  \param  n_bits
          *          The output number of bits
          */
-        inline std::vector<bool> int2bool(uint integer,uint8_t n_bits){
+        inline std::vector<bool> int2bool(unsigned int integer,uint8_t n_bits){
                 std::vector<bool> vec(n_bits,0);
                 int j=n_bits;
                 for(int i=0 ;i<n_bits;i++) {

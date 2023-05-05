@@ -110,7 +110,7 @@ namespace gr
                 offset++;
             }
 #ifdef GRLORA_DEBUG
-            for (uint i = 0; i < dewhitened.size(); i++)
+            for (unsigned int i = 0; i < dewhitened.size(); i++)
             {
                 std::cout << (char)(int)dewhitened[i] << "    0x" << std::hex << (int)dewhitened[i] << std::dec << std::endl;
             }
