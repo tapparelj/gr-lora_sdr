@@ -108,7 +108,7 @@ about:
 
         - (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
         - (Windows) `%CONDA_PREFIX%\share\gr-lora_sdr\examples`
-<br>
+    <br>
     If you find this module useful for your project, please consider citing the
     publication "An Open-Source LoRa Physical Layer Prototype on GNU Radio" (<a href="https://ieeexplore.ieee.org/document/9154273">IEEE Xplore</a>, 
     <a href="https://arxiv.org/abs/2002.08208">arXiv</a>
