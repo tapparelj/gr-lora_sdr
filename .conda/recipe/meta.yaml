@@ -97,18 +97,19 @@ about:
     implementation of a LoRa transceiver with all the necessary receiver
     components to operate correctly even at very low SNRs. The transceiver is
     available as a module for GNU Radio 3.10. This work has been conducted at
-    the Telecommunication Circuits Laboratory, EPFL.
+    the Telecommunication Circuits Laboratory, EPFL.<br>
 
     In the GNU Radio implementation of the LoRa Tx and Rx chains the user can
     choose all the parameters of the transmission, such as the spreading
     factor, the coding rate, the bandwidth, the sync word, the presence of an
-    explicit header and CRC.
+    explicit header and CRC.<br>
 
     Example gnuradio-companion flowgraphs are installed with the package and can be found in:
 
         - (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
         - (Windows) `%CONDA_PREFIX%\share\gr-lora_sdr\examples`
-
+<br>
     If you find this module useful for your project, please consider citing the
-    publication <a href="https://arxiv.org/abs/2002.08208">https://arxiv.org/abs/2002.08208.</a>
+    publication "An Open-Source LoRa Physical Layer Prototype on GNU Radio" (<a href="https://ieeexplore.ieee.org/document/9154273">IEEE Xplore</a>, 
+    <a href="https://arxiv.org/abs/2002.08208">arXiv</a>
     
