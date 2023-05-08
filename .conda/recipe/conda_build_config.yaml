@@ -1,7 +1,7 @@
 # this is the channel and label where packages will be uploaded to if enabled
 # (see ../README.md)
 channel_targets:
-  - gnuradio main
+  - tapparelj main
 # override the conda-forge pin for gnuradio-core by uncommenting
 # and specifying a different version here
 #gnuradio_core:
