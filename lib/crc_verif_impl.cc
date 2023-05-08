@@ -146,10 +146,11 @@ namespace gr
                         out_crc[0] = crc_valid;
                         produce(1,1);
                     }
-
-                    curent_tag.value = pmt::dict_add(curent_tag.value, pmt::string_to_symbol("crc_valid"), pmt::from_bool(crc_valid == 1));
-                    curent_tag.offset = nitems_written(0);
-                    add_item_tag(0, curent_tag);
+					if (output_items.size()){
+		                curent_tag.value = pmt::dict_add(curent_tag.value, pmt::string_to_symbol("crc_valid"), pmt::from_bool(crc_valid == 1));
+		                curent_tag.offset = nitems_written(0);
+		                add_item_tag(0, curent_tag);
+                    }
 
                     if (print_rx_msg)
                     {
@@ -175,10 +176,10 @@ namespace gr
             }
             else if ((in_buff.size()>= (int)m_payload_len) && !m_crc_presence)
             {
-                
-                curent_tag.offset = nitems_written(0);
-                add_item_tag(0, curent_tag);
-
+                if (output_items.size()){
+		            curent_tag.offset = nitems_written(0);
+		            add_item_tag(0, curent_tag);
+				}
                 // get payload as string
                 message_str.clear();
                 for (unsigned int i = 0; i < m_payload_len; i++)

@@ -105,8 +105,8 @@ documentation: |-
     Inputs:
         - in: Stream of complex samples
     Outputs
-        - out(msg): Message containing the received payload (optional)
-        - out(bytes): Stream of char of the received payloads (optional)
+        - (optional) out(msg): Message containing the received payload
+        - (optional) out(bytes): Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
     
     
 

@@ -24,8 +24,6 @@ import time
 import gnuradio.lora_sdr as lora_sdr
 
 
-
-
 class tx_rx_usrp(gr.top_block):
 
     def __init__(self):

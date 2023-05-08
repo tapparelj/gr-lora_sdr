@@ -2,4 +2,4 @@ build*/
 *.pyc
 *.pyo
 .vscode/
-examples/hier*
+*/__pycache__/*

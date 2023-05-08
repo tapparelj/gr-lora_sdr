@@ -48,6 +48,7 @@ documentation: |-
         in: stream of payload bytes
       Output:
         (optional) msg: Received payload
-        (optional) out: received payload as a stream of char
+        (optional) payload_char: Received payload as a stream of char, with tagged with payload length and CRC verification result.
+        (optional) crc_check: stream indicating the result of the CRC verification. Enabled by the corresponding parameter.
 
 file_format: 1

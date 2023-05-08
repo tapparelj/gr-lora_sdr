@@ -78,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 96.0]
+    coordinate: [752, 92.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -295,7 +295,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [160, 408.0]
+    coordinate: [152, 408.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -573,4 +573,3 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.3.0
