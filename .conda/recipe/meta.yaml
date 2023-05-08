@@ -104,10 +104,11 @@ about:
     factor, the coding rate, the bandwidth, the sync word, the presence of an
     explicit header and CRC.
 
-    Example flowgraphs are installed with the package and can be found in:
+    Example gnuradio-companion flowgraphs are installed with the package and can be found in:
 
         - (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
         - (Windows) `%CONDA_PREFIX%\share\gr-lora_sdr\examples`
 
     If you find this module useful for your project, please consider citing the
-    publication https://arxiv.org/abs/2002.08208.
+    publication <a href="https://arxiv.org/abs/2002.08208">https://arxiv.org/abs/2002.08208.</a>
+    
