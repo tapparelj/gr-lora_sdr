@@ -3,6 +3,7 @@
 ![version](https://img.shields.io/badge/Version-0.5.5-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftapparelj%2Fgr-lora_sdr&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
 ## Summary
@@ -47,7 +48,7 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 ## Reference
 J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming and A. Burg, "An Open-Source LoRa Physical Layer Prototype on GNU Radio," 2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC), Atlanta, GA, USA, 2020, pp. 1-5.
 
-[IEEE link](https://ieeexplore.ieee.org/document/9154273), [arXiv link](https://arxiv.org/abs/2002.08208)
+[IEEE Xplore link](https://ieeexplore.ieee.org/document/9154273), [arXiv link](https://arxiv.org/abs/2002.08208)
 
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
