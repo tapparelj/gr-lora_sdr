@@ -325,7 +325,7 @@ namespace gr
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
 
-            for (uint i = 0; i < m_number_of_bins; i++)
+            for (uint32_t i = 0; i < m_number_of_bins; i++)
             {
                 cx_in[i].r = dechirped[i].real();
                 cx_in[i].i = dechirped[i].imag();
@@ -364,7 +364,7 @@ namespace gr
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&dechirped[0], samples, &m_downchirp[0], m_number_of_bins);
 
-            for (uint i = 0; i < m_number_of_bins; i++)
+            for (uint32_t i = 0; i < m_number_of_bins; i++)
             {
                 cx_in[i].r = dechirped[i].real();
                 cx_in[i].i = dechirped[i].imag();
@@ -494,7 +494,7 @@ namespace gr
             }
 
             // downsampling
-            for (uint ii = 0; ii < m_number_of_bins; ii++)
+            for (uint32_t ii = 0; ii < m_number_of_bins; ii++)
                 in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
 
             switch (m_state)
@@ -547,7 +547,7 @@ namespace gr
                     m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
                     m_sto_frac = estimate_STO_frac();
                     // create correction vector
-                    for (uint n = 0; n < m_number_of_bins; n++)
+                    for (uint32_t n = 0; n < m_number_of_bins; n++)
                     {
                         CFO_frac_correc[n] = gr_expj(-2 * M_PI * m_cfo_frac / m_number_of_bins * n);
                     }
@@ -623,7 +623,7 @@ namespace gr
 
                     std::vector<gr_complex> CFO_int_correc;
                     CFO_int_correc.resize((m_n_up_req + additional_upchirps) * m_number_of_bins);
-                    for (uint n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
+                    for (uint32_t n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
                     {
                         CFO_int_correc[n] = gr_expj(-2 * M_PI * (m_cfo_int) / m_number_of_bins * n);
                     }
@@ -639,7 +639,7 @@ namespace gr
                     int N = m_number_of_bins;
                     std::vector<gr_complex> sfo_corr_vect;
                     sfo_corr_vect.resize((m_n_up_req + additional_upchirps) * m_number_of_bins, 0);
-                    for (uint n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
+                    for (uint32_t n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
                     {
                         sfo_corr_vect[n] = gr_expj(-2 * M_PI * (pow(mod(n, N), 2) / 2 / N * (m_bw / fs_p * m_bw / fs_p - m_bw / fs * m_bw / fs) + (std::floor((float)n / N) * (m_bw / fs_p * m_bw / fs_p - m_bw / fs_p) + m_bw / 2 * (1 / fs - 1 / fs_p)) * mod(n, N)));
                     }
@@ -657,7 +657,7 @@ namespace gr
                     std::vector<gr_complex> corr_preamb;
                     corr_preamb.resize((m_n_up_req + additional_upchirps) * m_number_of_bins, 0);
                     // apply sto correction
-                    for (uint i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
+                    for (uint32_t i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
                     {
                         corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
                     }
@@ -691,7 +691,7 @@ namespace gr
                     net_ids_samp_dec.resize(2 * m_number_of_bins, 0);
                     // start_off gives the offset in the net_id_samp vector required to be aligned in time (CFOint is equivalent to STOint since upchirp_val was forced to 0)
                     int start_off = (int)m_os_factor / 2 - (my_roundf(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
-                    for (uint i = 0; i < m_number_of_bins * 2; i++)
+                    for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
                     {
                         net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
                     }

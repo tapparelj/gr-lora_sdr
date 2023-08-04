@@ -85,7 +85,7 @@ namespace gr {
 
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&m_dechirped[0], samples, &m_downchirp[0], m_samples_per_symbol);
-            for (uint i = 0; i < m_samples_per_symbol; i++) {
+            for (uint32_t i = 0; i < m_samples_per_symbol; i++) {
                 cx_in[i].r = m_dechirped[i].real();
                 cx_in[i].i = m_dechirped[i].imag();
             }
@@ -185,7 +185,7 @@ namespace gr {
             double SNRdB_estimate = 10*std::log10(m_Ps_est/m_Pn_est);
             //std::cout << "SNR " << SNRdB_estimate << std::endl;
             //  Normalize fft_mag to 1 to avoid Bessel overflow
-            for (uint i = 0; i < m_samples_per_symbol; i++) {  // upgrade to avoid for loop
+            for (uint32_t i = 0; i < m_samples_per_symbol; i++) {  // upgrade to avoid for loop
                 m_fft_mag_sq[i] *= m_samples_per_symbol; // Normalized |Y[n]| * sqrt(N) => |Y[n]|² * N (depends on kiss FFT library)
                 //m_fft_mag_sq[i] /= Ps_frame; // // Normalize to avoid Bessel overflow (does not change the performances)
             }
@@ -284,7 +284,7 @@ namespace gr {
                     build_upchirp(&m_upchirp[0], mod(cfo_int, m_samples_per_symbol), m_sf);
                     volk_32fc_conjugate_32fc(&m_downchirp[0], &m_upchirp[0], m_samples_per_symbol);
                     // adapt the downchirp to the cfo_frac of the frame
-                    for (uint n = 0; n < m_samples_per_symbol; n++)
+                    for (uint32_t n = 0; n < m_samples_per_symbol; n++)
                     {
                         m_downchirp[n] = m_downchirp[n] * gr_expj(-2 * M_PI * cfo_frac / m_samples_per_symbol * n);
                     }
