@@ -80,7 +80,7 @@ namespace gr {
 
                     for (uint32_t i = 0; i < cw_len; i++) {
                         // take only sf_app bits over the sf bits available
-                        memcpy(inter_bin[i].data(), in2 + (i * m_sf + m_sf - sf_app), sf_app * sizeof(LLR));
+                        memcpy(inter_bin[i].data(), in2 + (i * MAX_SF + m_sf - sf_app), sf_app * sizeof(LLR));
                     }
 
                     // Do the actual deinterleaving

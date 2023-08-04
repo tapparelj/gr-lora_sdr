@@ -173,9 +173,8 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
-- added information on conda package installation
-- added complete Tx & Rx transmitter chain unit tests with `make test`
 - Improved LLR stream format between _fft\_demod_ and _deinterleaver_ 
+- added information on conda package installation
 - added tags to crc verification output stream indication frame start, length and CRC result.
 - added separator option for file input
 - added preamble length option

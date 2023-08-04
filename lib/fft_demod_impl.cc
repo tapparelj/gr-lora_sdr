@@ -316,7 +316,7 @@ namespace gr {
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
                     if (m_soft_decoding) {
                         for (int i = 0; i < block_size; i++)
-                            memcpy(out2 + i * m_sf, LLRs_block[i].data(), m_sf * sizeof(LLR));
+                            memcpy(out2 + i * MAX_SF, LLRs_block[i].data(), m_sf * sizeof(LLR));
                         LLRs_block.clear();
                     } else {  // Hard decoding
                         memcpy(out1, output.data(), block_size * sizeof(uint16_t));
