@@ -164,6 +164,15 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 
    
 ## Frequent issues:  
+- Fail to `make` after pulling a new version from git
+	- If the parameters of a block have changed in the new version, you need to first clean the old installation before building the module again.
+	- from within the build folder, run 
+		```
+		(sudo) make uninstall
+		make clean
+		make -j4
+		(sudo) make install
+		```
 - "ImportError: No module named lora_sdr":
 	- This issue comes probably from missing PYTHONPATH and LD_LIBRARY_PATH                             
 	- Refer to https://wiki.gnuradio.org/index.php/ModuleNotFoundError to modify those variables. If you set a prefix during the "cmake" call, skip directly to point C.(Verifying that the paths exist in your folders might help.)
