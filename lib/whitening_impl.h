@@ -18,10 +18,14 @@ namespace gr {
          std::vector<std::string> payload_str;
          bool m_file_source; ///< indicate that the payload are provided by a file through an input stream
          void msg_handler(pmt::pmt_t message);
+         bool m_use_length_tag;
+         std::string m_length_tag_name;
+         int m_input_byte_cnt;
+         uint64_t m_tag_offset;
          
 
      public:
-      whitening_impl(bool is_hex, char separator);
+      whitening_impl(bool is_hex, bool use_length_tag, char separator, std::string length_tag_name);
       ~whitening_impl();
 
       // Where all the action really happens

@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lora Rx
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.3.0
+# GNU Radio version: 3.10.5.1
 
 from gnuradio import gr
 from gnuradio.filter import firdes
@@ -46,6 +46,7 @@ class lora_RX(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
+
         self.uhd_usrp_source_0 = uhd.usrp_source(
             ",".join(("addr=192.168.10.6", '')),
             uhd.stream_args(

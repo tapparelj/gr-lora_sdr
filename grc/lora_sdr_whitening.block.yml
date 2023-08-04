@@ -8,16 +8,28 @@ parameters:
     default: message_strobe
     options: ['message_strobe', 'file_source']
     option_labels: ['Message strobe', 'File source']
+-   id: use_length_tag
+    label: Use length tag
+    dtype: enum
+    options: ['True','False']
+    option_labels: [ 'Yes','No']
+    default: 'False'
+    hide: ${ ( 'none' if str(source_type) == "file_source" else 'all') }
 -   id: separator
     label: Separator
     dtype: raw
     default: "','"
-    hide: ${ ( 'none' if str(source_type) == "file_source" else 'all') }
+    hide: ${ ( 'none' if ((str(source_type) == "file_source") and (use_length_tag == 'False')) else 'all') }
+-   id: length_tag_name
+    label: Length tag key
+    dtype: raw
+    default: "'packet_len'"
+    hide: ${ ( 'none' if ((str(source_type) == "file_source") and (use_length_tag == 'True')) else 'all') }
 -   id: is_hex
     label: is_hex
     dtype: bool
     default: false
-    hide: ${ ( 'none' if str(source_type) == "file_source" else 'all') }
+    hide: ${ ( 'none' if (str(source_type) == "file_source" and use_length_tag == 'False') else 'all') }
 
 inputs:
 -   domain: stream
@@ -34,7 +46,7 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.whitening(${is_hex},${separator})
+    make: lora_sdr.whitening(${is_hex},${use_length_tag},${separator},${length_tag_name})
 
 documentation: |-
     Whiten the payload data with a pseudo random sequence

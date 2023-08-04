@@ -1,6 +1,6 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
 ![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.5-important)
-![version](https://img.shields.io/badge/Version-0.5.5-brightgreen)
+![version](https://img.shields.io/badge/Version-0.5.6-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftapparelj%2Fgr-lora_sdr&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 [![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
@@ -173,8 +173,8 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
-- Improved LLR stream format between _fft\_demod_ and _deinterleaver_ 
-- added information on conda package installation
+- Added tagged stream input support (for frame definition of frame length)
+- Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 
 - added tags to crc verification output stream indication frame start, length and CRC result.
 - added separator option for file input
 - added preamble length option

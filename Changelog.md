@@ -1,3 +1,6 @@
+# v0.5.6
+- Added tagged stream input support (for frame definition of frame length)
+- Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 
 # v0.5.5
 - added tags to crc verification output stream indication frame start, length and CRC result.
 # v0.5.4

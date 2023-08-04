@@ -20,7 +20,7 @@ namespace gr {
         uint32_t m_samp_rate; ///< Transmission sampling rate
         uint32_t m_bw; ///< Transmission bandwidth (Works only for samp_rate=bw)
         uint32_t m_number_of_bins; ///< number of bin per loar symbol
-        uint32_t m_samples_per_symbol; ///< samples per symbols(Works only for 2^sf)
+        int m_samples_per_symbol; ///< samples per symbols(Works only for 2^sf)
         std::vector<uint16_t> m_sync_words; ///< sync words (network id) 
 
         int m_ninput_items_required; ///< number of samples required to call this block (forecast)
@@ -36,7 +36,7 @@ namespace gr {
 
         uint16_t m_preamb_len; ///< number of upchirps in the preamble
         int32_t samp_cnt; ///< counter of the number of lora samples sent
-        uint32_t preamb_samp_cnt; ///< counter of the number of preamble symbols output
+        int32_t preamb_samp_cnt; ///< counter of the number of preamble symbols output
         uint32_t padd_cnt; ///< counter of the number of null symbols output after each frame
         uint64_t frame_cnt; ///< counter of the number of frame sent
         bool frame_end; ///< indicate that we send a full frame

@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::whitening::make is the public interface for
        * creating new instances.
        */
-      static sptr make(bool is_hex, char separator =',');
+      static sptr make(bool is_hex, bool use_length_tag, char separator =',', std::string length_tag_name = "");
     };
 
   } // namespace lora_sdr
