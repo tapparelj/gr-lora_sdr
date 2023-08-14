@@ -457,7 +457,7 @@ namespace gr
             int items_to_output = 0;
 
             // check if there is enough space in the output buffer
-            if ((uint)noutput_items < m_number_of_bins)
+            if ((uint32_t)noutput_items < m_number_of_bins)
             {
                 return 0;
             }
@@ -562,7 +562,7 @@ namespace gr
                 {
                 case NET_ID1:
                 {
-                    if (bin_idx == 0 || bin_idx == 1 || (uint)bin_idx == m_number_of_bins - 1)
+                    if (bin_idx == 0 || bin_idx == 1 || (uint32_t)bin_idx == m_number_of_bins - 1)
                     { // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
                         if (additional_upchirps >= 3)
@@ -609,7 +609,7 @@ namespace gr
                 case QUARTER_DOWN:
                 {
                     memcpy(&additional_symbol_samp[m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-                    if ((uint)down_val < m_number_of_bins / 2)
+                    if ((uint32_t)down_val < m_number_of_bins / 2)
                     {
                         m_cfo_int = floor(down_val / 2);
                     }
@@ -833,7 +833,7 @@ namespace gr
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
 
-                if (symbol_cnt < 8 || ((uint)symbol_cnt < m_symb_numb && m_received_head))
+                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
                 {
                     // output downsampled signal (with no STO but with CFO)
                     memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
