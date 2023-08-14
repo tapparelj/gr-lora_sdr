@@ -46,7 +46,6 @@ list(APPEND lora_sdr_python_files
         modulate_python.cc
         payload_id_inc_python.cc
         RH_RF95_header_python.cc
-        utilities_python.cc
         whitening_python.cc
         python_bindings.cc)
 
