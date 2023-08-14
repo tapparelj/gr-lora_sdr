@@ -52,6 +52,9 @@ documentation: |-
     Whiten the payload data with a pseudo random sequence
         Parameters:
             Source type: choose the input mode: message or file
+            Use length tag: separate frame content based on a length tag or a separator character
+            Separator: the separator used to separate frame contents
+            Length tag key: the key of the length tag 
             is_hex: If True, the input file contains hex values as sequence of digits, with frames separated with the separator. e.g(6669727374207061636b6574,7365636f6e64207061636b6574,). Else the file contains sequence of chars with frames separated by the separator. e.g(first packet,second packet).
         Input:
             msg: the payload as a PMT message string
