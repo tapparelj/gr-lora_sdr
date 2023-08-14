@@ -297,7 +297,7 @@ namespace gr {
                     m_symb_numb = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("symb_numb"), err));                
                 }
             }
-            if((uint)ninput_items[0]>=m_samples_per_symbol)//check if we have enough samples at the input
+            if((uint32_t)ninput_items[0]>=m_samples_per_symbol)//check if we have enough samples at the input
             {
                 if (tags.size()){
                         tags[0].offset = nitems_written(0);
