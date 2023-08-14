@@ -288,10 +288,12 @@ blocks:
     alias: ''
     comment: ''
     is_hex: 'False'
+    length_tag_name: '''packet_len'''
     maxoutbuf: '0'
     minoutbuf: '0'
     separator: ''','''
     source_type: message_strobe
+    use_length_tag: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -591,4 +593,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.3.0
+  grc_version: 3.10.5.1

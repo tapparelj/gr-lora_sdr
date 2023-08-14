@@ -159,7 +159,7 @@ namespace gr
                 }
             }
             
-            if ( samp_cnt < m_frame_len*m_samples_per_symbol && samp_cnt>-1) //output payload
+            if ( samp_cnt < m_frame_len*(int32_t)m_samples_per_symbol && samp_cnt>-1) //output payload
             {
                 nitems_to_process = std::min(nitems_to_process, int((float)(noutput_items - output_offset) / m_samples_per_symbol));
                 nitems_to_process = std::min(nitems_to_process, ninput_items[0]);
@@ -176,7 +176,7 @@ namespace gr
             }
 
             if ((samp_cnt >= (m_frame_len*m_samples_per_symbol)) && 
-                (samp_cnt < m_frame_len*m_samples_per_symbol + m_inter_frame_padding)) //padd frame end with zeros
+                (samp_cnt < m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)) //padd frame end with zeros
             {
                 m_ninput_items_required = 0;
                 int padd_size = std::min(uint32_t(noutput_items - output_offset), m_frame_len*m_samples_per_symbol + m_inter_frame_padding - samp_cnt );
@@ -196,7 +196,7 @@ namespace gr
                 //     }
                 // }
             }
-            if ( samp_cnt == m_frame_len*m_samples_per_symbol + m_inter_frame_padding)
+            if ( samp_cnt == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
             {
                 samp_cnt++;
                 frame_cnt++;

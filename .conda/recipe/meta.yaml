@@ -113,4 +113,7 @@ about:
     publication "An Open-Source LoRa Physical Layer Prototype on GNU Radio" 
     (<a href="https://ieeexplore.ieee.org/document/9154273">IEEE Xplore</a>,  
     <a href="https://arxiv.org/abs/2002.08208">arXiv</a>)
+    <h3>Installation issue</h3>
+    Add conda-forge to the list of channel for installation with:<br>
+    `conda install -c tapparelj -c conda-forge gnuradio-lora_sdr`
     

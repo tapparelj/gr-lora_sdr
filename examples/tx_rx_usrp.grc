@@ -193,7 +193,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [160, 392.0]
+    coordinate: [104, 332.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -211,7 +211,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 400.0]
+    coordinate: [1296, 340.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_add_crc_0
@@ -227,7 +227,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 400.0]
+    coordinate: [696, 340.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_crc_verif_0
@@ -244,7 +244,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 632.0]
+    coordinate: [1376, 632.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -260,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 656.0]
+    coordinate: [760, 660.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -275,7 +275,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 648.0]
+    coordinate: [1256, 648.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -292,7 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 656.0]
+    coordinate: [472, 660.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -315,7 +315,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 624.0]
+    coordinate: [320, 628.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_demap_0
@@ -331,7 +331,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 400.0]
+    coordinate: [1032, 340.0]
     rotation: 0
     state: true
 - name: lora_sdr_gray_mapping_0
@@ -347,7 +347,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 656.0]
+    coordinate: [616, 660.0]
     rotation: 0
     state: true
 - name: lora_sdr_hamming_dec_0
@@ -363,7 +363,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 656.0]
+    coordinate: [904, 660.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hamming_enc_0
@@ -380,7 +380,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 392.0]
+    coordinate: [808, 332.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_0
@@ -398,7 +398,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [592, 384.0]
+    coordinate: [568, 324.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -419,7 +419,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 640.0]
+    coordinate: [1048, 644.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -438,7 +438,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 376.0]
+    coordinate: [928, 316.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_modulate_0
@@ -459,7 +459,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1192, 384.0]
+    coordinate: [1168, 324.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_payload_id_inc_0
@@ -475,7 +475,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 336.0]
+    coordinate: [128, 276.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_whitening_0
@@ -485,15 +485,17 @@ blocks:
     alias: ''
     comment: ''
     is_hex: 'False'
+    length_tag_name: '''packet_len'''
     maxoutbuf: '0'
     minoutbuf: '0'
     separator: ''','''
     source_type: message_strobe
+    use_length_tag: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 400.0]
+    coordinate: [376, 340.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0_0
@@ -608,8 +610,8 @@ blocks:
     clock_source7: ''
     comment: ''
     dev_addr: ''
-    dev_args: '"addr=192.168.10.5"'
-    gain0: '0'
+    dev_args: '"addr=192.168.10.3"'
+    gain0: '10'
     gain1: '0'
     gain10: '0'
     gain11: '0'
@@ -770,7 +772,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1448, 324.0]
+    coordinate: [1496, 268.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0_0
@@ -778,7 +780,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    ant0: TX/RX
+    ant0: '"RX2"'
     ant1: RX2
     ant10: ''
     ant11: ''
@@ -1206,7 +1208,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [104, 580.0]
+    coordinate: [0, 604.0]
     rotation: 0
     state: enabled
 
@@ -1234,4 +1236,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.3.0
+  grc_version: 3.10.5.1

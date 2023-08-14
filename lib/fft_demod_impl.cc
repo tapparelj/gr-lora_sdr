@@ -85,7 +85,7 @@ namespace gr {
 
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&m_dechirped[0], samples, &m_downchirp[0], m_samples_per_symbol);
-            for (int i = 0; i < m_samples_per_symbol; i++) {
+            for (uint32_t i = 0; i < m_samples_per_symbol; i++) {
                 cx_in[i].r = m_dechirped[i].real();
                 cx_in[i].i = m_dechirped[i].imag();
             }
@@ -149,7 +149,7 @@ namespace gr {
             double noise_energy = 0;
 
             int n_adjacent_bins = 1; // Put '0' for best accurate SNR estimation but if symbols energy splitted in 2 bins, put '1' for safety
-            for (int i = 0; i < m_samples_per_symbol; i++) {
+            for (int i = 0; i < (int)m_samples_per_symbol; i++) {
                 if ( mod(std::abs(i - symbol_idx), m_samples_per_symbol-1) < 1 + n_adjacent_bins ) 
                     signal_energy += m_fft_mag_sq[i];
                 else
@@ -185,7 +185,7 @@ namespace gr {
             double SNRdB_estimate = 10*std::log10(m_Ps_est/m_Pn_est);
             //std::cout << "SNR " << SNRdB_estimate << std::endl;
             //  Normalize fft_mag to 1 to avoid Bessel overflow
-            for (int i = 0; i < m_samples_per_symbol; i++) {  // upgrade to avoid for loop
+            for (uint32_t i = 0; i < m_samples_per_symbol; i++) {  // upgrade to avoid for loop
                 m_fft_mag_sq[i] *= m_samples_per_symbol; // Normalized |Y[n]| * sqrt(N) => |Y[n]|² * N (depends on kiss FFT library)
                 //m_fft_mag_sq[i] /= Ps_frame; // // Normalize to avoid Bessel overflow (does not change the performances)
             }
@@ -284,7 +284,7 @@ namespace gr {
                     build_upchirp(&m_upchirp[0], mod(cfo_int, m_samples_per_symbol), m_sf);
                     volk_32fc_conjugate_32fc(&m_downchirp[0], &m_upchirp[0], m_samples_per_symbol);
                     // adapt the downchirp to the cfo_frac of the frame
-                    for (int n = 0; n < m_samples_per_symbol; n++)
+                    for (uint32_t n = 0; n < m_samples_per_symbol; n++)
                     {
                         m_downchirp[n] = m_downchirp[n] * gr_expj(-2 * M_PI * cfo_frac / m_samples_per_symbol * n);
                     }
@@ -297,7 +297,7 @@ namespace gr {
                     m_symb_numb = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("symb_numb"), err));                
                 }
             }
-            if(ninput_items[0]>=m_samples_per_symbol)//check if we have enough samples at the input
+            if((uint32_t)ninput_items[0]>=m_samples_per_symbol)//check if we have enough samples at the input
             {
                 if (tags.size()){
                         tags[0].offset = nitems_written(0);
@@ -316,7 +316,7 @@ namespace gr {
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
                     if (m_soft_decoding) {
                         for (int i = 0; i < block_size; i++)
-                            memcpy(out2 + i * m_sf, LLRs_block[i].data(), m_sf * sizeof(LLR));
+                            memcpy(out2 + i * MAX_SF, LLRs_block[i].data(), m_sf * sizeof(LLR));
                         LLRs_block.clear();
                     } else {  // Hard decoding
                         memcpy(out1, output.data(), block_size * sizeof(uint16_t));

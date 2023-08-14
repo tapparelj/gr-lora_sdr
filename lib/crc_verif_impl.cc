@@ -104,7 +104,7 @@ namespace gr
             consume_each(ninput_items[0]);
 
 
-            if ((in_buff.size() >= (int)m_payload_len + 2) && m_crc_presence)
+            if ((in_buff.size() >= m_payload_len + 2) && m_crc_presence)
             { // wait for all the payload to come
 
                 if (m_payload_len < 2)
@@ -174,7 +174,7 @@ namespace gr
                         return m_payload_len;
                 }
             }
-            else if ((in_buff.size()>= (int)m_payload_len) && !m_crc_presence)
+            else if ((in_buff.size()>= m_payload_len) && !m_crc_presence)
             {
                 if (output_items.size()){
 		            curent_tag.offset = nitems_written(0);

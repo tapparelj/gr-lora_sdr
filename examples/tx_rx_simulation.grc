@@ -198,7 +198,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/jtappare/Documents/github/gr-lora_sdr/data/GRC_default/example_tx_source.txt
+    file: /home/jtappare/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -508,15 +508,17 @@ blocks:
     alias: ''
     comment: ''
     is_hex: 'False'
+    length_tag_name: '''packet_len'''
     maxoutbuf: '0'
     minoutbuf: '0'
     separator: ''','''
     source_type: file_source
+    use_length_tag: 'False'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 272.0]
+    coordinate: [240, 260.0]
     rotation: 0
     state: enabled
 
@@ -542,4 +544,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.3.0
+  grc_version: 3.10.5.1

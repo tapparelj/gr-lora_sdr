@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Hier Functionnality Check
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.1.1
+# GNU Radio version: 3.10.5.1
 
 from gnuradio import blocks
 import pmt
@@ -50,6 +50,7 @@ class tx_rx_hier_functionnality_check(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
+
         self.lora_tx_0 = lora_sdr.lora_sdr_lora_tx(
             bw=125000,
             cr=1,
@@ -61,14 +62,14 @@ class tx_rx_hier_functionnality_check(gr.top_block):
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, soft_decoding=True, ldro_mode=2, print_rx=[True,True])
         self.channels_channel_model_0 = channels.channel_model(
-            noise_voltage=10**(-SNRdB/20),
-            frequency_offset=center_freq*clk_offset*1e-6/samp_rate,
-            epsilon=1.0+clk_offset*1e-6,
+            noise_voltage=(10**(-SNRdB/20)),
+            frequency_offset=(center_freq*clk_offset*1e-6/samp_rate),
+            epsilon=(1.0+clk_offset*1e-6),
             taps=[1.0 + 0.0j],
             noise_seed=0,
             block_tags=True)
-        self.channels_channel_model_0.set_min_output_buffer(520)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate*10,True)
+        self.channels_channel_model_0.set_min_output_buffer((int((2**sf+2)*samp_rate/bw)))
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
         self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
 
 
@@ -113,8 +114,8 @@ class tx_rx_hier_functionnality_check(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0.set_sample_rate(self.samp_rate*10)
-        self.channels_channel_model_0.set_frequency_offset(self.center_freq*self.clk_offset*1e-6/self.samp_rate)
+        self.blocks_throttle_0.set_sample_rate((self.samp_rate*10))
+        self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
 
     def get_preamb_len(self):
         return self.preamb_len
@@ -151,22 +152,22 @@ class tx_rx_hier_functionnality_check(gr.top_block):
 
     def set_clk_offset(self, clk_offset):
         self.clk_offset = clk_offset
-        self.channels_channel_model_0.set_frequency_offset(self.center_freq*self.clk_offset*1e-6/self.samp_rate)
-        self.channels_channel_model_0.set_timing_offset(1.0+self.clk_offset*1e-6)
+        self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
+        self.channels_channel_model_0.set_timing_offset((1.0+self.clk_offset*1e-6))
 
     def get_center_freq(self):
         return self.center_freq
 
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
-        self.channels_channel_model_0.set_frequency_offset(self.center_freq*self.clk_offset*1e-6/self.samp_rate)
+        self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
 
     def get_SNRdB(self):
         return self.SNRdB
 
     def set_SNRdB(self, SNRdB):
         self.SNRdB = SNRdB
-        self.channels_channel_model_0.set_noise_voltage(10**(-self.SNRdB/20))
+        self.channels_channel_model_0.set_noise_voltage((10**(-self.SNRdB/20)))
 
 
 

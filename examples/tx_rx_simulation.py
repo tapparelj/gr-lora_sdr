@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Simulation
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.3.0
+# GNU Radio version: 3.10.5.1
 
 from gnuradio import blocks
 import pmt
@@ -50,7 +50,8 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,',')
+
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)
@@ -74,7 +75,7 @@ class tx_rx_simulation(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/github/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
         self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 

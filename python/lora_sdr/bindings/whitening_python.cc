@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(whitening.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(1d9c1f82a08480f16b35e2d7055b5f60) */
+/* BINDTOOL_HEADER_FILE_HASH(6adc1c750354c5146ec5d8d340847c1a) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,7 +37,8 @@ void bind_whitening(py::module &m) {
       m, "whitening", D(whitening))
 
       .def(py::init(&whitening::make), py::arg("is_hex"),
-           py::arg("separator") = ',', D(whitening, make))
+           py::arg("use_length_tag"), py::arg("separator") = ',',
+           py::arg("length_tag_name") = "", D(whitening, make))
 
       ;
 }

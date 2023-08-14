@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Usrp
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.3.0
+# GNU Radio version: 3.10.5.1
 
 from gnuradio import blocks
 import pmt
@@ -22,6 +22,8 @@ from gnuradio import eng_notation
 from gnuradio import uhd
 import time
 import gnuradio.lora_sdr as lora_sdr
+
+
 
 
 class tx_rx_usrp(gr.top_block):
@@ -48,6 +50,7 @@ class tx_rx_usrp(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
+
         self.uhd_usrp_source_0_0 = uhd.usrp_source(
             ",".join(('', "addr=192.168.10.6")),
             uhd.stream_args(
@@ -60,12 +63,12 @@ class tx_rx_usrp(gr.top_block):
         # No synchronization enforced.
 
         self.uhd_usrp_source_0_0.set_center_freq(center_freq, 0)
-        self.uhd_usrp_source_0_0.set_antenna('TX/RX', 0)
+        self.uhd_usrp_source_0_0.set_antenna("RX2", 0)
         self.uhd_usrp_source_0_0.set_bandwidth(bw, 0)
         self.uhd_usrp_source_0_0.set_gain(0, 0)
         self.uhd_usrp_source_0_0.set_min_output_buffer((2**sf<<2))
         self.uhd_usrp_sink_0_0 = uhd.usrp_sink(
-            ",".join(('', "addr=192.168.10.5")),
+            ",".join(('', "addr=192.168.10.3")),
             uhd.stream_args(
                 cpu_format="fc32",
                 args='',
@@ -79,8 +82,8 @@ class tx_rx_usrp(gr.top_block):
         self.uhd_usrp_sink_0_0.set_center_freq(center_freq, 0)
         self.uhd_usrp_sink_0_0.set_antenna('TX/RX', 0)
         self.uhd_usrp_sink_0_0.set_bandwidth(bw, 0)
-        self.uhd_usrp_sink_0_0.set_gain(0, 0)
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,',')
+        self.uhd_usrp_sink_0_0.set_gain(10, 0)
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,True,',','packet_len')
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate_tx, bw, [0x12], (int(20*2**sf*samp_rate_tx/bw)),8)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)

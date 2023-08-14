@@ -119,7 +119,7 @@ namespace gr {
             build_upchirp(upchirp,0,sf,os_factor);
             volk_32fc_conjugate_32fc(&downchirp[0], &upchirp[0], N*os_factor);
 
-            // for(uint n = 0; n < N ;n++){
+            // for(uint32_t n = 0; n < N ;n++){
             //     //the scaling factor of 0.9 is here to avoid to saturate the USRP_SINK
             //     upchirp[n] =  gr_complex(0.9f, 0.0f)*gr_expj(2.0 * M_PI * (n*n/(2*N)-0.5*n));
             //     downchirp[n] = gr_complex(0.9f, 0.0f)*gr_expj(-2.0 * M_PI * (n*n/(2*N)-0.5*n));
