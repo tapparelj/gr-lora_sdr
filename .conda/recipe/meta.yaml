@@ -77,7 +77,7 @@ test:
     {% endfor %}
 
     # verify that examples get installed
-    {% set example_grcs = ["lora_RX", "lora_TX", "tx_rx_functionnality_check", "tx_rx_simulation", "tx_rx_usrp"] %}
+    {% set example_grcs = ["lora_RX", "lora_TX", "tx_rx_functionality_check", "tx_rx_simulation", "tx_rx_usrp"] %}
     {% for eg in example_grcs %}
     - grcc $PREFIX/share/gr-{{ oot_name }}/examples/{{ eg }}.grc  # [not win]
     - grcc %PREFIX%\\Library\\share\\gr-{{ oot_name}}\\examples\\{{ eg }}.grc  # [win]

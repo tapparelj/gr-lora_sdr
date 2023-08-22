@@ -6,8 +6,8 @@
 install(
     FILES lora_RX.grc
           lora_TX.grc
-          tx_rx_functionnality_check.grc
-          tx_rx_hier_functionnality_check.grc
+          tx_rx_functionality_check.grc
+          tx_rx_hier_functionality_check.grc
           tx_rx_simulation.grc
           tx_rx_usrp.grc
     DESTINATION ${GR_PKG_DATA_DIR}/examples)

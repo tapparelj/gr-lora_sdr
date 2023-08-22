@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Tx Rx Functionnality Check
+# Title: Tx Rx Functionality Check
 # Author: Tapparel Joachim@EPFL,TCL
 # GNU Radio version: 3.10.5.1
 
@@ -25,10 +25,10 @@ import gnuradio.lora_sdr as lora_sdr
 
 
 
-class tx_rx_functionnality_check(gr.top_block):
+class tx_rx_functionality_check(gr.top_block):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Tx Rx Functionnality Check", catch_exceptions=True)
+        gr.top_block.__init__(self, "Tx Rx Functionality Check", catch_exceptions=True)
 
         ##################################################
         # Variables
@@ -205,7 +205,7 @@ class tx_rx_functionnality_check(gr.top_block):
 
 
 
-def main(top_block_cls=tx_rx_functionnality_check, options=None):
+def main(top_block_cls=tx_rx_functionality_check, options=None):
     tb = top_block_cls()
 
     def sig_handler(sig=None, frame=None):

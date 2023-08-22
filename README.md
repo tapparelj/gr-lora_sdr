@@ -123,9 +123,9 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	gnuradio-companion &
 	```
-- A final verification of the transceiver functionning can be made by executing the following script, transmitting a frame every two seconds:
+- A final verification of the transceiver functioning can be made by executing the following script, transmitting a frame every two seconds:
 	```sh
-	python3 examples/tx_rx_functionnality_check.py 
+	python3 examples/tx_rx_functionality_check.py 
 	```
 
 #### Usage
