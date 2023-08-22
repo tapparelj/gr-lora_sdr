@@ -66,7 +66,7 @@ If you find this implementation useful for your project, please consider citing 
 
 The conda environment used to develop this module is described by the environment.yml file. 
 ## Installation
-The out of three module gr-lora_sdr can be installed from source or directly as a conda package.
+The out of tree module gr-lora_sdr can be installed from source or directly as a conda package.
 ### From source
 - Clone this repository
 	```sh
