@@ -11,7 +11,7 @@ options:
     gen_linking: dynamic
     generate_options: no_gui
     hier_block_src_path: '.:'
-    id: tx_rx_hier_functionnality_check
+    id: tx_rx_hier_functionality_check
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -321,3 +321,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.10.5.1
