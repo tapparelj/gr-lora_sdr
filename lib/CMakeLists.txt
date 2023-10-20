@@ -32,7 +32,8 @@ list(APPEND lora_sdr_sources
     data_source_impl.cc
     frame_sync_impl.cc
     deinterleaver_impl.cc
-    payload_id_inc_impl.cc )
+    payload_id_inc_impl.cc
+    whiteningt_impl.cc )
 
 set(lora_sdr_sources "${lora_sdr_sources}" PARENT_SCOPE)
 if(NOT lora_sdr_sources)

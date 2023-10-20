@@ -62,10 +62,16 @@ namespace gr
         {
             // check if input file is used
             uint8_t *in;
+            
+            
             if (input_items.size())
             {
                 m_file_source = true;
                 in = (uint8_t *)input_items[0];
+                std::cout<< "hello" << std::endl;
+                for (int i = 0;i<noutput_items*2;i++)
+                    std::cout<< in[i] <<", ";
+                std::cout<<std::endl;
                 std::string s;
 
                 int nitem_to_process = noutput_items;
@@ -124,6 +130,7 @@ namespace gr
                     }
                 }
             }
+            std::cout<< payload_str.size() << std::endl;
 
             // check if too many messages queued by the message strobe source
             if (payload_str.size() >= 100 && !(payload_str.size() % 100) && !m_file_source)
@@ -158,6 +165,7 @@ namespace gr
                     out[2 * i + 1] = (m_payload[i] ^ whitening_seq[i]) >> 4;
                 }
                 noutput_items = 2 * m_payload.size();
+                std::cout << noutput_items << std::endl;
                 m_payload.clear();
                 payload_str.erase(payload_str.begin());
             }

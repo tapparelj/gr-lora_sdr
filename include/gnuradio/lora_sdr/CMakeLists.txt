@@ -30,5 +30,6 @@ install(FILES
     deinterleaver.h
     payload_id_inc.h
     utilities.h
-    DESTINATION include/gnuradio/lora_sdr
+    
+    whiteningt.h DESTINATION include/gnuradio/lora_sdr
 )

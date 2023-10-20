@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Simulation
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: 3.10.3.0
 
 from gnuradio import blocks
 import pmt
@@ -50,7 +50,6 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
@@ -74,8 +73,10 @@ class tx_rx_simulation(gr.top_block):
             noise_seed=0,
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
+        self.blocks_vector_source_x_0 = blocks.vector_source_b((0, 0, 0), False, 1, [])
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
         self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -85,6 +86,7 @@ class tx_rx_simulation(gr.top_block):
         self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
         self.connect((self.blocks_file_source_0_0, 0), (self.lora_sdr_whitening_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_null_sink_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_sync_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
         self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))

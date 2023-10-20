@@ -26,7 +26,7 @@ endif()
 
 #install to conda if prefix defined
 if(DEFINED ENV{CONDA_PREFIX} )
-    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX} CACHE PATH "")
+    set(CMAKE_INSTALL_PREFIX $ENV{CONDA_PREFIX})
     message(STATUS "Conda installed GNU Radio. Setting CMAKE_INSTALL_PREFIX to $ENV{CONDA_PREFIX}")
 endif()
 

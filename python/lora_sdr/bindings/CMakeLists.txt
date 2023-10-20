@@ -47,7 +47,8 @@ list(APPEND lora_sdr_python_files
         payload_id_inc_python.cc
         RH_RF95_header_python.cc
         whitening_python.cc
-        python_bindings.cc)
+    
+    whiteningt_python.cc python_bindings.cc)
 
 GR_PYBIND_MAKE_OOT(lora_sdr
    ../../..
