@@ -1,6 +1,7 @@
 id: lora_sdr_header
 label: Add header
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: impl_head
@@ -36,10 +37,19 @@ documentation: |-
             impl_head: indicate to use the implicit header mode (explicit otherwise)
             has_crc: indicate the presence of a payload crc
             CR: coding rate
-            
+
         Input:
             in: stream of payload nibbles
         Output:
             out: stream of header and payload nibbles
+
+
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/header.h>']
+    declarations: 'lora_sdr::header::sptr ${id};'
+    make: 'this->${id} = lora_sdr::header::make(${impl_head}, ${has_crc}, ${cr});'
+    callbacks:
+        - set_cr(${cr})
 
 file_format: 1

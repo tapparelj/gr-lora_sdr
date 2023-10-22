@@ -1,6 +1,7 @@
 id: lora_sdr_gray_demap
 label: Gray demapping
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: sf
@@ -31,3 +32,10 @@ documentation: |-
             out: decimal value mapped
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/gray_demap.h>']
+    declarations: 'lora_sdr::gray_demap::sptr ${id};'
+    make: 'this->${id} = lora_sdr::gray_demap::make(${sf});'
+    callbacks:
+        - set_sf(${sf})

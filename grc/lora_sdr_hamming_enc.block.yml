@@ -3,6 +3,7 @@
 id: lora_sdr_hamming_enc
 label: Hamming enc
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: cr
@@ -40,3 +41,11 @@ documentation: |-
             out: stream of bytes containing a nibble of data and corresponding parity bits.
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/hamming_enc.h>']
+    declarations: 'lora_sdr::hamming_enc::sptr ${id};'
+    make: 'this->${id} = lora_sdr::hamming_enc::make(${cr}, ${sf});'
+    callbacks:
+        - set_cr(${cr})
+        - set_sf(${sf})

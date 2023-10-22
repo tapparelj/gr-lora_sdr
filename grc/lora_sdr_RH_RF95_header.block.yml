@@ -1,6 +1,7 @@
 id: lora_sdr_RH_RF95_header
 label: Rh rf95 header
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: _to
@@ -45,3 +46,8 @@ documentation: |-
             out: radiohead header and payload as a string
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/RH_RF95_header.h>']
+    declarations: 'lora_sdr::RH_RF95_header::sptr ${id};'
+    make: 'this->${id} = lora_sdr::RH_RF95_header::make(${_to}, ${_from}, ${_id}, ${_flags});'

@@ -3,6 +3,7 @@
 id: lora_sdr_data_source
 label: Data source
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: pay_len
@@ -35,3 +36,8 @@ documentation: |-
             msg: payload data as a string
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/data_source.h>']
+    declarations: 'lora_sdr::data_source::sptr ${id};'
+    make: 'this->${id} = lora_sdr::data_source::make(${pay_len}, ${n_frames});'

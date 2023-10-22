@@ -3,13 +3,14 @@
 id: lora_sdr_header_decoder
 label: Header decoder
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: impl_head
     label: Impl_head
     dtype: bool
 -   id: print_header
-    label: print_header 
+    label: print_header
     dtype: enum
     options: ['True','False']
     option_labels: [ 'Yes','No']
@@ -52,18 +53,27 @@ templates:
 
 documentation: |-
     Recover information present in the header of a frame and send them to the frame synchronization block, which forwards them to each other blocks.
-    In implicit header mode, the values given as parameters will be transmitted to the other blocks.     
+    In implicit header mode, the values given as parameters will be transmitted to the other blocks.
     Parameters:
         impl_head: indicate the usage of implicit header mode (explicit otherwise)
-        CR: coding rate        
-        pay_len: payload length in bytes       
+        CR: coding rate
+        pay_len: payload length in bytes
         has_crc: indicate the presence of a payload CRC
         LDRO: Use of low datarate optimisation mode ('Auto': enabled for symbols durations > 16ms)
 
-    Input:        
-        in: stream of nibbles containing the header, payload (and CRC if used)        
-    Output:        
-        out: stream of nibbles containing payload (and CRC)   
+    Input:
+        in: stream of nibbles containing the header, payload (and CRC if used)
+    Output:
+        out: stream of nibbles containing payload (and CRC)
         frame_info: info of the frame contained in the header such as coding rate, CRC presence, and payload length
+
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/header_decoder.h>']
+    declarations: 'lora_sdr::header_decoder::sptr ${id};'
+    make: 'this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${ldro}, ${print_header});'
+    translations:
+        'True': 'true'
+        'False': 'false'
 
 file_format: 1

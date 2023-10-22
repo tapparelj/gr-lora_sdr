@@ -1,6 +1,7 @@
 id: lora_sdr_interleaver
 label: Interleaver
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: cr
@@ -51,3 +52,11 @@ documentation: |-
             out: stream of interleaved codewords as decimal values
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/interleaver.h>']
+    declarations: 'lora_sdr::interleaver::sptr ${id};'
+    make: 'this->${id} = lora_sdr::interleaver::make(${cr}, ${sf}, ${ldro}, ${bw});'
+    callbacks:
+        - set_cr(${cr})
+        - set_sf(${sf})

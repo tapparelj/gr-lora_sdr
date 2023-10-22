@@ -1,7 +1,7 @@
 id: lora_rx
 label: LoRa Rx
 category: '[LoRa_RX]'
-flags: [python]
+flags: [ python ]
 
 parameters:
 -   id: samp_rate
@@ -58,12 +58,12 @@ parameters:
     option_labels: ['Disable','Enable','Auto']
     default: '2'
 -   id: print_rx
-    label: Print info 
+    label: Print info
     dtype: enum
     options: ['[True,True]','[False,True]','[True,False]','[False,False]']
     option_labels: ['Header & Payload','Payload','Header','None']
     default: '[True,True]'
-    
+
 
 inputs:
 -   label: in
@@ -107,8 +107,8 @@ documentation: |-
     Outputs
         - (optional) out(msg): Message containing the received payload
         - (optional) out(bytes): Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
-    
-    
+
+
 
 
 file_format: 1

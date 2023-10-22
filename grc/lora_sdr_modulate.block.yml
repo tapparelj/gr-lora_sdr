@@ -3,6 +3,7 @@
 id: lora_sdr_modulate
 label: Modulate
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: sf
@@ -60,5 +61,14 @@ documentation: |-
             in: stream of decimal symbol values
         Output:
             out: stream of complex valued samples
+
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/modulate.h>']
+    declarations: 'lora_sdr::modulate::sptr ${id};'
+    make: 'this->${id} = lora_sdr::modulate::make(${sf}, ${samp_rate}, ${bw}, std::vector<uint16_t>{0x12}, ${preamb_len}, (int(20 * std::pow(2, ${sf}) * ${samp_rate} / ${bw})));'
+    callbacks:
+        - set_sf(${sf})
+
 
 file_format: 1

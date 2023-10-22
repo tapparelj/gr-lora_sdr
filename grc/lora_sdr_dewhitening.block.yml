@@ -3,6 +3,7 @@
 id: lora_sdr_dewhitening
 label: Dewhitening
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 inputs:
 -   domain: stream
@@ -27,3 +28,8 @@ documentation: |-
             out: dewhitened payload bytes (and CRC if present)
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/dewhitening.h>']
+    declarations: 'lora_sdr::dewhitening::sptr ${id};'
+    make: 'this->${id} = lora_sdr::dewhitening::make();'

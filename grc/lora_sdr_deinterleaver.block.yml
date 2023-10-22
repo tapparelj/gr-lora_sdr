@@ -3,6 +3,7 @@
 id: lora_sdr_deinterleaver
 label: Deinterleaver
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: soft_decoding
@@ -35,3 +36,8 @@ documentation: |-
             out: stream of deinterleaved codewords (one per byte)
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/deinterleaver.h>']
+    declarations: 'lora_sdr::deinterleaver::sptr ${id};'
+    make: 'this->${id} = lora_sdr::deinterleaver::make(${soft_decoding});'

@@ -1,6 +1,7 @@
 id: lora_sdr_hamming_dec
 label: Hamming dec
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: soft_decoding
@@ -32,3 +33,8 @@ documentation: |-
             out: stream of bytes containing ones nibble of payload each
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/hamming_dec.h>']
+    declarations: 'lora_sdr::hamming_dec::sptr ${id};'
+    make: 'this->${id} = lora_sdr::hamming_dec::make(${soft_decoding});'

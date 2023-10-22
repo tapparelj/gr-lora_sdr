@@ -3,6 +3,7 @@
 id: lora_sdr_fft_demod
 label: fft_demod
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: soft_decoding
@@ -33,12 +34,20 @@ templates:
 
 documentation: |-
     Recover the value of a lora symbol using argmax(DFT(lora_symbol * ref_downchirp)
-        Parameters: 
-           impl_head: usage of an implicit header (explicit will be used otherwise) 
-           soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax   
-        Input:        
-            in: vector of 2^sf complex samples        
-        Output:        
+        Parameters:
+           impl_head: usage of an implicit header (explicit will be used otherwise)
+           soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax
+        Input:
+            in: vector of 2^sf complex samples
+        Output:
             out: stream of lora symbol decimal values or bits LLRs if soft-decision decoding is selected
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/fft_demod.h>']
+    declarations: 'lora_sdr::fft_demod::sptr ${id};'
+    make: 'this->${id} = lora_sdr::fft_demod::make(${soft_decoding}, ${max_log_approx});'
+    translations:
+      'True': 'true'
+      'False': 'false'

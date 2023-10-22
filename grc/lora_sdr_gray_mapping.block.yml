@@ -1,6 +1,7 @@
 id: lora_sdr_gray_mapping
 label: Gray mapping
 category: '[LoRa_RX]'
+flags: [ python, cpp ]
 
 parameters:
 -   id: soft_decoding
@@ -32,3 +33,8 @@ documentation: |-
             out: decimal value demapped
 
 file_format: 1
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/gray_mapping.h>']
+    declarations: 'lora_sdr::gray_mapping::sptr ${id};'
+    make: 'this->${id} = lora_sdr::gray_mapping::make(${soft_decoding});'

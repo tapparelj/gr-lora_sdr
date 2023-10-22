@@ -1,6 +1,8 @@
 id: lora_sdr_whitening
 label: Whitening
 category: '[LoRa_TX]'
+flags: [ python, cpp ]
+
 parameters:
 -   id: source_type
     label: Source type
@@ -31,7 +33,6 @@ parameters:
     default: false
     hide: ${ ( 'none' if (str(source_type) == "file_source" and use_length_tag == 'False') else 'all') }
 
-
 inputs:
 -   domain: stream
     dtype: byte
@@ -55,7 +56,7 @@ documentation: |-
             Source type: choose the input mode: message or file
             Use length tag: separate frame content based on a length tag or a separator character
             Separator: the separator used to separate frame contents
-            Length tag key: the key of the length tag 
+            Length tag key: the key of the length tag
             is_hex: If True, the input file contains hex values as sequence of digits, with frames separated with the separator. e.g(6669727374207061636b6574,7365636f6e64207061636b6574,). Else the file contains sequence of chars with frames separated by the separator. e.g(first packet,second packet).
         Input:
             msg: the payload as a PMT message string
@@ -63,5 +64,18 @@ documentation: |-
             in: a file source with payloads separated by separator.
         Output:
             out: Stream of whitened payload nibbles
+
+
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/whitening.h>']
+    declarations: 'lora_sdr::whitening::sptr ${id};'
+    make: 'this->${id} = lora_sdr::whitening::make(${is_hex},${use_length_tag},${separator},${length_tag_name});'
+    translations:
+        gr.sizeof_: 'sizeof('
+        'True': 'true'
+        'False': 'false'
+        "'": '"'
+        '","': "','"
 
 file_format: 1
