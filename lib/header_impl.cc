@@ -66,6 +66,7 @@ namespace gr
             uint8_t *out = (uint8_t *)output_items[0];
             int nitems_to_process = std::min(ninput_items[0], noutput_items);
             int out_offset = 0;
+          
 
             // read tags
             std::vector<tag_t> tags;

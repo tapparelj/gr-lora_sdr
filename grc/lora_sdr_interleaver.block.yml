@@ -54,7 +54,7 @@ documentation: |-
 file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/interleaver.h>']
+    includes: ['#include "gnuradio/lora_sdr/interleaver.h"']
     declarations: 'lora_sdr::interleaver::sptr ${id};'
     make: 'this->${id} = lora_sdr::interleaver::make(${cr}, ${sf}, ${ldro}, ${bw});'
     callbacks:

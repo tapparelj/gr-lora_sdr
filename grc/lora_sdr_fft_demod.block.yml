@@ -45,7 +45,7 @@ documentation: |-
 file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/fft_demod.h>']
+    includes: ['#include "gnuradio/lora_sdr/fft_demod.h"']
     declarations: 'lora_sdr::fft_demod::sptr ${id};'
     make: 'this->${id} = lora_sdr::fft_demod::make(${soft_decoding}, ${max_log_approx});'
     translations:

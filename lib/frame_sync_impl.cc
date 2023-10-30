@@ -452,8 +452,8 @@ namespace gr
                                           gr_vector_const_void_star &input_items,
                                           gr_vector_void_star &output_items)
         {
-            const gr_complex *in = (const gr_complex *)input_items[0];
-            gr_complex *out = (gr_complex *)output_items[0];
+            const gr_complex *in = (const gr_complex *)input_items[0]; //store input
+            gr_complex *out = (gr_complex *)output_items[0]; //store output
             int items_to_output = 0;
 
             // check if there is enough space in the output buffer

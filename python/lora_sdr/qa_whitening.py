@@ -92,6 +92,7 @@ class qa_whitening(gr_unittest.TestCase):
         
         for i in range(int(len(result_data)/2)):
             result = result_data[2*i] | (result_data[2*i+1]<<4)
+
             self.assertEqual(hex(result), expected_data[i]) 
             
 

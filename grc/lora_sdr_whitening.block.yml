@@ -68,7 +68,7 @@ documentation: |-
 
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/whitening.h>']
+    includes: ['#include "gnuradio/lora_sdr/whitening.h"']
     declarations: 'lora_sdr::whitening::sptr ${id};'
     make: 'this->${id} = lora_sdr::whitening::make(${is_hex},${use_length_tag},${separator},${length_tag_name});'
     translations:

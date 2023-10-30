@@ -1,7 +1,6 @@
 #ifndef INCLUDED_LORA_GRAY_DEMAP_IMPL_H
 #define INCLUDED_LORA_GRAY_DEMAP_IMPL_H
 
-
 #include <gnuradio/lora_sdr/gray_demap.h>
 
 namespace gr {

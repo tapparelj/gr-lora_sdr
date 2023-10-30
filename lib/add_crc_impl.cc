@@ -72,10 +72,16 @@ namespace gr
                                        gr_vector_void_star &output_items)
         {
             const uint8_t *in = (const uint8_t *)input_items[0];
+            // for (int i = 0;i<noutput_items*2;i++)
+            //     std::cout<< in[i] <<", ";
+            // std::cout<<std::endl;
+            
             uint8_t *out = (uint8_t *)output_items[0];
             int nitems_to_output = 0;
             noutput_items = std::max(0, noutput_items - 4);//take margin to output CRC
             int nitems_to_process = std::min(ninput_items[0], noutput_items);
+            
+            
 
             // read tags
             std::vector<tag_t> tags;
@@ -112,8 +118,12 @@ namespace gr
                 return 0;
             }
             m_cnt += nitems_to_process;
+           
+            
+
             if (m_has_crc && m_cnt == m_frame_len && nitems_to_process)
             { //append the CRC to the payload
+                
                 uint16_t crc = 0x0000;
                 m_payload_len = m_payload.size();
                 //calculate CRC on the N-2 firsts data bytes using Poly=1021 Init=0000

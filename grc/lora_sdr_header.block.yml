@@ -46,7 +46,7 @@ documentation: |-
 
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/header.h>']
+    includes: ['#include "gnuradio/lora_sdr/header.h"']
     declarations: 'lora_sdr::header::sptr ${id};'
     make: 'this->${id} = lora_sdr::header::make(${impl_head}, ${has_crc}, ${cr});'
     callbacks:

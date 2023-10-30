@@ -39,7 +39,7 @@ void bind_modulate(py::module& m);
 void bind_payload_id_inc(py::module& m);
 void bind_RH_RF95_header(py::module& m);
 void bind_whitening(py::module& m);
-    void bind_whiteningt(py::module& m);
+
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 
@@ -87,6 +87,5 @@ PYBIND11_MODULE(lora_sdr_python, m)
     bind_RH_RF95_header(m);
     bind_whitening(m);
    
-    bind_whiteningt(m);
     // ) END BINDING_FUNCTION_CALLS
 }

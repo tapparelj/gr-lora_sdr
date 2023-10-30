@@ -48,6 +48,6 @@ documentation: |-
 file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/RH_RF95_header.h>']
+    includes: ['#include "gnuradio/lora_sdr/RH_RF95_header.h"']
     declarations: 'lora_sdr::RH_RF95_header::sptr ${id};'
     make: 'this->${id} = lora_sdr::RH_RF95_header::make(${_to}, ${_from}, ${_id}, ${_flags});'

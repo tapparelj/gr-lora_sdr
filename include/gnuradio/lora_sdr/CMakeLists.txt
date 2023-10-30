@@ -31,5 +31,5 @@ install(FILES
     payload_id_inc.h
     utilities.h
     
-    whiteningt.h DESTINATION include/gnuradio/lora_sdr
+    DESTINATION include/gnuradio/lora_sdr
 )

@@ -25,9 +25,10 @@ documentation: |-
             msg_in: payload as a string
         Output:
             msg_out: payload with ending index incremented by one
-file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/payload_id_inc.h>']
+    includes: ['#include "gnuradio/lora_sdr/payload_id_inc.h"']
     declarations: 'lora_sdr::payload_id_inc::sptr ${id};'
     make: 'this->${id} = lora_sdr::payload_id_inc::make(${separator});'
+
+file_format: 1

@@ -96,8 +96,8 @@ namespace gr
 
       // nitems_to_process = std::min(nitems_to_process)
       // handle the first interleaved block special case
-      uint8_t cw_len = 4 + (((int)cw_cnt < m_sf - 2) ? 4 : m_cr);
-      uint8_t sf_app = (((int)cw_cnt < m_sf - 2) ||m_ldro) ? m_sf - 2 : m_sf;
+      uint8_t cw_len = 4 + (((int)cw_cnt < m_sf - 2) ? 4 : m_cr); //code word length
+      uint8_t sf_app = (((int)cw_cnt < m_sf - 2) ||m_ldro) ? m_sf - 2 : m_sf; //sf applied to the code word
 
       nitems_to_process = std::min(nitems_to_process,(int)sf_app);
       if(std::floor((float)noutput_items/cw_len)==0)

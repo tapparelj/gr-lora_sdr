@@ -36,7 +36,7 @@ documentation: |-
 
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/add_crc.h>']
+    includes: ['#include "gnuradio/lora_sdr/add_crc.h"']
     declarations: 'lora_sdr::add_crc::sptr ${id};'
     make: 'this->${id} = lora_sdr::add_crc::make(${has_crc});'
     translations:

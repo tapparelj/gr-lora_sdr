@@ -35,6 +35,6 @@ documentation: |-
 file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/gray_mapping.h>']
+    includes: ['#include "gnuradio/lora_sdr/gray_mapping.h"']
     declarations: 'lora_sdr::gray_mapping::sptr ${id};'
     make: 'this->${id} = lora_sdr::gray_mapping::make(${soft_decoding});'

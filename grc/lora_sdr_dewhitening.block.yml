@@ -30,6 +30,6 @@ documentation: |-
 file_format: 1
 
 cpp_templates:
-    includes: ['#include <gnuradio/lora_sdr/dewhitening.h>']
+    includes: ['#include "dewhitening.h"']
     declarations: 'lora_sdr::dewhitening::sptr ${id};'
     make: 'this->${id} = lora_sdr::dewhitening::make();'

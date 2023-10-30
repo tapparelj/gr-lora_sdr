@@ -101,6 +101,7 @@ namespace gr
             int output_offset = 0;
             // read tags
             std::vector<tag_t> tags;
+            
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
             if (tags.size())
             {
@@ -196,8 +197,14 @@ namespace gr
                 //     }
                 // }
             }
-            if ( samp_cnt == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
+            // bool check = samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding;
+            // std::cout << check << std::endl;
+            // std::cout << samp_cnt << std::endl;
+            // std::cout << m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding << std::endl;
+           
+            if(samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
             {
+                //std::cout << samp_cnt << std::endl;
                 samp_cnt++;
                 frame_cnt++;
                 m_ninput_items_required = 1;
