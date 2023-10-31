@@ -11,7 +11,7 @@
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from numpy import array
-from table import code
+from whitening_sequence import code
 import pmt
 import numpy as np
 

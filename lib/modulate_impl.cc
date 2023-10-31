@@ -99,6 +99,7 @@ namespace gr
             gr_complex *out = (gr_complex *)output_items[0];
             int nitems_to_process = ninput_items[0];
             int output_offset = 0;
+            const uint64_t n_frames = 1;
             // read tags
             std::vector<tag_t> tags;
             
@@ -205,14 +206,20 @@ namespace gr
             if(samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
             {
                 //std::cout << samp_cnt << std::endl;
+                //std::cout << frame_cnt << std::endl;
                 samp_cnt++;
                 frame_cnt++;
                 m_ninput_items_required = 1;
                 frame_end = true;
+                
+        
             
 #ifdef GR_LORA_PRINT_INFO              
                 std::cout << "Frame " << frame_cnt << " sent\n";
 #endif
+            }
+            if(frame_cnt == n_frames){
+                return WORK_DONE;
             }
             // if (nitems_to_process)
             //     std::cout << ninput_items[0] << " " << nitems_to_process << " " << output_offset << " " << noutput_items << std::endl;
