@@ -16,22 +16,25 @@ import pmt
 import numpy as np
 
     
-f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_mod/ref_tx_mod_sf7_cr2.bin","r")
+f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_no_mod/ref_tx_sf7_cr2.bin","r")
 # Read the binary data into a NumPy array of complex64
-ref_data_mod = np.fromfile(f, dtype=np.complex64)
+ref_data_mod = np.fromfile(f, dtype=np.int32)
 
 # Convert the complex64 data to complex32
 
 f.close()
-f1 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_mod/ref_tx_mod_sf7_cr2_translated.bin", "wb")
-ref_data_mod.tofile(f1)
+f1 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_no_mod/ref_tx_sf7_cr2_translated.txt", "w")
+for i in range(len(ref_data_mod)):
+    f1.write(str(ref_data_mod[i]) + ",")
 f1.close()
 
-f2 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf7_cr2.bin","r")
-ref_data = np.fromfile(f2, dtype=np.complex64)
+f2 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_tx_with_mod_sf7_cr2.bin","r")
+ref_data = np.fromfile(f2, dtype=np.int32)
 f2.close()
 
-f3 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf7_cr2_translated.bin", "wb")
-ref_data.tofile(f3)
+f3 = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_tx_with_mod_sf7_cr2_translated.txt", "w")
+
+for i in range(len(ref_data)):
+    f3.write(str(ref_data[i]) + ",")
 f3.close()
 

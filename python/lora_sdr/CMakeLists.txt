@@ -43,7 +43,7 @@ add_custom_target(
 )
 
 # GR_ADD_TEST(qa_whitening ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_whitening.py)
-# GR_ADD_TEST(qa_tx_rx_simulation ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx_rx_simulation.py)
+# GR_ADD_TEST(qa_tx_no_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx_no_mod.py)
 # GR_ADD_TEST(qa_modulate ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_modulate.py)
 GR_ADD_TEST(qa_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx.py)
 # GR_ADD_TEST(qa_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_rx.py)

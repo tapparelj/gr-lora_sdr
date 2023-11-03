@@ -198,7 +198,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_new/ref_tx_sf11_cr5.bin
+    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf7_cr2.bin
     type: complex
     unbuffered: 'False'
     vlen: '1'
@@ -206,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1584, 176.0]
+    coordinate: [1520, 152.0]
     rotation: 0
     state: disabled
 - name: blocks_file_sink_0_0
@@ -242,9 +242,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1480, 112.0]
+    coordinate: [1312, 112.0]
     rotation: 0
-    state: true
+    state: disabled
+- name: blocks_file_sink_1_0
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_flow_mod/ref_flow_mod_sf7_cr2.bin
+    type: byte
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 320.0]
+    rotation: 0
+    state: enabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -264,9 +282,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 96.0]
+    coordinate: [760, 96.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_file_source_0_0
   id: blocks_file_source
   parameters:
@@ -275,7 +293,7 @@ blocks:
     begin_tag: pmt.PMT_NIL
     comment: ''
     file: '"/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt"'
-    length: '0'
+    length: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
@@ -286,9 +304,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 216.0]
+    coordinate: [24, 216.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_file_source_0_1
   id: blocks_file_source
   parameters:
@@ -346,9 +364,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 80.0]
+    coordinate: [1136, 128.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_sink_x_1
   id: blocks_vector_sink_x
   parameters:
@@ -570,9 +588,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 232.0]
+    coordinate: [424, 232.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_decoder_0
   id: lora_sdr_header_decoder
   parameters:
@@ -652,9 +670,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1112, 112.0]
+    coordinate: [968, 112.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
   parameters:
@@ -667,18 +685,18 @@ blocks:
     minoutbuf: '0'
     separator: ''','''
     source_type: file_source
-    use_length_tag: 'False'
+    use_length_tag: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 224.0]
+    coordinate: [224, 232.0]
     rotation: 0
     state: disabled
 
 connections:
-- [blocks_file_source_0, '0', lora_sdr_gray_demap_0, '0']
 - [blocks_file_source_0, '0', lora_sdr_modulate_1, '0']
+- [blocks_file_source_0_0, '0', lora_sdr_header_0, '0']
 - [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
 - [blocks_file_source_0_1, '0', lora_sdr_frame_sync_0, '0']
 - [blocks_throttle_0, '0', blocks_file_sink_0, '0']
@@ -697,6 +715,7 @@ connections:
 - [lora_sdr_gray_mapping_0, '0', lora_sdr_deinterleaver_0, '0']
 - [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
 - [lora_sdr_hamming_enc_0, '0', lora_sdr_interleaver_0, '0']
+- [lora_sdr_header_0, '0', blocks_file_sink_1_0, '0']
 - [lora_sdr_header_0, '0', lora_sdr_add_crc_0, '0']
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]

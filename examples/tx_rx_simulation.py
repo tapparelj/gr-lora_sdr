@@ -49,20 +49,18 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_modulate_1 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),8)
-        self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_int*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_no_mod/ref_tx_sf7_cr2.bin', False, 0, 0)
-        self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_flow_mod/ref_flow_mod_sf7_cr2.bin', False)
-        self.blocks_file_sink_1.set_unbuffered(False)
+        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 1)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_sink_1_0 = blocks.file_sink(gr.sizeof_char*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_flow_mod/ref_flow_mod_sf7_cr2.bin', False)
+        self.blocks_file_sink_1_0.set_unbuffered(False)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_file_source_0, 0), (self.lora_sdr_modulate_1, 0))
-        self.connect((self.blocks_throttle_0_0, 0), (self.blocks_file_sink_1, 0))
-        self.connect((self.lora_sdr_modulate_1, 0), (self.blocks_throttle_0_0, 0))
+        self.connect((self.blocks_file_source_0_0, 0), (self.lora_sdr_header_0, 0))
+        self.connect((self.lora_sdr_header_0, 0), (self.blocks_file_sink_1_0, 0))
 
 
     def get_soft_decoding(self):
@@ -76,14 +74,12 @@ class tx_rx_simulation(gr.top_block):
 
     def set_sf(self, sf):
         self.sf = sf
-        self.lora_sdr_modulate_1.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0_0.set_sample_rate((self.samp_rate*10))
 
     def get_preamb_len(self):
         return self.preamb_len
@@ -120,6 +116,7 @@ class tx_rx_simulation(gr.top_block):
 
     def set_cr(self, cr):
         self.cr = cr
+        self.lora_sdr_header_0.set_cr(self.cr)
 
     def get_clk_offset(self):
         return self.clk_offset

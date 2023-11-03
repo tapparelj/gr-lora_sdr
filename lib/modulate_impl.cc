@@ -102,23 +102,30 @@ namespace gr
             const uint64_t n_frames = 1;
             // read tags
             std::vector<tag_t> tags;
-            
+            std::cout<<"has tag out"<<tags.size()<<std::endl;
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
             if (tags.size())
             {
+                std::cout << "has tag" << std::endl;
+                std::cout << tags.size() << std::endl;
                 if (tags[0].offset != nitems_read(0)){
                     nitems_to_process = std::min(tags[0].offset - nitems_read(0), (uint64_t)(float)noutput_items / m_samples_per_symbol);
+                    
                 }
                 else
                 {
                     if (tags.size() >= 2)
                         nitems_to_process = std::min(tags[1].offset - tags[0].offset, (uint64_t)(float)noutput_items / m_samples_per_symbol);
+                        
                     if (frame_end)
                     {
                         m_frame_len = pmt::to_long(tags[0].value);
                         tags[0].offset = nitems_written(0);
 
                         tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
+                        std::cout << m_frame_len << std::endl; //38
+                        std::cout << m_samples_per_symbol << std::endl; //512
+                        std::cout << m_inter_frame_padding << std::endl; //10240
 
                         add_item_tag(0, tags[0]);
 
@@ -132,7 +139,10 @@ namespace gr
 
             if (samp_cnt == -1) // preamble
             {
-                
+                std::cout << "samp_cnt = -1" << std::endl;
+                std::cout << noutput_items  << std::endl; //4096
+                std::cout << m_samples_per_symbol << std::endl; //512
+                std::cout << "preamle sample count"<<preamb_samp_cnt << std::endl; //512
                 for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
                 {
                     if (preamb_samp_cnt < (m_preamb_len + 5)*m_samples_per_symbol) //should output preamble part
@@ -160,7 +170,9 @@ namespace gr
                     }
                 }
             }
-            
+
+            //first round preamb_samp_cnt =0 so that the code enter preamble part to output preamble, then preamble add to 4096 and enters next part of payload
+            std::cout << "output check" << samp_cnt << std::endl;
             if ( samp_cnt < m_frame_len*(int32_t)m_samples_per_symbol && samp_cnt>-1) //output payload
             {
                 nitems_to_process = std::min(nitems_to_process, int((float)(noutput_items - output_offset) / m_samples_per_symbol));
@@ -170,6 +182,7 @@ namespace gr
                     build_upchirp(&out[output_offset], in[i], m_sf,m_os_factor);
                     output_offset += m_samples_per_symbol;
                     samp_cnt += m_samples_per_symbol;
+                    std::cout << "output" << samp_cnt << std::endl;
                 }
             }
             else
@@ -186,6 +199,7 @@ namespace gr
                 samp_cnt += padd_size;
                 padd_cnt += padd_size;
                 output_offset += padd_size;
+                std::cout << "padding" << padd_cnt << std::endl;
                 // for (int i = 0; i < (noutput_items - output_offset); i++)
                 // {
                 //     if (samp_cnt < m_frame_len*m_samples_per_symbol + m_inter_frame_padding)
@@ -205,22 +219,28 @@ namespace gr
            
             if(samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
             {
-                //std::cout << samp_cnt << std::endl;
-                //std::cout << frame_cnt << std::endl;
+                std::cout << nitems_to_process << std::endl;
+                
+                std::cout << samp_cnt << std::endl;
+                std::cout << frame_cnt << std::endl;
+                std::cout << padd_cnt << std::endl;
+                std::cout << output_offset << std::endl;
+                std::cout << preamb_samp_cnt << std::endl;
                 samp_cnt++;
                 frame_cnt++;
                 m_ninput_items_required = 1;
                 frame_end = true;
-                
+                std::cout << "out" << frame_cnt << std::endl;
+            
         
             
 #ifdef GR_LORA_PRINT_INFO              
                 std::cout << "Frame " << frame_cnt << " sent\n";
 #endif
             }
-            if(frame_cnt == n_frames){
-                return WORK_DONE;
-            }
+            // if(frame_cnt == n_frames){
+            //     return WORK_DONE;
+            // }
             // if (nitems_to_process)
             //     std::cout << ninput_items[0] << " " << nitems_to_process << " " << output_offset << " " << noutput_items << std::endl;
             consume_each(nitems_to_process);
