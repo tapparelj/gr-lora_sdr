@@ -81,9 +81,11 @@ namespace gr
                     // search for tag
                     std::vector<tag_t> tags;
                     get_tags_in_window(tags, 0, 0, noutput_items, pmt::string_to_symbol(m_length_tag_name));
+                    std::cout<< "tags " << tags.size()<< "noutput "<<noutput_items<<std::endl;
                     if (tags.size())
                     {
                         // process only until next tag
+
                         if (tags[0].offset != nitems_read(0))
                         {
                             nitem_to_process = tags[0].offset - nitems_read(0);
@@ -104,10 +106,14 @@ namespace gr
                             }
                         }
                     }
+                    
                     for (int i = 0; i < nitem_to_process; i++) // read payload
                     {
+                        // std::cout<< "frame length" << m_frame_len <<std::endl;
+                        // std::cout<< "nitem"<<nitem_to_process <<std::endl; 22
                         s.push_back(in[i]);
                         m_input_byte_cnt++;
+                        //std::cout<< " m_input_byte_cnt"<< m_input_byte_cnt <<std::endl;
                         if (m_input_byte_cnt == m_frame_len)
                         {
                             payload_str.push_back(s);
@@ -130,7 +136,7 @@ namespace gr
                     }
                 }
             }
-            
+            //std::cout<< "payload"<<payload_str.size() <<std::endl;
 
             // check if too many messages queued by the message strobe source
             if (payload_str.size() >= 100 && !(payload_str.size() % 100) && !m_file_source)

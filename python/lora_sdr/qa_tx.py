@@ -15,6 +15,8 @@ from whitening_sequence import code
 import pmt
 import numpy as np
 import time
+import os
+import sys
 
 # from gnuradio import blocks
 try:
@@ -25,7 +27,9 @@ except ImportError:
     import sys
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
-    
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class qa_tx(gr_unittest.TestCase):
 
@@ -70,7 +74,10 @@ class qa_tx(gr_unittest.TestCase):
         lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         blocks_vector_sink_x_0 = blocks.vector_sink_c(1, 1024)
         blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
+        # Define the relative path to the file from the script's directory
+        relative_path = "../../data/GRC_default/example_tx_source.txt"
+        input_path = os.path.join(script_dir, relative_path)
+        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
         blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
    
         ##################################################
@@ -88,7 +95,10 @@ class qa_tx(gr_unittest.TestCase):
         self.tb.run()
         result_data = blocks_vector_sink_x_0.data()
         # Load ref files
-        f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin","r")
+        relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
+
+        reference_path = os.path.join(script_dir, relative_ref_path)
+        f = open(reference_path,"r")
         ref_data = np.fromfile(f, dtype=np.complex64)
         f.close()
 
@@ -122,7 +132,9 @@ class qa_tx(gr_unittest.TestCase):
         lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         blocks_vector_sink_x_0 = blocks.vector_sink_c(1, 1024)
         blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
+        relative_path = "../../data/GRC_default/example_tx_source.txt"
+        input_path = os.path.join(script_dir, relative_path)
+        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
         blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -141,7 +153,9 @@ class qa_tx(gr_unittest.TestCase):
         self.tb.run()
         result_data = blocks_vector_sink_x_0.data()
         # Load ref files
-        f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin","r")
+        relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
+        reference_path = os.path.join(script_dir, relative_ref_path)
+        f = open(reference_path,"r")
         ref_data = np.fromfile(f, dtype=np.complex64)
         f.close()
 
@@ -177,7 +191,9 @@ class qa_tx(gr_unittest.TestCase):
         lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         blocks_vector_sink_x_0 = blocks.vector_sink_c(1, 1024)
         blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
+        relative_path = "../../data/GRC_default/example_tx_source.txt"
+        input_path = os.path.join(script_dir, relative_path)
+        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
         blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -203,7 +219,9 @@ class qa_tx(gr_unittest.TestCase):
         print("Running time: ", elapsed_time)
         result_data = blocks_vector_sink_x_0.data()
         # Load ref files
-        f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin","r")
+        relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
+        reference_path = os.path.join(script_dir, relative_ref_path)
+        f = open(reference_path,"r")
         ref_data = np.fromfile(f, dtype=np.complex64)
         f.close()
 
