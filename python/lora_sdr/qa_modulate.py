@@ -26,6 +26,15 @@ except ImportError:
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
 
+def make_tag(key, value, offset, srcid=None):
+    tag = gr.tag_t()
+    tag.key = pmt.string_to_symbol(key)
+    tag.value = pmt.to_pmt(value)
+    tag.offset = offset
+    if srcid is not None:
+        tag.srcid = pmt.to_pmt(srcid)
+    return tag
+
 
 class qa_modulate(gr_unittest.TestCase):
 
@@ -41,12 +50,8 @@ class qa_modulate(gr_unittest.TestCase):
 
     def test_001(self):
 
-        src_data = (15,18,1,1,9,1,44)
-        
         sf = 7
         samp_rate = 500000
-        preamb_len = 8
-
         bw = 125000
 
         blocks_file_source = blocks.file_source(gr.sizeof_int*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_no_mod/ref_tx_sf7_cr2.bin', False, 0, 0)
@@ -70,6 +75,35 @@ class qa_modulate(gr_unittest.TestCase):
         ref_data = np.fromfile(f, dtype=np.complex64)
         f.close()
         self.assertEqual(result_data, list(ref_data))
+
+    def test_002(self):
+
+        
+        src_data = (1,1)
+        src_tags = [make_tag('packet_len',2 ,0,'src_data')]
+        
+        sf = 7
+        samp_rate = 500000
+
+        bw = 125000
+        blocks_vector_source = blocks.vector_source_i(src_data, False, 1, [])
+        blocks_throttle = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
+        lora_sdr_modulate = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),8)
+        blocks_vector_sink = blocks.vector_sink_c(1, 1024)
+        #dst = blocks.null_sink(gr.sizeof_char)
+        self.tb.connect((blocks_vector_source, 0), (lora_sdr_modulate, 0))
+        self.tb.connect((lora_sdr_modulate, 0), (blocks_throttle, 0))
+        self.tb.connect((blocks_throttle, 0), (blocks_vector_sink, 0))
+     
+        self.tb.run()
+        #self.tb.run()
+        result_data = blocks_vector_sink.data()
+        print(len(result_data))
+        #f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_flow_mod/ref_flow_mod_sf7_cr2.bin","rb")
+        # f = open("/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_mod/ref_tx_sf7_cr2.bin","rb")
+        # ref_data = np.fromfile(f, dtype=np.complex64)
+        # f.close()
+        # self.assertEqual(result_data, list(ref_data))
 
         
     

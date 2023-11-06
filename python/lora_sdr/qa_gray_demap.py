@@ -27,7 +27,7 @@ except ImportError:
     sys.path.append(os.path.join(dirname, "bindings"))
    
 
-class qa_hamm(gr_unittest.TestCase):
+class qa_gray_demap(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.top_block()
@@ -56,16 +56,17 @@ class qa_hamm(gr_unittest.TestCase):
         SNRdB = -5
         src_data = (1,1,0,2,3)
 
-        lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
-        blocks_vector_source_x_0 = blocks.vector_source_b(src_data, False, 1, [])
-        blocks_vector_sink_1_0 = blocks.vector_sink_b(1, 1024)
+        lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
+        blocks_vector_source_x_0 = blocks.vector_source_i((0, 1, 2), False, 1, [])
+        blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
 
-        self.tb.connect((blocks_vector_source_x_0, 0), (lora_sdr_hamming_enc_0, 0))
-        self.tb.connect((lora_sdr_hamming_enc_0, 0), (blocks_vector_sink_1_0, 0))
+        self.tb.connect((blocks_vector_source_x_0, 0), (lora_sdr_gray_demap_0, 0))
+        self.tb.connect((lora_sdr_gray_demap_0, 0), (blocks_vector_sink_x_0, 0))
 
         self.tb.run()
-        result_data = blocks_vector_sink_1_0.data()
-        ref_data = [139, 139, 0, 78, 197]
+        result_data = blocks_vector_sink_x_0.data()
+        #print(result_data)
+        ref_data = [1,2,4]
 
         #print(result_data)
 
@@ -77,4 +78,4 @@ class qa_hamm(gr_unittest.TestCase):
     
 
 if __name__ == '__main__':
-    gr_unittest.run(qa_hamm)
+    gr_unittest.run(qa_gray_demap)

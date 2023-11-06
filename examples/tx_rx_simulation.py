@@ -9,7 +9,9 @@
 # Author: Tapparel Joachim@EPFL,TCL
 # GNU Radio version: 3.10.3.0
 
+from gnuradio import analog
 from gnuradio import blocks
+import pmt
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
@@ -48,16 +50,36 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
+        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
+        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
-        self.blocks_vector_source_x_0 = blocks.vector_source_b((0, 0, 0), False, 1, [])
-        self.blocks_vector_sink_x_0 = blocks.vector_sink_b(1, 1024)
+        self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
+        self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
+        self.blocks_patterned_interleaver_0 = blocks.patterned_interleaver(gr.sizeof_gr_complex*1, [0,1])
+        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_sink_0_0_0 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_buffer.bin', False)
+        self.blocks_file_sink_0_0_0.set_unbuffered(False)
+        self.analog_const_source_x_0 = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_vector_source_x_0, 0), (self.lora_sdr_hamming_enc_0, 0))
-        self.connect((self.lora_sdr_hamming_enc_0, 0), (self.blocks_vector_sink_x_0, 0))
+        self.connect((self.analog_const_source_x_0, 0), (self.blocks_patterned_interleaver_0, 0))
+        self.connect((self.blocks_file_source_0_0, 0), (self.lora_sdr_whitening_0, 0))
+        self.connect((self.blocks_patterned_interleaver_0, 0), (self.blocks_null_sink_0, 0))
+        self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
+        self.connect((self.lora_sdr_gray_demap_0, 0), (self.lora_sdr_modulate_0, 0))
+        self.connect((self.lora_sdr_hamming_enc_0, 0), (self.lora_sdr_interleaver_0, 0))
+        self.connect((self.lora_sdr_header_0, 0), (self.lora_sdr_add_crc_0, 0))
+        self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_demap_0, 0))
+        self.connect((self.lora_sdr_modulate_0, 0), (self.blocks_file_sink_0_0_0, 0))
+        self.connect((self.lora_sdr_modulate_0, 0), (self.blocks_patterned_interleaver_0, 1))
+        self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
 
 
     def get_soft_decoding(self):
@@ -71,7 +93,10 @@ class tx_rx_simulation(gr.top_block):
 
     def set_sf(self, sf):
         self.sf = sf
+        self.lora_sdr_gray_demap_0.set_sf(self.sf)
         self.lora_sdr_hamming_enc_0.set_sf(self.sf)
+        self.lora_sdr_interleaver_0.set_sf(self.sf)
+        self.lora_sdr_modulate_0.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -115,6 +140,8 @@ class tx_rx_simulation(gr.top_block):
     def set_cr(self, cr):
         self.cr = cr
         self.lora_sdr_hamming_enc_0.set_cr(self.cr)
+        self.lora_sdr_header_0.set_cr(self.cr)
+        self.lora_sdr_interleaver_0.set_cr(self.cr)
 
     def get_clk_offset(self):
         return self.clk_offset

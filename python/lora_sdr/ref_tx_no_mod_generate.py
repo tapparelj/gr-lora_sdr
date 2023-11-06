@@ -32,9 +32,6 @@ class ref_tx_no_mod_generate(gr.top_block):
     def __init__(self, sf, cr):
         gr.top_block.__init__(self, "Tx Rx Simulation", catch_exceptions=True)
 
-        ##################################################
-        # Variables
-        ##################################################
         self.soft_decoding = soft_decoding = False
         self.sf = sf 
         self.samp_rate = samp_rate = 500000
@@ -49,9 +46,6 @@ class ref_tx_no_mod_generate(gr.top_block):
         self.bw = bw = 125000
         self.SNRdB = SNRdB = -5
 
-        ##################################################
-        # Blocks
-        ##################################################
         self.lora_sdr_whitening = lora_sdr.whitening(False,False,',','packet_len')
         self.lora_sdr_interleaver = lora_sdr.interleaver(self.cr, self.sf, ldro, 125000)
         self.lora_sdr_header = lora_sdr.header(impl_head, has_crc, self.cr)
@@ -64,10 +58,6 @@ class ref_tx_no_mod_generate(gr.top_block):
         self.blocks_file_sink = blocks.file_sink(gr.sizeof_int*1, output_file_path, False)
         self.blocks_file_sink.set_unbuffered(False)
 
-
-        ##################################################
-        # Connections
-        ##################################################
         self.connect((self.blocks_file_source, 0), (self.lora_sdr_whitening, 0))
         self.connect((self.lora_sdr_gray_demap, 0), (self.blocks_file_sink, 0))
         self.connect((self.lora_sdr_add_crc, 0), (self.lora_sdr_hamming_enc, 0))
