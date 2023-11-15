@@ -81,7 +81,7 @@ namespace gr
                     // search for tag
                     std::vector<tag_t> tags;
                     get_tags_in_window(tags, 0, 0, noutput_items, pmt::string_to_symbol(m_length_tag_name));
-                    std::cout<< "tags " << tags.size()<< "noutput "<<noutput_items<<std::endl;
+                    
                     if (tags.size())
                     {
                         // process only until next tag
@@ -158,10 +158,14 @@ namespace gr
                     }
                     payload_str.front() = newString;
                 }
+                
                 pmt::pmt_t frame_len = pmt::from_long(2 * payload_str.front().length());
+               
+             
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_len"), frame_len);
 
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("payload_str"), pmt::string_to_symbol(payload_str.front()));
+                std::cout << payload_str.front()<<std::endl;
 
                 std::copy(payload_str.front().begin(), payload_str.front().end(), std::back_inserter(m_payload));
 

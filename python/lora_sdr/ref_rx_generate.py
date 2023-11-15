@@ -32,9 +32,6 @@ class ref_rx_generate(gr.top_block):
     def __init__(self, sf, cr):
         gr.top_block.__init__(self, "Tx Rx Simulation", catch_exceptions=True)
 
-        ##################################################
-        # Variables
-        ##################################################
         self.soft_decoding = soft_decoding = False
         self.sf = sf 
         self.samp_rate = samp_rate = 500000
@@ -49,9 +46,6 @@ class ref_rx_generate(gr.top_block):
         self.bw = bw = 125000
         self.SNRdB = SNRdB = -5
 
-        ##################################################
-        # Blocks
-        ##################################################
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
@@ -75,10 +69,6 @@ class ref_rx_generate(gr.top_block):
         #self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_rx/ref_rx_sf7_cr2.bin', False)
         self.blocks_file_sink_0_0.set_unbuffered(False)
 
-
-        ##################################################
-        # Connections
-        ##################################################
         self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
         self.connect((self.blocks_file_source_0_0, 0), (self.lora_sdr_whitening_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.lora_sdr_frame_sync_0, 0))

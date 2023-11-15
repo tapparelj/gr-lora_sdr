@@ -39,25 +39,16 @@ class qa_tx(gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-    # def test_instance(self):
-    #     # FIXME: Test will fail until you pass sensible arguments to the constructor
-    #     instance = whitening()
-
     def test_001_functional_test(self):
 
-        soft_decoding = False
         sf = 7
         samp_rate = 500000
         preamb_len = 8
-        pay_len = 16
         ldro = False
         impl_head = False
         has_crc = True
         cr = 2
-        clk_offset = 0
-        center_freq = 868.1e6
         bw = 125000
-        SNRdB = -5
 
         lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
@@ -84,10 +75,10 @@ class qa_tx(gr_unittest.TestCase):
         self.tb.connect((lora_sdr_modulate_0, 0), (blocks_throttle_0, 0))
         self.tb.connect((lora_sdr_whitening_0, 0), (lora_sdr_header_0, 0))
         self.tb.run()
+        
         result_data = blocks_vector_sink_x_0.data()
         # Load ref files
         relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
-
         reference_path = os.path.join(script_dir, relative_ref_path)
         f = open(reference_path,"r")
         ref_data = np.fromfile(f, dtype=np.complex64)
@@ -130,6 +121,7 @@ class qa_tx(gr_unittest.TestCase):
         self.tb.connect((lora_sdr_modulate_0, 0), (blocks_throttle_0, 0))
         self.tb.connect((lora_sdr_whitening_0, 0), (lora_sdr_header_0, 0))
         self.tb.run()
+
         result_data = blocks_vector_sink_x_0.data()
         # Load ref files
         relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"

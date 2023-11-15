@@ -12,6 +12,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from numpy import array
 from whitening_sequence import code
+
 import pmt
 import numpy as np
 
@@ -69,7 +70,7 @@ class qa_whitening(gr_unittest.TestCase):
 
     def test_001_vector_source(self):
 
-        src_data = (0,1,1,0,25,0,0,0,0,0,44)
+        src_data = (1,1,44) # In ASCII, 44 represents comma. The block stops when it meets the separator ','
         expected_data = [0] * (len(src_data) - 1)
         expected_data = [src_data[i] ^ code[i] for i in range(len(src_data) - 1)]
         
@@ -81,7 +82,11 @@ class qa_whitening(gr_unittest.TestCase):
      
         self.tb.run()
         result_data = dst.data()
+        print(result_data)
+        result_tags = dst.tags()
+        print(result_tags)
         result_data = self.combine(result_data)
+
         
         self.assertEqual(result_data, expected_data)
 
@@ -115,7 +120,7 @@ class qa_whitening(gr_unittest.TestCase):
 
     def test_003_whitening_sequence_validation(self):
 
-        src_data = [0] * 255 + [44]
+        src_data = [255] * 255 + [44] # In ASCII, 44 represents comma. The block stops when it meets the separator ','
        
         src = blocks.vector_source_b(src_data, False, 1,[])
         lora_sdr_whitening = whitening(False,False,',','packet_len')
@@ -126,8 +131,8 @@ class qa_whitening(gr_unittest.TestCase):
         self.tb.run()
         result_data = dst.data()
         result_data = self.combine(result_data)
-            
-        self.assertEqual(result_data, code)           
+        flipped_code = [byte ^ 0xFF for byte in code]
+        self.assertEqual(result_data, flipped_code)
 
     def test_004_edge_test_empty_input(self):
 
@@ -147,25 +152,7 @@ class qa_whitening(gr_unittest.TestCase):
         
         self.assertEqual(result_data, expected_data)
 
-    def test_005_edge_test_large_input(self):
-
-        src_data = (255,255,255,255,255,255,44)
-        expected_data = [0] * (len(src_data) - 1)
-        expected_data = [src_data[i] ^ code[i] for i in range(len(src_data) - 1)]
-        
-        src = blocks.vector_source_b(src_data, False, 1,[])
-        lora_sdr_whitening = whitening(False,False,',','packet_len')
-        dst = blocks.vector_sink_b()
-        self.tb.connect((src, 0), (lora_sdr_whitening, 0))
-        self.tb.connect((lora_sdr_whitening, 0), (dst,0))
-     
-        self.tb.run()
-        result_data = dst.data()
-        result_data = self.combine(result_data)
-        
-        self.assertEqual(result_data, expected_data)
-
-    def test_006_is_hex(self): # input should be even length
+    def test_005_is_hex(self): # input should be even length
 
         file_path = '/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source_ishex.txt'
         src = blocks.file_source(gr.sizeof_char*1, file_path, False, 0, 0)
@@ -194,7 +181,7 @@ class qa_whitening(gr_unittest.TestCase):
     
         self.assertEqual(result_data, result_segments)
 
-    def test_008_use_tag_function_test(self):
+    def test_006_use_tag_function_test(self):
 
         src_data = (1,1,1,1,1,1,1)
         src_tags = [make_tag('packet_len',7 ,0,'src_data')]
@@ -214,7 +201,7 @@ class qa_whitening(gr_unittest.TestCase):
 
         self.assertEqual(result_data, expected_data)
 
-    def test_008_use_tag(self):
+    def test_007_use_multiple_tags(self):
 
         src_data = [np.byte(x) for x in range(112)]
         src_tags = [make_tag('packet_len',16 ,0,'src_data'), make_tag('packet_len',32 ,16,'src_data'),make_tag('packet_len',64 ,48,'src_data')]
@@ -234,28 +221,9 @@ class qa_whitening(gr_unittest.TestCase):
      
         self.tb.run()
         result_data = dst.data() 
-        result_tags = dst.tags()
         result_data = self.combine(result_data)
 
         self.assertEqual(result_data, expected_data)
-
-    # def test_tag(self):
-    #     # Create a message strobe source to generate tags
-    #     src_data = [float(x) for x in range(16)]
-    #     expected_result = src_data
-    #     src_tags = [make_tag('key', 'val', 0, 'src')]
-    #     expected_tags = src_tags[:]
-
-    #     src = blocks.vector_source_f(src_data, repeat=False, tags=src_tags)
-    #     dst = blocks.vector_sink_f()
-
-    #     self.tb.connect(src, dst)
-    #     self.tb.run()
-    #     result_data = dst.data()
-    #     result_tags = dst.tags()
-    #     self.assertEqual(expected_result, result_data)
-    #     self.assertEqual(len(result_tags), 1)
-    #     self.assertTrue(compare_tags(expected_tags[0], result_tags[0]))
     
 
 

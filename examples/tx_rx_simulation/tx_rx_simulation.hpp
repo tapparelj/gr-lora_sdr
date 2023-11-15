@@ -12,23 +12,9 @@ GNU Radio version: 3.10.3.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
-#include <gnuradio/blocks/file_source.h>
-#include <gnuradio/blocks/throttle.h>
-#include "gnuradio/lora_sdr/add_crc.h"
-#include "gnuradio/lora_sdr/crc_verif.h"
-#include "gnuradio/lora_sdr/deinterleaver.h"
-#include "dewhitening.h"
-#include "gnuradio/lora_sdr/fft_demod.h"
-#include "gnuradio/lora_sdr/frame_sync.h"
-#include "gnuradio/lora_sdr/gray_demap.h"
-#include "gnuradio/lora_sdr/gray_mapping.h"
-#include "gnuradio/lora_sdr/hamming_dec.h"
-#include "gnuradio/lora_sdr/hamming_enc.h"
+#include <gnuradio/blocks/vector_sink.h>
+#include <gnuradio/blocks/vector_source.h>
 #include "gnuradio/lora_sdr/header.h"
-#include "gnuradio/lora_sdr/header_decoder.h"
-#include "gnuradio/lora_sdr/interleaver.h"
-#include "gnuradio/lora_sdr/modulate.h"
-#include "gnuradio/lora_sdr/whitening.h"
 
 
 
@@ -41,23 +27,9 @@ class tx_rx_simulation {
 private:
 
 
-    lora_sdr::whitening::sptr lora_sdr_whitening_0;
-    lora_sdr::modulate::sptr lora_sdr_modulate_0;
-    lora_sdr::interleaver::sptr lora_sdr_interleaver_0;
-    lora_sdr::header_decoder::sptr lora_sdr_header_decoder_0;
     lora_sdr::header::sptr lora_sdr_header_0;
-    lora_sdr::hamming_enc::sptr lora_sdr_hamming_enc_0;
-    lora_sdr::hamming_dec::sptr lora_sdr_hamming_dec_0;
-    lora_sdr::gray_mapping::sptr lora_sdr_gray_mapping_0;
-    lora_sdr::gray_demap::sptr lora_sdr_gray_demap_0;
-    lora_sdr::frame_sync::sptr lora_sdr_frame_sync_0;
-    lora_sdr::fft_demod::sptr lora_sdr_fft_demod_0;
-    lora_sdr::dewhitening::sptr lora_sdr_dewhitening_0;
-    lora_sdr::deinterleaver::sptr lora_sdr_deinterleaver_0;
-    lora_sdr::crc_verif::sptr lora_sdr_crc_verif_0;
-    lora_sdr::add_crc::sptr lora_sdr_add_crc_0;
-    blocks::throttle::sptr blocks_throttle_0;
-    blocks::file_source::sptr blocks_file_source_0_0;
+    blocks::vector_source_b::sptr blocks_vector_source_x_0;
+    blocks::vector_sink_b::sptr blocks_vector_sink_x_2;
 
 
 // Variables:

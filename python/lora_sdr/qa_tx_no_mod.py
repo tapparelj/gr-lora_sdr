@@ -105,26 +105,13 @@ class qa_tx_no_mod(gr_unittest.TestCase):
 
         # Define the relative path to the file from the script's directory
         relative_path = "../../data/GRC_default/example_tx_source.txt"
-
-        # Construct the absolute file path
-        input_path = os.path.join(script_dir, relative_path)
-
-        soft_decoding = soft_decoding = False
         src_data = (0,1,1,0,0,0,0,0,0,0,44)
         sf = 11
-        samp_rate = 500000
-        preamb_len = 8
-        pay_len = 16
         ldro = False
         impl_head = False
         has_crc = True
         cr = 5
-        clk_offset = 0
-        center_freq = 868.1e6
-        bw = 125000
-        SNRdB = -5
 
-        # build up locks
         blocks_vector_source = blocks.vector_source_b(src_data, False, 1, [])
         lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)       
@@ -133,9 +120,6 @@ class qa_tx_no_mod(gr_unittest.TestCase):
         lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
         lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)       
-
-
-        # connect blocks
 
         self.tb.connect((blocks_vector_source, 0), (lora_sdr_whitening_0, 0))    
         self.tb.connect((lora_sdr_add_crc_0, 0), (lora_sdr_hamming_enc_0, 0))

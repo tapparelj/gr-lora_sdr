@@ -23,10 +23,10 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import gnuradio.lora_sdr as lora_sdr
+import os
+import sys
 
-
-
-
+script_dir = os.path.dirname(os.path.abspath(__file__))
 class ref_tx_generate(gr.top_block):
 
     def __init__(self, sf, cr):
@@ -54,10 +54,13 @@ class ref_tx_generate(gr.top_block):
         self.lora_sdr_gray_demap = lora_sdr.gray_demap(self.sf)
         self.lora_sdr_add_crc = lora_sdr.add_crc(has_crc)
         self.blocks_throttle = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
+        relative_path = "../../data/GRC_default/example_tx_source.txt"
+        input_path = os.path.join(script_dir, relative_path)
+        self.blocks_file_source = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
         self.blocks_file_source.set_begin_tag(pmt.PMT_NIL)
-        output_file_path = "/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf{}_cr{}.bin".format(self.sf, self.cr)
-        self.blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, output_file_path, False)
+        relative_out_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
+        output_path = os.path.join(script_dir, relative_out_path)
+        self.blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, output_path, False)
         #self.blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, "/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf"+ str(self.sf)+"_"+"cr"+str(self.cr)+".bin", False)
         self.blocks_file_sink.set_unbuffered(False)
 
@@ -157,25 +160,6 @@ class ref_tx_generate(gr.top_block):
 
     def set_SNRdB(self, SNRdB):
         self.SNRdB = SNRdB
-
-
-
-
-# def main(top_block_cls=tx_rx_simulation, options=None):
-#     tb = top_block_cls()
-
-#     def sig_handler(sig=None, frame=None):
-#         tb.stop()
-#         tb.wait()
-
-#         sys.exit(0)
-
-#     signal.signal(signal.SIGINT, sig_handler)
-#     signal.signal(signal.SIGTERM, sig_handler)
-
-#     tb.start()
-
-#     tb.wait()
 
 def main(top_block_cls=ref_tx_generate, options=None):
     # Define the range of sf and cr values

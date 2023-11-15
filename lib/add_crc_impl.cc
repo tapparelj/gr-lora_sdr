@@ -100,6 +100,7 @@ namespace gr
                         nitems_to_process = std::min(tags[1].offset - tags[0].offset, (uint64_t)noutput_items);
                     }
                     std::string str = pmt::symbol_to_string(tags[0].value);
+                    
                     std::copy(str.begin(), str.end(), std::back_inserter(m_payload));
                     //pass tags downstream
                     get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
@@ -118,7 +119,7 @@ namespace gr
                 return 0;
             }
             m_cnt += nitems_to_process;
-           
+            
             
 
             if (m_has_crc && m_cnt == m_frame_len && nitems_to_process)
@@ -126,10 +127,13 @@ namespace gr
                 
                 uint16_t crc = 0x0000;
                 m_payload_len = m_payload.size();
+               
+     
                 //calculate CRC on the N-2 firsts data bytes using Poly=1021 Init=0000
-                for (int i = 0; i < (int)m_payload_len - 2; i++)
+                for (int i = 0; i < (int)m_payload_len - 2; i++){
                     crc = crc16(crc, m_payload[i]);
-
+                    
+                }
                 //XOR the obtained CRC with the last 2 data bytes
                 crc = crc ^ m_payload[m_payload_len - 1] ^ (m_payload[m_payload_len - 2] << 8);
                 //Place the CRC in the correct output nibble
@@ -137,8 +141,8 @@ namespace gr
                 out[nitems_to_process + 1] = ((crc & 0x00F0) >> 4);
                 out[nitems_to_process + 2] = ((crc & 0x0F00) >> 8);
                 out[nitems_to_process + 3] = ((crc & 0xF000) >> 12);
-
                 nitems_to_output = nitems_to_process + 4;
+                
                 m_payload.clear();
             }
             else
@@ -147,8 +151,13 @@ namespace gr
             }
             memcpy(out, in, nitems_to_process * sizeof(uint8_t));
             consume_each(nitems_to_process);
+            for (int i = 0; i < nitems_to_output; i++) {
+                std::cout << "out[" << i << "] = " << static_cast<int>(out[i]) << std::endl;
+            }
+            if(nitems_to_output == 10){
+                return WORK_DONE;
+            }
 
-            
             return nitems_to_output;
             
         }

@@ -41,19 +41,8 @@ class qa_hamm(gr_unittest.TestCase):
 
     def test_001_function_test(self):
 
-        soft_decoding = False
         sf = 7
-        samp_rate = 500000
-        preamb_len = 8
-        pay_len = 16
-        ldro = False
-        impl_head = False
-        has_crc = True
         cr = 2
-        clk_offset = 0
-        center_freq = 868.1e6
-        bw = 125000
-        SNRdB = -5
         src_data = (1,1,0,2,3)
 
         lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
@@ -62,18 +51,13 @@ class qa_hamm(gr_unittest.TestCase):
 
         self.tb.connect((blocks_vector_source_x_0, 0), (lora_sdr_hamming_enc_0, 0))
         self.tb.connect((lora_sdr_hamming_enc_0, 0), (blocks_vector_sink_1_0, 0))
-
         self.tb.run()
+
         result_data = blocks_vector_sink_1_0.data()
         ref_data = [139, 139, 0, 78, 197]
 
-        #print(result_data)
-
-
         self.assertEqual(ref_data, result_data)
         
-    
-
     
 
 if __name__ == '__main__':
