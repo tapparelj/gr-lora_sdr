@@ -61,7 +61,6 @@ class ref_tx_generate(gr.top_block):
         relative_out_path = "qa_ref/qa_ref_tx/ref_tx_sf"+str(sf)+"_cr"+str(cr)+".bin"
         output_path = os.path.join(script_dir, relative_out_path)
         self.blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, output_path, False)
-        #self.blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, "/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf"+ str(self.sf)+"_"+"cr"+str(self.cr)+".bin", False)
         self.blocks_file_sink.set_unbuffered(False)
 
         self.connect((self.blocks_file_source, 0), (self.lora_sdr_whitening, 0))

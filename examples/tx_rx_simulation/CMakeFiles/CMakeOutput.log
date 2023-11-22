@@ -1,0 +1,485 @@
+The system is: Linux - 5.10.9-1.el7.elrepo.x86_64 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc 
+Build flags: -march=nocona;-mtune=haswell;-ftree-vectorize;-fPIC;-fstack-protector-strong;-fno-plt;-O2;-ffunction-sections;-pipe;-isystem;/home/yujwu/conda/envs/gr310/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/3.23.3/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++ 
+Build flags: -fvisibility-inlines-hidden;-std=c++17;-fmessage-length=0;-march=nocona;-mtune=haswell;-ftree-vectorize;-fPIC;-fstack-protector-strong;-fno-plt;-O2;-ffunction-sections;-pipe;-isystem;/home/yujwu/conda/envs/gr310/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/3.23.3/CompilerIdCXX/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_553ad/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_553ad.dir/build.make CMakeFiles/cmTC_553ad.dir/build
+gmake[1]: Entering directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o
+/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc   -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include    -v -o CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -c /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCCompilerABI.c
+Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs
+could not find specs file conda.specs
+COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc
+Target: x86_64-conda-linux-gnu
+Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 10.4.0 (conda-forge gcc 10.4.0-16) 
+COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o' '-c'
+ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/cc1 -quiet -v -iprefix /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/ -isysroot /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot -isystem /home/yujwu/conda/envs/gr310/include /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -march=nocona -mtune=haswell -auxbase-strip CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -O2 -version -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o
+GNU assembler version 2.36.1 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.36.1
+GNU C17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)
+	compiled by GNU C version 10.3.0, GMP version 6.1.0, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include"
+ignoring nonexistent directory "/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed"
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/yujwu/conda/envs/gr310/include
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include
+ /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include
+End of search list.
+GNU C17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)
+	compiled by GNU C version 10.3.0, GMP version 6.1.0, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: 8afc6f277515d8a9a61950b6feed8d37
+COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/
+LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o' '-c'
+Linking C executable cmTC_553ad
+/home/yujwu/conda/envs/gr310/bin/cmake -E cmake_link_script CMakeFiles/cmTC_553ad.dir/link.txt --verbose=1
+/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include  -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/yujwu/conda/envs/gr310/lib -Wl,-rpath-link,/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/lib -v -rdynamic CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -o cmTC_553ad 
+Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs
+could not find specs file conda.specs
+COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc
+COLLECT_LTO_WRAPPER=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper
+Target: x86_64-conda-linux-gnu
+Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 10.4.0 (conda-forge gcc 10.4.0-16) 
+COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/
+LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_553ad'
+ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2 -plugin /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so -plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc7zaInk.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_553ad /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o -L/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0 -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../.. -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/yujwu/conda/envs/gr310/lib -rpath-link /home/yujwu/conda/envs/gr310/lib CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/yujwu/conda/envs/gr310/lib
+COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_553ad'
+gmake[1]: Leaving directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp'
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/home/yujwu/conda/envs/gr310/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+  end of search list found
+  collapse include dir [/home/yujwu/conda/envs/gr310/include] ==> [/home/yujwu/conda/envs/gr310/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/include]
+  implicit include dirs: [/home/yujwu/conda/envs/gr310/include;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-conda-linux-gnu-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_553ad/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_553ad.dir/build.make CMakeFiles/cmTC_553ad.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc   -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include    -v -o CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -c /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCCompilerABI.c]
+  ignore line: [Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs]
+  ignore line: [could not find specs file conda.specs]
+  ignore line: [COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc]
+  ignore line: [Target: x86_64-conda-linux-gnu]
+  ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 10.4.0 (conda-forge gcc 10.4.0-16) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o' '-c']
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/cc1 -quiet -v -iprefix /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/ -isysroot /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot -isystem /home/yujwu/conda/envs/gr310/include /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -march=nocona -mtune=haswell -auxbase-strip CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -O2 -version -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o]
+  ignore line: [GNU assembler version 2.36.1 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.36.1]
+  ignore line: [GNU C17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)]
+  ignore line: [	compiled by GNU C version 10.3.0  GMP version 6.1.0  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include"]
+  ignore line: [ignoring nonexistent directory "/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed"]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /home/yujwu/conda/envs/gr310/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)]
+  ignore line: [	compiled by GNU C version 10.3.0  GMP version 6.1.0  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: 8afc6f277515d8a9a61950b6feed8d37]
+  ignore line: [COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/]
+  ignore line: [LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o' '-c']
+  ignore line: [Linking C executable cmTC_553ad]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/cmake -E cmake_link_script CMakeFiles/cmTC_553ad.dir/link.txt --verbose=1]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include  -Wl -O2 -Wl --sort-common -Wl --as-needed -Wl -z relro -Wl -z now -Wl --disable-new-dtags -Wl --gc-sections -Wl --allow-shlib-undefined -Wl -rpath /home/yujwu/conda/envs/gr310/lib -Wl -rpath-link /home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/lib -v -rdynamic CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -o cmTC_553ad ]
+  ignore line: [Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs]
+  ignore line: [could not find specs file conda.specs]
+  ignore line: [COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-cc]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper]
+  ignore line: [Target: x86_64-conda-linux-gnu]
+  ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 10.4.0 (conda-forge gcc 10.4.0-16) ]
+  ignore line: [COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/]
+  ignore line: [LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_553ad']
+  link line: [ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2 -plugin /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so -plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cc7zaInk.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_553ad /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o -L/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0 -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../.. -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/yujwu/conda/envs/gr310/lib -rpath-link /home/yujwu/conda/envs/gr310/lib CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/yujwu/conda/envs/gr310/lib]
+    arg [/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/cc7zaInk.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [--sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_553ad] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o]
+    arg [-L/home/yujwu/conda/envs/gr310/lib] ==> dir [/home/yujwu/conda/envs/gr310/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib]
+    arg [-O2] ==> ignore
+    arg [--sort-common] ==> ignore
+    arg [--as-needed] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [-znow] ==> ignore
+    arg [--disable-new-dtags] ==> ignore
+    arg [--gc-sections] ==> ignore
+    arg [--allow-shlib-undefined] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+    arg [CMakeFiles/cmTC_553ad.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--push-state] ==> ignore
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--pop-state] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--push-state] ==> ignore
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--pop-state] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o]
+    arg [-rpath] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+  collapse library dir [/home/yujwu/conda/envs/gr310/lib] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc] ==> [/home/yujwu/conda/envs/gr310/lib/gcc]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
+  implicit objs: [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+  implicit dirs: [/home/yujwu/conda/envs/gr310/lib;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0;/home/yujwu/conda/envs/gr310/lib/gcc;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  implicit fwks: []
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5b6ce/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5b6ce.dir/build.make CMakeFiles/cmTC_5b6ce.dir/build
+gmake[1]: Entering directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o
+/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -std=c++17 -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include    -v -o CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -c /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCXXCompilerABI.cpp
+Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs
+could not find specs file conda.specs
+COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++
+Target: x86_64-conda-linux-gnu
+Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 10.4.0 (conda-forge gcc 10.4.0-16) 
+COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc'
+ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/cc1plus -quiet -v -iprefix /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/ -isysroot /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot -D_GNU_SOURCE -isystem /home/yujwu/conda/envs/gr310/include /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -march=nocona -mtune=haswell -auxbase-strip CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -O2 -std=c++17 -version -fvisibility-inlines-hidden -fmessage-length=0 -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o
+GNU assembler version 2.36.1 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.36.1
+GNU C++17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)
+	compiled by GNU C version 10.3.0, GMP version 6.1.0, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include"
+ignoring nonexistent directory "/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed"
+ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /home/yujwu/conda/envs/gr310/include
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu
+ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/backward
+ /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include
+End of search list.
+GNU C++17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)
+	compiled by GNU C version 10.3.0, GMP version 6.1.0, MPFR version 3.1.6, MPC version 1.0.3, isl version isl-0.18-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: bad8ad384d6ef156227242d27d640c10
+COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/
+LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc'
+Linking CXX executable cmTC_5b6ce
+/home/yujwu/conda/envs/gr310/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5b6ce.dir/link.txt --verbose=1
+/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -std=c++17 -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include  -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/yujwu/conda/envs/gr310/lib -Wl,-rpath-link,/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/lib -v -rdynamic CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_5b6ce 
+Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs
+could not find specs file conda.specs
+COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++
+COLLECT_LTO_WRAPPER=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper
+Target: x86_64-conda-linux-gnu
+Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 10.4.0 (conda-forge gcc 10.4.0-16) 
+COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/
+LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_5b6ce' '-shared-libgcc'
+ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2 -plugin /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so -plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccqwzR1J.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_5b6ce /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o -L/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0 -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../.. -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/yujwu/conda/envs/gr310/lib -rpath-link /home/yujwu/conda/envs/gr310/lib CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/yujwu/conda/envs/gr310/lib
+COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_5b6ce' '-shared-libgcc'
+gmake[1]: Leaving directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp'
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/home/yujwu/conda/envs/gr310/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu]
+    add: [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/backward]
+    add: [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+  end of search list found
+  collapse include dir [/home/yujwu/conda/envs/gr310/include] ==> [/home/yujwu/conda/envs/gr310/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/backward] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0/backward]
+  collapse include dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/include]
+  implicit include dirs: [/home/yujwu/conda/envs/gr310/include;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/include/c++/10.4.0/backward;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-conda-linux-gnu-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5b6ce/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5b6ce.dir/build.make CMakeFiles/cmTC_5b6ce.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/yujwu/Documents/gr-lora_sdr/examples/tx_rx_simulation/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -std=c++17 -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include    -v -o CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -c /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs]
+  ignore line: [could not find specs file conda.specs]
+  ignore line: [COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++]
+  ignore line: [Target: x86_64-conda-linux-gnu]
+  ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 10.4.0 (conda-forge gcc 10.4.0-16) ]
+  ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc']
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/cc1plus -quiet -v -iprefix /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/ -isysroot /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot -D_GNU_SOURCE -isystem /home/yujwu/conda/envs/gr310/include /home/yujwu/conda/envs/gr310/share/cmake-3.23/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpbase CMakeCXXCompilerABI.cpp -march=nocona -mtune=haswell -auxbase-strip CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -O2 -std=c++17 -version -fvisibility-inlines-hidden -fmessage-length=0 -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [GNU assembler version 2.36.1 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.36.1]
+  ignore line: [GNU C++17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)]
+  ignore line: [	compiled by GNU C version 10.3.0  GMP version 6.1.0  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include"]
+  ignore line: [ignoring nonexistent directory "/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed"]
+  ignore line: [ignoring duplicate directory "/home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /home/yujwu/conda/envs/gr310/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/include-fixed]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/include]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/x86_64-conda-linux-gnu]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../lib/gcc/../../x86_64-conda-linux-gnu/include/c++/10.4.0/backward]
+  ignore line: [ /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+  ignore line: [End of search list.]
+  ignore line: [GNU C++17 (conda-forge gcc 10.4.0-16) version 10.4.0 (x86_64-conda-linux-gnu)]
+  ignore line: [	compiled by GNU C version 10.3.0  GMP version 6.1.0  MPFR version 3.1.6  MPC version 1.0.3  isl version isl-0.18-GMP]
+  ignore line: []
+  ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+  ignore line: [Compiler executable checksum: bad8ad384d6ef156227242d27d640c10]
+  ignore line: [COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/]
+  ignore line: [LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-v' '-o' 'CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc']
+  ignore line: [Linking CXX executable cmTC_5b6ce]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5b6ce.dir/link.txt --verbose=1]
+  ignore line: [/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -std=c++17 -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/yujwu/conda/envs/gr310/include  -Wl -O2 -Wl --sort-common -Wl --as-needed -Wl -z relro -Wl -z now -Wl --disable-new-dtags -Wl --gc-sections -Wl --allow-shlib-undefined -Wl -rpath /home/yujwu/conda/envs/gr310/lib -Wl -rpath-link /home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/lib -v -rdynamic CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_5b6ce ]
+  ignore line: [Reading specs from /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/specs]
+  ignore line: [could not find specs file conda.specs]
+  ignore line: [COLLECT_GCC=/home/yujwu/conda/envs/gr310/bin/x86_64-conda-linux-gnu-c++]
+  ignore line: [COLLECT_LTO_WRAPPER=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper]
+  ignore line: [Target: x86_64-conda-linux-gnu]
+  ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-default-pie --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --enable-lto --enable-threads=posix --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_build_env/x86_64-conda-linux-gnu/sysroot --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1658951349035/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/include/c++/10.4.0 --with-pkgversion='conda-forge gcc 10.4.0-16' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose]
+  ignore line: [Thread model: posix]
+  ignore line: [Supported LTO compression algorithms: zlib]
+  ignore line: [gcc version 10.4.0 (conda-forge gcc 10.4.0-16) ]
+  ignore line: [COMPILER_PATH=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/bin/]
+  ignore line: [LIBRARY_PATH=/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/:/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-std=c++17' '-fmessage-length=0' '-march=nocona' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/yujwu/conda/envs/gr310/include' '-L/home/yujwu/conda/envs/gr310/lib' '-v' '-rdynamic' '-o' 'cmTC_5b6ce' '-shared-libgcc']
+  link line: [ /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2 -plugin /home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so -plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccqwzR1J.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_5b6ce /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o -L/home/yujwu/conda/envs/gr310/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0 -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib -L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../.. -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/yujwu/conda/envs/gr310/lib -rpath-link /home/yujwu/conda/envs/gr310/lib CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o /home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/yujwu/conda/envs/gr310/lib]
+    arg [/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/collect2] ==> ignore
+    arg [-plugin] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/liblto_plugin.so] ==> ignore
+    arg [-plugin-opt=/home/yujwu/conda/envs/gr310/bin/../libexec/gcc/x86_64-conda-linux-gnu/10.4.0/lto-wrapper] ==> ignore
+    arg [-plugin-opt=-fresolution=/tmp/ccqwzR1J.res] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lc] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+    arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+    arg [--sysroot=/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_5b6ce] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o]
+    arg [-L/home/yujwu/conda/envs/gr310/lib] ==> dir [/home/yujwu/conda/envs/gr310/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..] ==> dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib]
+    arg [-L/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib]
+    arg [-O2] ==> ignore
+    arg [--sort-common] ==> ignore
+    arg [--as-needed] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [-znow] ==> ignore
+    arg [--disable-new-dtags] ==> ignore
+    arg [--gc-sections] ==> ignore
+    arg [--allow-shlib-undefined] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+    arg [-rpath-link] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+    arg [CMakeFiles/cmTC_5b6ce.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o]
+    arg [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o]
+    arg [-rpath] ==> ignore
+    arg [/home/yujwu/conda/envs/gr310/lib] ==> ignore
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o]
+  collapse obj [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+  collapse library dir [/home/yujwu/conda/envs/gr310/lib] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0] ==> [/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc] ==> [/home/yujwu/conda/envs/gr310/lib/gcc]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../lib] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../../../x86_64-conda-linux-gnu/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../lib/gcc/x86_64-conda-linux-gnu/10.4.0/../../..] ==> [/home/yujwu/conda/envs/gr310/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib]
+  collapse library dir [/home/yujwu/conda/envs/gr310/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+  implicit objs: [/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtbeginS.o;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0/crtendS.o;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+  implicit dirs: [/home/yujwu/conda/envs/gr310/lib;/home/yujwu/conda/envs/gr310/lib/gcc/x86_64-conda-linux-gnu/10.4.0;/home/yujwu/conda/envs/gr310/lib/gcc;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/lib;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/lib;/home/yujwu/conda/envs/gr310/x86_64-conda-linux-gnu/sysroot/usr/lib]
+  implicit fwks: []
+
+

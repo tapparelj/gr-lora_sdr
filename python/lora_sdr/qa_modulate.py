@@ -41,11 +41,15 @@ def make_tag(key, value, offset, srcid=None):
 
 def build_upchirp(chirp, id, sf, os_factor=1):
     N = 2 ** sf
+    print("id")
+    print(id)
     n_fold = int(N * os_factor - id * os_factor)
     for n in range(int(N * os_factor)):
         if n < n_fold:
             chirp[n] = 1.0 + 0.0j
             chirp[n] *= np.exp(2.0j * np.pi * (n * n / (2 * N) / (os_factor ** 2) + (id / N - 0.5) * n / os_factor))
+            # print(n)
+            # print(chirp[n])
         else:
             chirp[n] = 1.0 + 0.0j
             chirp[n] *= np.exp(2.0j * np.pi * (n * n / (2 * N) / (os_factor ** 2) + (id / N - 1.5) * n / os_factor))
@@ -119,11 +123,6 @@ class qa_modulate(gr_unittest.TestCase):
         
         result_data = blocks_vector_sink.data()
 
-        rounded_result = [complex(
-            int(num.real * 10 + 0.5) / 10,
-            int(num.imag * 10 + 0.5 ) / 10
-        )for num in result_data]
-
         # generate the reference output
         ref_out = [0j] * 15360
         preamb_samp_cnt = 0
@@ -131,10 +130,10 @@ class qa_modulate(gr_unittest.TestCase):
         m_samples_per_symbol = 512
         output_offset = 0
         m_sync_words = [8,16]
-        m_upchirp = np.zeros(512, dtype=complex)
-        m_downchirp = np.zeros(512, dtype=complex)
+        m_upchirp = [0j] * 512
+        m_downchirp = [0j] * 512
         build_ref_chirps(m_upchirp, m_downchirp, sf, os_factor)
-
+        
         if len(m_sync_words) == 1:
             tmp = m_sync_words[0]
             m_sync_words.extend([0, 0])
@@ -143,9 +142,10 @@ class qa_modulate(gr_unittest.TestCase):
 
         for i in range(m_preamb_len):
             ref_out[output_offset:output_offset + m_samples_per_symbol] = m_upchirp
+            
             output_offset += m_samples_per_symbol
             preamb_samp_cnt += m_samples_per_symbol
-
+        
         if preamb_samp_cnt == (m_preamb_len * m_samples_per_symbol):
             # sync words
             temp1_chirp = [0j] * 512
@@ -160,7 +160,7 @@ class qa_modulate(gr_unittest.TestCase):
             ref_out[output_offset:output_offset + m_samples_per_symbol] = temp_chirp
             output_offset += m_samples_per_symbol
             preamb_samp_cnt += m_samples_per_symbol
-        
+      
         if preamb_samp_cnt < (m_preamb_len + 4) * m_samples_per_symbol:
             # 2.25 downchirps
             ref_out[output_offset:output_offset +  m_samples_per_symbol] = m_downchirp
@@ -176,19 +176,25 @@ class qa_modulate(gr_unittest.TestCase):
         if preamb_samp_cnt == (m_preamb_len + 4) * m_samples_per_symbol:
             ref_out[output_offset:output_offset + m_samples_per_symbol // 4] = m_downchirp[:m_samples_per_symbol // 4]
             output_offset += m_samples_per_symbol // 4
-
+        
         for i in range(len(src_data)):
             temp2_chirp = [0j] * 512
             build_upchirp(temp2_chirp, src_data[i], sf, os_factor)
             ref_out[output_offset:output_offset + m_samples_per_symbol] = temp2_chirp
             output_offset += m_samples_per_symbol
+        
+        decimalPlace = 4
+        # error message in case if test case got failed 
+        message = "first and second are not almost equal."
+        # assert function() to check if values are almost equal 
+        count = 0
+        print("here")
+        
+        for i in range(len(result_data)):
+            # print(i)
+            self.assertAlmostEqual(result_data[i], ref_out[i], decimalPlace, message)
 
-        rounded_ref = [complex(
-            int(num.real * 10 + 0.5) / 10 ,
-            int(num.imag * 10 + 0.5) / 10
-        )for num in ref_out]
-
-        self.assertEqual(rounded_result, rounded_ref)
+        #self.assertEqual(rounded_result, rounded_ref)
     
 
 if __name__ == '__main__':

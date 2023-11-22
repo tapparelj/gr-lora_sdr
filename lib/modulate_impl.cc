@@ -47,6 +47,8 @@ namespace gr
                 m_sync_words.resize(2,0);
                 m_sync_words[0] = ((tmp&0xF0)>>4)<<3;
                 m_sync_words[1] = (tmp&0x0F)<<3;
+                std::cout<< "m1"<<m_sync_words[0]<<std::endl;
+                std::cout<< "m2"<<m_sync_words[1]<<std::endl;
             }
             if (preamble_len<5)
             {
@@ -66,15 +68,12 @@ namespace gr
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_os_factor = m_samp_rate / m_bw;
             m_samples_per_symbol = (uint32_t)(m_number_of_bins*m_os_factor);
-
-
             m_downchirp.resize(m_samples_per_symbol);
             m_upchirp.resize(m_samples_per_symbol);
 
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf,m_os_factor);
+
             
-
-
         } 
 
         /*
@@ -122,7 +121,7 @@ namespace gr
                         tags[0].offset = nitems_written(0);
 
                         tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
-                        std::cout << "frame length"<< m_frame_len << std::endl; //38
+                       
                         // std::cout << m_samples_per_symbol << std::endl; //512
                         // std::cout << m_inter_frame_padding << std::endl; //10240
 
@@ -176,8 +175,7 @@ namespace gr
             {
                 nitems_to_process = std::min(nitems_to_process, int((float)(noutput_items - output_offset) / m_samples_per_symbol));
                 nitems_to_process = std::min(nitems_to_process, ninput_items[0]);
-                std::cout << "frame length output" << m_frame_len << std::endl;
-                std::cout << "nitems_to_process" << nitems_to_process << std::endl;
+
                 for (int i = 0; i < nitems_to_process; i++)
                 {
                     build_upchirp(&out[output_offset], in[i], m_sf,m_os_factor);
@@ -190,7 +188,7 @@ namespace gr
             {
                 nitems_to_process = 0;
             }
-            std::cout << "final samp count" << samp_cnt << std::endl;
+          
 
             if ((samp_cnt >= (m_frame_len*m_samples_per_symbol)) && 
                 (samp_cnt < m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)) //padd frame end with zeros
@@ -214,12 +212,6 @@ namespace gr
                 //     }
                 // }
             }
-            std::cout << "final padding" << padd_cnt << std::endl;
-            // bool check = samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding;
-            // std::cout << check << std::endl;
-            // std::cout << samp_cnt << std::endl;
-            // std::cout << m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding << std::endl;
-           
             if(samp_cnt  == m_frame_len*m_samples_per_symbol + (int64_t)m_inter_frame_padding)
             {
                 // std::cout << nitems_to_process << std::endl;

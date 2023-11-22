@@ -12,9 +12,9 @@ GNU Radio version: 3.10.3.0
 ** Create includes
 ********************/
 #include <gnuradio/top_block.h>
+#include <gnuradio/blocks/file_source.h>
 #include <gnuradio/blocks/vector_sink.h>
-#include <gnuradio/blocks/vector_source.h>
-#include "gnuradio/lora_sdr/header.h"
+#include "gnuradio/lora_sdr/whitening.h"
 
 
 
@@ -27,9 +27,9 @@ class tx_rx_simulation {
 private:
 
 
-    lora_sdr::header::sptr lora_sdr_header_0;
-    blocks::vector_source_b::sptr blocks_vector_source_x_0;
-    blocks::vector_sink_b::sptr blocks_vector_sink_x_2;
+    lora_sdr::whitening::sptr lora_sdr_whitening_0;
+    blocks::vector_sink_b::sptr blocks_vector_sink_x_0;
+    blocks::file_source::sptr blocks_file_source_0_0;
 
 
 // Variables:

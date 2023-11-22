@@ -43,68 +43,7 @@ class qa_tx_buffer(gr_unittest.TestCase):
     #     # FIXME: Test will fail until you pass sensible arguments to the constructor
     #     instance = whitening()
 
-    def test_001_patterned_interleaver_function_test(self):
-
-        sf = 7
-        samp_rate = 500000
-        preamb_len = 8
-        ldro = False
-        impl_head = False
-        has_crc = True
-        cr = 2
-        bw = 125000
-
-        lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
-        lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
-        lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
-        lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
-        lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
-        lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        blocks_throttle = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        blocks_patterned_interleaver_0 = blocks.patterned_interleaver(gr.sizeof_gr_complex*1, [0,1])
-        blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
-        relative_path = "../../data/GRC_default/example_tx_source.txt"
-        input_path = os.path.join(script_dir, relative_path)
-        blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
-        blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
-        analog_const_source_x_0 = analog.sig_source_c(0, analog.GR_CONST_WAVE, 0, 0, 0)
-        relative_out_path = "qa_ref/temp/ref_buffer_test.bin"
-        output_path = os.path.join(script_dir, relative_out_path)
-        blocks_file_sink = blocks.file_sink(gr.sizeof_gr_complex*1, output_path, False)
-        blocks_file_sink.set_unbuffered(False)
-
-        self.tb.connect((analog_const_source_x_0, 0), (blocks_patterned_interleaver_0, 0))
-        self.tb.connect((blocks_file_source_0_0, 0), (lora_sdr_whitening_0, 0))
-        self.tb.connect((blocks_patterned_interleaver_0, 0), (blocks_null_sink_0, 0))
-        self.tb.connect((lora_sdr_add_crc_0, 0), (lora_sdr_hamming_enc_0, 0))
-        self.tb.connect((lora_sdr_gray_demap_0, 0), (lora_sdr_modulate_0, 0))
-        self.tb.connect((lora_sdr_hamming_enc_0, 0), (lora_sdr_interleaver_0, 0))
-        self.tb.connect((lora_sdr_header_0, 0), (lora_sdr_add_crc_0, 0))
-        self.tb.connect((lora_sdr_interleaver_0, 0), (lora_sdr_gray_demap_0, 0))
-        self.tb.connect((lora_sdr_modulate_0, 0), (blocks_patterned_interleaver_0, 1))
-        self.tb.connect((lora_sdr_modulate_0, 0), (blocks_throttle, 0))
-        self.tb.connect((blocks_throttle, 0), (blocks_file_sink, 0))
-        self.tb.connect((lora_sdr_whitening_0, 0), (lora_sdr_header_0, 0))
-        self.tb.run()
-
-        # Load ref files
-        relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf7_cr2.bin"
-        reference_path = os.path.join(script_dir, relative_ref_path)
-        f = open(reference_path,"r")
-        ref_data = np.fromfile(f, dtype=np.complex64)
-        f.close()
-        #print(result_data)
-        relative_result_path = "qa_ref/temp/ref_buffer_test.bin"
-        reference_test_path = os.path.join(script_dir, relative_result_path)
-        f1 = open(reference_test_path,"r")
-        result_data = np.fromfile(f1, dtype=np.complex64)
-        f1.close()
-
-    
-        self.assertEqual(list(result_data), list(ref_data))
-
-    def test_002_full_buffer_test(self):
+    def test_001_full_buffer_test(self):
 
         src_data = (0,1,0,0,0,44)
         sf = 7
@@ -154,8 +93,15 @@ class qa_tx_buffer(gr_unittest.TestCase):
         result_data = blocks_vector_sink.data()
     
         self.assertEqual(result_data, list(ref_data))
+        decimalPlace = 7
+        # error message in case if test case got failed 
+        message = "first and second are not almost equal."
+        # assert function() to check if values are almost equal 
+        for i in range(len(result_data)):
+            self.assertAlmostEqual(result_data[i], ref_data[i], decimalPlace, message) 
+    
 
-    def test_003_empty_buffer_test(self):
+    def test_002_empty_buffer_before_header_test(self):
 
         src_data = (0,1,0,0,0,44)
         sf = 7
@@ -206,8 +152,70 @@ class qa_tx_buffer(gr_unittest.TestCase):
         #print(result_data)
 
         result_data = blocks_vector_sink.data()
+
+        decimalPlace = 7
+        # error message in case if test case got failed 
+        message = "first and second are not almost equal."
+        # assert function() to check if values are almost equal 
+        for i in range(len(result_data)):
+            self.assertAlmostEqual(result_data[i], ref_data[i], decimalPlace, message) 
     
-        self.assertEqual(result_data, list(ref_data))
+    def test_003_empty_buffer_before_whitening_test(self):
+
+        src_data = (0,1,0,0,0,44)
+        sf = 7
+        samp_rate = 500000
+        preamb_len = 8
+        ldro = False
+        impl_head = False
+        has_crc = True
+        cr = 2
+        bw = 125000
+
+        relative_path = "../../data/GRC_default/example_tx_source.txt"
+        input_path = os.path.join(script_dir, relative_path) 
+        blocks_file_source = blocks.file_source(gr.sizeof_char*1, input_path, False, 0, 0)
+        blocks_file_source.set_begin_tag(pmt.PMT_NIL)
+
+        lora_sdr_whitening = lora_sdr.whitening(False,False,',','packet_len')
+        lora_sdr_modulate = lora_sdr.modulate(sf, samp_rate, bw, [0x12], (int(20*2**sf*samp_rate/bw)),preamb_len)
+        lora_sdr_interleaver = lora_sdr.interleaver(cr, sf, ldro, 125000)
+        lora_sdr_header = lora_sdr.header(impl_head, has_crc, cr)
+        lora_sdr_hamming_enc = lora_sdr.hamming_enc(cr, sf)
+        lora_sdr_gray_demap = lora_sdr.gray_demap(sf)
+        lora_sdr_add_crc = lora_sdr.add_crc(has_crc)
+        blocks_throttle = blocks.throttle(gr.sizeof_char*1, 10,True)
+        blocks_vector_sink = blocks.vector_sink_c(1, 1024)
+    
+        self.tb.connect((blocks_file_source, 0), (blocks_throttle, 0))
+        self.tb.connect((lora_sdr_add_crc, 0), (lora_sdr_hamming_enc, 0))
+        self.tb.connect((lora_sdr_gray_demap, 0), (lora_sdr_modulate, 0))
+        self.tb.connect((lora_sdr_hamming_enc, 0), (lora_sdr_interleaver, 0))
+        self.tb.connect((lora_sdr_header, 0), (lora_sdr_add_crc, 0))
+        self.tb.connect((lora_sdr_interleaver, 0), (lora_sdr_gray_demap, 0))
+        self.tb.connect((lora_sdr_modulate, 0), (blocks_vector_sink, 0))
+        self.tb.connect((blocks_throttle, 0), (lora_sdr_whitening, 0))
+        self.tb.connect((lora_sdr_whitening, 0), (lora_sdr_header, 0))
+        self.tb.run()
+
+        # Load ref files
+        relative_ref_path = "qa_ref/qa_ref_tx/ref_tx_sf7_cr2.bin"
+        reference_path = os.path.join(script_dir, relative_ref_path)
+        f = open(reference_path,"r")
+        ref_data = np.fromfile(f, dtype=np.complex64)
+        f.close()
+        #print(result_data)
+
+        result_data = blocks_vector_sink.data()
+
+        decimalPlace = 7
+        # error message in case if test case got failed 
+        message = "first and second are not almost equal."
+        # assert function() to check if values are almost equal 
+        for i in range(len(result_data)):
+            self.assertAlmostEqual(result_data[i], ref_data[i], decimalPlace, message) 
+    
+      
 
     
 

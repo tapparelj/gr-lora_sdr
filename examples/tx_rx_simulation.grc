@@ -13,13 +13,13 @@ options:
     hier_block_src_path: '.:'
     id: tx_rx_simulation
     max_nouts: '0'
-    output_language: python
+    output_language: cpp
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
     run: 'True'
     run_command: '{python} -u {filename}'
-    run_options: prompt
+    run_options: run
     sizing_mode: fixed
     thread_safe_setters: ''
     title: ''
@@ -191,117 +191,6 @@ blocks:
     coordinate: [704, 16.0]
     rotation: 0
     state: enabled
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: complex
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1384, 40.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_flow_mod.bin
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1920, 248.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_0_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_fft_demod_input.bin
-    type: short
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1016, 912.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_0_0_0_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_flow_patt.bin
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1912, 120.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_sink_1
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_flow_mod/ref_flow_mod_sf7_cr2.bin
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1312, 112.0]
-    rotation: 0
-    state: disabled
-- name: blocks_file_source_0
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx_no_mod/ref_tx_sf7_cr2.bin
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'False'
-    type: int
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [752, 96.0]
-    rotation: 0
-    state: disabled
 - name: blocks_file_source_0_0
   id: blocks_file_source
   parameters:
@@ -321,66 +210,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [128, 232.0]
+    coordinate: [48, 216.0]
     rotation: 0
-    state: disabled
-- name: blocks_file_source_0_1
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: /home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/temp/ref_fft_demod_input.bin
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'False'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1184, 816.0]
-    rotation: 0
-    state: disabled
-- name: blocks_null_sink_0
-  id: blocks_null_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    bus_structure_sink: '[[0,],]'
-    comment: ''
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [2024, 88.0]
-    rotation: 0
-    state: disabled
-- name: blocks_patterned_interleaver_0
-  id: blocks_patterned_interleaver
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    pattern: '[0]*50000+[1]*50000'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1608, 136.0]
-    rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -400,25 +232,6 @@ blocks:
     coordinate: [1488, 264.0]
     rotation: 0
     state: disabled
-- name: blocks_throttle_0_0
-  id: blocks_throttle
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    ignoretag: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samples_per_second: samp_rate*10
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1136, 128.0]
-    rotation: 0
-    state: disabled
 - name: blocks_vector_sink_x_0
   id: blocks_vector_sink_x
   parameters:
@@ -426,67 +239,15 @@ blocks:
     alias: ''
     comment: ''
     reserve_items: '1024'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1640, 336.0]
-    rotation: 0
-    state: disabled
-- name: blocks_vector_sink_x_1
-  id: blocks_vector_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    reserve_items: '1024'
-    type: short
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1128, 320.0]
-    rotation: 0
-    state: disabled
-- name: blocks_vector_sink_x_2
-  id: blocks_vector_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    reserve_items: '1024'
     type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 368.0]
+    coordinate: [56, 360.0]
     rotation: 0
-    state: true
-- name: blocks_vector_source_x_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: byte
-    vector: (0, 0, 0)
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [520, 352.0]
-    rotation: 0
-    state: true
+    state: enabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -523,7 +284,7 @@ blocks:
     bus_structure: null
     coordinate: [672, 264.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora_sdr_crc_verif_0
   id: lora_sdr_crc_verif
   parameters:
@@ -756,27 +517,6 @@ blocks:
     coordinate: [1248, 248.0]
     rotation: 0
     state: disabled
-- name: lora_sdr_modulate_1
-  id: lora_sdr_modulate
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: bw
-    comment: ''
-    frame_zero_padd: int(20*2**sf*samp_rate/bw)
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    preamb_len: '8'
-    samp_rate: samp_rate
-    sf: sf
-    sync_words: '0x12'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [968, 112.0]
-    rotation: 0
-    state: disabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
   parameters:
@@ -794,29 +534,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 240.0]
+    coordinate: [320, 240.0]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', blocks_patterned_interleaver_0, '0']
-- [blocks_file_source_0, '0', lora_sdr_modulate_1, '0']
 - [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
-- [blocks_file_source_0_1, '0', lora_sdr_fft_demod_0, '0']
-- [blocks_patterned_interleaver_0, '0', blocks_file_sink_0_0_0_0, '0']
-- [blocks_patterned_interleaver_0, '0', blocks_null_sink_0, '0']
-- [blocks_throttle_0, '0', blocks_file_sink_0, '0']
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle_0, '0', lora_sdr_frame_sync_0, '0']
-- [blocks_throttle_0_0, '0', blocks_file_sink_1, '0']
-- [blocks_vector_source_x_0, '0', lora_sdr_add_crc_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_sync_0, '0']
-- [lora_sdr_add_crc_0, '0', blocks_vector_sink_x_2, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
+- [lora_sdr_crc_verif_0, '0', blocks_vector_sink_x_0, '0']
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
-- [lora_sdr_fft_demod_0, '0', blocks_file_sink_0_0, '0']
-- [lora_sdr_fft_demod_0, '0', blocks_vector_sink_x_1, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_mapping_0, '0']
 - [lora_sdr_frame_sync_0, '0', lora_sdr_fft_demod_0, '0']
 - [lora_sdr_gray_demap_0, '0', lora_sdr_modulate_0, '0']
@@ -827,10 +557,8 @@ connections:
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_demap_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_patterned_interleaver_0, '1']
 - [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
-- [lora_sdr_modulate_0, '0', blocks_vector_sink_x_0, '0']
-- [lora_sdr_modulate_1, '0', blocks_throttle_0_0, '0']
+- [lora_sdr_whitening_0, '0', blocks_vector_sink_x_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 
 metadata:

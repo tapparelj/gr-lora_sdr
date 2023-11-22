@@ -15,6 +15,7 @@
 #endif
 
 #define print(message) std::cout<< message <<std::endl
+
 namespace gr {
     namespace lora_sdr {
 
@@ -100,7 +101,10 @@ namespace gr {
                     chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-0.5)*n/os_factor));
                 else
                     chirp[n] = gr_complex(1.0,0.0)*gr_expj(2.0*M_PI *(n*n/(2*N)/pow(os_factor,2)+(id/N-1.5)*n/os_factor));
-
+                //std::cout<< "os_factor" << os_factor << std::endl;
+                // for (int i = 0; i < 512; ++i) {
+                //     std::cout << chirp[i] << std::endl;
+                // }
             }
         }
 

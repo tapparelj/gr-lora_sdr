@@ -86,6 +86,10 @@ namespace gr
 #endif
         uint8_t cr_app = (m_cnt < m_sf - 2) ? 4 : m_cr;
         data_bin = int2bool(in_data[i], 4);
+        std::cout<< data_bin[0] << std::endl;
+        std::cout<< data_bin[1] << std::endl;
+        std::cout<< data_bin[2] << std::endl;
+        std::cout<< data_bin[3] << std::endl;
 
         //the data_bin is msb first
         if (cr_app != 1)

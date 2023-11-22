@@ -17,16 +17,16 @@ tx_rx_simulation::tx_rx_simulation ()  {
     this->tb = gr::make_top_block("Tx Rx Simulation");
 
 // Blocks:
-        this->lora_sdr_header_0 = lora_sdr::header::make(impl_head, has_crc, cr);
+        this->lora_sdr_whitening_0 = lora_sdr::whitening::make(false,false,',',"packet_len");
 
-        this->blocks_vector_source_x_0 = blocks::vector_source_b::make((0, 0, 0), true, 1, []);
+        this->blocks_vector_sink_x_0 = blocks::vector_sink_b::make(1, 1024);
 
-        this->blocks_vector_sink_x_2 = blocks::vector_sink_b::make(1, 1024);
+        this->blocks_file_source_0_0 =blocks::file_source::make(sizeof(char)*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", false, 0, 0);
 
 
 // Connections:
-    this->tb->hier_block2::connect(this->blocks_vector_source_x_0, 0, this->lora_sdr_header_0, 0);
-    this->tb->hier_block2::connect(this->lora_sdr_header_0, 0, this->blocks_vector_sink_x_2, 0);
+    this->tb->hier_block2::connect(this->blocks_file_source_0_0, 0, this->lora_sdr_whitening_0, 0);
+    this->tb->hier_block2::connect(this->lora_sdr_whitening_0, 0, this->blocks_vector_sink_x_0, 0);
 }
 
 tx_rx_simulation::~tx_rx_simulation () {
@@ -103,7 +103,6 @@ int tx_rx_simulation::get_cr () const {
 
 void tx_rx_simulation::set_cr (int cr) {
     this->cr = cr;
-    this->lora_sdr_header_0->set_cr(this->cr);
 }
 
 int tx_rx_simulation::get_clk_offset () const {
@@ -143,9 +142,6 @@ int main (int argc, char **argv) {
 
     tx_rx_simulation* top_block = new tx_rx_simulation();
     top_block->tb->start();
-    std::cout << "Press Enter to quit: ";
-    std::cin.ignore();
-    top_block->tb->stop();
     top_block->tb->wait();
 
     return 0;

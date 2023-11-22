@@ -41,23 +41,11 @@ class qa_gray_demap(gr_unittest.TestCase):
 
     def test_001_function_test(self):
 
-        soft_decoding = False
         sf = 7
-        samp_rate = 500000
-        preamb_len = 8
-        pay_len = 16
-        ldro = False
-        impl_head = False
-        has_crc = True
-        cr = 2
-        clk_offset = 0
-        center_freq = 868.1e6
-        bw = 125000
-        SNRdB = -5
-        src_data = (1,1,0,2,3)
+        src_data = (0, 1, 2)
 
         lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        blocks_vector_source_x_0 = blocks.vector_source_i((0, 1, 2), False, 1, [])
+        blocks_vector_source_x_0 = blocks.vector_source_i(src_data, False, 1, [])
         blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
 
         self.tb.connect((blocks_vector_source_x_0, 0), (lora_sdr_gray_demap_0, 0))
@@ -68,14 +56,15 @@ class qa_gray_demap(gr_unittest.TestCase):
         #print(result_data)
         ref_data = [1,2,4]
 
-        #print(result_data)
-
+        # generate reference data
+        ref_data = [0] * len(src_data)
+        for i in range(len(src_data)):
+            ref_data[i] = src_data[i]
+            for j in range(1, sf):
+                ref_data[i]=ref_data[i]^(src_data[i]>>j)
+            ref_data[i] = ((ref_data[i]+1) % (1 << sf))
 
         self.assertEqual(ref_data, result_data)
-        
-    
-
-    
 
 if __name__ == '__main__':
     gr_unittest.run(qa_gray_demap)

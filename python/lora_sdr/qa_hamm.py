@@ -25,6 +25,10 @@ except ImportError:
     import sys
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
+
+def int_to_bool(value, num_bits):
+
+    return [(value >> i) & 1 for i in range(num_bits - 1, -1, -1)]
    
 
 class qa_hamm(gr_unittest.TestCase):
@@ -56,7 +60,44 @@ class qa_hamm(gr_unittest.TestCase):
         result_data = blocks_vector_sink_1_0.data()
         ref_data = [139, 139, 0, 78, 197]
 
-        self.assertEqual(ref_data, result_data)
+        # generate reference data
+        data_bin = []
+        ref_out = [0] * len(src_data)
+        p0, p1, p2, p3, p4 = False, False, False, False, False
+        m_cnt = 0
+
+        for i in range(len(src_data)):
+            #ifdef GRLORA_DEBUG
+            print(f'{src_data[i]:02X}   ', end='')
+            #endif
+            
+            cr_app = 4 if m_cnt < sf - 2 else cr
+            data_bin = int_to_bool(src_data[i], 4)
+            print(data_bin)
+
+            # the data_bin is msb first
+            if cr_app != 1:
+                p0 = data_bin[3] ^ data_bin[2] ^ data_bin[1]
+                p1 = data_bin[2] ^ data_bin[1] ^ data_bin[0]
+                p2 = data_bin[3] ^ data_bin[2] ^ data_bin[0]
+                p3 = data_bin[3] ^ data_bin[1] ^ data_bin[0]
+
+                # we put the data LSB first and append the parity bits
+                ref_out[i] = ((data_bin[3] << 7) | (data_bin[2] << 6) | (data_bin[1] << 5) |
+                                (data_bin[0] << 4) | (p0 << 3) | (p1 << 2) | (p2 << 1) | p3) >> (4 - cr_app)
+            else:
+                # coding rate = 4/5, add a parity bit
+                p4 = data_bin[0] ^ data_bin[1] ^ data_bin[2] ^ data_bin[3]
+                ref_out[i] = ((data_bin[3] << 4) | (data_bin[2] << 3) | (data_bin[1] << 2) |
+                                (data_bin[0] << 1) | p4)
+
+            #ifdef GRLORA_DEBUG
+            print(ref_out[i])
+            #endif
+            m_cnt += 1
+
+
+        self.assertEqual(ref_out, result_data)
         
     
 
