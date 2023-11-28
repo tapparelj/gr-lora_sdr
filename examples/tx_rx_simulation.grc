@@ -229,9 +229,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1488, 264.0]
+    coordinate: [1408, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_vector_sink_x_0
   id: blocks_vector_sink_x
   parameters:
@@ -247,7 +247,7 @@ blocks:
     bus_structure: null
     coordinate: [56, 360.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -284,7 +284,7 @@ blocks:
     bus_structure: null
     coordinate: [672, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_crc_verif_0
   id: lora_sdr_crc_verif
   parameters:
@@ -301,7 +301,7 @@ blocks:
     bus_structure: null
     coordinate: [120, 424.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_deinterleaver_0
   id: lora_sdr_deinterleaver
   parameters:
@@ -317,7 +317,7 @@ blocks:
     bus_structure: null
     coordinate: [816, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_dewhitening_0
   id: lora_sdr_dewhitening
   parameters:
@@ -332,7 +332,7 @@ blocks:
     bus_structure: null
     coordinate: [328, 440.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_fft_demod_0
   id: lora_sdr_fft_demod
   parameters:
@@ -349,7 +349,7 @@ blocks:
     bus_structure: null
     coordinate: [1168, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_sync_0
   id: lora_sdr_frame_sync
   parameters:
@@ -370,9 +370,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1488, 416.0]
+    coordinate: [1368, 416.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_demap_0
   id: lora_sdr_gray_demap
   parameters:
@@ -388,7 +388,7 @@ blocks:
     bus_structure: null
     coordinate: [1088, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_mapping_0
   id: lora_sdr_gray_mapping
   parameters:
@@ -404,7 +404,7 @@ blocks:
     bus_structure: null
     coordinate: [992, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_dec_0
   id: lora_sdr_hamming_dec
   parameters:
@@ -420,7 +420,7 @@ blocks:
     bus_structure: null
     coordinate: [648, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_enc_0
   id: lora_sdr_hamming_enc
   parameters:
@@ -437,7 +437,7 @@ blocks:
     bus_structure: null
     coordinate: [808, 256.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_0
   id: lora_sdr_header
   parameters:
@@ -453,9 +453,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [512, 248.0]
+    coordinate: [520, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_decoder_0
   id: lora_sdr_header_decoder
   parameters:
@@ -476,7 +476,7 @@ blocks:
     bus_structure: null
     coordinate: [488, 432.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -495,7 +495,7 @@ blocks:
     bus_structure: null
     coordinate: [960, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_modulate_0
   id: lora_sdr_modulate
   parameters:
@@ -516,7 +516,7 @@ blocks:
     bus_structure: null
     coordinate: [1248, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
   parameters:
@@ -544,7 +544,6 @@ connections:
 - [blocks_throttle_0, '0', lora_sdr_frame_sync_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
-- [lora_sdr_crc_verif_0, '0', blocks_vector_sink_x_0, '0']
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_mapping_0, '0']

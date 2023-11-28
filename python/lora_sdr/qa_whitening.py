@@ -86,6 +86,7 @@ class qa_whitening(gr_unittest.TestCase):
         result_tags = dst.tags()
         print(result_tags)
         result_data = self.combine(result_data)
+        print(result_data)
 
         
         self.assertEqual(result_data, expected_data)

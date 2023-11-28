@@ -47,8 +47,8 @@ namespace gr
                 m_sync_words.resize(2,0);
                 m_sync_words[0] = ((tmp&0xF0)>>4)<<3;
                 m_sync_words[1] = (tmp&0x0F)<<3;
-                std::cout<< "m1"<<m_sync_words[0]<<std::endl;
-                std::cout<< "m2"<<m_sync_words[1]<<std::endl;
+                //std::cout<< "m1"<<m_sync_words[0]<<std::endl;
+                //std::cout<< "m2"<<m_sync_words[1]<<std::endl;
             }
             if (preamble_len<5)
             {
@@ -104,8 +104,8 @@ namespace gr
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
             if (tags.size())
             {
-                std::cout << "has tag" << std::endl;
-                std::cout << tags.size() << std::endl;
+                //std::cout << "has tag" << std::endl;
+                //std::cout << tags.size() << std::endl;
                 if (tags[0].offset != nitems_read(0)){
                     nitems_to_process = std::min(tags[0].offset - nitems_read(0), (uint64_t)(float)noutput_items / m_samples_per_symbol);
                     
@@ -170,7 +170,7 @@ namespace gr
             }
 
             //first round preamb_samp_cnt =0 so that the code enter preamble part to output preamble, then preamble add to 4096 and enters next part of payload
-            std::cout << "output check" << samp_cnt << std::endl;
+            //std::cout << "output check" << samp_cnt << std::endl;
             if ( samp_cnt < m_frame_len*(int32_t)m_samples_per_symbol && samp_cnt>-1) //output payload
             {
                 nitems_to_process = std::min(nitems_to_process, int((float)(noutput_items - output_offset) / m_samples_per_symbol));
@@ -233,9 +233,9 @@ namespace gr
                 std::cout << "Frame " << frame_cnt << " sent\n";
 #endif
             }
-            if(frame_cnt == n_frames){
-                return WORK_DONE;
-            }
+            // if(frame_cnt == n_frames){
+            //     return WORK_DONE;
+            // }
             // if (nitems_to_process)
             //     std::cout << ninput_items[0] << " " << nitems_to_process << " " << output_offset << " " << noutput_items << std::endl;
             consume_each(nitems_to_process);

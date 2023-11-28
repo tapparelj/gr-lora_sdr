@@ -46,6 +46,7 @@ namespace gr
             up_symb_to_use = m_n_up_req - 1;
 
             m_sto_frac = 0.0;
+            
 
             m_impl_head = impl_head;
 
@@ -127,6 +128,7 @@ namespace gr
             kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * up_symb_to_use * m_number_of_bins];
 
             std::vector<float> fft_mag_sq(2 * up_symb_to_use * m_number_of_bins);
+            std::cout << "estimate_cfo_frc" <<std::endl;
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * up_symb_to_use * m_number_of_bins, 0, 0, 0);
             // create longer downchirp
             std::vector<gr_complex> downchirp_aug(up_symb_to_use * m_number_of_bins);
@@ -202,6 +204,7 @@ namespace gr
             {
                 fft_mag_sq[i] = 0;
             }
+            std::cout << "estimate_CFO_frac_Bernier" <<std::endl;
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             for (int i = 0; i < up_symb_to_use; i++)
             {
@@ -261,6 +264,8 @@ namespace gr
             {
                 fft_mag_sq[i] = 0;
             }
+            std::cout << "estimate_STO_frac" <<std::endl;
+            
             kiss_fft_cfg cfg_sto = kiss_fft_alloc(2 * m_number_of_bins, 0, 0, 0);
 
             for (int i = 0; i < up_symb_to_use; i++)
@@ -319,8 +324,21 @@ namespace gr
             double sig_en = 0;
             std::vector<float> fft_mag(m_number_of_bins);
             volk::vector<gr_complex> dechirped(m_number_of_bins);
+            // std::cout << "get_symbol_val" <<std::endl;
+            // std::cout << "m_number_of_bins" << m_number_of_bins <<std::endl;
+           
+            // kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
+           
+            // std::cout << "cfg " << cfg <<std::endl;
+            static kiss_fft_cfg cfg = nullptr;
 
-            kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
+            // Check if cfg has been initialized
+            if (!cfg)
+            {
+                // Allocate memory for cfg only if it's not initialized
+                cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
+            }
+
 
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
@@ -339,7 +357,7 @@ namespace gr
                 fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
                 sig_en += fft_mag[i];
             }
-            free(cfg);
+            //free(cfg);
             // Return argmax here
 
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;

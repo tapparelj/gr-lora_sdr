@@ -56,6 +56,7 @@ namespace gr
                     crcValue = (crcValue << 1);
                 }
                 newByte <<= 1;
+               
             }
             return crcValue;
         }
@@ -119,23 +120,31 @@ namespace gr
                 return 0;
             }
             m_cnt += nitems_to_process;
+            //std::cout<< "m_cnt"<<m_cnt << std::endl;
             
             
 
             if (m_has_crc && m_cnt == m_frame_len && nitems_to_process)
             { //append the CRC to the payload
+                //std::cout<< "here" << std::endl;
                 
                 uint16_t crc = 0x0000;
                 m_payload_len = m_payload.size();
+                //std::cout<< "m_payload_len" << int(m_payload_len)<< std::endl;
                
      
                 //calculate CRC on the N-2 firsts data bytes using Poly=1021 Init=0000
                 for (int i = 0; i < (int)m_payload_len - 2; i++){
+                    //std::cout<< "crc"<<crc << std::endl;
                     crc = crc16(crc, m_payload[i]);
                     
+                    
+                    
                 }
+                //std::cout<< "crc"<<crc << std::endl;
                 //XOR the obtained CRC with the last 2 data bytes
                 crc = crc ^ m_payload[m_payload_len - 1] ^ (m_payload[m_payload_len - 2] << 8);
+                //std::cout<< "crc"<<crc << std::endl;
                 //Place the CRC in the correct output nibble
                 out[nitems_to_process] = ((crc & 0x000F));
                 out[nitems_to_process + 1] = ((crc & 0x00F0) >> 4);

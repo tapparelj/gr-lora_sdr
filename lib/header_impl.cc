@@ -73,6 +73,7 @@ namespace gr
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_len"));
             if (tags.size())
             {
+
                 if (tags[0].offset != nitems_read(0))
                     nitems_to_process = std::min(tags[0].offset - nitems_read(0), (uint64_t)noutput_items);
                 else
@@ -91,11 +92,13 @@ namespace gr
                     m_cnt_nibbles = 0;
 
                     m_tags[1] = tags[0];
-                    std::cout<< "payload length"<< m_payload_len <<std::endl;
+                    //std::cout<< "payload length"<< (int)m_payload_len <<std::endl;
                   
+                    //std::cout<<"TAG "<<pmt::symbol_to_string(tags[0].value)<<std::endl;
                 }
+
             }
-            std::cout<<"ntp"<<nitems_to_process<<std::endl;
+            //std::cout<<"ntp"<<nitems_to_process<<std::endl;
 
            
             if (m_cnt_nibbles == 0 && !m_impl_head)
@@ -107,8 +110,8 @@ namespace gr
                     //payload length
                     m_header[0] = (m_payload_len >> 4);
                     m_header[1] = (m_payload_len & 0x0F);
-                    std::cout<< "add header"<<std::endl;
-                    std::cout<< m_header[0] <<std::endl;
+                    //std::cout<< "add header"<<std::endl;
+                    //std::cout<< m_header[0] <<std::endl;
 
                     //coding rate and has_crc
                     m_header[2] = ((m_cr << 1) | m_has_crc);
@@ -133,7 +136,7 @@ namespace gr
                     if (m_cnt_header_nibbles < 5)
                     {
                         out[i] = m_header[m_cnt_header_nibbles];
-                        std::cout<< "add header to output"<<std::endl;
+                        //std::cout<< "add header to output"<<std::endl;
                   
                         m_cnt_header_nibbles++;
                         out_offset++;
@@ -145,29 +148,26 @@ namespace gr
                     
                 }
             }
-            std::cout<< "header nibbles"<< m_cnt_header_nibbles<< std::endl;
+            //std::cout<< "header nibbles"<< m_cnt_header_nibbles<< std::endl;
          
             if (m_impl_head && m_cnt_nibbles == 0)
             {
                 add_item_tag(0, m_tags[0]);
                 add_item_tag(0, m_tags[1]);
             }
-            std::cout<< "offset"<<out_offset << std::endl;
+            //std::cout<< "offset"<<out_offset << std::endl;
             for (int i = out_offset; i < nitems_to_process; i++)
             {
                 out[i] = in[i - out_offset];
                 
                 m_cnt_nibbles++;
-                std::cout<< "m_cnt_nibbles"<<m_cnt_nibbles<< std::endl;
+                //std::cout<< "m_cnt_nibbles"<<m_cnt_nibbles<< std::endl;
              
                 m_cnt_header_nibbles = 0;
             }
 
             consume_each(nitems_to_process - out_offset);
             
-            // if(m_cnt_nibbles == 6){
-            //     return WORK_DONE;
-            // }
             return nitems_to_process;
            
         }
