@@ -74,7 +74,7 @@ namespace gr
 
       kiss_fft_cpx *cx_in;  ///<input of the FFT
       kiss_fft_cpx *cx_out; ///<output of the FFT
-      
+      kiss_fft_cfg cfg_gsv; 
 
       int items_to_consume; ///< Number of items to consume after each iteration of the general_work function
 

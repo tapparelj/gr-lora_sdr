@@ -56,7 +56,7 @@ namespace gr
                     crcValue = (crcValue << 1);
                 }
                 newByte <<= 1;
-               
+                //std::cout<<"val "<<crcValue<<std::endl;               
             }
             return crcValue;
         }
@@ -120,7 +120,6 @@ namespace gr
                 return 0;
             }
             m_cnt += nitems_to_process;
-            //std::cout<< "m_cnt"<<m_cnt << std::endl;
             
             
 
@@ -130,21 +129,21 @@ namespace gr
                 
                 uint16_t crc = 0x0000;
                 m_payload_len = m_payload.size();
-                //std::cout<< "m_payload_len" << int(m_payload_len)<< std::endl;
+                // for(int i=0;i<m_payload.size();i++)
+                //     std::cout<< "m_payload " << m_payload[i]<< std::endl;
                
      
                 //calculate CRC on the N-2 firsts data bytes using Poly=1021 Init=0000
+                //std::cout<< "m_payload_len"<<(int)m_payload_len <<", frame len "<<m_frame_len<<" nitems_to_process "<<nitems_to_process<< std::endl;
                 for (int i = 0; i < (int)m_payload_len - 2; i++){
-                    //std::cout<< "crc"<<crc << std::endl;
+                    
                     crc = crc16(crc, m_payload[i]);
-                    
-                    
-                    
                 }
                 //std::cout<< "crc"<<crc << std::endl;
                 //XOR the obtained CRC with the last 2 data bytes
+                std::cout<< "crc"<<crc << std::endl;
                 crc = crc ^ m_payload[m_payload_len - 1] ^ (m_payload[m_payload_len - 2] << 8);
-                //std::cout<< "crc"<<crc << std::endl;
+                std::cout<< "crc"<<crc << std::endl;
                 //Place the CRC in the correct output nibble
                 out[nitems_to_process] = ((crc & 0x000F));
                 out[nitems_to_process + 1] = ((crc & 0x00F0) >> 4);
@@ -152,11 +151,13 @@ namespace gr
                 out[nitems_to_process + 3] = ((crc & 0xF000) >> 12);
                 nitems_to_output = nitems_to_process + 4;
                 
+                std::cout<<"here "<<std::endl;               
                 m_payload.clear();
             }
             else
             {
                 nitems_to_output = nitems_to_process;
+
             }
             memcpy(out, in, nitems_to_process * sizeof(uint8_t));
             consume_each(nitems_to_process);

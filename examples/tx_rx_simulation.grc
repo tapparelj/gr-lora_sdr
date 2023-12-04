@@ -232,22 +232,6 @@ blocks:
     coordinate: [1408, 264.0]
     rotation: 0
     state: enabled
-- name: blocks_vector_sink_x_0
-  id: blocks_vector_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    reserve_items: '1024'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [56, 360.0]
-    rotation: 0
-    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -557,7 +541,6 @@ connections:
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_demap_0, '0']
 - [lora_sdr_modulate_0, '0', blocks_throttle_0, '0']
-- [lora_sdr_whitening_0, '0', blocks_vector_sink_x_0, '0']
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 
 metadata:

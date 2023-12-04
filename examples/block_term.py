@@ -10,7 +10,6 @@
 # GNU Radio version: 3.10.3.0
 
 from gnuradio import blocks
-import pmt
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
@@ -19,7 +18,6 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import gnuradio.lora_sdr as lora_sdr
 
 
 
@@ -49,22 +47,14 @@ class block_term(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
-        self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
-        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_char*1, '', "")
-        self.blocks_tag_debug_0.set_display(True)
-        self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_char*1)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt", False, 0, 0)
-        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_vector_source_x_0 = blocks.vector_source_i((0, 0, 0), False, 1, [])
+        self.blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_file_source_0_0, 0), (self.lora_sdr_whitening_0, 0))
-        self.connect((self.lora_sdr_header_0, 0), (self.blocks_null_sink_0, 0))
-        self.connect((self.lora_sdr_whitening_0, 0), (self.blocks_tag_debug_0, 0))
-        self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_vector_sink_x_0, 0))
 
 
     def get_soft_decoding(self):
@@ -120,7 +110,6 @@ class block_term(gr.top_block):
 
     def set_cr(self, cr):
         self.cr = cr
-        self.lora_sdr_header_0.set_cr(self.cr)
 
     def get_clk_offset(self):
         return self.clk_offset

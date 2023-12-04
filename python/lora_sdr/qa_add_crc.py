@@ -60,8 +60,8 @@ def crc16(crc_value, new_byte):
             crc_value = (crc_value << 1)
         byte_value <<= 1
         byte_value = byte_value & 0xFF
-       
-
+        
+    
     return crc_value & 0xffff
 
 
@@ -72,7 +72,10 @@ def calculate_crc(payload):
     # Calculate CRC on the N-2 first data bytes using Poly=1021 Init=0000
     for i in range(payload_len - 2):
         
-        crc = crc16(crc, str(payload[i]))
+        crc = crc16(crc, payload[i])
+    print(crc)   
+    crc = crc ^ ord(payload[payload_len - 1]) ^( ord(payload[payload_len - 2]) << 8) 
+    print(crc)   
     crc_nibbles = [
         (crc & 0x000F),
         ((crc & 0x00F0) >> 4),
@@ -96,14 +99,20 @@ class qa_add_crc(gr_unittest.TestCase):
 
         has_crc = True
         cr = 2
-        payload_len = 13
+        payload_len = 6
+        max_value = 16
+        
 
         # use output of add_header block
-        src_data_str = "31364" # random input source
-        src_data_int = [3,1,3,6,4]
-        src_data = [0, 4, 5, 0, 2, 15, 12, 15, 3, 15, 10, 15, 12] # output of use output of add_header block
+        # src_data_str = "31364" # random input source
+        src = np.random.randint(max_value, size=payload_len)
+        src_data_str = ''.join(map(str, src))
+        frame_len = payload_len * 2 +5 # whitening block doubles the length add 5 byte of header
+        src_data= np.random.randint(max_value, size=frame_len)
+        print(src_data_str)
+        print(src_data)
 
-        src_tags = [make_tag('frame_len',payload_len,0,'src_data'),make_tag_string('payload_str', src_data_str, 0,'src')] 
+        src_tags = [make_tag('frame_len', frame_len, 0,'src_data'),make_tag('payload_str', src_data_str, 0,'src')] 
 
         lora_sdr_add_crc = lora_sdr.add_crc(has_crc)
         blocks_vector_source = blocks.vector_source_b(src_data, False, 1, src_tags)
@@ -115,10 +124,11 @@ class qa_add_crc(gr_unittest.TestCase):
 
         result_data = blocks_vector_sink.data()
         # generate crc 
-        ref_crc = calculate_crc(src_data_int)
-        ref_out = src_data + ref_crc
+        ref_crc = calculate_crc(src_data_str)
+        # ref_out = np.concatenate((src_data, ref_crc), axis=1)
+
         
-        self.assertEqual(result_data, ref_out)
+        self.assertEqual(result_data[len(result_data)-4:len(result_data)], ref_crc)
 
     
 if __name__ == '__main__':

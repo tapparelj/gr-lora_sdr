@@ -105,9 +105,11 @@ namespace gr
         return 0;
       }
 
+
       if (nitems_to_process >= sf_app || cw_cnt + nitems_to_process == (uint32_t)m_frame_len)
       {        
         //propagate tag
+      
         if(!cw_cnt)
           add_item_tag(0, tags[0]);
 
@@ -119,12 +121,22 @@ namespace gr
         //convert to input codewords to binary vector of vector
         for (int i = 0; i < sf_app; i++)
         {
-          if (i >= nitems_to_process)//ninput_items[0])
+          if (i >= nitems_to_process){//ninput_items[0])
             cw_bin[i] = int2bool(0, cw_len);
-          else
+
+            // for (bool bit : cw_bin[i]) {
+            //   std::cout << bit << ' ';
+            // } 
+           
+          }
+          else{
             cw_bin[i] = int2bool(in[i], cw_len);
+
+          }
+          
           cw_cnt++;
         }
+        
 
 #ifdef GRLORA_DEBUG
         std::cout << "codewords---- " << std::endl;
@@ -148,7 +160,7 @@ namespace gr
           //For the first bloc we add a parity bit and a zero in the end of the lora symbol(reduced rate)
           if (((int)cw_cnt == m_sf - 2)||m_ldro)
             inter_bin[i][sf_app] = accumulate(inter_bin[i].begin(), inter_bin[i].end(), 0) % 2;
-
+     
           out[i] = bool2int(inter_bin[i]);
         }
 
@@ -165,6 +177,7 @@ namespace gr
         std::cout << std::endl;
 #endif
         consume_each(nitems_to_process > sf_app ? sf_app : nitems_to_process);
+
         return cw_len;
       }
       else

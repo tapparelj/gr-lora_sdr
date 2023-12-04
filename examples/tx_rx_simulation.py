@@ -10,7 +10,6 @@
 # GNU Radio version: 3.10.3.0
 
 from gnuradio import blocks
-import pmt
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
@@ -49,32 +48,16 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)
-        self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
-        self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], (int(samp_rate/bw)),preamb_len)
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, False)
-        self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
-        self.blocks_vector_sink_x_0 = blocks.vector_sink_b(1, 1024)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/yujwu/Documents/gr-lora_sdr/python/lora_sdr/qa_ref/qa_ref_tx/ref_tx_sf7_cr2.bin', False, 0, 0)
-        self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
+        self.blocks_vector_source_x_0 = blocks.vector_source_b((0, 0, 0), True, 1, [])
+        self.blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
-        self.connect((self.blocks_file_source_0, 0), (self.lora_sdr_frame_sync_0, 0))
-        self.connect((self.lora_sdr_crc_verif_0, 0), (self.blocks_vector_sink_x_0, 0))
-        self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))
-        self.connect((self.lora_sdr_dewhitening_0, 0), (self.lora_sdr_crc_verif_0, 0))
-        self.connect((self.lora_sdr_fft_demod_0, 0), (self.lora_sdr_gray_mapping_0, 0))
-        self.connect((self.lora_sdr_frame_sync_0, 0), (self.lora_sdr_fft_demod_0, 0))
-        self.connect((self.lora_sdr_gray_mapping_0, 0), (self.lora_sdr_deinterleaver_0, 0))
-        self.connect((self.lora_sdr_hamming_dec_0, 0), (self.lora_sdr_header_decoder_0, 0))
-        self.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.lora_sdr_interleaver_0, 0))
+        self.connect((self.lora_sdr_interleaver_0, 0), (self.blocks_vector_sink_x_0, 0))
 
 
     def get_soft_decoding(self):
@@ -88,6 +71,7 @@ class tx_rx_simulation(gr.top_block):
 
     def set_sf(self, sf):
         self.sf = sf
+        self.lora_sdr_interleaver_0.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -130,6 +114,7 @@ class tx_rx_simulation(gr.top_block):
 
     def set_cr(self, cr):
         self.cr = cr
+        self.lora_sdr_interleaver_0.set_cr(self.cr)
 
     def get_clk_offset(self):
         return self.clk_offset
@@ -172,11 +157,6 @@ def main(top_block_cls=tx_rx_simulation, options=None):
 
     tb.start()
 
-    try:
-        input('Press Enter to quit: ')
-    except EOFError:
-        pass
-    tb.stop()
     tb.wait()
 
 

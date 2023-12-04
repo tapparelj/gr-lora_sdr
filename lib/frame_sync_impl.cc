@@ -31,6 +31,7 @@ namespace gr
             m_center_freq = center_freq;
             m_bw = bandwidth;
             m_sf = sf;
+            
 
             m_sync_words = sync_word;
             m_os_factor = os_factor;
@@ -80,7 +81,8 @@ namespace gr
             k_hat = 0;
             preamb_up_vals.resize(m_n_up_req, 0);
             frame_cnt = 0;
-
+            cfg_gsv = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
+            
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             // register message ports
@@ -106,6 +108,8 @@ namespace gr
          */
         frame_sync_impl::~frame_sync_impl()
         {
+            free(cfg_gsv);
+
         }
         int frame_sync_impl::my_roundf(float number)
         {
@@ -319,28 +323,15 @@ namespace gr
             return sto_frac;
         }
 
+
+
         uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
         {
+            // update code not use kiss_fft_alloc every time
             double sig_en = 0;
             std::vector<float> fft_mag(m_number_of_bins);
             volk::vector<gr_complex> dechirped(m_number_of_bins);
-            // std::cout << "get_symbol_val" <<std::endl;
-            // std::cout << "m_number_of_bins" << m_number_of_bins <<std::endl;
-           
-            // kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
-           
-            // std::cout << "cfg " << cfg <<std::endl;
-            static kiss_fft_cfg cfg = nullptr;
 
-            // Check if cfg has been initialized
-            if (!cfg)
-            {
-                // Allocate memory for cfg only if it's not initialized
-                cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
-            }
-
-
-            // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
 
             for (uint32_t i = 0; i < m_number_of_bins; i++)
@@ -348,8 +339,9 @@ namespace gr
                 cx_in[i].r = dechirped[i].real();
                 cx_in[i].i = dechirped[i].imag();
             }
-            // do the FFT
-            kiss_fft(cfg, cx_in, cx_out);
+
+
+            kiss_fft(cfg_gsv, cx_in, cx_out);
 
             // Get magnitude
             for (uint32_t i = 0u; i < m_number_of_bins; i++)
@@ -357,10 +349,37 @@ namespace gr
                 fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
                 sig_en += fft_mag[i];
             }
-            //free(cfg);
-            // Return argmax here
 
+            // Return argmax here
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
+            // original code:
+            // double sig_en = 0;
+            // std::vector<float> fft_mag(m_number_of_bins);
+            // volk::vector<gr_complex> dechirped(m_number_of_bins);
+
+            // kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
+
+            // // Multiply with ideal downchirp
+            // volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
+
+            // for (uint32_t i = 0; i < m_number_of_bins; i++)
+            // {
+            //     cx_in[i].r = dechirped[i].real();
+            //     cx_in[i].i = dechirped[i].imag();
+            // }
+            // // do the FFT
+            // kiss_fft(cfg, cx_in, cx_out);
+
+            // // Get magnitude
+            // for (uint32_t i = 0u; i < m_number_of_bins; i++)
+            // {
+            //     fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
+            //     sig_en += fft_mag[i];
+            // }
+            // free(cfg);
+            // // Return argmax here
+
+            // return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
 
         float frame_sync_impl::determine_energy(const gr_complex *samples, int length = 1)
@@ -446,6 +465,7 @@ namespace gr
         {
             m_sf = sf;
             m_number_of_bins = (uint32_t)(1u << m_sf);
+
             m_samples_per_symbol = m_number_of_bins * m_os_factor;
             additional_symbol_samp.resize(2 * m_samples_per_symbol);
             m_upchirp.resize(m_number_of_bins);
@@ -460,6 +480,8 @@ namespace gr
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
+                
+            cfg_gsv = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             set_output_multiple(m_number_of_bins);
