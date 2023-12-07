@@ -20,7 +20,7 @@ namespace gr {
          */
         deinterleaver_impl::deinterleaver_impl( bool soft_decoding)
             : gr::block("deinterleaver",
-                        gr::io_signature::make(1, 1, soft_decoding ? MAX_SF * sizeof(LLR) : sizeof(uint16_t)),  // In reality: sf_app               < sf
+                        gr::io_signature::make(1, 1, soft_decoding ? MAX_SF * sizeof(LLR) : sizeof(uint16_t)),  // In reality: sf_app  < sf
                         gr::io_signature::make(1, 1, soft_decoding ? 8 * sizeof(LLR) : sizeof(uint8_t))),   // In reality: cw_len = cr_app + 4  < 8
               m_soft_decoding(soft_decoding)
                {
@@ -65,7 +65,7 @@ namespace gr {
                 add_item_tag(0, tags[0]);
 
             }
-            sf_app = (m_is_header||m_ldro) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block
+            sf_app = ((m_is_header && m_sf>=7)||m_ldro) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block for sf>=7
             cw_len = m_is_header ? 8 : m_cr + 4;
             // std::cout << "sf_app " << +sf_app << " cw_len " << +cw_len << std::endl;
 
@@ -114,7 +114,7 @@ namespace gr {
                         for (int j = 0; j < int(sf_app); j++) {
                             std::cout << inter_bin[i][j];
                         }
-                        std::cout << " " << (int)in1[i] << std::endl;
+                        std::cout <<std::hex<<"0x" << (int)in1[i+first_symbols_to_skip] <<std::dec<< std::endl;
                     }
                     std::cout << std::endl;
 #endif
@@ -146,7 +146,7 @@ namespace gr {
                     //     add_item_tag(0, nitems_written(0), pmt::string_to_symbol("header_len"), pmt::mp((long)sf_app));//sf_app is the header part size
 
                     // consume_each(cw_len);
-                }
+                }     
                 consume_each(cw_len);
 
                 if (noutput_items < sf_app)

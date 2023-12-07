@@ -795,6 +795,9 @@ namespace gr
 
                         m_received_head = false;
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
+                        if(m_sf < 7){//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
+                            items_to_consume+= 2*m_samples_per_symbol;
+                        }
                         symbol_cnt = one_symbol_off;
                         float snr_est2 = 0;
 
