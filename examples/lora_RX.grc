@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 88.0]
+    coordinate: [440, 92.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -121,7 +121,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false
@@ -133,7 +133,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'True'
+    value: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -231,6 +231,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     os_factor: int(samp_rate/bw)
+    preamb_len: '8'
     sf: sf
     show_log_port: 'False'
     sync_word: '18'
@@ -727,7 +728,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 148.0]
+    coordinate: [40, 164.0]
     rotation: 0
     state: enabled
 
@@ -744,4 +745,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.3.0
+  grc_version: v3.11.0.0git-604-gd7f88722

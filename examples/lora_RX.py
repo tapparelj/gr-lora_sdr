@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lora Rx
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import gr
 from gnuradio.filter import firdes
@@ -33,8 +33,8 @@ class lora_RX(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.soft_decoding = soft_decoding = True
-        self.sf = sf = 7
+        self.soft_decoding = soft_decoding = False
+        self.sf = sf = 5
         self.samp_rate = samp_rate = 500000
         self.pay_len = pay_len = 11
         self.impl_head = impl_head = False

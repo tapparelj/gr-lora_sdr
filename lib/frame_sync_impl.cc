@@ -796,7 +796,7 @@ namespace gr
                         m_received_head = false;
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
                         if(m_sf < 7){//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
-                            items_to_consume+= 2*m_samples_per_symbol;
+                            //TODO check if necessary for sf5/6 items_to_consume+= 2*m_samples_per_symbol;
                         }
                         symbol_cnt = one_symbol_off;
                         float snr_est2 = 0;
@@ -835,8 +835,8 @@ namespace gr
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
-
-                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
+            //TODO remove 20 (8)
+                if (symbol_cnt < 20 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
                 {
                     // output downsampled signal (with no STO but with CFO)
                     memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
