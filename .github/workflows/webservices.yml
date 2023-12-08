@@ -1,0 +1,13 @@
+on: repository_dispatch
+
+jobs:
+  webservices:
+    runs-on: ubuntu-latest
+    name: webservices
+    steps:
+      - name: webservices
+        id: webservices
+        uses: conda-forge/webservices-dispatch-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          rerendering_github_token: ${{ secrets.RERENDERING_GITHUB_TOKEN }}
