@@ -7,7 +7,7 @@ channel_targets:
 #gnuradio_core:
   #- "3.10.1"
 channel_sources:
-  - conda-forge
+  - https://conda.anaconda.org/conda-forge
 gnuradio_extra_pin:
   # always leave one entry with the empty string
   - ""
