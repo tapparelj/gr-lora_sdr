@@ -5,7 +5,7 @@ c_compiler:
 c_compiler_version:
 - '16'
 channel_sources:
-- https://conda.anaconda.org/conda-forge
+- conda-forge
 channel_targets:
 - tapparelj main
 cxx_compiler:
