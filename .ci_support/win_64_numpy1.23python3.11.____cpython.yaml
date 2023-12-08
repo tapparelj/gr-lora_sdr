@@ -1,7 +1,7 @@
 c_compiler:
 - vs2019
 channel_sources:
-- conda-forge
+- https://conda.anaconda.org/conda-forge
 channel_targets:
 - tapparelj main
 cxx_compiler:
