@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Simulation
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt
@@ -75,7 +75,7 @@ class tx_rx_simulation(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/jtappare/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/joachim/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
         self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
 

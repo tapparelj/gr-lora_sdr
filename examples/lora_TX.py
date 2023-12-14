@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lora Tx
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt
@@ -19,8 +19,7 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-from gnuradio import uhd
-import time
+from gnuradio import soapy
 import gnuradio.lora_sdr as lora_sdr
 
 
@@ -38,9 +37,9 @@ class lora_TX(gr.top_block):
         self.samp_rate = samp_rate = 250000
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
-        self.frame_period = frame_period = 1000
+        self.frame_period = frame_period = 5000
         self.cr = cr = 1
-        self.center_freq = center_freq = 868.1e6
+        self.center_freq = center_freq = 868.3e6
         self.bw = bw = 125000
         self.TX_gain = TX_gain = 0
 
@@ -48,22 +47,19 @@ class lora_TX(gr.top_block):
         # Blocks
         ##################################################
 
-        self.uhd_usrp_sink_0 = uhd.usrp_sink(
-            ",".join(("addr=192.168.10.5", '')),
-            uhd.stream_args(
-                cpu_format="fc32",
-                args='',
-                channels=list(range(0,1)),
-            ),
-            'frame_len',
-        )
-        self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
-        # No synchronization enforced.
+        self.soapy_limesdr_sink_0 = None
+        dev = 'driver=lime'
+        stream_args = ''
+        tune_args = ['']
+        settings = ['']
 
-        self.uhd_usrp_sink_0.set_center_freq(center_freq, 0)
-        self.uhd_usrp_sink_0.set_antenna('TX/RX', 0)
-        self.uhd_usrp_sink_0.set_bandwidth(bw, 0)
-        self.uhd_usrp_sink_0.set_gain(TX_gain, 0)
+        self.soapy_limesdr_sink_0 = soapy.sink(dev, "fc32", 1, '',
+                                  stream_args, tune_args, settings)
+        self.soapy_limesdr_sink_0.set_sample_rate(0, samp_rate)
+        self.soapy_limesdr_sink_0.set_bandwidth(0, 0.0)
+        self.soapy_limesdr_sink_0.set_frequency(0, center_freq)
+        self.soapy_limesdr_sink_0.set_frequency_correction(0, 0)
+        self.soapy_limesdr_sink_0.set_gain(0, min(max(20.0, -12.0), 64.0))
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False,False,',','packet_len')
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16], (int(20*2**sf*samp_rate/bw)),8)
@@ -87,7 +83,7 @@ class lora_TX(gr.top_block):
         self.connect((self.lora_sdr_hamming_enc_0, 0), (self.lora_sdr_interleaver_0, 0))
         self.connect((self.lora_sdr_header_0, 0), (self.lora_sdr_add_crc_0, 0))
         self.connect((self.lora_sdr_interleaver_0, 0), (self.lora_sdr_gray_demap_0, 0))
-        self.connect((self.lora_sdr_modulate_0, 0), (self.uhd_usrp_sink_0, 0))
+        self.connect((self.lora_sdr_modulate_0, 0), (self.soapy_limesdr_sink_0, 0))
         self.connect((self.lora_sdr_whitening_0, 0), (self.lora_sdr_header_0, 0))
 
 
@@ -106,7 +102,7 @@ class lora_TX(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.uhd_usrp_sink_0.set_samp_rate(self.samp_rate)
+        self.soapy_limesdr_sink_0.set_sample_rate(0, self.samp_rate)
 
     def get_impl_head(self):
         return self.impl_head
@@ -141,21 +137,19 @@ class lora_TX(gr.top_block):
 
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
-        self.uhd_usrp_sink_0.set_center_freq(self.center_freq, 0)
+        self.soapy_limesdr_sink_0.set_frequency(0, self.center_freq)
 
     def get_bw(self):
         return self.bw
 
     def set_bw(self, bw):
         self.bw = bw
-        self.uhd_usrp_sink_0.set_bandwidth(self.bw, 0)
 
     def get_TX_gain(self):
         return self.TX_gain
 
     def set_TX_gain(self, TX_gain):
         self.TX_gain = TX_gain
-        self.uhd_usrp_sink_0.set_gain(self.TX_gain, 0)
 
 
 

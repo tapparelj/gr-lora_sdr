@@ -143,6 +143,7 @@ namespace gr
                     bool c2 = (in[0] & 0b0100) >> 2 ^ (in[1] & 0b1000) >> 3 ^ (in[1] & 0b0001) ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0010) >> 1;
                     bool c1 = (in[0] & 0b0010) >> 1 ^ (in[1] & 0b0100) >> 2 ^ (in[1] & 0b0001) ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
                     bool c0 = (in[0] & 0b0001) ^ (in[1] & 0b0010) >> 1 ^ (in[2] & 0b1000) >> 3 ^ (in[2] & 0b0100) >> 2 ^ (in[2] & 0b0010) >> 1 ^ (in[2] & 0b0001);
+
                     if(m_print_header){
                         std::cout << "\n--------Header--------" << std::endl;
                         std::cout << "Payload length: " << (int)m_payload_len << std::endl;
@@ -159,14 +160,14 @@ namespace gr
                         // message_port_pub(pmt::intern("err"),pmt::mp(true));
                         head_err = 1;
                         noutput_items = 0;
+#ifdef GRLORA_DEBUG
+                        std::cout << "received checksum " << (int)header_chk << std::endl;
+                        std::cout << "instead of " << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0 << std::endl;
+#endif
                     }
                     else
                     {
                         if(m_print_header) std::cout << "Header checksum valid!" << std::endl<< std::endl;
-#ifdef GRLORA_DEBUG
-                        std::cout << "should have " << (int)header_chk << std::endl;
-                        std::cout << "got: " << (int)(c4 << 4) + (c3 << 3) + (c2 << 2) + (c1 << 1) + c0 << std::endl;
-#endif
                         noutput_items = nitem_to_process - header_len;
                     }
                     publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro_mode, head_err);

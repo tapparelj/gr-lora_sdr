@@ -295,6 +295,28 @@ blocks:
     coordinate: [1104, 200.0]
     rotation: 0
     state: enabled
+- name: soapy_limesdr_source_0
+  id: soapy_limesdr_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '0.0'
+    center_freq: center_freq
+    comment: ''
+    dev_args: ''
+    freq_correction: '0'
+    gain: '20.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fc32
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [72, 364.0]
+    rotation: 0
+    state: enabled
 - name: uhd_usrp_source_0
   id: uhd_usrp_source
   parameters:
@@ -730,7 +752,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 164.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
@@ -741,6 +763,7 @@ connections:
 - [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
+- [soapy_limesdr_source_0, '0', lora_sdr_frame_sync_0, '0']
 - [uhd_usrp_source_0, '0', lora_sdr_frame_sync_0, '0']
 
 metadata:

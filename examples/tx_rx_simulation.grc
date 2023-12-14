@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 104.0]
+    coordinate: [496, 108.0]
     rotation: 0
     state: enabled
 - name: bw
@@ -54,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 104.0]
+    coordinate: [176, 108.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -78,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 104.0]
+    coordinate: [400, 108.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -92,7 +92,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 104.0]
+    coordinate: [320, 108.0]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -152,7 +152,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [560, 104.0]
+    coordinate: [584, 108.0]
     rotation: 0
     state: true
 - name: samp_rate
@@ -176,7 +176,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 104.0]
+    coordinate: [256, 108.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
@@ -198,7 +198,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/jtappare/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt
+    file: /home/joachim/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -544,4 +544,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.5.1
+  grc_version: v3.11.0.0git-604-gd7f88722

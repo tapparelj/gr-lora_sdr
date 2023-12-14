@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Functionality Check
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt
@@ -42,7 +42,7 @@ class tx_rx_functionality_check(gr.top_block):
         self.pay_len = pay_len = 255
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
-        self.cr = cr = 0
+        self.cr = cr = 1
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
         self.SNRdB = SNRdB = -5
@@ -52,7 +52,6 @@ class tx_rx_functionality_check(gr.top_block):
         ##################################################
 
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False,True,',','packet_len')
-        self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word], (int(20*2**sf*samp_rate/bw)),preamb_len)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 2, bw)
@@ -77,21 +76,21 @@ class tx_rx_functionality_check(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int((2**sf+2)*samp_rate/bw)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
+        self.blocks_probe_signal_vx_0 = blocks.probe_signal_vb(1)
+        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello World!"), 2000)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, (int(2**sf*samp_rate/bw*10.1)))
 
 
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
         self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_whitening_0, 'msg'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
-        self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0_0, 'set_msg'))
         self.connect((self.blocks_delay_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_sync_0, 0))
         self.connect((self.lora_sdr_add_crc_0, 0), (self.lora_sdr_hamming_enc_0, 0))
+        self.connect((self.lora_sdr_crc_verif_0, 0), (self.blocks_probe_signal_vx_0, 0))
         self.connect((self.lora_sdr_deinterleaver_0, 0), (self.lora_sdr_hamming_dec_0, 0))
         self.connect((self.lora_sdr_dewhitening_0, 0), (self.lora_sdr_crc_verif_0, 0))
         self.connect((self.lora_sdr_fft_demod_0, 0), (self.lora_sdr_gray_mapping_0, 0))

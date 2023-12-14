@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Hier Functionality Check
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt
@@ -59,7 +59,6 @@ class tx_rx_hier_functionality_check(gr.top_block):
             samp_rate=500000,
             sf=7,
          ldro_mode=2,frame_zero_padd=1280 )
-        self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, soft_decoding=True, ldro_mode=2, print_rx=[True,True])
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
@@ -70,15 +69,13 @@ class tx_rx_hier_functionality_check(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int((2**sf+2)*samp_rate/bw)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
+        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world!"), 2000)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
         self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_tx_0, 'in'))
-        self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0_0, 'set_msg'))
         self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_rx_0, 0))
         self.connect((self.lora_tx_0, 0), (self.blocks_throttle_0, 0))

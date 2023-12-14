@@ -61,7 +61,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 868.1e6
+    value: 868.3e6
   states:
     bus_sink: false
     bus_source: false
@@ -85,7 +85,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1000'
+    value: '5000'
   states:
     bus_sink: false
     bus_source: false
@@ -299,6 +299,26 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [296, 200.0]
+    rotation: 0
+    state: enabled
+- name: soapy_limesdr_sink_0
+  id: soapy_limesdr_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '0.0'
+    center_freq: center_freq
+    comment: ''
+    dev_args: ''
+    freq_correction: '0'
+    gain: '20.0'
+    samp_rate: samp_rate
+    type: fc32
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1392, 312.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_sink_0
@@ -577,7 +597,7 @@ blocks:
     bus_structure: null
     coordinate: [1376, 124.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [blocks_message_strobe_0, strobe, lora_sdr_payload_id_inc_0, msg_in]
@@ -587,10 +607,11 @@ connections:
 - [lora_sdr_hamming_enc_0, '0', lora_sdr_interleaver_0, '0']
 - [lora_sdr_header_0, '0', lora_sdr_add_crc_0, '0']
 - [lora_sdr_interleaver_0, '0', lora_sdr_gray_demap_0, '0']
+- [lora_sdr_modulate_0, '0', soapy_limesdr_sink_0, '0']
 - [lora_sdr_modulate_0, '0', uhd_usrp_sink_0, '0']
 - [lora_sdr_payload_id_inc_0, msg_out, blocks_message_strobe_0, set_msg]
 - [lora_sdr_whitening_0, '0', lora_sdr_header_0, '0']
 
 metadata:
   file_format: 1
-  grc_version: 3.10.5.1
+  grc_version: v3.11.0.0git-604-gd7f88722

@@ -84,7 +84,7 @@ namespace gr
 #ifdef GRLORA_DEBUG
         std::cout << std::hex << (int)in_data[i] << "   ";
 #endif
-        uint8_t cr_app = (m_cnt < m_sf - 2) ? 4 : m_cr;
+        uint8_t cr_app = (m_cnt < m_sf - (m_sf<7?0:2)) ? 4 : m_cr;//for sf<7 we don'tuse the ldro
         data_bin = int2bool(in_data[i], 4);
 
         //the data_bin is msb first

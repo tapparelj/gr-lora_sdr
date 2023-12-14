@@ -2,7 +2,7 @@
 #define INCLUDED_LORA_HAMMING_ENC_IMPL_H
 
 #include <gnuradio/lora_sdr/hamming_enc.h>
-
+// #define GRLORA_DEBUG
 namespace gr {
   namespace lora_sdr {
 

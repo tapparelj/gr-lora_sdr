@@ -29,7 +29,7 @@ namespace gr
       m_cr = cr;
       m_bw = bw;
       if (ldro == AUTO)
-        m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+        m_ldro = (float)(1u << sf) * 1e3 / bw > LDRO_MAX_DURATION_MS;
       else
         m_ldro = ldro;
 
@@ -38,17 +38,20 @@ namespace gr
       set_tag_propagation_policy(TPP_DONT);
     }
 
-    void interleaver_impl::set_cr(uint8_t cr){
+    void interleaver_impl::set_cr(uint8_t cr)
+    {
       m_cr = cr;
-    } 
+    }
 
-    void interleaver_impl::set_sf(uint8_t sf){
+    void interleaver_impl::set_sf(uint8_t sf)
+    {
       m_sf = sf;
-    } 
+    }
 
-    uint8_t interleaver_impl::get_cr(){
+    uint8_t interleaver_impl::get_cr()
+    {
       return m_cr;
-    } 
+    }
 
     /*
      * Our virtual destructor.
@@ -82,44 +85,53 @@ namespace gr
           nitems_to_process = tags[0].offset - nitems_read(0);
         else
         {
-          if (tags.size() >= 2){
+          if (tags.size() >= 2)
+          {
             nitems_to_process = tags[1].offset - tags[0].offset;
           }
           cw_cnt = 0;
           m_frame_len = pmt::to_long(tags[0].value);
-          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
-          tags[0].offset = nitems_written(0); 
+          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
+          tags[0].offset = nitems_written(0);
         }
       }
-
-      
-
       // nitems_to_process = std::min(nitems_to_process)
       // handle the first interleaved block special case
-      uint8_t cw_len = 4 + (((int)cw_cnt < m_sf - 2) ? 4 : m_cr);
-      uint8_t sf_app = (((int)cw_cnt < m_sf - 2) ||m_ldro) ? m_sf - 2 : m_sf;
+      uint8_t cw_len;
+      bool use_ldro;
+      if (m_sf >= 7)
+      {
+        cw_len = 4 + (((int)cw_cnt < m_sf - 2) ? 4 : m_cr);
+        use_ldro = (((int)cw_cnt < m_sf - 2) || m_ldro);// header or ldro activated for payload
+      }
+      else //sf == 5 or sf ==6 don't use LDRO in header
+      {
+        cw_len = 4 + (((int)cw_cnt < m_sf) ? 4 : m_cr);
+        use_ldro = ((int)cw_cnt > m_sf) && m_ldro; // not header and ldro activated for payload
+      }
+      uint8_t sf_app = use_ldro ? m_sf - 2 : m_sf;
 
-      nitems_to_process = std::min(nitems_to_process,(int)sf_app);
-      if(std::floor((float)noutput_items/cw_len)==0)
+      nitems_to_process = std::min(nitems_to_process, (int)sf_app);
+      if (std::floor((float)noutput_items / cw_len) == 0)
       {
         return 0;
       }
 
       if (nitems_to_process >= sf_app || cw_cnt + nitems_to_process == (uint32_t)m_frame_len)
-      {        
-        //propagate tag
-        if(!cw_cnt)
+      {
+        // propagate tag
+        if (!cw_cnt)
           add_item_tag(0, tags[0]);
 
-        //Create the empty matrices
+        // Create the empty matrices
         std::vector<std::vector<bool>> cw_bin(sf_app);
         std::vector<bool> init_bit(m_sf, 0);
         std::vector<std::vector<bool>> inter_bin(cw_len, init_bit);
 
-        //convert to input codewords to binary vector of vector
+        // convert to input codewords to binary vector of vector
         for (int i = 0; i < sf_app; i++)
         {
-          if (i >= nitems_to_process)//ninput_items[0])
+          if (i >= nitems_to_process) // ninput_items[0])
             cw_bin[i] = int2bool(0, cw_len);
           else
             cw_bin[i] = int2bool(in[i], cw_len);
@@ -138,15 +150,15 @@ namespace gr
         }
         std::cout << std::endl;
 #endif
-        //Do the actual interleaving
+        // Do the actual interleaving
         for (int32_t i = 0; i < cw_len; i++)
         {
           for (int32_t j = 0; j < int(sf_app); j++)
           {
             inter_bin[i][j] = cw_bin[mod((i - j - 1), sf_app)][i];
           }
-          //For the first bloc we add a parity bit and a zero in the end of the lora symbol(reduced rate)
-          if (((int)cw_cnt == m_sf - 2)||m_ldro)
+          // For the first bloc we add a parity bit and a zero in the end of the lora symbol(reduced rate)
+          if (use_ldro)
             inter_bin[i][sf_app] = accumulate(inter_bin[i].begin(), inter_bin[i].end(), 0) % 2;
 
           out[i] = bool2int(inter_bin[i]);
