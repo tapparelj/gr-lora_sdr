@@ -239,7 +239,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     output_crc_check: 'False'
-    print_rx_msg: 'True'
+    print_rx_msg: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -1236,4 +1236,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.5.1
+  grc_version: v3.11.0.0git-604-gd7f88722

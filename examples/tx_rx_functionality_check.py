@@ -65,7 +65,7 @@ class tx_rx_functionality_check(gr.top_block):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( 1, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
