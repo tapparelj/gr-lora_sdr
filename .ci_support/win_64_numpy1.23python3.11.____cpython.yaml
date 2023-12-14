@@ -7,7 +7,7 @@ channel_targets:
 cxx_compiler:
 - vs2019
 gnuradio_core:
-- 3.10.8
+- 3.10.6
 gnuradio_extra_pin:
 - ''
 numpy:

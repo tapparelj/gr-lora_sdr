@@ -7,7 +7,7 @@ cdt_name:
 channel_sources:
 - conda-forge
 channel_targets:
-- 3.10.6
+- tapparelj main
 cxx_compiler:
 - gxx
 cxx_compiler_version:
@@ -17,17 +17,17 @@ docker_image:
 gmp:
 - '6'
 gnuradio_core:
-- 3.10.8
+- 3.10.6
 gnuradio_extra_pin:
 - ''
 numpy:
-- '1.22'
+- '1.23'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.10.* *_cpython
+- 3.11.* *_cpython
 target_platform:
 - linux-64
 volk:
