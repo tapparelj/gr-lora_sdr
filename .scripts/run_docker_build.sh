@@ -91,6 +91,9 @@ docker run ${DOCKER_RUN_ARGS} \
            -e CPU_COUNT \
            -e BUILD_WITH_CONDA_DEBUG \
            -e BUILD_OUTPUT_ID \
+           -e flow_run_id \
+           -e remote_url \
+           -e sha \
            -e BINSTAR_TOKEN \
            "${DOCKER_IMAGE}" \
            bash \
