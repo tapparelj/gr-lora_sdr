@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Tx Rx Usrp
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt
@@ -98,7 +98,7 @@ class tx_rx_usrp(gr.top_block):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, False)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( 1, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_cc(10**((Att_dB)/20))
         self.blocks_multiply_const_vxx_0.set_min_output_buffer(10000000)

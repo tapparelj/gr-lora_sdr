@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: >-
+  A fully-functional GNU Radio software-defined radio
+  implementation of a LoRa transceiver
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Joachim
+    family-names: Tapparel
+    orcid: 'https://orcid.org/0000-0002-0154-9738'
+    affiliation: École Polytechnique Fédérale de Lausanne
+repository-code: 'https://github.com/tapparelj/gr-lora_sdr'
+abstract: >-
+  This is the fully-functional GNU Radio software-defined
+  radio (SDR) implementation of a LoRa transceiver with all
+  the necessary receiver components to operate correctly
+  even at very low SNRs. This work has been conducted at the
+  Telecommunication Circuits Laboratory, EPFL. 
+license: GPL-3.0+
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Joachim"
+    given-names: "Tapparel"
+    orcid: "https://orcid.org/0000-0002-0154-9738"
+  - family-names: "Afisiadis"
+    given-names: "Orion"
+    orcid: "https://orcid.org/0000-0002-5287-9681"
+  - family-names: "Mayoraz"
+    given-names: "Paul"
+  - family-names: "Balatsoukas-Stimming"
+    given-names: "Alexios"
+    orcid: "https://orcid.org/0000-0002-6721-4666"
+  - family-names: "Burg"
+    given-names: "Andreas"
+    orcid: "https://orcid.org/0000-0002-7270-5558"
+  doi: "10.1109/SPAWC48557.2020.9154273"
+  journal: "2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC)"
+  month: 5
+  start: 1
+  end: 5
+  title: "An Open-Source LoRa Physical Layer Prototype on GNU Radio"
+  year: 2020

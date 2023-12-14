@@ -199,6 +199,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_ports: '1'
+    showports: 'False'
     type: complex
     vlen: '1'
   states:
@@ -241,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1576, 252.0]
+    coordinate: [1584, 244.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -290,12 +291,12 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     output_crc_check: 'False'
-    print_rx_msg: 'True'
+    print_rx_msg: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [256, 424.0]
+    coordinate: [248, 424.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -575,4 +576,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.5.1
+  grc_version: v3.11.0.0git-604-gd7f88722

@@ -1,3 +1,6 @@
+# v0.5.7
+- Add optional print of received payload as hex values
+- Update conda-smithy configuration 
 # v0.5.6
 - Added tagged stream input support (for frame definition of frame length)
 - Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 
