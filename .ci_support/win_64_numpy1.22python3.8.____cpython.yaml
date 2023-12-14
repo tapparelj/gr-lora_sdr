@@ -1,5 +1,3 @@
-boost:
-- 1.78.0
 c_compiler:
 - vs2019
 channel_sources:
@@ -15,8 +13,6 @@ gnuradio_extra_pin:
 numpy:
 - '1.22'
 pin_run_as_build:
-  boost:
-    max_pin: x.x.x
   python:
     min_pin: x.x
     max_pin: x.x
