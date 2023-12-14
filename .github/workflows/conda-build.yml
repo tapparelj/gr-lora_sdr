@@ -23,67 +23,131 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - CONFIG: linux_64_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: linux_64_numpy1.22python3.10.____cpython
+          - CONFIG: linux_64_channel_targets3.10.6numpy1.22python3.10.____cpython
+            SHORT_CONFIG: linux_64_channel_targets3.10.6numpy_he956f42b89
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: linux_64_numpy1.22python3.8.____cpython
+          - CONFIG: linux_64_channel_targets3.10.6numpy1.22python3.8.____cpython
+            SHORT_CONFIG: linux_64_channel_targets3.10.6numpy_h9b11ae3867
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_64_numpy1.22python3.9.____cpython
-            SHORT_CONFIG: linux_64_numpy1.22python3.9.____cpython
+          - CONFIG: linux_64_channel_targets3.10.6numpy1.22python3.9.____cpython
+            SHORT_CONFIG: linux_64_channel_targets3.10.6numpy_hbc4d47fe27
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_64_numpy1.23python3.11.____cpython
-            SHORT_CONFIG: linux_64_numpy1.23python3.11.____cpython
+          - CONFIG: linux_64_channel_targets3.10.6numpy1.23python3.11.____cpython
+            SHORT_CONFIG: linux_64_channel_targets3.10.6numpy_h0c07bf2690
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: win_64_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: win_64_numpy1.22python3.10.____cpython
+          - CONFIG: linux_64_channel_targetstapparelj_mainnumpy1.22python3.10.____cpython
+            SHORT_CONFIG: linux_64_channel_targetstapparelj_m_hb91f03818c
+            UPLOAD_PACKAGES: True
+            os: ubuntu
+            runs_on: ['ubuntu-latest']
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_64_channel_targetstapparelj_mainnumpy1.22python3.8.____cpython
+            SHORT_CONFIG: linux_64_channel_targetstapparelj_m_h31c66b1727
+            UPLOAD_PACKAGES: True
+            os: ubuntu
+            runs_on: ['ubuntu-latest']
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_64_channel_targetstapparelj_mainnumpy1.22python3.9.____cpython
+            SHORT_CONFIG: linux_64_channel_targetstapparelj_m_h3a07ff3f95
+            UPLOAD_PACKAGES: True
+            os: ubuntu
+            runs_on: ['ubuntu-latest']
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_64_channel_targetstapparelj_mainnumpy1.23python3.11.____cpython
+            SHORT_CONFIG: linux_64_channel_targetstapparelj_m_hc4e36d5814
+            UPLOAD_PACKAGES: True
+            os: ubuntu
+            runs_on: ['ubuntu-latest']
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: win_64_channel_targets3.10.6numpy1.22python3.10.____cpython
+            SHORT_CONFIG: win_64_channel_targets3.10.6numpy1._hdbf08cfcbf
             UPLOAD_PACKAGES: True
             os: windows
             runs_on: ['windows-latest']
-          - CONFIG: win_64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: win_64_numpy1.22python3.8.____cpython
+          - CONFIG: win_64_channel_targets3.10.6numpy1.22python3.8.____cpython
+            SHORT_CONFIG: win_64_channel_targets3.10.6numpy1._hedf256bfc6
             UPLOAD_PACKAGES: True
             os: windows
             runs_on: ['windows-latest']
-          - CONFIG: win_64_numpy1.22python3.9.____cpython
-            SHORT_CONFIG: win_64_numpy1.22python3.9.____cpython
+          - CONFIG: win_64_channel_targets3.10.6numpy1.22python3.9.____cpython
+            SHORT_CONFIG: win_64_channel_targets3.10.6numpy1._h913ba3d896
             UPLOAD_PACKAGES: True
             os: windows
             runs_on: ['windows-latest']
-          - CONFIG: win_64_numpy1.23python3.11.____cpython
-            SHORT_CONFIG: win_64_numpy1.23python3.11.____cpython
+          - CONFIG: win_64_channel_targets3.10.6numpy1.23python3.11.____cpython
+            SHORT_CONFIG: win_64_channel_targets3.10.6numpy1._h6b9f83b1ba
             UPLOAD_PACKAGES: True
             os: windows
             runs_on: ['windows-latest']
-          - CONFIG: osx_64_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: osx_64_numpy1.22python3.10.____cpython
+          - CONFIG: win_64_channel_targetstapparelj_mainnumpy1.22python3.10.____cpython
+            SHORT_CONFIG: win_64_channel_targetstapparelj_mai_h4ec09e1f4b
+            UPLOAD_PACKAGES: True
+            os: windows
+            runs_on: ['windows-latest']
+          - CONFIG: win_64_channel_targetstapparelj_mainnumpy1.22python3.8.____cpython
+            SHORT_CONFIG: win_64_channel_targetstapparelj_mai_h86dc1c0d92
+            UPLOAD_PACKAGES: True
+            os: windows
+            runs_on: ['windows-latest']
+          - CONFIG: win_64_channel_targetstapparelj_mainnumpy1.22python3.9.____cpython
+            SHORT_CONFIG: win_64_channel_targetstapparelj_mai_h654f67407c
+            UPLOAD_PACKAGES: True
+            os: windows
+            runs_on: ['windows-latest']
+          - CONFIG: win_64_channel_targetstapparelj_mainnumpy1.23python3.11.____cpython
+            SHORT_CONFIG: win_64_channel_targetstapparelj_mai_h3b63bdb8a8
+            UPLOAD_PACKAGES: True
+            os: windows
+            runs_on: ['windows-latest']
+          - CONFIG: osx_64_channel_targets3.10.6numpy1.22python3.10.____cpython
+            SHORT_CONFIG: osx_64_channel_targets3.10.6numpy1._h89f0e7a878
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-latest']
-          - CONFIG: osx_64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: osx_64_numpy1.22python3.8.____cpython
+          - CONFIG: osx_64_channel_targets3.10.6numpy1.22python3.8.____cpython
+            SHORT_CONFIG: osx_64_channel_targets3.10.6numpy1._h15b6df557a
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-latest']
-          - CONFIG: osx_64_numpy1.22python3.9.____cpython
-            SHORT_CONFIG: osx_64_numpy1.22python3.9.____cpython
+          - CONFIG: osx_64_channel_targets3.10.6numpy1.22python3.9.____cpython
+            SHORT_CONFIG: osx_64_channel_targets3.10.6numpy1._hf40b3ea01d
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-latest']
-          - CONFIG: osx_64_numpy1.23python3.11.____cpython
-            SHORT_CONFIG: osx_64_numpy1.23python3.11.____cpython
+          - CONFIG: osx_64_channel_targets3.10.6numpy1.23python3.11.____cpython
+            SHORT_CONFIG: osx_64_channel_targets3.10.6numpy1._hbd89b0f4af
+            UPLOAD_PACKAGES: True
+            os: macos
+            runs_on: ['macos-latest']
+          - CONFIG: osx_64_channel_targetstapparelj_mainnumpy1.22python3.10.____cpython
+            SHORT_CONFIG: osx_64_channel_targetstapparelj_mai_he64de0899f
+            UPLOAD_PACKAGES: True
+            os: macos
+            runs_on: ['macos-latest']
+          - CONFIG: osx_64_channel_targetstapparelj_mainnumpy1.22python3.8.____cpython
+            SHORT_CONFIG: osx_64_channel_targetstapparelj_mai_hbf7f721cb9
+            UPLOAD_PACKAGES: True
+            os: macos
+            runs_on: ['macos-latest']
+          - CONFIG: osx_64_channel_targetstapparelj_mainnumpy1.22python3.9.____cpython
+            SHORT_CONFIG: osx_64_channel_targetstapparelj_mai_h63461b9e06
+            UPLOAD_PACKAGES: True
+            os: macos
+            runs_on: ['macos-latest']
+          - CONFIG: osx_64_channel_targetstapparelj_mainnumpy1.23python3.11.____cpython
+            SHORT_CONFIG: osx_64_channel_targetstapparelj_mai_h919e83bedd
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-latest']
