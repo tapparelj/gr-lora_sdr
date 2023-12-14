@@ -34,6 +34,8 @@ requirements:
     - numpy                               # [build_platform != target_platform]
     - pybind11                            # [build_platform != target_platform]
     # Add extra build tool dependencies here
+    - boost-cpp=1.78.0
+    - volk=3.0.0
 
   host:
     - gmp  # [linux]
@@ -46,11 +48,15 @@ requirements:
     - numpy
     - volk
     # Add/remove library dependencies here
+    - boost-cpp=1.78.0
+    - volk=3.0.0
 
   run:
     - numpy
     - python
     # Add/remove runtime dependencies here
+    - boost-cpp=1.78.0
+    - volk=3.0.0
 
 test:
   requires:
