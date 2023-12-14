@@ -31,7 +31,7 @@ python:
 target_platform:
 - linux-64
 volk:
-- '3.0'
+- '3.1'
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
