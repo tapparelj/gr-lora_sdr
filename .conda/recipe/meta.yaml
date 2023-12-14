@@ -25,7 +25,6 @@ requirements:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - cmake
-    - boost
     - git
     - ninja
     - pkg-config
@@ -35,6 +34,7 @@ requirements:
     - numpy                               # [build_platform != target_platform]
     - pybind11                            # [build_platform != target_platform]
     # Add extra build tool dependencies here
+    - boost-cpp=1.74.0
 
   host:
     - gmp  # [linux]
@@ -46,14 +46,14 @@ requirements:
     - python
     - numpy
     - volk
-    - boost
     # Add/remove library dependencies here
+    - boost-cpp=1.74.0
 
   run:
     - numpy
     - python
-    - boost
     # Add/remove runtime dependencies here
+    - boost-cpp=1.74.0
 
 test:
   requires:
