@@ -46,7 +46,6 @@ requirements:
     - pybind11
     - python
     - numpy
-    - volk
     # Add/remove library dependencies here
     - boost-cpp=1.78.0
     - volk=3.0.0
