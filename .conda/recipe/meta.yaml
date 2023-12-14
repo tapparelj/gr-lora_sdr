@@ -25,6 +25,7 @@ requirements:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - cmake
+    - boost
     - git
     - ninja
     - pkg-config
@@ -45,11 +46,13 @@ requirements:
     - python
     - numpy
     - volk
+    - boost
     # Add/remove library dependencies here
 
   run:
     - numpy
     - python
+    - boost
     # Add/remove runtime dependencies here
 
 test:
