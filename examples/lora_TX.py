@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lora Tx
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import blocks
 import pmt

@@ -36,6 +36,11 @@ namespace gr {
     class LORA_SDR_API crc_verif : virtual public gr::block
     {
      public:
+     enum Print_type{
+      NONE,
+      ASCII,
+      HEX
+     };
       typedef std::shared_ptr<crc_verif> sptr;
 
       /*!
@@ -46,7 +51,7 @@ namespace gr {
        * class. lora_sdr::crc_verif::make is the public interface for
        * creating new instances.
        */
-      static sptr make(bool print_rx_msg, bool output_crc_check);
+      static sptr make(int print_rx_msg, bool output_crc_check);
     };
 
   } // namespace lora_sdr

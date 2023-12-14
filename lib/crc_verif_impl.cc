@@ -7,6 +7,7 @@
 #include "crc_verif_impl.h"
 
 #include <gnuradio/lora_sdr/utilities.h> // for print color
+#include "gnuradio/lora_sdr/crc_verif.h"
 
 namespace gr
 {
@@ -14,7 +15,7 @@ namespace gr
     {
 
         crc_verif::sptr
-        crc_verif::make(bool print_rx_msg, bool output_crc_check)
+        crc_verif::make(int print_rx_msg, bool output_crc_check)
         {
             return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg, output_crc_check));
         }
@@ -22,15 +23,16 @@ namespace gr
         /*
          * The private constructor
          */
-        crc_verif_impl::crc_verif_impl(bool print_rx_msg, bool output_crc_check)
+        crc_verif_impl::crc_verif_impl(int print_rx_msg, bool output_crc_check)
             : gr::block("crc_verif",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
                         gr::io_signature::make2(0, 2, sizeof(uint8_t), sizeof(uint8_t))),
-              print_rx_msg(print_rx_msg),
+                        print_rx_msg(print_rx_msg),
                   output_crc_check(output_crc_check)
         {
             message_port_register_out(pmt::mp("msg"));
             set_tag_propagation_policy(TPP_DONT);
+            
         }
 
         /*
@@ -151,11 +153,19 @@ namespace gr
 		                curent_tag.offset = nitems_written(0);
 		                add_item_tag(0, curent_tag);
                     }
-
-                    if (print_rx_msg)
+                    if (print_rx_msg != NONE)
                     {
-                        std::cout << "rx msg: " << message_str << std::endl
-                                  << std::endl;
+                        if(print_rx_msg == ASCII)
+                            std::cout << "rx msg: " << message_str << std::endl;                        
+                        else if(print_rx_msg == HEX){
+                            std::cout << "rx msg: ";
+                            for (int i = 0; i < (int)m_payload_len; i++){
+                                std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
+                                if(i != (int)m_payload_len-1)
+                                    std::cout << ", ";
+                            }
+                            std::cout << std::endl;
+                        }
 
                         if (crc_valid)
                             std::cout << "CRC valid!" << std::endl
@@ -191,8 +201,17 @@ namespace gr
                 }
                 cnt++;
                 in_buff.erase(in_buff.begin(), in_buff.begin() + m_payload_len );
-                if (print_rx_msg)
+                if (print_rx_msg == ASCII)
                     std::cout << "rx msg: " << message_str << std::endl;
+                else if(print_rx_msg == HEX){
+                    std::cout << "rx msg: ";
+                    for (int i = 0; i < (int)m_payload_len; i++){
+                        std::cout << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                        if(i != (int)m_payload_len-1)
+                            std::cout << ", ";
+                    }
+                    std::cout << std::endl;
+                }
                 message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
                 
                 return m_payload_len;

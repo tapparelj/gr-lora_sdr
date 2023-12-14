@@ -8,15 +8,15 @@ parameters:
 -   id: print_rx_msg
     label: print_rx_msg
     dtype: enum
-    options: ['False', 'True']
-    option_labels: ['No', 'Yes']
+    options: [0, 1, 2]
+    option_labels: ['None', 'ASCII', 'Hex']
+    default: 1
 -   id: output_crc_check
     label: output_crc_check
     dtype: enum
     options: ['False', 'True']
     option_labels: ['No', 'Yes']
     default: 'False'
-
 
 inputs:
 -   domain: stream
@@ -42,7 +42,7 @@ documentation: |-
     Calculate the CRC of the received data and compare it with the received CRC.
       Parameters:
         rx_log: filename where to store the received messages and their timestamp, put "" for no log. "Walltime,payload\n"
-        print_rx_msg: Print or not the received message.
+        print_rx_msg: Print the received message in the terminal with the specified format. 0: None, 1: ASCII, 2: Hex
         output_crc_check: Ouput a stream of bytes containing either 0 or 1 based on the CRC check. If enabled, both stream output must be connected.
       Input:
         in: stream of payload bytes

@@ -18,7 +18,7 @@ namespace gr {
         char m_char;///< A new char of the payload
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
-        bool print_rx_msg;  ///< print received message in terminal or not
+        int print_rx_msg;  ///< print received message in terminal. 0: no print, 1: ASCII, 2: HEX
         bool output_crc_check; ///< output the result of the payload CRC check
         tag_t curent_tag; ///< the most recent tag for the packet we are currently processing
         
@@ -44,7 +44,7 @@ namespace gr {
         unsigned int crc16(uint8_t* data, uint32_t len);
 
      public:
-      crc_verif_impl(bool print_rx_msg, bool output_crc_check);
+      crc_verif_impl(int print_rx_msg, bool output_crc_check);
       ~crc_verif_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

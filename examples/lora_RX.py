@@ -7,7 +7,7 @@
 # GNU Radio Python Flow Graph
 # Title: Lora Rx
 # Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.5.1
+# GNU Radio version: v3.11.0.0git-604-gd7f88722
 
 from gnuradio import gr
 from gnuradio.filter import firdes
@@ -69,7 +69,7 @@ class lora_RX(gr.top_block):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( 1, False)
 
 
         ##################################################
