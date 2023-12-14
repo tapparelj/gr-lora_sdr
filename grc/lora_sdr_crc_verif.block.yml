@@ -8,7 +8,7 @@ parameters:
 -   id: print_rx_msg
     label: print_rx_msg
     dtype: enum
-    options: [0, 1, 2]
+    options: ['0', '1', '2']
     option_labels: ['None', 'ASCII', 'Hex']
     default: 1
 -   id: output_crc_check
