@@ -21,7 +21,7 @@ gnuradio_core:
 gnuradio_extra_pin:
 - ''
 numpy:
-- '1.21'
+- '1.22'
 pin_run_as_build:
   python:
     min_pin: x.x
@@ -31,7 +31,7 @@ python:
 target_platform:
 - linux-ppc64le
 volk:
-- '3.0'
+- '3.1'
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
