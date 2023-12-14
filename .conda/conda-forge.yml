@@ -2,10 +2,10 @@
 # documentation on possible keys and values.
 
 # uncomment to enable cross-compiled osx-arm64 builds
-#build_platform:
-  #linux_aarch64: linux_64
-  #linux_ppc64le: linux_64
-  #osx_arm64: osx_64
+build_platform:
+  linux_aarch64: linux_64
+  linux_ppc64le: linux_64
+  osx_arm64: osx_64
 clone_depth: 0
 github_actions:
   store_build_artifacts: true
