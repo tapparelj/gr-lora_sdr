@@ -20,8 +20,6 @@ python:
 - 3.11.* *_cpython
 target_platform:
 - win-64
-volk:
-- '3.1'
 zip_keys:
 - - python
   - numpy
