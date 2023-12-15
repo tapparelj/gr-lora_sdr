@@ -236,8 +236,7 @@ namespace gr
             // if(frame_cnt == n_frames){
             //     return WORK_DONE;
             // }
-            // if (nitems_to_process)
-            //     std::cout << ninput_items[0] << " " << nitems_to_process << " " << output_offset << " " << noutput_items << std::endl;
+
             consume_each(nitems_to_process);
             return output_offset;
         }

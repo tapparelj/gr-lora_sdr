@@ -38,3 +38,7 @@ cpp_templates:
     includes: ['#include "gnuradio/lora_sdr/hamming_dec.h"']
     declarations: 'lora_sdr::hamming_dec::sptr ${id};'
     make: 'this->${id} = lora_sdr::hamming_dec::make(${soft_decoding});'
+
+translations:
+    'True': 'true'
+    'False': 'false'

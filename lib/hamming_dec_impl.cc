@@ -57,7 +57,7 @@ namespace gr {
 
                     pmt::pmt_t err = pmt::string_to_symbol("error");
                     is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));
-
+                    
                     if (!is_header) {
                         m_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
                         // std::cout<<"\nhamming_cr "<<tags[0].offset<<" - cr: "<<(int)m_cr<<"\n";
@@ -66,7 +66,9 @@ namespace gr {
             }
 
             cr_app = is_header ? 4 : m_cr;
+  
             uint8_t cw_len = cr_app + 4;
+            
 
             for (int i = 0; i < nitems_to_process; i++) {
                 if (m_soft_decoding) {
@@ -139,6 +141,7 @@ namespace gr {
                     std::vector<bool> codeword;
 
                     codeword = int2bool(in[i], cr_app + 4);
+                    
                     data_nibble = {codeword[3], codeword[2], codeword[1], codeword[0]};  // reorganized msb-first
 
                     switch (cr_app) {

@@ -34,26 +34,10 @@ def make_tag(key, value, offset, srcid=None):
     if srcid is not None:
         tag.srcid = pmt.to_pmt(srcid)
     return tag
+    
 def compare_tags(a, b):
     return a.offset == b.offset and pmt.equal(a.key, b.key) and \
         pmt.equal(a.value, b.value) and pmt.equal(a.srcid, b.srcid)
-
-class CustomSourceBlock(gr.sync_block):
-    def __init__(self):
-        gr.sync_block.__init__(self, name="Custom Source Block", in_sig=None, out_sig=[np.byte])
-
-    def work(self, input_items, output_items):
-        num_output_items = len(output_items[0])
-
-        # Put your code here to fill the output_items...
-
-        # Make a new tag on the middle element every time work is called
-        count = self.nitems_written(0) + num_output_items / 2
-        key = pmt.string_to_symbol("example_key")
-        value = pmt.string_to_symbol("example_value")
-        self.add_item_tag(0, count, key, pmt.string_to_symbol("example_value"))
-        return num_output_items
-
 
 
 class qa_whitening(gr_unittest.TestCase):
@@ -82,11 +66,8 @@ class qa_whitening(gr_unittest.TestCase):
      
         self.tb.run()
         result_data = dst.data()
-        print(result_data)
-        result_tags = dst.tags()
-        print(result_tags)
+      
         result_data = self.combine(result_data)
-        print(result_data)
 
         
         self.assertEqual(result_data, expected_data)

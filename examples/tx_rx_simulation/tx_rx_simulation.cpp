@@ -49,7 +49,7 @@ tx_rx_simulation::tx_rx_simulation ()  {
 
         this->blocks_throttle_0 = blocks::throttle::make(sizeof(gr_complex)*1, (samp_rate*10), true);
 
-        this->blocks_file_source_0_0 =blocks::file_source::make(sizeof(char)*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source_100_frame.txt", false, 0, 0);
+        this->blocks_file_source_0_0 =blocks::file_source::make(sizeof(char)*1, "/home/yujwu/Documents/gr-lora_sdr/data/GRC_default/example_tx_source_30_frame.txt", false, 0, 0);
 
 
 // Connections:

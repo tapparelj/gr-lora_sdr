@@ -141,17 +141,16 @@ namespace gr
                 }
                 //std::cout<< "crc"<<crc << std::endl;
                 //XOR the obtained CRC with the last 2 data bytes
-                std::cout<< "crc"<<crc << std::endl;
+               
                 crc = crc ^ m_payload[m_payload_len - 1] ^ (m_payload[m_payload_len - 2] << 8);
-                std::cout<< "crc"<<crc << std::endl;
+
                 //Place the CRC in the correct output nibble
                 out[nitems_to_process] = ((crc & 0x000F));
                 out[nitems_to_process + 1] = ((crc & 0x00F0) >> 4);
                 out[nitems_to_process + 2] = ((crc & 0x0F00) >> 8);
                 out[nitems_to_process + 3] = ((crc & 0xF000) >> 12);
                 nitems_to_output = nitems_to_process + 4;
-                
-                std::cout<<"here "<<std::endl;               
+             
                 m_payload.clear();
             }
             else

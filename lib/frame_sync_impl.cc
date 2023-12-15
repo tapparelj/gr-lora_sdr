@@ -132,7 +132,7 @@ namespace gr
             kiss_fft_cpx *cx_out_cfo = new kiss_fft_cpx[2 * up_symb_to_use * m_number_of_bins];
 
             std::vector<float> fft_mag_sq(2 * up_symb_to_use * m_number_of_bins);
-            std::cout << "estimate_cfo_frc" <<std::endl;
+           
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(2 * up_symb_to_use * m_number_of_bins, 0, 0, 0);
             // create longer downchirp
             std::vector<gr_complex> downchirp_aug(up_symb_to_use * m_number_of_bins);
@@ -208,7 +208,7 @@ namespace gr
             {
                 fft_mag_sq[i] = 0;
             }
-            std::cout << "estimate_CFO_frac_Bernier" <<std::endl;
+             
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             for (int i = 0; i < up_symb_to_use; i++)
             {
@@ -268,8 +268,7 @@ namespace gr
             {
                 fft_mag_sq[i] = 0;
             }
-            std::cout << "estimate_STO_frac" <<std::endl;
-            
+         
             kiss_fft_cfg cfg_sto = kiss_fft_alloc(2 * m_number_of_bins, 0, 0, 0);
 
             for (int i = 0; i < up_symb_to_use; i++)
@@ -381,6 +380,35 @@ namespace gr
 
             // return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
+        uint32_t frame_sync_impl::get_custom(const gr_complex *samples, gr_complex *ref_chirp)
+        {
+            // update code not use kiss_fft_alloc every time
+        
+            double sig_en = 0;
+            std::vector<float> fft_mag(m_number_of_bins);
+            volk::vector<gr_complex> dechirped(m_number_of_bins);
+
+            volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
+
+            for (uint32_t i = 0; i < m_number_of_bins; i++)
+            {
+                cx_in[i].r = dechirped[i].real();
+                cx_in[i].i = dechirped[i].imag();
+            }
+
+
+            kiss_fft(cfg_gsv, cx_in, cx_out);
+
+            // Get magnitude
+            for (uint32_t i = 0u; i < m_number_of_bins; i++)
+            {
+                fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
+                sig_en += fft_mag[i];
+            }
+
+            // Return argmax here
+            return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
+        }
 
         float frame_sync_impl::determine_energy(const gr_complex *samples, int length = 1)
         {
@@ -421,6 +449,11 @@ namespace gr
             float sig_en = fft_mag[max_idx];
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
+        void custom_rotate(std::vector<gr_complex>& vec, size_t positions) {
+            std::rotate(vec.begin(), vec.begin() + positions, vec.end());
+        }
+
+        
 
         void frame_sync_impl::noise_est_handler(pmt::pmt_t noise_est)
         {
@@ -541,6 +574,8 @@ namespace gr
             {
             case DETECT:
             {
+                
+                
                 bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
                 if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
@@ -581,6 +616,7 @@ namespace gr
             }
             case SYNC:
             {
+                
                 items_to_output = 0;
                 if (!cfo_frac_sto_frac_est)
                 {
@@ -607,7 +643,28 @@ namespace gr
                         memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
                         if (additional_upchirps >= 3)
                         {
+
+                            // Perform the rotation using pointer arithmetic
+                            //std::move(preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end(), preamble_raw_up.begin());
+                            // auto start_iter = preamble_raw_up.begin() + m_samples_per_symbol;
+                            // auto end_iter = preamble_raw_up.end();
+                            // auto dest_iter = preamble_raw_up.begin();
+
+                            // // Using std::memcpy to copy the range
+                            // std::memcpy(dest_iter.base(), start_iter.base(), static_cast<std::size_t>(end_iter - start_iter) * sizeof(std::complex<float>));
+
+
+                            //std::copy(rotate_end - rotate_count, rotate_end, rotate_dest + rotate_count);
+
+                            // const gr_complex* in_start = &in[(int)(m_os_factor / 2) + k_hat * m_os_factor];
+                            // const gr_complex* in_end = in_start + m_samples_per_symbol;
+                            // gr_complex* out_start = &preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)];
+
+                            // // Perform the memcpy
+                            // std::memcpy(out_start, in_start, m_samples_per_symbol * sizeof(gr_complex));
+
                             std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
+                            // //custom_rotate(preamble_raw_up,m_samples_per_symbol);
                             memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
                         }
                         else
@@ -659,7 +716,14 @@ namespace gr
                     }
 
                     // correct STOint and CFOint in the preamble upchirps
-                    std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
+                    custom_rotate(preamble_upchirps, mod(m_cfo_int, m_number_of_bins));
+                    // auto start_iter2 = preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins);
+                    // auto end_iter2 = preamble_upchirps.end();
+                    // auto dest_iter2 = preamble_upchirps.begin();
+
+                    // std::memcpy(dest_iter2.base(), start_iter2.base(), static_cast<std::size_t>(end_iter2 - start_iter2) * sizeof(std::complex<float>));
+                    //std::move(preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end(),preamble_upchirps.begin());
+                    //std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
 
                     std::vector<gr_complex> CFO_int_correc;
                     CFO_int_correc.resize((m_n_up_req + additional_upchirps) * m_number_of_bins);
@@ -701,6 +765,14 @@ namespace gr
                     {
                         corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
                     }
+                    //custom_rotate(corr_preamb, mod(m_cfo_int, m_number_of_bins));
+                    //std::move(corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end(),corr_preamb.begin());
+                    // auto start_iter3 = corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins);
+                    // auto end_iter3 = corr_preamb.end();
+                    // auto dest_iter3 = corr_preamb.begin();
+
+                    // // Using std::memcpy
+                    // std::memcpy(dest_iter3.base(), start_iter3.base(), static_cast<std::size_t>(end_iter3 - start_iter3) * sizeof(std::complex<float>));
                     std::rotate(corr_preamb.begin(), corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end());
                     // apply cfo correction
                     volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &CFO_int_correc[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
@@ -872,6 +944,7 @@ namespace gr
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
+            
 
                 if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
                 {
@@ -917,5 +990,6 @@ namespace gr
             produce(0, items_to_output);
             return WORK_CALLED_PRODUCE;
         }
+        
     } /* namespace lora_sdr */
 } /* namespace gr */

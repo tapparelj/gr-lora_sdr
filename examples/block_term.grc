@@ -13,7 +13,7 @@ options:
     hier_block_src_path: '.:'
     id: block_term
     max_nouts: '0'
-    output_language: python
+    output_language: cpp
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
@@ -191,6 +191,25 @@ blocks:
     coordinate: [704, 16.0]
     rotation: 0
     state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1528, 320.0]
+    rotation: 0
+    state: true
 - name: blocks_file_source_0_0
   id: blocks_file_source
   parameters:
@@ -247,7 +266,7 @@ blocks:
     bus_structure: null
     coordinate: [1136, 384.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_source_x_0
   id: blocks_vector_source_x
   parameters:
@@ -267,7 +286,7 @@ blocks:
     bus_structure: null
     coordinate: [784, 336.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -321,7 +340,7 @@ blocks:
     bus_structure: null
     coordinate: [120, 424.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_deinterleaver_0
   id: lora_sdr_deinterleaver
   parameters:
@@ -337,7 +356,7 @@ blocks:
     bus_structure: null
     coordinate: [816, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_dewhitening_0
   id: lora_sdr_dewhitening
   parameters:
@@ -352,7 +371,7 @@ blocks:
     bus_structure: null
     coordinate: [328, 440.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_fft_demod_0
   id: lora_sdr_fft_demod
   parameters:
@@ -369,7 +388,7 @@ blocks:
     bus_structure: null
     coordinate: [1168, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_sync_0
   id: lora_sdr_frame_sync
   parameters:
@@ -392,7 +411,7 @@ blocks:
     bus_structure: null
     coordinate: [1368, 416.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_demap_0
   id: lora_sdr_gray_demap
   parameters:
@@ -424,7 +443,7 @@ blocks:
     bus_structure: null
     coordinate: [992, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_dec_0
   id: lora_sdr_hamming_dec
   parameters:
@@ -440,7 +459,7 @@ blocks:
     bus_structure: null
     coordinate: [648, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_enc_0
   id: lora_sdr_hamming_enc
   parameters:
@@ -496,7 +515,7 @@ blocks:
     bus_structure: null
     coordinate: [488, 432.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -559,6 +578,7 @@ blocks:
     state: disabled
 
 connections:
+- [analog_noise_source_x_0, '0', lora_sdr_frame_sync_0, '0']
 - [blocks_file_source_0_0, '0', lora_sdr_whitening_0, '0']
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle_0, '0', lora_sdr_frame_sync_0, '0']

@@ -102,7 +102,7 @@ namespace gr
                                 m_frame_len = pmt::to_long(tags[0].value);
                                 m_tag_offset = tags[0].offset;
                                 m_input_byte_cnt = 0;
-                                std::cout << "[whitening_impl.cc] offset "<<tags[0].offset<<" New frame of length " << m_frame_len << std::endl;
+                                //std::cout << "[whitening_impl.cc] offset "<<tags[0].offset<<" New frame of length " << m_frame_len << std::endl;
                             }
                         }
                     }
@@ -165,7 +165,6 @@ namespace gr
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_len"), frame_len);
 
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("payload_str"), pmt::string_to_symbol(payload_str.front()));
-                std::cout << payload_str.front()<<std::endl;
 
                 std::copy(payload_str.front().begin(), payload_str.front().end(), std::back_inserter(m_payload));
 

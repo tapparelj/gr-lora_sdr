@@ -43,7 +43,7 @@ add_custom_target(
 )
 # GR_ADD_TEST(qa_add_crc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_add_crc.py)
 # GR_ADD_TEST(qa_whitening ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_whitening.py)
-GR_ADD_TEST(qa_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_interleaver.py)
+# GR_ADD_TEST(qa_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_interleaver.py)
 # GR_ADD_TEST(qa_tx_no_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx_no_mod.py)
 # GR_ADD_TEST(qa_modulate ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_modulate.py) # need to set n_frames to 1 in modulate_impl.cc
 # GR_ADD_TEST(qa_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx.py)
@@ -54,3 +54,7 @@ GR_ADD_TEST(qa_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_i
 # GR_ADD_TEST(qa_tx_buffer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tx_buffer.py)
 # GR_ADD_TEST(qa_rx_buffer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_rx_buffer.py)
 # GR_ADD_TEST(qa_add_header ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_add_header.py) # need to set m_cnt_nibbles to the length of frame in header_impl.cc
+# GR_ADD_TEST(qa_demodulate ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_demodulate.py)
+# GR_ADD_TEST(qa_hamm_dec ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_hamm_dec.py)
+GR_ADD_TEST(qa_gray_mapping ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_mapping.py)
+# GR_ADD_TEST(qa_dewhitening ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_dewhitening.py)

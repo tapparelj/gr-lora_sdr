@@ -112,7 +112,8 @@ namespace gr {
 
             // Return argmax
             uint16_t idx = std::max_element(m_fft_mag_sq, m_fft_mag_sq + m_samples_per_symbol) - m_fft_mag_sq;
-            // std::cout << " hard-dec idx " << idx /*<< " m_fft_mag_sq " << m_fft_mag_sq[0] */<< std::endl;
+           
+            //std::cout << " hard-dec idx " << idx /*<< " m_fft_mag_sq " << m_fft_mag_sq[0] */<< std::endl;
 
 #ifdef GRLORA_MEASUREMENTS
             energy_file << std::fixed << std::setprecision(10) << m_fft_mag_sq[idx] << "," << m_fft_mag_sq[mod(idx - 1, m_samples_per_symbol)] << "," << m_fft_mag_sq[mod(idx + 1, m_samples_per_symbol)] << "," << rec_en << "," << std::endl;
@@ -268,6 +269,7 @@ namespace gr {
             LLR *out2 = (LLR *)output_items[0];
             int to_output = 0;
             std::vector<tag_t> tags;
+            
             get_tags_in_window(tags, 0, 0, m_samples_per_symbol, pmt::string_to_symbol("frame_info"));
             if (tags.size()) 
             {

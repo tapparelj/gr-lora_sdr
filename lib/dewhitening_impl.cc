@@ -70,13 +70,16 @@ namespace gr
             get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_info"));
             if (tags.size())
             {
-                if (tags[0].offset != nitems_read(0))           
+                if (tags[0].offset != nitems_read(0))    {       
                     nitem_to_process = tags[0].offset - nitems_read(0);
                     
+                }
                 else
                 {
-                    if (tags.size() >= 2)
+                    if (tags.size() >= 2){
                         nitem_to_process = tags[1].offset - tags[0].offset;
+                        //std::cout<< "tags[0].offset"<<(int)tags[0].offset<<std::endl;
+                    }
                     
                     pmt::pmt_t err = pmt::string_to_symbol("error");
                     m_crc_presence = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
@@ -87,6 +90,7 @@ namespace gr
                     // std::cout<<"\ndewi_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 }
             }
+            //std::cout<< "nitem_to_process"<<nitem_to_process<<std::endl;
 
             for (int i = 0; i < nitem_to_process / 2; i++)
             {

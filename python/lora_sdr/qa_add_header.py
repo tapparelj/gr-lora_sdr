@@ -83,7 +83,7 @@ class qa_add_header(gr_unittest.TestCase):
         impl_head = False
         has_crc = True
         cr = 2
-        # payload_length is the length of source frame
+        # payload_length is the length of source frame, set the value randomly
         payload_length = 4
         # nitems_in_frame is the length of message after whitening block which is twice of the source
         nitems_in_frame = payload_length * 2 
@@ -107,10 +107,7 @@ class qa_add_header(gr_unittest.TestCase):
         lora_sdr_header = lora_sdr.header(impl_head, has_crc, cr)
         blocks_vector_source = blocks.vector_source_b(src_data, False, 1, src_tags)
         blocks_vector_sink = blocks.vector_sink_b(1, 1024)
-        relative_out_path = "qa_ref/temp/add_header6_"+str(sf)+"_cr"+str(cr)+".bin"
-        output_path = os.path.join(script_dir, relative_out_path)
-        blocks_file_sink = blocks.file_sink(gr.sizeof_char*1, output_path, False)
-        blocks_file_sink.set_unbuffered(False)
+
 
         self.tb.connect((blocks_vector_source, 0), (lora_sdr_header, 0))
         self.tb.connect((lora_sdr_header, 0), (blocks_vector_sink, 0))

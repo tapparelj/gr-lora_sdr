@@ -92,11 +92,11 @@ class qa_hamm(gr_unittest.TestCase):
                                 (data_bin[0] << 1) | p4)
 
             #ifdef GRLORA_DEBUG
-            print(ref_out[i])
+      
             #endif
             m_cnt += 1
 
-
+        print(ref_out)
         self.assertEqual(ref_out, result_data)
         
     

@@ -48,16 +48,16 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, 125000)
-        self.blocks_vector_source_x_0 = blocks.vector_source_b((0, 0, 0), True, 1, [])
-        self.blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
+        self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
+        self.blocks_vector_source_x_1 = blocks.vector_source_b((0, 0, 0), False, 1, [])
+        self.blocks_vector_sink_x_0 = blocks.vector_sink_b(1, 1024)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_vector_source_x_0, 0), (self.lora_sdr_interleaver_0, 0))
-        self.connect((self.lora_sdr_interleaver_0, 0), (self.blocks_vector_sink_x_0, 0))
+        self.connect((self.blocks_vector_source_x_1, 0), (self.lora_sdr_dewhitening_0, 0))
+        self.connect((self.lora_sdr_dewhitening_0, 0), (self.blocks_vector_sink_x_0, 0))
 
 
     def get_soft_decoding(self):
@@ -71,7 +71,6 @@ class tx_rx_simulation(gr.top_block):
 
     def set_sf(self, sf):
         self.sf = sf
-        self.lora_sdr_interleaver_0.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -114,7 +113,6 @@ class tx_rx_simulation(gr.top_block):
 
     def set_cr(self, cr):
         self.cr = cr
-        self.lora_sdr_interleaver_0.set_cr(self.cr)
 
     def get_clk_offset(self):
         return self.clk_offset
