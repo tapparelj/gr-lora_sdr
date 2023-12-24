@@ -142,8 +142,7 @@ namespace gr
           *          The reference chirp to use to dechirp the lora symbol.
           */
       uint32_t get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp);
-      uint32_t get_custom(const gr_complex *samples, gr_complex *ref_chirp);
-      
+
 
       /**
           *  \brief  Determine the energy of a symbol.

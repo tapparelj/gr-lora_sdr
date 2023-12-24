@@ -390,16 +390,6 @@ namespace gr
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
 
-        void custom_rotate(std::vector<gr_complex>& vec, size_t positions) {
-            std::rotate(vec.begin(), vec.begin() + positions, vec.end());
-        }
-
-        void custom_rotate3(std::vector<gr_complex>& vec, size_t positions) {
-            std::rotate(vec.begin(), vec.begin() + positions, vec.end());
-        }
-
-        
-
         void frame_sync_impl::noise_est_handler(pmt::pmt_t noise_est)
         {
             m_noise_est = pmt::to_double(noise_est);
@@ -590,8 +580,6 @@ namespace gr
                         if (additional_upchirps >= 3)
                         {
                             std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
-                            
-                            //custom_rotate2(preamble_raw_up,m_samples_per_symbol);
                             memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
                         }
                         else
@@ -642,14 +630,7 @@ namespace gr
                         m_cfo_int = floor(double(down_val - (int)m_number_of_bins) / 2);
                     }
 
-                    // correct STOint and CFOint in the preamble upchirps
-                    // custom_rotate(preamble_upchirps, mod(m_cfo_int, m_number_of_bins));
-                    // auto start_iter2 = preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins);
-                    // auto end_iter2 = preamble_upchirps.end();
-                    // auto dest_iter2 = preamble_upchirps.begin();
-
-                    // std::memcpy(dest_iter2.base(), start_iter2.base(), static_cast<std::size_t>(end_iter2 - start_iter2) * sizeof(std::complex<float>));
-                    //std::move(preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end(),preamble_upchirps.begin());
+                    
                     std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
 
                     std::vector<gr_complex> CFO_int_correc;
@@ -692,14 +673,7 @@ namespace gr
                     {
                         corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
                     }
-                    //custom_rotate(corr_preamb, mod(m_cfo_int, m_number_of_bins));
-                    //std::move(corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end(),corr_preamb.begin());
-                    // auto start_iter3 = corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins);
-                    // auto end_iter3 = corr_preamb.end();
-                    // auto dest_iter3 = corr_preamb.begin();
-
-                    // // Using std::memcpy
-                    // std::memcpy(dest_iter3.base(), start_iter3.base(), static_cast<std::size_t>(end_iter3 - start_iter3) * sizeof(std::complex<float>));
+                 
                     std::rotate(corr_preamb.begin(), corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end());
                     // apply cfo correction
                     volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &CFO_int_correc[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
@@ -708,7 +682,7 @@ namespace gr
                         volk_32fc_x2_multiply_32fc(&corr_preamb[m_number_of_bins * i], &corr_preamb[m_number_of_bins * i], &CFO_frac_correc[0], m_number_of_bins);
                     }
 
-                    // //apply sfo correction
+                    // apply sfo correction
                     volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &sfo_corr_vect[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
 
                     float snr_est = 0;

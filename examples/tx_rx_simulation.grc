@@ -9,11 +9,11 @@ options:
     description: ''
     gen_cmake: 'Off'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: no_gui
     hier_block_src_path: '.:'
     id: tx_rx_simulation
     max_nouts: '0'
-    output_language: python
+    output_language: cpp
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
@@ -269,7 +269,7 @@ blocks:
     bus_structure: null
     coordinate: [48, 232.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_tag_debug_0
   id: blocks_tag_debug
   parameters:
@@ -307,7 +307,7 @@ blocks:
     bus_structure: null
     coordinate: [1392, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_vector_sink_x_0
   id: blocks_vector_sink_x
   parameters:
@@ -323,7 +323,7 @@ blocks:
     bus_structure: null
     coordinate: [96, 616.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_source_x_0
   id: blocks_vector_source_x
   parameters:
@@ -361,9 +361,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 608.0]
+    coordinate: [200, 584.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: channels_channel_model_0
   id: channels_channel_model
   parameters:
@@ -400,7 +400,7 @@ blocks:
     bus_structure: null
     coordinate: [672, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_crc_verif_0
   id: lora_sdr_crc_verif
   parameters:
@@ -433,7 +433,7 @@ blocks:
     bus_structure: null
     coordinate: [824, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_dewhitening_0
   id: lora_sdr_dewhitening
   parameters:
@@ -448,7 +448,7 @@ blocks:
     bus_structure: null
     coordinate: [328, 440.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_fft_demod_0
   id: lora_sdr_fft_demod
   parameters:
@@ -465,7 +465,7 @@ blocks:
     bus_structure: null
     coordinate: [1168, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_frame_sync_0
   id: lora_sdr_frame_sync
   parameters:
@@ -488,7 +488,7 @@ blocks:
     bus_structure: null
     coordinate: [1360, 416.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_demap_0
   id: lora_sdr_gray_demap
   parameters:
@@ -504,7 +504,7 @@ blocks:
     bus_structure: null
     coordinate: [1088, 264.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_gray_mapping_0
   id: lora_sdr_gray_mapping
   parameters:
@@ -520,7 +520,7 @@ blocks:
     bus_structure: null
     coordinate: [992, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_dec_0
   id: lora_sdr_hamming_dec
   parameters:
@@ -536,7 +536,7 @@ blocks:
     bus_structure: null
     coordinate: [656, 448.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_hamming_enc_0
   id: lora_sdr_hamming_enc
   parameters:
@@ -553,7 +553,7 @@ blocks:
     bus_structure: null
     coordinate: [808, 256.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_0
   id: lora_sdr_header
   parameters:
@@ -571,7 +571,7 @@ blocks:
     bus_structure: null
     coordinate: [520, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_header_decoder_0
   id: lora_sdr_header_decoder
   parameters:
@@ -592,7 +592,7 @@ blocks:
     bus_structure: null
     coordinate: [488, 432.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_interleaver_0
   id: lora_sdr_interleaver
   parameters:
@@ -611,7 +611,7 @@ blocks:
     bus_structure: null
     coordinate: [960, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_modulate_0
   id: lora_sdr_modulate
   parameters:
@@ -632,7 +632,7 @@ blocks:
     bus_structure: null
     coordinate: [1232, 248.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
   parameters:
@@ -652,7 +652,7 @@ blocks:
     bus_structure: null
     coordinate: [320, 240.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
