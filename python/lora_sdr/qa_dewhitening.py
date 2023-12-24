@@ -24,7 +24,7 @@
 #   Description: test the correctness of dewhitening when there is no crc
 #
 # Function: test_002_crc_presence
-#   Description: test the correctness of dewhitening when there is crc
+#    Description: test the correctness of dewhitening when there is crc
 ##############################################################################
 
 from gnuradio import gr, gr_unittest

@@ -5,7 +5,7 @@
 # Description: This is a test code for block gray_demapping
 #
 # Function: test_001_functional_test
-#   Description: test the general function of gray demapping
+#    Description: test the general function of gray demapping
 ##############################################################################
 
 from gnuradio import gr, gr_unittest

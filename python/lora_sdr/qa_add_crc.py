@@ -23,7 +23,7 @@
 #   Output: list - List of CRC nibbles
 #
 # Function: test_001_functional_test
-#   Description: Test the correctness of the add_crc block by comparing the result with the reference CRC nibbles.
+#    Description: Test the correctness of the add_crc block by comparing the result with the reference CRC nibbles.
 ##############################################################################
 
 from gnuradio import gr, gr_unittest

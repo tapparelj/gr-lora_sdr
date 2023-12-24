@@ -36,7 +36,7 @@
 #     list - Processed data for encoding
 #
 # Function: test_001_functional_test
-#   Description: test the correctness of de-interleaving
+#    Description: test the correctness of de-interleaving
 ##############################################################################
 
 

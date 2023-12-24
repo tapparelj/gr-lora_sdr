@@ -22,7 +22,7 @@
 #                ref_tx_sf_cr.bin in qa_ref/qa_ref_tx folder
 #
 # Function: test_003_empty_buffer_before_whitening_test
-#   Description: test the buffers of transmitter (correctness) by set slow processing 
+#    Description: test the buffers of transmitter (correctness) by set slow processing 
 #                speed(1) in throttle before whitening. In this case, the later
 #                blocks would have empty buffer.
 #                Input exampe_tx_source and compare output with reference file 

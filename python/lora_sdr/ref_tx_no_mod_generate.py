@@ -4,7 +4,7 @@
 #
 # Description: This is a code for automatically generate output of transmitter. 
 #              It consists whitening, add_header, add_crc, hamming_enc, 
-#              interleaver and gray demapping. sf from 7 to 12, cr from 2 to 5
+#               interleaver and gray demapping. sf from 7 to 12, cr from 2 to 5
 #
 ##############################################################################
 

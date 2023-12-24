@@ -44,7 +44,7 @@
 #   Output: list - Reference demodulation output
 #
 # Function: test_001_functional_test
-#   Description: Test hard-coding scenarios for FFT demodulation.
+#    Description: Test hard-coding scenarios for FFT demodulation.
 #
 ##############################################################################
 

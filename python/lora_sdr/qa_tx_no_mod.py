@@ -9,7 +9,7 @@
 #              If it is not, use the ref_tx_no_mod_generate.py to regenerate
 #
 # Function: test_001_file_source
-#   Description: test the general function of transmitter without modulate(correctness) by input 
+#    Description: test the general function of transmitter without modulate(correctness) by input 
 #                exampe_tx_source and compare output with reference file 
 #                ref_tx_sf_cr.bin in qa_ref/qa_ref_tx folder
 #

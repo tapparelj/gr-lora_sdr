@@ -29,7 +29,7 @@
 #   Description: check the adding tag function in whitening block
 #
 # Function: test_007_use_multiple_tags
-#   Description: check adding multiple tags at the beginning of each frame, the frame lengths are defined as 16, 32, 64
+#    Description: check adding multiple tags at the beginning of each frame, the frame lengths are defined as 16, 32, 64
 ##############################################################################
 
 

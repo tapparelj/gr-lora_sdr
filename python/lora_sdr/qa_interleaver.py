@@ -36,7 +36,7 @@
 #     list: Interleaved output data.
 #
 # Function: test_001_functional_test
-#   Description: test the correctness of decoding hamming parity in hardcoding
+#    Description: test the correctness of decoding hamming parity in hardcoding
 #               when input is not header
 ##############################################################################
 

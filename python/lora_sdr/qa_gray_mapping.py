@@ -17,7 +17,7 @@
 #   Output: list - Encoded data with added parity bits
 #
 # Function: test_001_function_test
-#   Description: test the general function of gray_mapping
+#    Description: test the general function of gray_mapping
 #
 ##############################################################################
 

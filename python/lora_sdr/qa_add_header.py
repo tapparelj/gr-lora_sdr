@@ -27,7 +27,7 @@
 #     list - Complete header for the LoRa packet
 #
 # Function: test_001_functional_test
-#   Description: test the correctness of adding header to message output from 
+#    Description: test the correctness of adding header to message output from 
 #                whitening block, when there is crc
 ##############################################################################
 
