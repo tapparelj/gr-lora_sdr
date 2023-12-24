@@ -1,22 +1,18 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#                     GNU GENERAL PUBLIC LICENSE
-#                        Version 3, 29 June 2007
+##############################################################################
+# File: qa_gray_demap.py
+# Date: 21-12-2023
 #
-#  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
-#  Everyone is permitted to copy and distribute verbatim copies
-#  of this license document, but changing it is not allowed.
-
+# Description: This is a test code for block gray_demapping
+#
+# Function: test_001_functional_test
+#   Description: test the general function of gray demapping
+##############################################################################
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from numpy import array
-from whitening_sequence import code
-import pmt
 import numpy as np
 
-
-# from gnuradio import blocks
 try:
     import gnuradio.lora_sdr as lora_sdr
    
@@ -25,7 +21,6 @@ except ImportError:
     import sys
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
-   
 
 class qa_gray_demap(gr_unittest.TestCase):
 
@@ -35,26 +30,28 @@ class qa_gray_demap(gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-    # def test_instance(self):
-    #     # FIXME: Test will fail until you pass sensible arguments to the constructor
-    #     instance = whitening()
-
     def test_001_function_test(self):
 
         sf = 7
-        src_data = (0, 1, 2)
+        # set the payload_length
+        payload_length = 10
+        # the symbol can be seen as integers between 0 and 2^sf - 1
+        max_value = 2 ** sf
+        # randomly generate the source data
+        src_data = np.random.randint(max_value, size=payload_length)
 
-        lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        blocks_vector_source_x_0 = blocks.vector_source_i(src_data, False, 1, [])
-        blocks_vector_sink_x_0 = blocks.vector_sink_i(1, 1024)
+        # initialize the blocks
+        lora_sdr_gray_demap = lora_sdr.gray_demap(sf)
+        blocks_vector_source = blocks.vector_source_i(src_data, False, 1, [])
+        blocks_vector_sink = blocks.vector_sink_i(1, 1024)
 
-        self.tb.connect((blocks_vector_source_x_0, 0), (lora_sdr_gray_demap_0, 0))
-        self.tb.connect((lora_sdr_gray_demap_0, 0), (blocks_vector_sink_x_0, 0))
-
+        # connect the blocks
+        self.tb.connect((blocks_vector_source, 0), (lora_sdr_gray_demap, 0))
+        self.tb.connect((lora_sdr_gray_demap, 0), (blocks_vector_sink, 0))
         self.tb.run()
-        result_data = blocks_vector_sink_x_0.data()
-        #print(result_data)
-        ref_data = [1,2,4]
+
+        # get the output from the connected blocks
+        result_data = blocks_vector_sink.data()
 
         # generate reference data
         ref_data = [0] * len(src_data)
@@ -65,6 +62,7 @@ class qa_gray_demap(gr_unittest.TestCase):
             ref_data[i] = ((ref_data[i]+1) % (1 << sf))
 
         self.assertEqual(ref_data, result_data)
+
 
 if __name__ == '__main__':
     gr_unittest.run(qa_gray_demap)

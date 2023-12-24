@@ -1,25 +1,53 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#                     GNU GENERAL PUBLIC LICENSE
-#                        Version 3, 29 June 2007
+##############################################################################
+# File: qa_deinterleaver.py
+# Date: 21-12-2023
 #
-#  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
-#  Everyone is permitted to copy and distribute verbatim copies
-#  of this license document, but changing it is not allowed.
+# Description: This is a test code for block deinterleaver, here we only consider hardcoding
+#
+# Function: make_tag
+#   Description: Create a GNU Radio tag with specified key, value, offset, and optional source ID.
+#   Input: key (str) - Key for the tag, value - Value for the tag, 
+#          offset (int) - Offset of the tag in intput data, srcid (optional) - Source ID for the tag, default is None
+#   Output: gr.tag_t - GNU Radio tag object with specified attributes
+#
+# Function: int2bool
+#   Description:convert an integer (value) into a list of boolean values, 
+#            where each boolean represents a bit in the binary representation 
+#            of the integer. The function 
+#   Input: the integer value, num_bits(the number of bits)  
+#   Output: list - a list of boolean values representing the binary
+#
+# Function: bool2int
+#   Function: Convert a binary representation (list of boolean values) to an integer.
+#   Input:
+#     b (list) - Binary representation as a list of boolean values
+#   Output:
+#     int - Integer representation of the binary input
+#
+# Function: deinterleave
+#   Function: deinterleave input data for encoding based on specified parameters.
+#   Input:
+#     in_data (list) - Input data to be processed,
+#     sf (int) - Spreading factor,
+#     cr (int) - Coding rate,
+#     ldro (bool) - LDRO (Low Density Parity Check Code) presence indicator,
+#     m_frame_len (int) - Length of the frame
+#   Output:
+#     list - Processed data for encoding
+#
+# Function: test_001_functional_test
+#   Description: test the correctness of de-interleaving
+##############################################################################
 
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from numpy import array
-from whitening_sequence import code
 import pmt
 import numpy as np
-import time
 import os
 import sys
 
-
-# from gnuradio import blocks
 try:
     import gnuradio.lora_sdr as lora_sdr
     
@@ -29,11 +57,10 @@ except ImportError:
     dirname, filename = os.path.split(os.path.abspath(__file__))
     sys.path.append(os.path.join(dirname, "bindings"))
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
 def make_tag(key, value, offset, srcid=None):
     tag = gr.tag_t()
     tag.key = pmt.string_to_symbol(key)
-    tag.value = pmt.to_pmt(value)
+    tag.value = value
     tag.offset = offset
     if srcid is not None:
         tag.srcid = pmt.to_pmt(srcid)
@@ -53,56 +80,45 @@ def bool2int(b):
 def mod(a, b):
     return a % b
 
-def process_data(in_data, m_sf, m_cr, m_ldro, m_frame_len):
+def deinterleave(in_data, sf, cr, ldro, m_frame_len):
+
+    # first generate the header
+    out = []
+    is_header = True
+    sf_header = sf - 2 if is_header or ldro else sf
+    cw_len = 8 if is_header else cr + 4 # cw_len symbols per block
+
+    inter_bin = [int2bool(in_data[j], sf_header) for j in range(cw_len)]
+    init_bit = [0] * cw_len
+    deinter_bin = [init_bit.copy() for _ in range(sf_header)]
+
+    for b in range(cw_len):
+        for c in range(sf_header):
+            deinter_bin[mod((b - c - 1), sf_header)][b] = inter_bin[b][c]
+
+    for d in range(sf_header):
+        out.append(bool2int(deinter_bin[d]))
+
+    # then generate the payload
+    is_header = False
+    sf_payload = sf - 2 if is_header or ldro else sf
+    cw_len = 8 if is_header else cr + 4
     
-    nitems_to_process = len(in_data)
-    out_data = []
-    cw_cnt = 0
-    while cw_cnt in range(m_frame_len):
-    
-        cw_len = 4 + (4 if cw_cnt< m_sf - 2 else m_cr)
-        sf_app = m_sf - 2 if (cw_cnt < m_sf - 2) or m_ldro else m_sf
-       
-        nitems_to_process = np.minimum(nitems_to_process,sf_app)
-   
+    for i in range(int((m_frame_len-8) / cw_len)):
 
-        if nitems_to_process >= sf_app or cw_cnt + nitems_to_process == m_frame_len :
+        inter_bin = [int2bool(in_data[i*cw_len+j+8], sf_payload) for j in range(cw_len)]
+        init_bit = [0] * cw_len
+        deinter_bin = [init_bit.copy() for _ in range(sf_payload)]
 
-        # Create the empty matrices
+        for b in range(cw_len):
+            for c in range(sf_payload):
+                deinter_bin[mod((b - c - 1), sf_payload)][b] = inter_bin[b][c]
 
-            cw_bin = [int2bool(0, cw_len) for _ in range(sf_app)]
-            init_bit = [0] * m_sf
-            inter_bin = [init_bit.copy() for _ in range(cw_len)]
+        for d in range(sf_payload):
+            out.append(bool2int(deinter_bin[d]))
 
 
-            # Convert input codewords to binary vector of vector
-            for i in range(sf_app):
-                if i >= nitems_to_process:
-                    cw_bin[i] = int2bool(0, cw_len)
-        
-                else:
-                    cw_bin[i] = int2bool(in_data[i], cw_len)
-              
-                cw_cnt += 1
-                
-           
-            for i in range(cw_len):
-                for j in range(sf_app):
-                    inter_bin[i][j] = cw_bin[mod((i - j - 1), sf_app)][i]
-                    
-                
-                # For the first block, add a parity bit and a zero at the end of the LoRa symbol (reduced rate)
-                if cw_cnt == m_sf - 2 or m_ldro:
-                    inter_bin[i][sf_app] = sum(inter_bin[i]) % 2
-        
-              
-                out_data.append(bool2int(inter_bin[i]))
-            in_data = in_data[nitems_to_process:]
-            nitems_to_process = m_frame_len - nitems_to_process
-
-            
-    
-    return out_data
+    return out
 
 
 class qa_deinterleaver(gr_unittest.TestCase):
@@ -117,31 +133,59 @@ class qa_deinterleaver(gr_unittest.TestCase):
 
         sf = 7
         cr = 2
-        max_value = 16
-        sf = 11
-        ldro = False
-        # define payloadlength
-        payload_length = 10
-        # nibbles generated by whitening block is 4 bits, the maximum value of the nibble is 16
-        max_value = 16
+        ldro = 0
+        soft_decoding = False
+        # set payload length
+        payload_len = 42
+        # input data is 8 symbol header followed by payload
+        frame_len = payload_len + 8 
+        # the symbol is composed of 8 bits
+        max_value = 256
+
+        # generate dictionary containing information of the header 
+        a = pmt.make_dict()
+        key1 = pmt.intern("is_header")
+        is_header_tag = pmt.from_bool(1)
+        key2 = pmt.intern("sf")
+        sf_tag = pmt.from_long(sf)
+
+        a = pmt.dict_add(a, key1, is_header_tag)
+        a = pmt.dict_add(a, key2, sf_tag)
+
+        # generate dictionary containing information of the payload
+        b = pmt.make_dict()
+        key1 = pmt.intern("is_header")
+        is_header_tag_b = pmt.from_bool(0)
+        key2 = pmt.intern("ldro")
+        ldro_tag = pmt.from_bool(ldro)
+        key3 = pmt.intern("cr")
+        cr_tag = pmt.from_long(cr)
+
+        b = pmt.dict_add(b, key1, is_header_tag_b)
+        b = pmt.dict_add(b, key2, ldro_tag)
+        b = pmt.dict_add(b, key3, cr_tag)
 
         # randomly generate the input data
-        src_data = np.random.randint(max_value, size=payload_length)
-        # print(src_data)
+        src_data = np.random.randint(max_value, size=frame_len)
 
-        src_tags = [make_tag('frame_len',payload_length, 0,'src_data')] 
-        blocks_vector_source = blocks.vector_source_b(src_data, False, 1, src_tags)
-    
-        lora_sdr_interleaver = lora_sdr.interleaver(cr, sf, ldro, 125000)
-        blocks_vector_sink = blocks.vector_sink_i(1, 1024)      
+        # make the tag
+        src_tags = [make_tag('frame_info',a, 0,'src_data'),make_tag('frame_info',b, 8,'src_data')] 
 
-        self.tb.connect((blocks_vector_source, 0), (lora_sdr_interleaver, 0))
-        self.tb.connect((lora_sdr_interleaver , 0), (blocks_vector_sink, 0))
+        # initialize the blocks
+        blocks_vector_source = blocks.vector_source_s(src_data, False, 1, src_tags)
+        lora_sdr_deinterleaver = lora_sdr.deinterleaver(soft_decoding)
+        blocks_vector_sink = blocks.vector_sink_b(1, 1024)
+
+        # connect the blocks
+        self.tb.connect((blocks_vector_source, 0), (lora_sdr_deinterleaver, 0))
+        self.tb.connect((lora_sdr_deinterleaver, 0), (blocks_vector_sink, 0))
         self.tb.run()
 
+        # get the output from the connected blocks
         result_data = blocks_vector_sink.data()
+
         # generate reference interleaver
-        ref_out = process_data(src_data, sf, cr,ldro, payload_length)
+        ref_out = deinterleave(src_data, sf, cr,ldro, frame_len)
 
         self.assertEqual(result_data, ref_out)
 

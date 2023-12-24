@@ -160,9 +160,9 @@ namespace gr
             }
             memcpy(out, in, nitems_to_process * sizeof(uint8_t));
             consume_each(nitems_to_process);
-            for (int i = 0; i < nitems_to_output; i++) {
-                std::cout << "out[" << i << "] = " << static_cast<int>(out[i]) << std::endl;
-            }
+            // for (int i = 0; i < nitems_to_output; i++) {
+            //     std::cout << "out[" << i << "] = " << static_cast<int>(out[i]) << std::endl;
+            // }
             // if(nitems_to_output == 10){
             //     return WORK_DONE;
             // }

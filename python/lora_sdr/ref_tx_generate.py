@@ -1,16 +1,12 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+##############################################################################
+# File: ref_tx_generate.py
+# Date: 21-12-2023
 #
-# SPDX-License-Identifier: GPL-3.0
+# Description: This is a code for automatically generate output of transmitter. 
+#              It consists whitening, add_header, add_crc, hamming_enc, 
+#              interleaver, gray demapping and modulate. sf from 7 to 12, cr from 2 to 5
 #
-# GNU Radio Python Flow Graph
-# Title: Tx Rx Simulation
-# Author: Tapparel Joachim@EPFL,TCL
-# GNU Radio version: 3.10.3.0
-# This code generates the reference data of tx. 
-# Includes all the blocks in tx_rx_simulations from file source to throtte
-# Generate files into ../python/lora_sdr/qa_ref_tx
+##############################################################################
 
 from gnuradio import blocks
 import pmt
@@ -162,14 +158,13 @@ class ref_tx_generate(gr.top_block):
 
 def main(top_block_cls=ref_tx_generate, options=None):
     # Define the range of sf and cr values
-    sf_range = range(7, 12)  # sf values from 7 to 11
+    sf_range = range(7, 13)  # sf values from 7 to 11
     cr_range = range(2, 6)   # cr values from 2 to 5
 
     for sf in sf_range:
         for cr in cr_range:
             # Create a new top_block instance for each combination of sf and cr
             tb = top_block_cls(sf,cr)
-
             # Set the sf and cr values for this iteration
             tb.set_sf(sf)
             tb.set_cr(cr)

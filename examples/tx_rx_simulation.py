@@ -9,12 +9,25 @@
 # Author: Tapparel Joachim@EPFL,TCL
 # GNU Radio version: 3.10.3.0
 
+from packaging.version import Version as StrictVersion
+
+if __name__ == '__main__':
+    import ctypes
+    import sys
+    if sys.platform.startswith('linux'):
+        try:
+            x11 = ctypes.cdll.LoadLibrary('libX11.so')
+            x11.XInitThreads()
+        except:
+            print("Warning: failed to XInitThreads()")
+
 from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
+from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
@@ -22,11 +35,40 @@ import gnuradio.lora_sdr as lora_sdr
 
 
 
+from gnuradio import qtgui
 
-class tx_rx_simulation(gr.top_block):
+class tx_rx_simulation(gr.top_block, Qt.QWidget):
 
     def __init__(self):
         gr.top_block.__init__(self, "Tx Rx Simulation", catch_exceptions=True)
+        Qt.QWidget.__init__(self)
+        self.setWindowTitle("Tx Rx Simulation")
+        qtgui.util.check_set_qss()
+        try:
+            self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
+        except:
+            pass
+        self.top_scroll_layout = Qt.QVBoxLayout()
+        self.setLayout(self.top_scroll_layout)
+        self.top_scroll = Qt.QScrollArea()
+        self.top_scroll.setFrameStyle(Qt.QFrame.NoFrame)
+        self.top_scroll_layout.addWidget(self.top_scroll)
+        self.top_scroll.setWidgetResizable(True)
+        self.top_widget = Qt.QWidget()
+        self.top_scroll.setWidget(self.top_widget)
+        self.top_layout = Qt.QVBoxLayout(self.top_widget)
+        self.top_grid_layout = Qt.QGridLayout()
+        self.top_layout.addLayout(self.top_grid_layout)
+
+        self.settings = Qt.QSettings("GNU Radio", "tx_rx_simulation")
+
+        try:
+            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+                self.restoreGeometry(self.settings.value("geometry").toByteArray())
+            else:
+                self.restoreGeometry(self.settings.value("geometry"))
+        except:
+            pass
 
         ##################################################
         # Variables
@@ -43,12 +85,12 @@ class tx_rx_simulation(gr.top_block):
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
         self.bw = bw = 125000
-        self.SNRdB = SNRdB = -5
+        self.SNRdB = SNRdB = 20
 
         ##################################################
         # Blocks
         ##################################################
-        self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( True, False)
         self.blocks_vector_source_x_1 = blocks.vector_source_b((0, 0, 0), False, 1, [])
         self.blocks_vector_sink_x_0 = blocks.vector_sink_b(1, 1024)
 
@@ -56,9 +98,17 @@ class tx_rx_simulation(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_vector_source_x_1, 0), (self.lora_sdr_dewhitening_0, 0))
-        self.connect((self.lora_sdr_dewhitening_0, 0), (self.blocks_vector_sink_x_0, 0))
+        self.connect((self.blocks_vector_source_x_1, 0), (self.lora_sdr_crc_verif_0, 0))
+        self.connect((self.lora_sdr_crc_verif_0, 0), (self.blocks_vector_sink_x_0, 0))
 
+
+    def closeEvent(self, event):
+        self.settings = Qt.QSettings("GNU Radio", "tx_rx_simulation")
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.stop()
+        self.wait()
+
+        event.accept()
 
     def get_soft_decoding(self):
         return self.soft_decoding
@@ -142,21 +192,32 @@ class tx_rx_simulation(gr.top_block):
 
 
 def main(top_block_cls=tx_rx_simulation, options=None):
+
+    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+        style = gr.prefs().get_string('qtgui', 'style', 'raster')
+        Qt.QApplication.setGraphicsSystem(style)
+    qapp = Qt.QApplication(sys.argv)
+
     tb = top_block_cls()
+
+    tb.start()
+
+    tb.show()
 
     def sig_handler(sig=None, frame=None):
         tb.stop()
         tb.wait()
 
-        sys.exit(0)
+        Qt.QApplication.quit()
 
     signal.signal(signal.SIGINT, sig_handler)
     signal.signal(signal.SIGTERM, sig_handler)
 
-    tb.start()
+    timer = Qt.QTimer()
+    timer.start(500)
+    timer.timeout.connect(lambda: None)
 
-    tb.wait()
-
+    qapp.exec_()
 
 if __name__ == '__main__':
     main()

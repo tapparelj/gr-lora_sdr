@@ -87,7 +87,7 @@ namespace gr
                     offset = 0;
                     tags[0].offset = nitems_written(0);
                     add_item_tag(0, tags[0]);
-                    // std::cout<<"\ndewi_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
+                    //std::cout<<"\ndewi_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 }
             }
             //std::cout<< "nitem_to_process"<<nitem_to_process<<std::endl;
@@ -97,8 +97,9 @@ namespace gr
 
                 if (offset < m_payload_len)
                 {
+
                     low_nib = in[2 * i] ^ (whitening_seq[offset] & 0x0F);
-                    high_nib = in[2 * i + 1] ^ (whitening_seq[offset] & 0xF0) >> 4;
+                    high_nib = in[2 * i + 1] ^ ((whitening_seq[offset] & 0xF0) >> 4);
                     dewhitened.push_back(high_nib << 4 | low_nib);
                 }
                 else if ((offset < m_payload_len + 2) && m_crc_presence)
@@ -111,6 +112,7 @@ namespace gr
                 { // full packet received
                     break;
                 }
+                
                 offset++;
             }
 #ifdef GRLORA_DEBUG

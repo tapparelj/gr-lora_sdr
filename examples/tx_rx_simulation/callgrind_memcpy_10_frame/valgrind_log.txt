@@ -1,0 +1,462 @@
+out[0] = 1
+out[1] = 3
+out[2] = 5
+out[3] = 1
+out[4] = 6
+out[5] = 14
+out[6] = 9
+out[7] = 2
+out[8] = 9
+out[9] = 5
+out[10] = 9
+out[11] = 11
+out[12] = 9
+out[13] = 5
+out[14] = 9
+out[15] = 3
+out[16] = 8
+out[17] = 1
+out[18] = 10
+out[19] = 6
+out[20] = 14
+out[21] = 15
+out[22] = 6
+out[23] = 3
+out[24] = 7
+out[25] = 11
+out[26] = 4
+out[27] = 10
+out[28] = 3
+out[29] = 8
+out[30] = 13
+out[31] = 12
+out[32] = 1
+out[33] = 5
+out[34] = 9
+out[35] = 7
+out[36] = 8
+out[37] = 2
+out[38] = 10
+out[39] = 9
+out[40] = 14
+out[41] = 14
+out[42] = 7
+out[43] = 9
+out[44] = 8
+out[45] = 2
+out[46] = 14
+out[0] = 0
+out[1] = 14
+out[2] = 5
+out[3] = 0
+out[4] = 7
+out[5] = 14
+out[6] = 9
+out[7] = 12
+out[8] = 9
+out[9] = 14
+out[10] = 9
+out[11] = 11
+out[12] = 9
+out[13] = 3
+out[14] = 9
+out[15] = 3
+out[16] = 8
+out[17] = 7
+out[18] = 10
+out[19] = 9
+out[20] = 14
+out[21] = 7
+out[22] = 6
+out[23] = 6
+out[24] = 7
+out[25] = 11
+out[26] = 4
+out[27] = 10
+out[28] = 3
+out[29] = 8
+out[30] = 13
+out[31] = 12
+out[32] = 1
+out[33] = 12
+out[34] = 11
+out[35] = 3
+out[36] = 9
+out[0] = 0
+out[1] = 14
+out[2] = 5
+out[3] = 0
+out[4] = 7
+out[5] = 14
+out[6] = 9
+out[7] = 12
+out[8] = 9
+out[9] = 14
+out[10] = 9
+out[11] = 11
+out[12] = 9
+out[13] = 3
+out[14] = 9
+out[15] = 5
+out[16] = 8
+out[17] = 6
+out[18] = 10
+out[19] = 10
+out[20] = 14
+out[21] = 9
+out[22] = 7
+out[23] = 8
+out[24] = 7
+out[25] = 11
+out[26] = 4
+out[27] = 10
+out[28] = 3
+out[29] = 8
+out[30] = 13
+out[31] = 12
+out[32] = 1
+out[33] = 7
+out[34] = 1
+out[35] = 11
+out[36] = 3
+out[0] = 0
+out[1] = 13
+out[2] = 5
+out[3] = 0
+out[4] = 8
+out[5] = 10
+out[6] = 9
+out[7] = 2
+out[8] = 9
+out[9] = 15
+out[10] = 8
+out[11] = 9
+out[12] = 9
+out[13] = 4
+out[14] = 9
+out[15] = 5
+out[16] = 8
+out[17] = 6
+out[18] = 10
+out[19] = 1
+out[20] = 14
+out[21] = 15
+out[22] = 6
+out[23] = 3
+out[24] = 7
+out[25] = 11
+out[26] = 4
+out[27] = 10
+out[28] = 3
+out[29] = 8
+out[30] = 13
+out[31] = 3
+out[32] = 10
+out[33] = 7
+out[34] = 6
+out[0] = 0
+out[1] = 5
+out[2] = 5
+out[3] = 0
+out[4] = 4
+out[5] = 9
+out[6] = 9
+out[7] = 2
+out[8] = 9
+out[9] = 3
+out[10] = 9
+out[11] = 10
+out[12] = 8
+out[13] = 1
+out[14] = 9
+out[15] = 4
+out[16] = 10
+out[17] = 8
+out[18] = 8
+out[0] = 0
+out[1] = 11
+out[2] = 5
+out[3] = 0
+out[4] = 11
+out[5] = 8
+out[6] = 9
+out[7] = 11
+out[8] = 9
+out[9] = 3
+out[10] = 9
+out[11] = 10
+out[12] = 8
+out[13] = 7
+out[14] = 9
+out[15] = 4
+out[16] = 8
+out[17] = 11
+out[18] = 10
+out[19] = 6
+out[20] = 15
+out[21] = 6
+out[22] = 6
+out[23] = 6
+out[24] = 7
+out[25] = 1
+out[26] = 4
+out[27] = 13
+out[28] = 10
+out[29] = 4
+out[30] = 6
+out[0] = 0
+out[1] = 14
+out[2] = 5
+out[3] = 0
+out[4] = 7
+out[5] = 7
+out[6] = 11
+out[7] = 11
+out[8] = 9
+out[9] = 0
+out[10] = 9
+out[11] = 4
+out[12] = 9
+out[13] = 5
+out[14] = 9
+out[15] = 15
+out[16] = 8
+out[17] = 2
+out[18] = 11
+out[19] = 7
+out[20] = 15
+out[21] = 2
+out[22] = 6
+out[23] = 9
+out[24] = 7
+out[25] = 12
+out[26] = 4
+out[27] = 11
+out[28] = 3
+out[29] = 15
+out[30] = 12
+out[31] = 11
+out[32] = 0
+out[33] = 14
+out[34] = 13
+out[35] = 3
+out[36] = 2
+out[0] = 1
+out[1] = 6
+out[2] = 5
+out[3] = 1
+out[4] = 10
+out[5] = 14
+out[6] = 9
+out[7] = 7
+out[8] = 11
+out[9] = 10
+out[10] = 8
+out[11] = 1
+out[12] = 8
+out[13] = 12
+out[14] = 9
+out[15] = 8
+out[16] = 8
+out[17] = 7
+out[18] = 11
+out[19] = 7
+out[20] = 14
+out[21] = 9
+out[22] = 6
+out[23] = 4
+out[24] = 7
+out[25] = 12
+out[26] = 4
+out[27] = 10
+out[28] = 3
+out[29] = 8
+out[30] = 13
+out[31] = 12
+out[32] = 1
+out[33] = 5
+out[34] = 9
+out[35] = 7
+out[36] = 8
+out[37] = 2
+out[38] = 10
+out[39] = 9
+out[40] = 14
+out[41] = 14
+out[42] = 7
+out[43] = 0
+out[44] = 5
+out[45] = 12
+out[46] = 0
+out[47] = 4
+out[48] = 11
+out[49] = 6
+out[50] = 7
+out[51] = 1
+out[52] = 5
+out[0] = 1
+out[1] = 13
+out[2] = 5
+out[3] = 1
+out[4] = 9
+out[5] = 5
+out[6] = 11
+out[7] = 11
+out[8] = 9
+out[9] = 15
+out[10] = 8
+out[11] = 11
+out[12] = 8
+out[13] = 9
+out[14] = 9
+out[15] = 2
+out[16] = 8
+out[17] = 3
+out[18] = 10
+out[19] = 12
+out[20] = 14
+out[21] = 8
+out[22] = 7
+out[23] = 4
+out[24] = 6
+out[25] = 11
+out[26] = 5
+out[27] = 15
+out[28] = 3
+out[29] = 14
+out[30] = 12
+out[31] = 9
+out[32] = 1
+out[33] = 3
+out[34] = 9
+out[35] = 1
+out[36] = 8
+out[37] = 5
+out[38] = 10
+out[39] = 14
+out[40] = 14
+out[41] = 14
+out[42] = 7
+out[43] = 0
+out[44] = 5
+out[45] = 12
+out[46] = 0
+out[47] = 4
+out[48] = 11
+out[49] = 4
+out[50] = 12
+out[51] = 4
+out[52] = 2
+out[53] = 4
+out[54] = 14
+out[55] = 5
+out[56] = 6
+out[57] = 6
+out[58] = 6
+out[59] = 0
+out[60] = 6
+out[61] = 12
+out[62] = 6
+out[63] = 0
+out[64] = 1
+out[65] = 9
+out[66] = 3
+
+--------Header--------
+Payload length: 19
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: alicebccddddddddddd
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 14
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: abbccbelladddd
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 14
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: abbccddorodddd
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 13
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: elsaddddddddd
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 5
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: flora
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 11
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: georgeisman
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 14
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: Hellenprincess
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 22
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: aIvyliubbccddddddddddd
+
+CRC valid!
+
+
+--------Header--------
+Payload length: 29
+CRC presence:   1
+Coding rate:    2
+Header checksum valid!
+
+rx msg: Jessicaisstarabbccddddddddddd
+
+CRC valid!
+

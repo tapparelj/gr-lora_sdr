@@ -73,7 +73,7 @@ private:
     int clk_offset = 0;
     double center_freq = 868.1e6;
     int bw = 125000;
-    int SNRdB = -5;
+    int SNRdB = 20;
 
 public:
     top_block_sptr tb;

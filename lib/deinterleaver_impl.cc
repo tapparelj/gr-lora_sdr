@@ -67,8 +67,7 @@ namespace gr {
             }
             sf_app = (m_is_header||m_ldro) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block
             cw_len = m_is_header ? 8 : m_cr + 4;
-            // std::cout << "sf_app " << +sf_app << " cw_len " << +cw_len << std::endl;
-
+            
             if (ninput_items[0] >= cw_len) {  // wait for a full block to deinterleave
 
                 if (m_soft_decoding) {
@@ -107,6 +106,7 @@ namespace gr {
                     // convert decimal vector to binary vector of vector
                     for (int i = 0; i < cw_len; i++) {
                         inter_bin[i] = int2bool(in1[i], sf_app);
+
                     }
 #ifdef GRLORA_DEBUG
                     std::cout << "interleaved----" << std::endl;
@@ -127,9 +127,11 @@ namespace gr {
                         // std::cout << std::endl;
                     }
 
+
                     // transform codewords from binary vector to dec
                     for (unsigned int i = 0; i < sf_app; i++) {
                         out1[i] = bool2int(deinter_bin[i]);  // bool2int return uint32_t Maybe explicit conversion to uint8_t
+
                     }
 
 #ifdef GRLORA_DEBUG

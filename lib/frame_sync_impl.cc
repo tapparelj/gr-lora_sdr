@@ -338,8 +338,6 @@ namespace gr
                 cx_in[i].r = dechirped[i].real();
                 cx_in[i].i = dechirped[i].imag();
             }
-
-
             kiss_fft(cfg_gsv, cx_in, cx_out);
 
             // Get magnitude
@@ -349,64 +347,6 @@ namespace gr
                 sig_en += fft_mag[i];
             }
 
-            // Return argmax here
-            return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
-            // original code:
-            // double sig_en = 0;
-            // std::vector<float> fft_mag(m_number_of_bins);
-            // volk::vector<gr_complex> dechirped(m_number_of_bins);
-
-            // kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
-
-            // // Multiply with ideal downchirp
-            // volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
-
-            // for (uint32_t i = 0; i < m_number_of_bins; i++)
-            // {
-            //     cx_in[i].r = dechirped[i].real();
-            //     cx_in[i].i = dechirped[i].imag();
-            // }
-            // // do the FFT
-            // kiss_fft(cfg, cx_in, cx_out);
-
-            // // Get magnitude
-            // for (uint32_t i = 0u; i < m_number_of_bins; i++)
-            // {
-            //     fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-            //     sig_en += fft_mag[i];
-            // }
-            // free(cfg);
-            // // Return argmax here
-
-            // return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
-        }
-        uint32_t frame_sync_impl::get_custom(const gr_complex *samples, gr_complex *ref_chirp)
-        {
-            // update code not use kiss_fft_alloc every time
-        
-            double sig_en = 0;
-            std::vector<float> fft_mag(m_number_of_bins);
-            volk::vector<gr_complex> dechirped(m_number_of_bins);
-
-            volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
-
-            for (uint32_t i = 0; i < m_number_of_bins; i++)
-            {
-                cx_in[i].r = dechirped[i].real();
-                cx_in[i].i = dechirped[i].imag();
-            }
-
-
-            kiss_fft(cfg_gsv, cx_in, cx_out);
-
-            // Get magnitude
-            for (uint32_t i = 0u; i < m_number_of_bins; i++)
-            {
-                fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-                sig_en += fft_mag[i];
-            }
-
-            // Return argmax here
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
 
@@ -449,7 +389,12 @@ namespace gr
             float sig_en = fft_mag[max_idx];
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
+
         void custom_rotate(std::vector<gr_complex>& vec, size_t positions) {
+            std::rotate(vec.begin(), vec.begin() + positions, vec.end());
+        }
+
+        void custom_rotate3(std::vector<gr_complex>& vec, size_t positions) {
             std::rotate(vec.begin(), vec.begin() + positions, vec.end());
         }
 
@@ -566,7 +511,6 @@ namespace gr
                 }
             }
 
-            // downsampling
             for (uint32_t ii = 0; ii < m_number_of_bins; ii++)
                 in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
 
@@ -599,6 +543,7 @@ namespace gr
                 bin_idx = bin_idx_new;
                 if (symbol_cnt == (int)(m_n_up_req))
                 {
+
                     additional_upchirps = 0;
                     m_state = SYNC;
                     symbol_cnt = 0;
@@ -634,6 +579,7 @@ namespace gr
                 volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0], m_number_of_bins);
 
                 bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+               
                 switch (symbol_cnt)
                 {
                 case NET_ID1:
@@ -643,28 +589,9 @@ namespace gr
                         memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
                         if (additional_upchirps >= 3)
                         {
-
-                            // Perform the rotation using pointer arithmetic
-                            //std::move(preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end(), preamble_raw_up.begin());
-                            // auto start_iter = preamble_raw_up.begin() + m_samples_per_symbol;
-                            // auto end_iter = preamble_raw_up.end();
-                            // auto dest_iter = preamble_raw_up.begin();
-
-                            // // Using std::memcpy to copy the range
-                            // std::memcpy(dest_iter.base(), start_iter.base(), static_cast<std::size_t>(end_iter - start_iter) * sizeof(std::complex<float>));
-
-
-                            //std::copy(rotate_end - rotate_count, rotate_end, rotate_dest + rotate_count);
-
-                            // const gr_complex* in_start = &in[(int)(m_os_factor / 2) + k_hat * m_os_factor];
-                            // const gr_complex* in_end = in_start + m_samples_per_symbol;
-                            // gr_complex* out_start = &preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)];
-
-                            // // Perform the memcpy
-                            // std::memcpy(out_start, in_start, m_samples_per_symbol * sizeof(gr_complex));
-
                             std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
-                            // //custom_rotate(preamble_raw_up,m_samples_per_symbol);
+                            
+                            //custom_rotate2(preamble_raw_up,m_samples_per_symbol);
                             memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
                         }
                         else
@@ -716,14 +643,14 @@ namespace gr
                     }
 
                     // correct STOint and CFOint in the preamble upchirps
-                    custom_rotate(preamble_upchirps, mod(m_cfo_int, m_number_of_bins));
+                    // custom_rotate(preamble_upchirps, mod(m_cfo_int, m_number_of_bins));
                     // auto start_iter2 = preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins);
                     // auto end_iter2 = preamble_upchirps.end();
                     // auto dest_iter2 = preamble_upchirps.begin();
 
                     // std::memcpy(dest_iter2.base(), start_iter2.base(), static_cast<std::size_t>(end_iter2 - start_iter2) * sizeof(std::complex<float>));
                     //std::move(preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end(),preamble_upchirps.begin());
-                    //std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
+                    std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
 
                     std::vector<gr_complex> CFO_int_correc;
                     CFO_int_correc.resize((m_n_up_req + additional_upchirps) * m_number_of_bins);
@@ -987,6 +914,7 @@ namespace gr
             }
             }
             consume_each(items_to_consume);
+       
             produce(0, items_to_output);
             return WORK_CALLED_PRODUCE;
         }
