@@ -14,7 +14,7 @@
 #                example_tx_source.txt in data/GRC_default folder
 #
 # Function: test_002_empty_buffer_test
-#   Description: test the buffers of receiver (correctness) by set slow processing speed(1) 
+#    Description: test the buffers of receiver (correctness) by set slow processing speed(1) 
 #                in throttle at the beigining(before frame_sync) of receiver.
 #                input the output of receiver ref_tx_sf_cr.bin in qa_ref/qa_ref_tx. 
 #                sf = 7, cr = 2 and compare output with reference file 

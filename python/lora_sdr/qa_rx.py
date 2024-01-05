@@ -7,7 +7,7 @@
 #              hamming_dec, header_decoder, dewhitening and crc_verify
 #
 # Function: test_001_functional_test
-#   Description: test the general function of receiver (correctness) by input 
+#    Description: test the general function of receiver (correctness) by input 
 #                the output of receiver ref_tx_sf_cr.bin in qa_ref/qa_ref_tx. sf = 7, cr = 2
 #                and compare output with reference file 
 #                example_tx_source.txt in data/GRC_default folder
