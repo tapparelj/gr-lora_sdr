@@ -222,7 +222,70 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 	- (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
 	- (Windows) `%CONDA_PREFIX%\Library\share\gr-lora_sdr\examples`
 
-   
+
+#### Block Test
+
+- Prerequisites: Before running the tests, make sure you have build the code and create a build folder according to above.
+
+- Test Procedure. Follow these steps to run the tests
+
+	- Open a terminal
+	
+	- Navigate to the build folder you create
+	
+		```sh
+		cd path/to/build/folder
+		```
+
+	- Run the code below to test all the blocks (except for modulate, frame_sync, header_decoder and crc_verify), LoRa transmitter as well as receiver
+		- with log
+			```sh
+			ctest -VV
+			```
+		- without log
+			```sh
+			make test
+			```
+#### Generate C++ code for flow graph
+
+- You can generate C++ code for flow graph in gnuradio. Follow these steps to generate C++ code for flow_graph.grc.
+  
+    
+	- Open gnuradio companion and open .grc file in folder examples 
+	- Change "output language" in "Options" to C++
+	- Change "general options" in "Options" to No GUI
+	- Press "run"
+	- Go to the folder where there is your flow_graph.grc and you could see a newly generated folder named as flow_graph. In flow_graph, you could see flow_graph.cpp
+   	- Go into the folder flow_graph
+   	- Create CMakeLists.txt file and specify the libraries in CMakeLists.txt
+		- In CMakeLists.txt add 
+			```sh
+			include_directories(/path/to/conda/envs/gr310/include/gnuradio/lora_sdr)
+			```
+		- In target_link_libraries add 
+			```sh
+			/path/to/build/lib/libgnuradio-lora_sdr.so
+			``` 
+
+#### Run C++ code for flow graph in terminal 
+- Procedure. Follow these steps to run the tests.
+	- To build the code, create build folder in the flow_graph folder generated above and go into it
+   		```sh
+		mkdir build
+		cd build
+		```
+
+	- Run the main CMakeLists.txt
+		```sh
+		cmake ..
+  		make
+		```
+
+	- Finally run the code
+		```sh
+		./flow_graph
+		```
+	  		  
 ## Frequent issues:  
 - Fail to `make` after pulling a new version from git
 	- If the parameters of a block have changed in the new version, you need to first clean the old installation before building the module again.
