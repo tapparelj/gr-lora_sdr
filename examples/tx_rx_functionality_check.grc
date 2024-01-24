@@ -37,12 +37,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-5'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 96.0]
+    coordinate: [848, 92.0]
     rotation: 0
     state: enabled
 - name: bw
@@ -66,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [312, 16.0]
+    coordinate: [336, 20.0]
     rotation: 0
     state: enabled
 - name: clk_offset
@@ -121,7 +121,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '255'
+    value: '14'
   states:
     bus_sink: false
     bus_source: false
@@ -157,7 +157,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '7'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false
@@ -206,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1448, 240.0]
+    coordinate: [1448, 236.0]
     rotation: 0
     state: true
 - name: blocks_message_strobe_0_0
@@ -217,28 +217,13 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    msg: pmt.intern("Hello World!")
+    msg: 'pmt.intern("Hello World: 0")'
     period: '2000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [120, 228.0]
-    rotation: 0
-    state: enabled
-- name: blocks_probe_signal_vx_0
-  id: blocks_probe_signal_vx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [448, 572.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle_0
@@ -257,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1584, 244.0]
+    coordinate: [1584, 236.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -486,7 +471,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 436.0]
+    coordinate: [592, 412.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_interleaver_0
@@ -544,7 +529,7 @@ blocks:
     bus_structure: null
     coordinate: [152, 172.0]
     rotation: 180
-    state: disabled
+    state: enabled
 - name: lora_sdr_whitening_0
   id: lora_sdr_whitening
   parameters:
@@ -573,7 +558,6 @@ connections:
 - [blocks_throttle_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
-- [lora_sdr_crc_verif_0, '0', blocks_probe_signal_vx_0, '0']
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
 - [lora_sdr_dewhitening_0, '0', lora_sdr_crc_verif_0, '0']
 - [lora_sdr_fft_demod_0, '0', lora_sdr_gray_mapping_0, '0']

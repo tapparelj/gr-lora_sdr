@@ -9,6 +9,7 @@
 #include <gnuradio/lora_sdr/utilities.h>
 
 // #define GR_LORA_PRINT_INFO
+#define SF_THRESHOLD 7 ///< the last SF that has a normal Header (7)
 
 namespace gr {
   namespace lora_sdr {

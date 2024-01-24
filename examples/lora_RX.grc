@@ -28,7 +28,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 4]
+    coordinate: [16, 12.0]
     rotation: 0
     state: enabled
 
@@ -49,12 +49,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 868.1e6
+    value: 867.7e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 8.0]
+    coordinate: [280, 12.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -66,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 8.0]
+    coordinate: [688, 12.0]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -78,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 8.0]
+    coordinate: [536, 12.0]
     rotation: 0
     state: enabled
 - name: impl_head
@@ -90,19 +90,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 8.0]
+    coordinate: [456, 12.0]
     rotation: 0
     state: enabled
 - name: pay_len
   id: variable
   parameters:
     comment: ''
-    value: '11'
+    value: '17'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [608, 8.0]
+    coordinate: [608, 12.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -114,19 +114,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 8.0]
+    coordinate: [200, 12.0]
     rotation: 0
     state: enabled
 - name: sf
   id: variable
   parameters:
     comment: ''
-    value: '5'
+    value: '6'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 88.0]
+    coordinate: [368, 92.0]
     rotation: 0
     state: enabled
 - name: soft_decoding
@@ -138,7 +138,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [528, 88.0]
+    coordinate: [528, 92.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -151,7 +151,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 80.0]
+    coordinate: [200, 84.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_crc_verif_0
@@ -163,12 +163,12 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     output_crc_check: 'False'
-    print_rx_msg: 'True'
+    print_rx_msg: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 192.0]
+    coordinate: [1392, 184.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -184,7 +184,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 216.0]
+    coordinate: [760, 212.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_dewhitening_0
@@ -199,7 +199,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 208.0]
+    coordinate: [1272, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 216.0]
+    coordinate: [424, 212.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_frame_sync_0
@@ -239,7 +239,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [256, 184.0]
+    coordinate: [264, 180.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_mapping_0
@@ -255,7 +255,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 216.0]
+    coordinate: [592, 212.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_hamming_dec_0
@@ -271,7 +271,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 216.0]
+    coordinate: [936, 212.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -292,29 +292,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 200.0]
-    rotation: 0
-    state: enabled
-- name: soapy_limesdr_source_0
-  id: soapy_limesdr_source
-  parameters:
-    affinity: ''
-    alias: ''
-    bandwidth: '0.0'
-    center_freq: center_freq
-    comment: ''
-    dev_args: ''
-    freq_correction: '0'
-    gain: '20.0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [72, 364.0]
+    coordinate: [1112, 196.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -752,7 +730,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 164.0]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']
@@ -763,7 +741,6 @@ connections:
 - [lora_sdr_hamming_dec_0, '0', lora_sdr_header_decoder_0, '0']
 - [lora_sdr_header_decoder_0, '0', lora_sdr_dewhitening_0, '0']
 - [lora_sdr_header_decoder_0, frame_info, lora_sdr_frame_sync_0, frame_info]
-- [soapy_limesdr_source_0, '0', lora_sdr_frame_sync_0, '0']
 - [uhd_usrp_source_0, '0', lora_sdr_frame_sync_0, '0']
 
 metadata:

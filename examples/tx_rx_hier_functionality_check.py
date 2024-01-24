@@ -36,7 +36,7 @@ class tx_rx_hier_functionality_check(gr.top_block):
         self.bw = bw = 125000
         self.sync_word = sync_word = 0x12
         self.soft_decoding = soft_decoding = False
-        self.sf = sf = 7
+        self.sf = sf = 5
         self.samp_rate = samp_rate = bw*4
         self.preamb_len = preamb_len = 8
         self.pay_len = pay_len = 255
@@ -45,7 +45,7 @@ class tx_rx_hier_functionality_check(gr.top_block):
         self.cr = cr = 0
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
-        self.SNRdB = SNRdB = -5
+        self.SNRdB = SNRdB = 0
 
         ##################################################
         # Blocks
@@ -59,6 +59,7 @@ class tx_rx_hier_functionality_check(gr.top_block):
             samp_rate=500000,
             sf=7,
          ldro_mode=2,frame_zero_padd=1280 )
+        self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, soft_decoding=True, ldro_mode=2, print_rx=[True,True])
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
@@ -69,13 +70,15 @@ class tx_rx_hier_functionality_check(gr.top_block):
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int((2**sf+2)*samp_rate/bw)))
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
-        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world!"), 2000)
+        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.intern("Hello world: 0"), 2000)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
         self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_tx_0, 'in'))
+        self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0_0, 'set_msg'))
         self.connect((self.blocks_throttle_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_rx_0, 0))
         self.connect((self.lora_tx_0, 0), (self.blocks_throttle_0, 0))

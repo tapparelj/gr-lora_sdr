@@ -398,13 +398,15 @@ namespace gr
             m_has_crc = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("crc"), err));
             uint8_t ldro_mode = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("ldro_mode"), err));
             m_invalid_header = pmt::to_double(pmt::dict_ref(frame_info, pmt::string_to_symbol("err"), err));
+            m_received_head = true;
 
             if (m_invalid_header)
             {
-                m_state = DETECT;
-                symbol_cnt = 1;
-                k_hat = 0;
-                m_sto_frac = 0;
+                m_debug_log = true;
+                // m_state = DETECT;
+                // symbol_cnt = 1;
+                // k_hat = 0;
+                // m_sto_frac = 0;
             }
             else
             {
@@ -414,7 +416,6 @@ namespace gr
                     m_ldro = ldro_mode;
 
                 m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
-                m_received_head = true;
                 frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(false));
                 frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
                 frame_info = pmt::dict_delete(frame_info, pmt::intern("ldro_mode"));
@@ -494,14 +495,18 @@ namespace gr
             }
 
             // downsampling
-            for (uint32_t ii = 0; ii < m_number_of_bins; ii++)
+            for (uint32_t ii = 0; ii < m_number_of_bins; ii++){
                 in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
+            }
 
             switch (m_state)
             {
             case DETECT:
             {
                 bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+                if (m_debug_log){
+                    //std::cout << "bin_idx_new " << bin_idx_new << "\n";
+                }
 
                 if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
                 {
@@ -546,6 +551,7 @@ namespace gr
                 {
                     m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
                     m_sto_frac = estimate_STO_frac();
+                    // std::cout<<"new offsets estimates "<<m_cfo_frac<<" "<<m_sto_frac<<"\n";
                     // create correction vector
                     for (uint32_t n = 0; n < m_number_of_bins; n++)
                     {
@@ -776,10 +782,11 @@ namespace gr
                                 off_by_one_id = net_id_off != 0;
                             items_to_consume = -m_os_factor * net_id_off;
                             m_state = SFO_COMPENSATION;
+
                             frame_cnt++;
                         }
                     }
-                    if (m_state != DETECT)
+                    if (m_state == SFO_COMPENSATION)
                     {
                         // update sto_frac to its value at the payload beginning
                         m_sto_frac += sfo_hat * 4.25;
@@ -829,13 +836,12 @@ namespace gr
                     }
                 }
                 }
-
                 break;
             }
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
-                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
+                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && (m_received_head && !m_invalid_header)))
                 {
                     // output downsampled signal (with no STO but with CFO)
                     memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
@@ -860,6 +866,7 @@ namespace gr
                 }
                 else
                 {
+                    //std::cout<<"get ready for nex frame\n";
                     m_state = DETECT;
                     symbol_cnt = 1;
                     items_to_consume = m_samples_per_symbol;
@@ -871,7 +878,7 @@ namespace gr
             }
             default:
             {
-                std::cerr << "[LoRa sync] WARNING : No state! Shouldn't happen\n";
+                std::cerr << "[LoRa sync] ERROR : No state! Shouldn't happen\n";
                 break;
             }
             }

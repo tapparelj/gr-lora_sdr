@@ -116,7 +116,7 @@ namespace gr
                         m_frame_len = pmt::to_long(tags[0].value);
                         tags[0].offset = nitems_written(0);
 
-                        tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25 + (m_sf<7?2:0)) * m_samples_per_symbol + m_inter_frame_padding ));
+                        tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25 + (m_sf<SF_THRESHOLD?2:0)) * m_samples_per_symbol + m_inter_frame_padding ));
 
                         add_item_tag(0, tags[0]);
 
@@ -132,7 +132,7 @@ namespace gr
             {
                 for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
                 {
-                    if (preamb_samp_cnt < (m_preamb_len + 5+(m_sf<7?2:0))*m_samples_per_symbol) //should output preamble part
+                    if (preamb_samp_cnt < (m_preamb_len + 5+(m_sf<SF_THRESHOLD?2:0))*m_samples_per_symbol) //should output preamble part
                     {
                         if (preamb_samp_cnt < (m_preamb_len*m_samples_per_symbol))
                         { //upchirps
@@ -153,16 +153,16 @@ namespace gr
                             memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol / 4 * sizeof(gr_complex));
                             //correct offset dur to quarter of downchirp
                             output_offset -= 3 * m_samples_per_symbol / 4;
-                            if(m_sf>=7){
+                            if(m_sf>=SF_THRESHOLD){
                                 samp_cnt = 0;
                             }
                             
                         }
-                        else if ((m_sf<7) && (preamb_samp_cnt < (m_preamb_len + 6)*m_samples_per_symbol)) //add first zero symbol before payload for sf<7
+                        else if ((m_sf<SF_THRESHOLD) && (preamb_samp_cnt < (m_preamb_len + 6)*m_samples_per_symbol)) //add first zero symbol before payload for sf<7
                         {
                             memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));                            
                         }
-                        else if ((m_sf<7) && (preamb_samp_cnt < (m_preamb_len + 7)*m_samples_per_symbol)) //add second zero symbol before payload for sf<7
+                        else if ((m_sf<SF_THRESHOLD) && (preamb_samp_cnt < (m_preamb_len + 7)*m_samples_per_symbol)) //add second zero symbol before payload for sf<7
                         {
 
                             memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));     
@@ -180,12 +180,10 @@ namespace gr
                 nitems_to_process = std::min(nitems_to_process, ninput_items[0]);
                 for (int i = 0; i < nitems_to_process; i++)
                 {
-                    std::cout<<std::hex<<"0x"<<in[i]<<std::dec<<std::endl;
                     build_upchirp(&out[output_offset], in[i], m_sf,m_os_factor);
                     output_offset += m_samples_per_symbol;
                     samp_cnt += m_samples_per_symbol;
                 }
-                std::cout<<"----\n";
             }
             else
             {

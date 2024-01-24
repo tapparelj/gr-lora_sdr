@@ -91,7 +91,8 @@ namespace gr
           }
           cw_cnt = 0;
           m_frame_len = pmt::to_long(tags[0].value);
-          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
+
+          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - (m_sf - (m_sf<7?0:2))) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
           tags[0].offset = nitems_written(0);
         }
       }

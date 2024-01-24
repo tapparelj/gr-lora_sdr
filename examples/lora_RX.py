@@ -17,7 +17,8 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-from gnuradio import soapy
+from gnuradio import uhd
+import time
 import gnuradio.lora_sdr as lora_sdr
 import numpy as np
 
@@ -33,32 +34,34 @@ class lora_RX(gr.top_block):
         # Variables
         ##################################################
         self.soft_decoding = soft_decoding = False
-        self.sf = sf = 5
+        self.sf = sf = 6
         self.samp_rate = samp_rate = 500000
-        self.pay_len = pay_len = 11
+        self.pay_len = pay_len = 17
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
         self.cr = cr = 1
-        self.center_freq = center_freq = 868.1e6
+        self.center_freq = center_freq = 867.7e6
         self.bw = bw = 125000
 
         ##################################################
         # Blocks
         ##################################################
 
-        self.soapy_limesdr_source_0 = None
-        dev = 'driver=lime'
-        stream_args = ''
-        tune_args = ['']
-        settings = ['']
+        self.uhd_usrp_source_0 = uhd.usrp_source(
+            ",".join(("addr=192.168.10.6", '')),
+            uhd.stream_args(
+                cpu_format="fc32",
+                args='',
+                channels=list(range(0,1)),
+            ),
+        )
+        self.uhd_usrp_source_0.set_samp_rate(samp_rate)
+        # No synchronization enforced.
 
-        self.soapy_limesdr_source_0 = soapy.source(dev, "fc32", 1, '',
-                                  stream_args, tune_args, settings)
-        self.soapy_limesdr_source_0.set_sample_rate(0, samp_rate)
-        self.soapy_limesdr_source_0.set_bandwidth(0, 0.0)
-        self.soapy_limesdr_source_0.set_frequency(0, center_freq)
-        self.soapy_limesdr_source_0.set_frequency_correction(0, 0)
-        self.soapy_limesdr_source_0.set_gain(0, min(max(20.0, -12.0), 61.0))
+        self.uhd_usrp_source_0.set_center_freq(center_freq, 0)
+        self.uhd_usrp_source_0.set_antenna('TX/RX', 0)
+        self.uhd_usrp_source_0.set_gain(0, 0)
+        self.uhd_usrp_source_0.set_min_output_buffer((int(np.ceil(samp_rate/bw*(2**sf+2)))))
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, False, True)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
@@ -80,7 +83,7 @@ class lora_RX(gr.top_block):
         self.connect((self.lora_sdr_gray_mapping_0, 0), (self.lora_sdr_deinterleaver_0, 0))
         self.connect((self.lora_sdr_hamming_dec_0, 0), (self.lora_sdr_header_decoder_0, 0))
         self.connect((self.lora_sdr_header_decoder_0, 0), (self.lora_sdr_dewhitening_0, 0))
-        self.connect((self.soapy_limesdr_source_0, 0), (self.lora_sdr_frame_sync_0, 0))
+        self.connect((self.uhd_usrp_source_0, 0), (self.lora_sdr_frame_sync_0, 0))
 
 
     def get_soft_decoding(self):
@@ -100,7 +103,7 @@ class lora_RX(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.soapy_limesdr_source_0.set_sample_rate(0, self.samp_rate)
+        self.uhd_usrp_source_0.set_samp_rate(self.samp_rate)
 
     def get_pay_len(self):
         return self.pay_len
@@ -131,13 +134,14 @@ class lora_RX(gr.top_block):
 
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
-        self.soapy_limesdr_source_0.set_frequency(0, self.center_freq)
+        self.uhd_usrp_source_0.set_center_freq(self.center_freq, 0)
 
     def get_bw(self):
         return self.bw
 
     def set_bw(self, bw):
         self.bw = bw
+        self.uhd_usrp_source_0.set_bandwidth(self.bw, 1)
 
 
 

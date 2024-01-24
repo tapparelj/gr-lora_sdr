@@ -34,7 +34,7 @@ class tx_rx_simulation(gr.top_block):
         # Variables
         ##################################################
         self.soft_decoding = soft_decoding = False
-        self.sf = sf = 7
+        self.sf = sf = 5
         self.samp_rate = samp_rate = 500000
         self.preamb_len = preamb_len = 8
         self.pay_len = pay_len = 16
@@ -45,7 +45,7 @@ class tx_rx_simulation(gr.top_block):
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
         self.bw = bw = 125000
-        self.SNRdB = SNRdB = -5
+        self.SNRdB = SNRdB = 0
 
         ##################################################
         # Blocks
@@ -74,7 +74,7 @@ class tx_rx_simulation(gr.top_block):
             noise_seed=0,
             block_tags=True)
         self.channels_channel_model_0.set_min_output_buffer((int(2**sf*samp_rate/bw*1.1)))
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, (samp_rate*10),True)
+        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
         self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_char*1, '/home/joachim/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt', False, 0, 0)
         self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
 
@@ -123,7 +123,7 @@ class tx_rx_simulation(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0.set_sample_rate((self.samp_rate*10))
+        self.blocks_throttle_0.set_sample_rate(self.samp_rate)
         self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
 
     def get_preamb_len(self):

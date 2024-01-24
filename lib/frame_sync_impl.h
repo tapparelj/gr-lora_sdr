@@ -106,6 +106,9 @@ namespace gr
 
       bool m_should_log;   ///< indicate that the sync values should be logged
       float off_by_one_id; ///< Indicate that the network identifiers where off by one and corrected (float used as saved in a float32 bin file)
+
+      bool m_debug_log =false;
+
 #ifdef GRLORA_DEBUG
       std::ofstream preamb_file;
 #endif

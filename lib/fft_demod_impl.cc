@@ -310,7 +310,6 @@ namespace gr {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
                 } else {                                 // Hard decoding
                     // shift by -1 and use reduce rate if first block (header)
-                    std::cout<<std::hex<<"0x"<<mod(get_symbol_val(in) - 1, (1 << m_sf))<<std::dec<<std::endl;
                     output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_sf<7 && m_ldro)) ? 4 : 1));
                 }
 
