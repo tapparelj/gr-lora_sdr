@@ -17,6 +17,12 @@ parameters:
     options: ['False', 'True']
     option_labels: ['No', 'Yes']
     default: 'False'
+-   id: hex_to_file
+    label: hex_to_file
+    dtype: enum
+    options: ['False', 'True']
+    option_labels: ['No', 'Yes']
+    default: 'False'
 
 inputs:
 -   domain: stream
@@ -33,21 +39,28 @@ outputs:
     hide: ${False if str(output_crc_check)=='True' else True}
 -   domain: message
     id: msg
-    optional: true
+    optional: True    
+-   domain: message
+    id: hex
+    optional: True
+    
+    
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.crc_verif( ${print_rx_msg}, ${output_crc_check})
+    make: lora_sdr.crc_verif( ${print_rx_msg}, ${output_crc_check}, ${hex_to_file})
 
 documentation: |-
     Calculate the CRC of the received data and compare it with the received CRC.
       Parameters:
         rx_log: filename where to store the received messages and their timestamp, put "" for no log. "Walltime,payload\n"
         print_rx_msg: Print the received message in the terminal with the specified format. 0: None, 1: ASCII, 2: Hex
-        output_crc_check: Ouput a stream of bytes containing either 0 or 1 based on the CRC check. If enabled, both stream output must be connected.
+        output_crc_check: Ouput a stream of bytes containing either 0 or 1 based on the CRC check. If enabled, both stream output must be connected.        
+        hex_to_file: Write hex to file with filename date_timestamp. If enabled, file would be written.
       Input:
         in: stream of payload bytes
       Output:
         (optional) msg: Received payload
+        (optional) hex: Received hex of payload
         (optional) payload_char: Received payload as a stream of char, with tagged with payload length and CRC verification result.
         (optional) crc_check: stream indicating the result of the CRC verification. Enabled by the corresponding parameter.
 

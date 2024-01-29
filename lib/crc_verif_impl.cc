@@ -15,22 +15,24 @@ namespace gr
     {
 
         crc_verif::sptr
-        crc_verif::make(int print_rx_msg, bool output_crc_check)
+        crc_verif::make(int print_rx_msg, bool output_crc_check, bool hex_to_file)
         {
-            return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg, output_crc_check));
+            return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg, output_crc_check, hex_to_file));
         }
 
         /*
          * The private constructor
          */
-        crc_verif_impl::crc_verif_impl(int print_rx_msg, bool output_crc_check)
+        crc_verif_impl::crc_verif_impl(int print_rx_msg, bool output_crc_check , bool hex_to_file) 
             : gr::block("crc_verif",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
                         gr::io_signature::make2(0, 2, sizeof(uint8_t), sizeof(uint8_t))),
                         print_rx_msg(print_rx_msg),
-                  output_crc_check(output_crc_check)
+                  output_crc_check(output_crc_check),
+                  hex_to_file(hex_to_file)
         {
             message_port_register_out(pmt::mp("msg"));
+            message_port_register_out(pmt::mp("hex"));
             set_tag_propagation_policy(TPP_DONT);
             
         }
@@ -68,6 +70,27 @@ namespace gr
                 }
             }
             return crc;
+        }
+
+        void writeHexToFile(const std::string& filename, const std::string& hexString) {
+            std::ofstream file(filename.c_str());
+
+            if (file.is_open()) {
+                file << hexString;
+                //std::cout << "Hexadecimal data written to file: " << filename << std::endl;
+            } else {
+                std::cerr << "Error opening file: " << filename << std::endl;
+            }
+        }
+
+        std::string getCurrentDateTime() {
+            auto now = std::chrono::system_clock::now();
+            std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+            std::tm* localTime = std::localtime(&now_c);
+
+            std::ostringstream oss;
+            oss << std::put_time(localTime, "%d%m%Y_%H%M%S");
+            return oss.str();
         }
 
         int crc_verif_impl::general_work(int noutput_items,
@@ -153,17 +176,38 @@ namespace gr
 		                curent_tag.offset = nitems_written(0);
 		                add_item_tag(0, curent_tag);
                     }
+                    std::stringstream hexStream;
+                    for (int i = 0; i < (int)m_payload_len; i++){
+                    //std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
+                    hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                    if(i != (int)m_payload_len-1)
+                        //std::cout << ", ";
+                        hexStream << ", ";
+                    }
+                    hexString = hexStream.str();
+                    if (hex_to_file)
+                    {                    
+                    std::string timestamp = getCurrentDateTime();
+                    std::string filename = "output_" + timestamp + ".txt";
+                    writeHexToFile(filename, hexString);
+                    }
+                   
+
                     if (print_rx_msg != NONE)
                     {
+                        
                         if(print_rx_msg == ASCII)
                             std::cout << "rx msg: " << message_str << std::endl;                        
-                        else if(print_rx_msg == HEX){
+                        else if(print_rx_msg == HEX ){
                             std::cout << "rx msg: ";
                             for (int i = 0; i < (int)m_payload_len; i++){
                                 std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
+                                //hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
                                 if(i != (int)m_payload_len-1)
                                     std::cout << ", ";
+                                    //hexStream << ", ";
                             }
+                            //hexString = hexStream.str();
                             std::cout << std::endl;
                         }
 
@@ -175,6 +219,7 @@ namespace gr
                                       << std::endl;
                     }
                     message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
+                    message_port_pub(pmt::intern("hex"), pmt::mp(hexString));
                     in_buff.erase(in_buff.begin(), in_buff.begin()+m_payload_len + 2);
                     if(output_crc_check){
                         produce(0,m_payload_len);
@@ -186,6 +231,7 @@ namespace gr
             }
             else if ((in_buff.size()>= m_payload_len) && !m_crc_presence)
             {
+                std::stringstream hexStream;
                 if (output_items.size()){
 		            curent_tag.offset = nitems_written(0);
 		            add_item_tag(0, curent_tag);
@@ -201,18 +247,36 @@ namespace gr
                 }
                 cnt++;
                 in_buff.erase(in_buff.begin(), in_buff.begin() + m_payload_len );
+                for (int i = 0; i < (int)m_payload_len; i++){
+                    //std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
+                    hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                    if(i != (int)m_payload_len-1)
+                        //std::cout << ", ";
+                        hexStream << ", ";
+                    }
+                hexString = hexStream.str();
+                if (hex_to_file) {                    
+                    std::string timestamp = getCurrentDateTime();
+                    std::string filename = "output_" + timestamp + ".txt";
+                    writeHexToFile(filename, hexString);
+                }
+                
                 if (print_rx_msg == ASCII)
                     std::cout << "rx msg: " << message_str << std::endl;
                 else if(print_rx_msg == HEX){
                     std::cout << "rx msg: ";
                     for (int i = 0; i < (int)m_payload_len; i++){
                         std::cout << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                        //hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
                         if(i != (int)m_payload_len-1)
                             std::cout << ", ";
+                            //hexStream << ", ";
                     }
+                    //hexString = hexStream.str();
                     std::cout << std::endl;
                 }
                 message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
+                message_port_pub(pmt::intern("hex"), pmt::mp(hexString));
                 
                 return m_payload_len;
             }
