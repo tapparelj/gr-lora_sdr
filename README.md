@@ -7,6 +7,39 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
 
+# Branch Info
+We will implement c++ capability to all blocks in this repo.
+This means adding the following lines to each of the block's .yml: 
+
+* ```
+  flags: [ python, cpp ]
+  ```
+* ``` 
+  cpp_templates: 
+  includes: ['#include <gnuradio/lora_sdr/<BLOCK_NAME>.h>'] 
+  declarations: 'lora_sdr::<BLOCK_NAME>::sptr ${id};' 
+  make: 'this->${id} = lora_sdr::<BLOCK_NAME>::make(<PARAMS>);'
+  packages: ['gnuradio-lora_sdr']
+  link: ['gnuradio::gnuradio-lora_sdr']
+  translations:
+     'False': 'false'
+     'True': 'true'
+     \[: '{'
+     \]: '}'
+  ```
+
+notice the <BLOCK_NAME> and <PARAMS> tag.
+for example you can look at `/grc/lora_sdr_frame_sync.block.yml` where it is already implemented
+
+Reciever Blocks to do:
+- [ ] lora_sdr_fft_demod.block.yml
+- [ ] lora_sdr_gray_mapping.block.yml
+- [ ] lora_sdr_deinterleaver.block.yml
+- [ ] lora_sdr_hamming_dec.block.yml
+- [ ] lora_sdr_header_decoder.block.yml
+- [ ] lora_sdr_dewhitening.block.yml
+- [ ] lora_sdr_crc_verif.block.yml
+
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
