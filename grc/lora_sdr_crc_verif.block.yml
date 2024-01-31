@@ -3,6 +3,7 @@
 id: lora_sdr_crc_verif
 label: CRC verif
 category: '[LoRa_RX]'
+flags: [python,cpp]
 
 parameters:
 -   id: print_rx_msg
@@ -17,6 +18,18 @@ parameters:
     options: ['False', 'True']
     option_labels: ['No', 'Yes']
     default: 'False'
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/crc_verif.h>']
+    declarations: 'lora_sdr::crc_verif::sptr ${id};'
+    make: 'this->${id} = lora_sdr::crc_verif::make(${print_rx_msg}, ${output_crc_check});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream
