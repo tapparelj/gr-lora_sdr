@@ -39,7 +39,7 @@ parameters:
 cpp_templates:
     includes: ['#include <gnuradio/lora_sdr/header_decoder.h>']
     declarations: 'lora_sdr::header_decoder::sptr ${id};'
-    make: 'this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${print_header}, ${cr}, ${pay_len}, ${has_crc}, ${ldro});'
+    make: 'this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${cr}, ${pay_len}, ${has_crc}, ${ldro}, ${print_header});'
     packages: ['gnuradio-lora_sdr']
     link: ['gnuradio::gnuradio-lora_sdr']
     translations:
