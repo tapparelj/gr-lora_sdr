@@ -1,6 +1,8 @@
 id: lora_sdr_whitening
 label: Whitening
 category: '[LoRa_TX]'
+flags: [python,cpp]
+
 parameters:
 -   id: source_type
     label: Source type
@@ -30,6 +32,18 @@ parameters:
     dtype: bool
     default: false
     hide: ${ ( 'none' if (str(source_type) == "file_source" and use_length_tag == 'False') else 'all') }
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/whitening.h>']
+    declarations: 'lora_sdr::whitening::sptr ${id};'
+    make: 'this->${id} = lora_sdr::whitening::make(${is_hex}, ${use_length_tag}, ${separator}, ${length_tag_name});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream

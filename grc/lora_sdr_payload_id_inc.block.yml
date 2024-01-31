@@ -1,6 +1,8 @@
 id: lora_sdr_payload_id_inc
 label: payload id inc
 category: '[LoRa_TX]'
+flags: [python,cpp]
+
 templates:
   imports: import gnuradio.lora_sdr as lora_sdr
   make: lora_sdr.payload_id_inc(${separator})
@@ -9,6 +11,19 @@ parameters:
   label: Separator
   dtype: string
   default: ':'
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/payload_id_inc.h>']
+    declarations: 'lora_sdr::payload_id_inc::sptr ${id};'
+    make: 'this->${id} = lora_sdr::payload_id_inc::make(${separator});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
+
 inputs: 
 -   domain: message
     id: msg_in
