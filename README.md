@@ -6,42 +6,6 @@
 [![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
-
-# Branch Info
-We implement c++ code generation capability to all blocks in this repo.
-This means adding the following lines to each of the blocks' .yml files: 
-
-* ```
-  flags: [python, cpp]
-  ```
-* ``` 
-  cpp_templates: 
-  includes: ['#include <gnuradio/lora_sdr/<BLOCK_NAME>.h>'] 
-  declarations: 'lora_sdr::<BLOCK_NAME>::sptr ${id};' 
-  make: 'this->${id} = lora_sdr::<BLOCK_NAME>::make(<PARAMS>);'
-  packages: ['gnuradio-lora_sdr']
-  link: ['gnuradio::gnuradio-lora_sdr']
-  translations:
-     'False': 'false'
-     'True': 'true'
-     \[: '{'
-     \]: '}'
-  ```
-
-notice the <BLOCK_NAME> and <PARAMS> tag.
-for example you can look at `/grc/lora_sdr_frame_sync.block.yml` where it is already implemented
-
-Rx Blocks:
-- [x] lora_sdr_fft_demod.block.yml
-- [x] lora_sdr_gray_mapping.block.yml
-- [x] lora_sdr_deinterleaver.block.yml
-- [x] lora_sdr_hamming_dec.block.yml
-- [x] lora_sdr_header_decoder.block.yml
-- [x] lora_sdr_dewhitening.block.yml
-- [x] lora_sdr_crc_verif.block.yml
-
-Tx Blocks: to do if requested
-
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
@@ -219,6 +183,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- Add C++ flowgraph support for receiver blocks
 - Add optional print of received payload as hex values
 - Added tagged stream input support (for frame definition of frame length)
 - Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 
