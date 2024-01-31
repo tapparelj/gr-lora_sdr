@@ -3,12 +3,25 @@
 id: lora_sdr_add_crc
 label: Add crc
 category: '[LoRa_TX]'
+flags: [python,cpp]
 
 parameters:
 -   id: has_crc
     label: Has_crc
     dtype: bool
     default: 'False'
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/add_crc.h>']
+    declarations: 'lora_sdr::add_crc::sptr ${id};'
+    make: 'this->${id} = lora_sdr::add_crc::make(${has_crc});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream

@@ -1,6 +1,7 @@
 id: lora_sdr_header
 label: Add header
 category: '[LoRa_TX]'
+flags: [python,cpp]
 
 parameters:
 -   id: impl_head
@@ -14,6 +15,18 @@ parameters:
     label: CR
     dtype: int
     default: 'cr'
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/header.h>']
+    declarations: 'lora_sdr::header::sptr ${id};'
+    make: 'this->${id} = lora_sdr::header::make(${impl_head}, ${has_crc}, ${cr});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 
 inputs:
