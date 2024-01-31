@@ -3,6 +3,19 @@
 id: lora_sdr_dewhitening
 label: Dewhitening
 category: '[LoRa_RX]'
+flags: [python,cpp]
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/dewhitening.h>']
+    declarations: 'lora_sdr::dewhitening::sptr ${id};'
+    make: 'this->${id} = lora_sdr::dewhitening::make();'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream

@@ -3,6 +3,7 @@
 id: lora_sdr_fft_demod
 label: fft_demod
 category: '[LoRa_RX]'
+flags: [python, cpp]
 
 parameters:
 -   id: soft_decoding
@@ -30,6 +31,18 @@ outputs:
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.fft_demod( ${soft_decoding}, ${max_log_approx})
+
+cpp_templates: 
+  includes: ['#include <gnuradio/lora_sdr/fft_demod.h>'] 
+  declarations: 'lora_sdr::fft_demod::sptr ${id};' 
+  make: 'this->${id} = lora_sdr::fft_demod::make(${soft_decoding}, ${max_log_approx});'
+  packages: ['gnuradio-lora_sdr']
+  link: ['gnuradio::gnuradio-lora_sdr']
+  translations:
+     'False': 'false'
+     'True': 'true'
+     \[: '{'
+     \]: '}'
 
 documentation: |-
     Recover the value of a lora symbol using argmax(DFT(lora_symbol * ref_downchirp)

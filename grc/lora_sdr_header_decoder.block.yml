@@ -3,6 +3,7 @@
 id: lora_sdr_header_decoder
 label: Header decoder
 category: '[LoRa_RX]'
+flags: [python,cpp]
 
 parameters:
 -   id: impl_head
@@ -35,6 +36,17 @@ parameters:
     option_labels: ['Disable','Enable','Auto']
     default: '2'
 
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/header_decoder.h>']
+    declarations: 'lora_sdr::header_decoder::sptr ${id};'
+    make: 'this->${id} = lora_sdr::header_decoder::make(${impl_head}, ${print_header}, ${cr}, ${pay_len}, ${has_crc}, ${ldro});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream
