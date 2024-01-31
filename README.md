@@ -8,8 +8,8 @@
 
 
 # Branch Info
-We will implement c++ capability to all blocks in this repo.
-This means adding the following lines to each of the block's .yml: 
+We implement c++ code generation capability to all blocks in this repo.
+This means adding the following lines to each of the blocks' .yml files: 
 
 * ```
   flags: [python, cpp]
@@ -31,14 +31,16 @@ This means adding the following lines to each of the block's .yml:
 notice the <BLOCK_NAME> and <PARAMS> tag.
 for example you can look at `/grc/lora_sdr_frame_sync.block.yml` where it is already implemented
 
-Reciever Blocks to do:
+Rx Blocks:
 - [x] lora_sdr_fft_demod.block.yml
 - [x] lora_sdr_gray_mapping.block.yml
 - [x] lora_sdr_deinterleaver.block.yml
 - [x] lora_sdr_hamming_dec.block.yml
 - [x] lora_sdr_header_decoder.block.yml
 - [x] lora_sdr_dewhitening.block.yml
-- [ ] lora_sdr_crc_verif.block.yml
+- [x] lora_sdr_crc_verif.block.yml
+
+Tx Blocks: to do if requested
 
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
