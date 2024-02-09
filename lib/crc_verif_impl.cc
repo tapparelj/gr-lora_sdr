@@ -177,12 +177,13 @@ namespace gr
 		                add_item_tag(0, curent_tag);
                     }
                     std::stringstream hexStream;
+                    
                     for (int i = 0; i < (int)m_payload_len; i++){
                     //std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
-                    hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                    hexStream << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i]<< std::dec;
                     if(i != (int)m_payload_len-1)
                         //std::cout << ", ";
-                        hexStream << ", ";
+                        hexStream << " ";
                     }
                     hexString = hexStream.str();
                     if (hex_to_file)
@@ -200,13 +201,16 @@ namespace gr
                             std::cout << "rx msg: " << message_str << std::endl;                        
                         else if(print_rx_msg == HEX ){
                             std::cout << "rx msg: ";
+                            /*
                             for (int i = 0; i < (int)m_payload_len; i++){
-                                std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
+                                std::cout << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i] << std::dec;
                                 //hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
                                 if(i != (int)m_payload_len-1)
-                                    std::cout << ", ";
+                                    std::cout << " ";
                                     //hexStream << ", ";
                             }
+                            */
+                            std::cout << hexString <<std::endl;
                             //hexString = hexStream.str();
                             std::cout << std::endl;
                         }
@@ -249,10 +253,10 @@ namespace gr
                 in_buff.erase(in_buff.begin(), in_buff.begin() + m_payload_len );
                 for (int i = 0; i < (int)m_payload_len; i++){
                     //std::cout << std::hex <<"0x"<< (int)in_buff[i] << std::dec;
-                    hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                    hexStream << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i]<< std::dec;
                     if(i != (int)m_payload_len-1)
                         //std::cout << ", ";
-                        hexStream << ", ";
+                        hexStream << " ";
                     }
                 hexString = hexStream.str();
                 if (hex_to_file) {                    
@@ -265,13 +269,16 @@ namespace gr
                     std::cout << "rx msg: " << message_str << std::endl;
                 else if(print_rx_msg == HEX){
                     std::cout << "rx msg: ";
+                    /*
                     for (int i = 0; i < (int)m_payload_len; i++){
-                        std::cout << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
+                        std::cout << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i]<< std::dec;
                         //hexStream << std::hex <<"0x"<< (int)in_buff[i]<< std::dec;
                         if(i != (int)m_payload_len-1)
-                            std::cout << ", ";
+                            std::cout << " ";
                             //hexStream << ", ";
                     }
+                    */
+                    std::cout << hexString <<std::endl;
                     //hexString = hexStream.str();
                     std::cout << std::endl;
                 }
