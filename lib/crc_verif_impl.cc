@@ -200,7 +200,7 @@ namespace gr
                         if(print_rx_msg == ASCII)
                             std::cout << "rx msg: " << message_str << std::endl;                        
                         else if(print_rx_msg == HEX ){
-                            std::cout << "rx msg: ";
+                            std::cout << "rx Hex: ";
                             /*
                             for (int i = 0; i < (int)m_payload_len; i++){
                                 std::cout << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i] << std::dec;
@@ -268,7 +268,7 @@ namespace gr
                 if (print_rx_msg == ASCII)
                     std::cout << "rx msg: " << message_str << std::endl;
                 else if(print_rx_msg == HEX){
-                    std::cout << "rx msg: ";
+                    std::cout << "rx Hex: ";
                     /*
                     for (int i = 0; i < (int)m_payload_len; i++){
                         std::cout << std::hex << std::setw(2) << std::setfill('0')<< (int)in_buff[i]<< std::dec;
