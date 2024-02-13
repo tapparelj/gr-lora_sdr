@@ -58,9 +58,11 @@ templates:
     make: lora_sdr.frame_sync(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len})
 
 cpp_templates:
-    includes: ['#include "frame_sync.h"']
+    includes: ['#include <gnuradio/lora_sdr/frame_sync.h>']
     declarations: 'lora_sdr::frame_sync::sptr ${id};'
     make: 'this->${id} = lora_sdr::frame_sync::make(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
     translations:
         'False': 'false'
         'True': 'true'

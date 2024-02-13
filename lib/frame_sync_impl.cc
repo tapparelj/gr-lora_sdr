@@ -415,7 +415,7 @@ namespace gr
                 else
                     m_ldro = ldro_mode;
 
-                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
+                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + (m_sf>=7?2:0) + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
                 frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(false));
                 frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
                 frame_info = pmt::dict_delete(frame_info, pmt::intern("ldro_mode"));
@@ -802,8 +802,9 @@ namespace gr
 
                         m_received_head = false;
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
-                        if(m_sf < 7){//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
-                            items_to_consume+= 2*m_samples_per_symbol;
+                        if(m_sf < 7)//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
+                        {
+                            items_to_consume += 2*m_samples_per_symbol;
                         }
                         symbol_cnt = one_symbol_off;
                         float snr_est2 = 0;

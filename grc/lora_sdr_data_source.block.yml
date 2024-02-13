@@ -3,6 +3,7 @@
 id: lora_sdr_data_source
 label: Data source
 category: '[LoRa_TX]'
+flags: [python,cpp]
 
 parameters:
 -   id: pay_len
@@ -11,6 +12,18 @@ parameters:
 -   id: n_frames
     label: N_frames
     dtype: int
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/data_source.h>']
+    declarations: 'lora_sdr::data_source::sptr ${id};'
+    make: 'this->${id} = lora_sdr::data_source::make(${pay_len}, ${n_frames});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: message

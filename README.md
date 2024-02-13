@@ -6,7 +6,6 @@
 [![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
-
 ## Summary
 This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL. 
 
@@ -184,6 +183,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- Add C++ support in gnuradio-companion for all blocks
 - Add optional print of received payload as hex values
 - Added tagged stream input support (for frame definition of frame length)
 - Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 

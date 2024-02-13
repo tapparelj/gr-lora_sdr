@@ -214,7 +214,7 @@ namespace gr {
                     double max_X1(0), max_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
                         // LoRa: shift by -1 and use reduce rate if first block (header)
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_sf<7 && m_ldro)) ? 4 : 1);
+                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1);
                         s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
                         if (s & (1u << i)) {  // if i-th bit of symbol n is '1'
                             if (LLs[n] > max_X1) max_X1 = LLs[n];
@@ -229,7 +229,7 @@ namespace gr {
                 for (uint32_t i = 0; i < m_sf; i++) {
                     double sum_X1(0), sum_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_sf<7 && m_ldro)) ? 4 : 1);
+                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1);
                         s = (s ^ (s >> 1u));  // Gray demap
                         if (s & (1u << i)) sum_X1 += LLs[n]; // Likelihood
                         else sum_X0 += LLs[n];
@@ -310,7 +310,7 @@ namespace gr {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
                 } else {                                 // Hard decoding
                     // shift by -1 and use reduce rate if first block (header)
-                    output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_sf<7 && m_ldro)) ? 4 : 1));
+                    output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1));
                 }
 
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
