@@ -108,7 +108,7 @@ namespace gr
       else //sf == 5 or sf ==6 don't use LDRO in header
       {
         cw_len = 4 + (((int)cw_cnt < m_sf) ? 4 : m_cr);
-        use_ldro = ((int)cw_cnt > m_sf) && m_ldro; // not header and ldro activated for payload
+        use_ldro = ((int)cw_cnt >= m_sf) && m_ldro; // not header and ldro activated for payload
       }
       uint8_t sf_app = use_ldro ? m_sf - 2 : m_sf;
 

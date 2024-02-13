@@ -92,11 +92,7 @@ namespace gr
                 pmt::pmt_t err = pmt::string_to_symbol("error");
                 m_crc_presence = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
                 m_payload_len = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err));
-                curent_tag = tags[0];
-                // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
-                // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
-                
-                
+                curent_tag = tags[0];                      
             }
             //append received bytes to buffer
             for (int i = 0; i < ninput_items[0]; i++)
