@@ -11,7 +11,7 @@ templates:
 parameters:
 - id: filename
   label: Filename
-  dtype: string
+  dtype: file_save
   default: 'log.txt'
  
 inputs:
