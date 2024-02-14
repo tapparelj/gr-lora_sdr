@@ -198,7 +198,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: /home/joachim/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt
+    file: '"/home/joachim/Documents/gr-lora_sdr/data/GRC_default/example_tx_source.txt"'
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -487,7 +487,7 @@ blocks:
     alias: ''
     bw: bw
     comment: ''
-    frame_zero_padd: int(20*2**sf*samp_rate/bw)
+    frame_zero_padd: int(20*pow(2,sf)*samp_rate/bw)
     maxoutbuf: '0'
     minoutbuf: '0'
     preamb_len: preamb_len
@@ -508,7 +508,7 @@ blocks:
     alias: ''
     comment: ''
     is_hex: 'False'
-    length_tag_name: '''packet_len'''
+    length_tag_name: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: '0'
     separator: ''','''

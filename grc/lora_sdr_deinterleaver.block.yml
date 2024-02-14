@@ -3,6 +3,7 @@
 id: lora_sdr_deinterleaver
 label: Deinterleaver
 category: '[LoRa_RX]'
+flags: [python,cpp]
 
 parameters:
 -   id: soft_decoding
@@ -14,6 +15,18 @@ inputs:
 -   domain: stream
     dtype: ${ 'f64' if soft_decoding else 'short'}
     vlen: ${ 12 if soft_decoding else 1} #12 is the max number of bits per symbol
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/deinterleaver.h>']
+    declarations: 'lora_sdr::deinterleaver::sptr ${id};'
+    make: 'this->${id} = lora_sdr::deinterleaver::make(${soft_decoding});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 outputs:
 -   domain: stream

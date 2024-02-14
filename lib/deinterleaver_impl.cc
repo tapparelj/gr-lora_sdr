@@ -65,7 +65,7 @@ namespace gr {
                 add_item_tag(0, tags[0]);
 
             }
-            sf_app = ((m_is_header && m_sf>=7)||m_ldro) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block for sf>=7
+            sf_app = ( m_sf>=7 && (m_is_header || m_ldro) || (m_sf<7 && !m_is_header && m_ldro )) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block for sf>=7
             cw_len = m_is_header ? 8 : m_cr + 4;
             // std::cout << "sf_app " << +sf_app << " cw_len " << +cw_len << std::endl;
 

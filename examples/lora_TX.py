@@ -34,7 +34,7 @@ class lora_TX(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.sf = sf = 6
+        self.sf = sf = 5
         self.samp_rate = samp_rate = 250000
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
@@ -49,7 +49,7 @@ class lora_TX(gr.top_block):
         ##################################################
 
         self.uhd_usrp_sink_0 = uhd.usrp_sink(
-            ",".join(("addr=192.168.10.5", '')),
+            ",".join(("addr=192.168.10.6", '')),
             uhd.stream_args(
                 cpu_format="fc32",
                 args='',
@@ -68,12 +68,12 @@ class lora_TX(gr.top_block):
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, [8,16], (int(20*2**sf*samp_rate/bw)),8)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 0, 125000)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, 2, bw)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
         self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
-        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern("Hello World!"), frame_period)
+        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.intern("Hello World: 0"), frame_period)
 
 
         ##################################################

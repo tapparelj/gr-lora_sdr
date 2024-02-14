@@ -3,6 +3,7 @@
 id: lora_sdr_hamming_enc
 label: Hamming enc
 category: '[LoRa_TX]'
+flags: [python,cpp]
 
 parameters:
 -   id: cr
@@ -13,6 +14,18 @@ parameters:
     label: SF
     dtype: int
     default: 7
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/hamming_enc.h>']
+    declarations: 'lora_sdr::hamming_enc::sptr ${id};'
+    make: 'this->${id} = lora_sdr::hamming_enc::make(${cr}, ${sf});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 inputs:
 -   domain: stream

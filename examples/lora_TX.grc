@@ -133,7 +133,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '6'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false
@@ -149,7 +149,7 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    msg: pmt.intern("Hello World!")
+    msg: 'pmt.intern("Hello World: 0")'
     period: frame_period
   states:
     bus_sink: false
@@ -230,10 +230,10 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: '125000'
+    bw: bw
     comment: ''
     cr: cr
-    ldro: '0'
+    ldro: '2'
     maxoutbuf: '0'
     minoutbuf: '0'
     sf: sf
@@ -412,7 +412,7 @@ blocks:
     clock_source6: ''
     clock_source7: ''
     comment: ''
-    dev_addr: '"addr=192.168.10.5"'
+    dev_addr: '"addr=192.168.10.6"'
     dev_args: ''
     gain0: TX_gain
     gain1: '0'
