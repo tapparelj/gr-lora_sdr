@@ -15,21 +15,20 @@ namespace gr
     {
 
         crc_verif::sptr
-        crc_verif::make(int print_rx_msg, bool output_crc_check, bool hex_to_file)
+        crc_verif::make(int print_rx_msg, bool output_crc_check)
         {
-            return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg, output_crc_check, hex_to_file));
+            return gnuradio::get_initial_sptr(new crc_verif_impl(print_rx_msg, output_crc_check));
         }
 
         /*
          * The private constructor
          */
-        crc_verif_impl::crc_verif_impl(int print_rx_msg, bool output_crc_check , bool hex_to_file) 
+        crc_verif_impl::crc_verif_impl(int print_rx_msg, bool output_crc_check ) 
             : gr::block("crc_verif",
                         gr::io_signature::make(1, 1, sizeof(uint8_t)),
                         gr::io_signature::make2(0, 2, sizeof(uint8_t), sizeof(uint8_t))),
                         print_rx_msg(print_rx_msg),
-                  output_crc_check(output_crc_check),
-                  hex_to_file(hex_to_file)
+                  output_crc_check(output_crc_check)
         {
             message_port_register_out(pmt::mp("msg"));
             message_port_register_out(pmt::mp("hex"));
@@ -182,13 +181,7 @@ namespace gr
                         hexStream << " ";
                     }
                     hexString = hexStream.str();
-                    if (hex_to_file)
-                    {                    
-                    std::string timestamp = getCurrentDateTime();
-                    std::string filename = "output_" + timestamp + ".txt";
-                    writeHexToFile(filename, hexString);
-                    }
-                   
+               
 
                     if (print_rx_msg != NONE)
                     {
@@ -255,11 +248,7 @@ namespace gr
                         hexStream << " ";
                     }
                 hexString = hexStream.str();
-                if (hex_to_file) {                    
-                    std::string timestamp = getCurrentDateTime();
-                    std::string filename = "output_" + timestamp + ".txt";
-                    writeHexToFile(filename, hexString);
-                }
+                
                 
                 if (print_rx_msg == ASCII)
                     std::cout << "rx msg: " << message_str << std::endl;

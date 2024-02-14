@@ -51,7 +51,7 @@ namespace gr {
        * class. lora_sdr::crc_verif::make is the public interface for
        * creating new instances.
        */
-      static sptr make(int print_rx_msg, bool output_crc_check, bool hex_to_file);
+      static sptr make(int print_rx_msg, bool output_crc_check);
     };
 
   } // namespace lora_sdr
