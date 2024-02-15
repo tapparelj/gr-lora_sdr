@@ -1,0 +1,38 @@
+id: lora_sdr_msg_sink
+label: msg sink
+category: '[LoRa_RX]'
+flags: [python,cpp]
+
+templates:
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.msg_sink( ${filename})
+    
+
+parameters:
+- id: filename
+  label: Filename
+  dtype: file_save
+  default: './log.txt'
+ 
+inputs:
+-   domain: message
+    id: msg_in
+    optional: false
+    
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/msg_sink.h>']
+    declarations: 'lora_sdr::msg_sink::sptr ${id};'
+    make: 'this->${id} = lora_sdr::msg_sink::make(${filename});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
+documentation: |-
+    Save the message to a file with a timestamp. in the format: timestamp, message
+        Parameters:
+        Input:
+            msg_in: input msg        
+file_format: 1

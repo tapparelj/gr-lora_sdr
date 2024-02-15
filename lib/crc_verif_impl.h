@@ -2,6 +2,7 @@
 #define INCLUDED_LORA_CRC_VERIF_IMPL_H
 
 #include <gnuradio/lora_sdr/crc_verif.h>
+#include <fstream>
 
 // #define GRLORA_DEBUG
 
@@ -15,11 +16,13 @@ namespace gr {
         bool m_crc_presence;///< Indicate if there is a payload CRC
         uint16_t m_crc;///< The CRC calculated from the received payload
         std::string message_str;///< The payload string
+	std::string hexString;
         char m_char;///< A new char of the payload
         bool new_frame; ///<indicate a new frame
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
         int print_rx_msg;  ///< print received message in terminal. 0: no print, 1: ASCII, 2: HEX
         bool output_crc_check; ///< output the result of the payload CRC check
+        //bool hex_to_file; ///< write hex to file
         tag_t curent_tag; ///< the most recent tag for the packet we are currently processing
         
 

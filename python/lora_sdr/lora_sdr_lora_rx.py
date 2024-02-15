@@ -40,6 +40,7 @@ class lora_sdr_lora_rx(gr.hier_block2):
         self.print_payload = print_rx[1]
         self.center_freq = center_freq
         self.sync_word = sync_word
+            
 
 
         ##################################################
