@@ -45,7 +45,7 @@ outputs:
     optional: ${True if str(output_crc_check)=='False' else False}
     hide: ${False if str(output_crc_check)=='True' else True}
 -   domain: message
-    id: msg
+    id: ascii
     optional: True    
 -   domain: message
     id: hex
@@ -65,7 +65,7 @@ documentation: |-
       Input:
         in: stream of payload bytes
       Output:
-        (optional) msg: Received payload
+        (optional) ascii: Received payload as ascii characters
         (optional) hex: Received hex of payload
         (optional) payload_char: Received payload as a stream of char, with tagged with payload length and CRC verification result.
         (optional) crc_check: stream indicating the result of the CRC verification. Enabled by the corresponding parameter.

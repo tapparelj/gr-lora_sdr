@@ -30,7 +30,7 @@ namespace gr
                         print_rx_msg(print_rx_msg),
                   output_crc_check(output_crc_check)
         {
-            message_port_register_out(pmt::mp("msg"));
+            message_port_register_out(pmt::mp("ascii"));
             message_port_register_out(pmt::mp("hex"));
             set_tag_propagation_policy(TPP_DONT);
             
@@ -211,7 +211,7 @@ namespace gr
                             std::cout << RED << "CRC invalid" << RESET << std::endl
                                       << std::endl;
                     }
-                    message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
+                    message_port_pub(pmt::intern("ascii"), pmt::mp(message_str));
                     message_port_pub(pmt::intern("hex"), pmt::mp(hexString));
                     in_buff.erase(in_buff.begin(), in_buff.begin()+m_payload_len + 2);
                     if(output_crc_check){
@@ -267,7 +267,7 @@ namespace gr
                     //hexString = hexStream.str();
                     std::cout << std::endl;
                 }
-                message_port_pub(pmt::intern("msg"), pmt::mp(message_str));
+                message_port_pub(pmt::intern("ascii"), pmt::mp(message_str));
                 message_port_pub(pmt::intern("hex"), pmt::mp(hexString));
                 
                 return m_payload_len;

@@ -12,11 +12,11 @@ parameters:
 - id: filename
   label: Filename
   dtype: file_save
-  default: 'log.txt'
+  default: './log.txt'
  
 inputs:
 -   domain: message
-    id: hex_in
+    id: msg_in
     optional: false
     
 cpp_templates:
@@ -30,5 +30,9 @@ cpp_templates:
         'True': 'true'
         \[: '{'
         \]: '}'
-        
+documentation: |-
+    Save the message to a file with a timestamp. in the format: timestamp, message
+        Parameters:
+        Input:
+            msg_in: input msg        
 file_format: 1
