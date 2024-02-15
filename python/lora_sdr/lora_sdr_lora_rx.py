@@ -40,11 +40,7 @@ class lora_sdr_lora_rx(gr.hier_block2):
         self.print_payload = print_rx[1]
         self.center_freq = center_freq
         self.sync_word = sync_word
-        if print_rx[1]==True:
-            self.hex_to_File=True
-        else:
-            self.hex_to_File=False
-        
+            
 
 
         ##################################################
@@ -57,7 +53,7 @@ class lora_sdr_lora_rx(gr.hier_block2):
         self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
         self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver(soft_decoding)
-        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( self.print_payload, False, self.hex_to_File)
+        self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( self.print_payload, False)
 
 
         ##################################################
