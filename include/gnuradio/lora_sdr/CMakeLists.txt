@@ -30,5 +30,6 @@ install(FILES
     deinterleaver.h
     payload_id_inc.h
     utilities.h
+    lora_rx.h
     DESTINATION include/gnuradio/lora_sdr
 )

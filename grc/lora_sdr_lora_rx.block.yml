@@ -83,9 +83,7 @@ outputs:
 cpp_templates:
     includes: ['#include <gnuradio/lora_sdr/lora_rx.h>']
     declarations: 'lora_sdr::lora_rx::sptr ${id};'
-    make: 'this->${id} = lora_sdr::lora_rx::make(bw=${bw}, cr=${cr}, has_crc=${has_crc},
-     impl_head=${impl_head}, pay_len=${pay_len}, samp_rate=${samp_rate},
-      sf=${sf}, soft_decoding=${soft_decoding}, ldro_mode=${ldro}, print_rx=${print_rx});'
+    make: 'this->${id} = lora_sdr::make_lora_rx(${bw}, ${cr}, ${has_crc}, ${impl_head}, ${pay_len}, ${samp_rate}, ${sf}, ${soft_decoding}, ${ldro}, ${print_rx});'
     packages: ['gnuradio-lora_sdr']
     link: ['gnuradio::gnuradio-lora_sdr']
     translations:

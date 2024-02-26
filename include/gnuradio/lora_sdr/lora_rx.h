@@ -15,7 +15,7 @@
 namespace gr {
   namespace lora_sdr {
 
-    class LORA_SDR_API lora_sdr_rx : public gr::hier_block2 {
+    class LORA_SDR_API lora_rx : public gr::hier_block2 {
     private:
         lora_sdr::header_decoder::sptr lora_sdr_header_decoder_0;
         lora_sdr::hamming_dec::sptr lora_sdr_hamming_dec_0;
@@ -26,7 +26,8 @@ namespace gr {
         lora_sdr::deinterleaver::sptr lora_sdr_deinterleaver_0;
         lora_sdr::crc_verif::sptr lora_sdr_crc_verif_0;
     public:
-        lora_sdr_rx(int bw,
+        typedef std::shared_ptr<lora_rx> sptr;
+        lora_rx(int bw,
                     uint8_t cr,
                     bool has_crc,
                     uint8_t impl_head,
@@ -36,11 +37,11 @@ namespace gr {
                     bool soft_decoding,
                     uint8_t ldro,
                     std::vector<bool> print_rx);
-        ~lora_sdr_rx() {};
+        ~lora_rx() {};
     };
 
     //overload the constructor
-    lora_sdr_rx::lora_sdr_rx(int bw,
+    lora_rx::lora_rx(int bw,
                             uint8_t cr,
                             bool has_crc,
                             uint8_t impl_head,
@@ -49,15 +50,17 @@ namespace gr {
                             uint8_t sf,
                             bool soft_decoding,
                             uint8_t ldro_mode,
-                            std::vector<bool> print_rx) : gr::hier_block2("lora_sdr_rx",
+                            std::vector<bool> print_rx) : gr::hier_block2("lora_rx",
                                                             gr::io_signature::make(1, 1, sizeof(gr_complex)*1),
                                                             gr::io_signature::make(1, 1, sizeof(char)*1)) {
 
         uint32_t center_freq = 868100000;
         uint16_t preamble_len = 8;
-        std::vector<uint16_t> sync_word = {18};
+        std::vector<uint16_t> sync_word = {0x12};
         bool print_header = print_rx[0];
         bool print_payload = print_rx[1];
+
+        message_port_register_out(pmt::mp("out"));
 
         this->lora_sdr_header_decoder_0 = lora_sdr::header_decoder::make(impl_head, cr, pay_len, has_crc, ldro_mode, print_header);
         this->lora_sdr_hamming_dec_0 = lora_sdr::hamming_dec::make(soft_decoding);
@@ -68,6 +71,8 @@ namespace gr {
         this->lora_sdr_deinterleaver_0 = lora_sdr::deinterleaver::make(soft_decoding);
         this->lora_sdr_crc_verif_0 = lora_sdr::crc_verif::make(print_payload, false);
 
+        hier_block2::msg_connect(this->lora_sdr_crc_verif_0, "msg", self(), "out");
+        hier_block2::msg_connect(this->lora_sdr_header_decoder_0, "frame_info", this->lora_sdr_frame_sync_0, "frame_info");
         hier_block2::connect(self(),0, this->lora_sdr_frame_sync_0, 0);
         hier_block2::connect(this->lora_sdr_frame_sync_0, 0, this->lora_sdr_fft_demod_0, 0);
         hier_block2::connect(this->lora_sdr_fft_demod_0, 0, this->lora_sdr_gray_mapping_0, 0);
@@ -79,8 +84,8 @@ namespace gr {
         hier_block2::connect(this->lora_sdr_crc_verif_0, 0, self(), 0);
     }
 
-    typedef std::shared_ptr<lora_sdr_rx> sptr;
-    sptr make_lora_sdr_rx(int bw,
+    
+    lora_rx::sptr make_lora_rx(int bw,
                         uint8_t cr,
                         bool has_crc,
                         uint8_t impl_head,
@@ -91,16 +96,16 @@ namespace gr {
                         uint8_t ldro_mode,
                         std::vector<bool> print_rx) {
                                 
-        return gnuradio::get_initial_sptr(new lora_sdr_rx(bw,
-                                                        cr,
-                                                        has_crc,
-                                                        impl_head,
-                                                        pay_len,
-                                                        samp_rate,
-                                                        sf,
-                                                        soft_decoding,
-                                                        ldro_mode,
-                                                        print_rx));
+    return gnuradio::get_initial_sptr(new lora_rx(bw,
+                                                    cr,
+                                                    has_crc,
+                                                    impl_head,
+                                                    pay_len,
+                                                    samp_rate,
+                                                    sf,
+                                                    soft_decoding,
+                                                    ldro_mode,
+                                                    print_rx));
     }
   };
 }
