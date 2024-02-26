@@ -60,7 +60,7 @@ namespace gr {
         bool print_header = print_rx[0];
         bool print_payload = print_rx[1];
 
-        message_port_register_out(pmt::mp("out"));
+        message_port_register_hier_out(pmt::mp("out"));
 
         this->lora_sdr_header_decoder_0 = lora_sdr::header_decoder::make(impl_head, cr, pay_len, has_crc, ldro_mode, print_header);
         this->lora_sdr_hamming_dec_0 = lora_sdr::hamming_dec::make(soft_decoding);
@@ -84,7 +84,6 @@ namespace gr {
         hier_block2::connect(this->lora_sdr_crc_verif_0, 0, self(), 0);
     }
 
-    
     lora_rx::sptr make_lora_rx(int bw,
                         uint8_t cr,
                         bool has_crc,
