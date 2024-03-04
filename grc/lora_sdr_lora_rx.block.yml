@@ -1,7 +1,7 @@
 id: lora_rx
 label: LoRa Rx
 category: '[LoRa_RX]'
-flags: [python]
+flags: [python,cpp]
 
 parameters:
 -   id: samp_rate
@@ -71,7 +71,11 @@ inputs:
     vlen: 1
 
 outputs:
--   label: out
+-   label: ascii
+    domain: message
+    dtype: message
+    optional: true
+-   label: hex
     domain: message
     dtype: message
     optional: true
@@ -79,6 +83,18 @@ outputs:
     dtype: byte
     vlen: 1
     optional: true
+
+cpp_templates:
+    includes: ['#include <gnuradio/lora_sdr/lora_rx.h>']
+    declarations: 'lora_sdr::lora_rx::sptr ${id};'
+    make: 'this->${id} = lora_sdr::make_lora_rx(${bw}, ${cr}, ${has_crc}, ${impl_head}, ${pay_len}, ${samp_rate}, ${sf}, ${soft_decoding}, ${ldro}, ${print_rx});'
+    packages: ['gnuradio-lora_sdr']
+    link: ['gnuradio::gnuradio-lora_sdr']
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
 
 templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
@@ -105,8 +121,9 @@ documentation: |-
     Inputs:
         - in: Stream of complex samples
     Outputs
-        - (optional) out(msg): Message containing the received payload
-        - (optional) out(bytes): Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
+        - (optional) out: Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
+        - (optional) ascii(msg): Message containing the received payload as ascii characters
+        - (optional) hex(msg): Message containing the received payload as a string of hex values (e.g. 48 65 6c 6c 6f 20 57 6f 72 6c 64 3a 20 30)
     
     
 
