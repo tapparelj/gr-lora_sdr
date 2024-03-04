@@ -60,7 +60,8 @@ namespace gr {
         bool print_header = print_rx[0];
         bool print_payload = print_rx[1];
 
-        message_port_register_hier_out(pmt::mp("out"));
+        message_port_register_hier_out(pmt::mp("ascii"));
+        message_port_register_hier_out(pmt::mp("hex"));
 
         this->lora_sdr_header_decoder_0 = lora_sdr::header_decoder::make(impl_head, cr, pay_len, has_crc, ldro_mode, print_header);
         this->lora_sdr_hamming_dec_0 = lora_sdr::hamming_dec::make(soft_decoding);
@@ -71,7 +72,8 @@ namespace gr {
         this->lora_sdr_deinterleaver_0 = lora_sdr::deinterleaver::make(soft_decoding);
         this->lora_sdr_crc_verif_0 = lora_sdr::crc_verif::make(print_payload, false);
 
-        hier_block2::msg_connect(this->lora_sdr_crc_verif_0, "msg", self(), "out");
+        hier_block2::msg_connect(this->lora_sdr_crc_verif_0, "ascii", self(), "ascii");
+        hier_block2::msg_connect(this->lora_sdr_crc_verif_0, "hex", self(), "hex");
         hier_block2::msg_connect(this->lora_sdr_header_decoder_0, "frame_info", this->lora_sdr_frame_sync_0, "frame_info");
         hier_block2::connect(self(),0, this->lora_sdr_frame_sync_0, 0);
         hier_block2::connect(this->lora_sdr_frame_sync_0, 0, this->lora_sdr_fft_demod_0, 0);

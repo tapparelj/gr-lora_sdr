@@ -71,7 +71,11 @@ inputs:
     vlen: 1
 
 outputs:
--   label: out
+-   label: ascii
+    domain: message
+    dtype: message
+    optional: true
+-   label: hex
     domain: message
     dtype: message
     optional: true
@@ -117,8 +121,9 @@ documentation: |-
     Inputs:
         - in: Stream of complex samples
     Outputs
-        - (optional) out(msg): Message containing the received payload
-        - (optional) out(bytes): Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
+        - (optional) out: Received payload as a stream of char (bytes), with tagged with payload length and CRC verification result.
+        - (optional) ascii(msg): Message containing the received payload as ascii characters
+        - (optional) hex(msg): Message containing the received payload as a string of hex values (e.g. 48 65 6c 6c 6f 20 57 6f 72 6c 64 3a 20 30)
     
     
 
