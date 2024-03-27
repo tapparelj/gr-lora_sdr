@@ -63,7 +63,12 @@ parameters:
     options: ['[True,True]','[False,True]','[True,False]','[False,False]']
     option_labels: ['Header & Payload','Payload','Header','None']
     default: '[True,True]'
-    
+-   id: legacy_sf56
+    label: legacy_sf56
+    dtype: bool
+    hide: part
+    default: False
+    options: [False, True]    
 
 inputs:
 -   label: in
@@ -87,7 +92,7 @@ outputs:
 cpp_templates:
     includes: ['#include <gnuradio/lora_sdr/lora_rx.h>']
     declarations: 'lora_sdr::lora_rx::sptr ${id};'
-    make: 'this->${id} = lora_sdr::make_lora_rx(${bw}, ${cr}, ${has_crc}, ${impl_head}, ${pay_len}, ${samp_rate}, ${sf}, ${soft_decoding}, ${ldro}, ${print_rx});'
+    make: 'this->${id} = lora_sdr::make_lora_rx(${bw}, ${cr}, ${has_crc}, ${impl_head}, ${pay_len}, ${samp_rate}, ${sf}, ${soft_decoding}, ${ldro}, ${print_rx}, ${legacy_sf56});'
     packages: ['gnuradio-lora_sdr']
     link: ['gnuradio::gnuradio-lora_sdr']
     translations:
@@ -100,7 +105,7 @@ templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
     make: "lora_sdr.lora_sdr_lora_rx( bw=${ bw }, cr=${ cr }, has_crc=${ has_crc},
      impl_head=${ impl_head }, pay_len=${ pay_len }, samp_rate=${samp_rate },
-      sf=${ sf }, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx})"
+      sf=${ sf }, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx}, legacy_sf56=${legacy_sf56})"
 asserts:
 - ${ (samp_rate/bw).is_integer()}
 

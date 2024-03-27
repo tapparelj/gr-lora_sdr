@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::deinterleaver::make is the public interface for
        * creating new instances.
        */
-      static sptr make( bool soft_decoding);
+      static sptr make( bool soft_decoding, bool legacy_sf56);
     };
 
   } // namespace lora_sdr

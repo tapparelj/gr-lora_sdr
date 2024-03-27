@@ -54,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 12.0]
+    coordinate: [296, 12.0]
     rotation: 0
     state: enabled
 - name: cr
@@ -66,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 12.0]
+    coordinate: [680, 12.0]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -97,7 +97,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '17'
+    value: '11'
   states:
     bus_sink: false
     bus_source: false
@@ -133,7 +133,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 'False'
+    value: 'True'
   states:
     bus_sink: false
     bus_source: false
@@ -151,7 +151,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 84.0]
+    coordinate: [200, 76.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_crc_verif_0
@@ -168,7 +168,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1392, 184.0]
+    coordinate: [1400, 168.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_deinterleaver_0
@@ -177,6 +177,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    legacy_sf56: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     soft_decoding: soft_decoding
@@ -199,7 +200,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 200.0]
+    coordinate: [1256, 200.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_fft_demod_0
@@ -208,6 +209,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    legacy_sf56: 'False'
     max_log_approx: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -228,6 +230,7 @@ blocks:
     center_freq: int(center_freq)
     comment: ''
     impl_head: impl_head
+    legacy_sf56: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     os_factor: int(samp_rate/bw)
@@ -239,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 180.0]
+    coordinate: [256, 180.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_gray_mapping_0
@@ -271,7 +274,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 212.0]
+    coordinate: [928, 212.0]
     rotation: 0
     state: enabled
 - name: lora_sdr_header_decoder_0
@@ -292,7 +295,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1112, 196.0]
+    coordinate: [1096, 196.0]
     rotation: 0
     state: enabled
 - name: uhd_usrp_source_0
@@ -332,7 +335,7 @@ blocks:
     ant7: ''
     ant8: ''
     ant9: ''
-    bw0: '0'
+    bw0: bw
     bw1: bw
     bw10: '0'
     bw11: '0'
@@ -470,7 +473,7 @@ blocks:
     dc_offs_enb7: default
     dc_offs_enb8: default
     dc_offs_enb9: default
-    dev_addr: '"addr=192.168.10.6"'
+    dev_addr: '"addr=192.168.10.7"'
     dev_args: ''
     gain0: '0'
     gain1: '5'
@@ -728,7 +731,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 164.0]
+    coordinate: [32, 156.0]
     rotation: 0
     state: enabled
 

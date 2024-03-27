@@ -18,6 +18,12 @@ parameters:
     options: ['False', 'True']
     option_labels: ['No', 'Yes']
     hide: ${ 'all' if not soft_decoding else 'part' }
+-   id: legacy_sf56
+    label: legacy_sf56
+    dtype: bool
+    hide: part
+    default: False
+    options: [False, True]
 
 inputs:
 -   domain: stream
@@ -30,12 +36,12 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.fft_demod( ${soft_decoding}, ${max_log_approx})
+    make: lora_sdr.fft_demod( ${soft_decoding}, ${max_log_approx}, ${legacy_sf56})
 
 cpp_templates: 
   includes: ['#include <gnuradio/lora_sdr/fft_demod.h>'] 
   declarations: 'lora_sdr::fft_demod::sptr ${id};' 
-  make: 'this->${id} = lora_sdr::fft_demod::make(${soft_decoding}, ${max_log_approx});'
+  make: 'this->${id} = lora_sdr::fft_demod::make(${soft_decoding}, ${max_log_approx}, ${legacy_sf56});'
   packages: ['gnuradio-lora_sdr']
   link: ['gnuradio::gnuradio-lora_sdr']
   translations:
@@ -48,7 +54,8 @@ documentation: |-
     Recover the value of a lora symbol using argmax(DFT(lora_symbol * ref_downchirp)
         Parameters: 
            impl_head: usage of an implicit header (explicit will be used otherwise) 
-           soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax   
+           soft_decoding: use soft-decision decoding, outputing LLRs instead of the argmax  
+           legacy_sf56: Use legacy SF5/6 encoding  used by sx127x generation of chips 
         Input:        
             in: vector of 2^sf complex samples        
         Output:        

@@ -12,15 +12,15 @@ namespace gr
   {
 
     interleaver::sptr
-    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
+    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool legacy_sf56 = false)
     {
-      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw));
+      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw, legacy_sf56));
     }
 
     /*
      * The private constructor
      */
-    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
+    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool legacy_sf56)
         : gr::block("interleaver",
                     gr::io_signature::make(1, 1, sizeof(uint8_t)),
                     gr::io_signature::make(1, 1, sizeof(uint32_t)))
@@ -28,6 +28,7 @@ namespace gr
       m_sf = sf;
       m_cr = cr;
       m_bw = bw;
+      m_legacy_sf56 = legacy_sf56;
       if (ldro == AUTO)
         m_ldro = (float)(1u << sf) * 1e3 / bw > LDRO_MAX_DURATION_MS;
       else
@@ -92,7 +93,12 @@ namespace gr
           cw_cnt = 0;
           m_frame_len = pmt::to_long(tags[0].value);
 
-          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - (m_sf - (m_sf<7?0:2))) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
+          if(m_legacy_sf56){
+            tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - (m_sf - 2 )) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
+          }
+          else{
+            tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - (m_sf - ((m_sf < 7)?0:2) )) / (m_sf - 2 * m_ldro)) * (m_cr + 4), 0)); // get number of items in frame
+          }
           tags[0].offset = nitems_written(0);
         }
       }
@@ -100,7 +106,7 @@ namespace gr
       // handle the first interleaved block special case
       uint8_t cw_len;
       bool use_ldro;
-      if (m_sf >= 7)
+      if (m_sf >= 7 || m_legacy_sf56)
       {
         cw_len = 4 + (((int)cw_cnt < m_sf - 2) ? 4 : m_cr);
         use_ldro = (((int)cw_cnt < m_sf - 2) || m_ldro);// header or ldro activated for payload

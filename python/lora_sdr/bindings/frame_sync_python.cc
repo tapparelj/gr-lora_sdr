@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(frame_sync.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b4a54a4ca7837d4c1d890b6e75488fba) */
+/* BINDTOOL_HEADER_FILE_HASH(9990b2a5af53749ac102369ea857c72b) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -39,7 +39,7 @@ void bind_frame_sync(py::module &m) {
       .def(py::init(&frame_sync::make), py::arg("center_freq"),
            py::arg("bandwidth"), py::arg("sf"), py::arg("impl_head"),
            py::arg("sync_word"), py::arg("os_factor"), py::arg("preamble_len"),
-           D(frame_sync, make))
+           py::arg("legacy_sf56"), D(frame_sync, make))
 
       ;
 }

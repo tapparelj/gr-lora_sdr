@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(hamming_enc.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(95de0a3629edb5cc3f2e0463adb3a9e5) */
+/* BINDTOOL_HEADER_FILE_HASH(81437403fd5a50e497801de5745ffcdb) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,7 +37,7 @@ void bind_hamming_enc(py::module &m) {
              std::shared_ptr<hamming_enc>>(m, "hamming_enc", D(hamming_enc))
 
       .def(py::init(&hamming_enc::make), py::arg("cr"), py::arg("sf"),
-           D(hamming_enc, make))
+           py::arg("legacy_sf56"), D(hamming_enc, make))
 
       .def("set_cr", &hamming_enc::set_cr, py::arg("cr"),
            D(hamming_enc, set_cr))

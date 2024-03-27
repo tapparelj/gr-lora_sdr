@@ -10,14 +10,14 @@ namespace gr
     {
 
         modulate::sptr
-        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len = 8)
+        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len = 8, bool legacy_sf56 = false)
         {
-            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd, preamble_len));
+            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd, preamble_len, legacy_sf56));
         }
         /*
      * The private constructor
      */
-        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len)
+        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len, bool legacy_sf56)
             : gr::block("modulate",
                         gr::io_signature::make(1, 1, sizeof(uint32_t)),
                         gr::io_signature::make(1, 1, sizeof(gr_complex)))
@@ -26,6 +26,7 @@ namespace gr
             m_samp_rate = samp_rate;
             m_bw = bw;
             m_sync_words = sync_words;
+            m_legacy_sf56 = legacy_sf56;
 
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_os_factor = m_samp_rate / m_bw;
@@ -116,7 +117,12 @@ namespace gr
                         m_frame_len = pmt::to_long(tags[0].value);
                         tags[0].offset = nitems_written(0);
 
-                        tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25 + (m_sf<SF_THRESHOLD?2:0)) * m_samples_per_symbol + m_inter_frame_padding ));
+                        if(m_legacy_sf56){
+                            tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));                
+                        }
+                        else{
+                            tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25 + ((m_sf < 7)?2:0)) * m_samples_per_symbol + m_inter_frame_padding ));
+                        }
 
                         add_item_tag(0, tags[0]);
 
@@ -132,7 +138,7 @@ namespace gr
             {
                 for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
                 {
-                    if (preamb_samp_cnt < (m_preamb_len + 5+(m_sf<SF_THRESHOLD?2:0))*m_samples_per_symbol) //should output preamble part
+                    if (preamb_samp_cnt < (m_preamb_len + 5 +((m_sf < 7 && !m_legacy_sf56)?2:0))*m_samples_per_symbol) //should output preamble part
                     {
                         if (preamb_samp_cnt < (m_preamb_len*m_samples_per_symbol))
                         { //upchirps
@@ -151,18 +157,18 @@ namespace gr
                         else if (preamb_samp_cnt == (m_preamb_len + 4)*m_samples_per_symbol)
                         {
                             memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol / 4 * sizeof(gr_complex));
-                            //correct offset dur to quarter of downchirp
+                            //correct offset due to quarter of downchirp
                             output_offset -= 3 * m_samples_per_symbol / 4;
-                            if(m_sf>=SF_THRESHOLD){
+                            if(m_sf >= 7 || m_legacy_sf56){
                                 samp_cnt = 0;
                             }
                             
                         }
-                        else if ((m_sf<SF_THRESHOLD) && (preamb_samp_cnt < (m_preamb_len + 6)*m_samples_per_symbol)) //add first zero symbol before payload for sf<7
+                        else if ((m_sf < 7 && !m_legacy_sf56) && (preamb_samp_cnt < (m_preamb_len + 6)*m_samples_per_symbol)) //add first zero symbol before payload for sf < 7 and not legacy mode
                         {
                             memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));                            
                         }
-                        else if ((m_sf<SF_THRESHOLD) && (preamb_samp_cnt < (m_preamb_len + 7)*m_samples_per_symbol)) //add second zero symbol before payload for sf<7
+                        else if ((m_sf < 7 && !m_legacy_sf56) && (preamb_samp_cnt < (m_preamb_len + 7)*m_samples_per_symbol)) //add second zero symbol before payload for sf < 7 and not legacy mode
                         {
 
                             memcpy(&out[output_offset], &m_upchirp[0], m_samples_per_symbol * sizeof(gr_complex));     

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(fft_demod.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(e1fc6fa289a3f514124b89738f3de4fd) */
+/* BINDTOOL_HEADER_FILE_HASH(8848b05dd752102e32878ff1070465a4) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,7 +37,8 @@ void bind_fft_demod(py::module &m) {
       m, "fft_demod", D(fft_demod))
 
       .def(py::init(&fft_demod::make), py::arg("soft_decoding"),
-           py::arg("max_log_approx"), D(fft_demod, make))
+           py::arg("max_log_approx"), py::arg("legacy_sf56"),
+           D(fft_demod, make))
 
       ;
 }

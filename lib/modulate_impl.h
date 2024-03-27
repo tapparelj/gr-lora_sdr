@@ -9,7 +9,6 @@
 #include <gnuradio/lora_sdr/utilities.h>
 
 // #define GR_LORA_PRINT_INFO
-#define SF_THRESHOLD 7 ///< the last SF that has a normal Header (7)
 
 namespace gr {
   namespace lora_sdr {
@@ -23,6 +22,7 @@ namespace gr {
         uint32_t m_number_of_bins; ///< number of bin per loar symbol
         int m_samples_per_symbol; ///< samples per symbols(Works only for 2^sf)
         std::vector<uint16_t> m_sync_words; ///< sync words (network id) 
+        bool m_legacy_sf56;                 ///< use of legacy SF5/6 mode of sx127x
 
         int m_ninput_items_required; ///< number of samples required to call this block (forecast)
 
@@ -44,7 +44,7 @@ namespace gr {
 
 
      public:
-      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len);
+      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len, bool legacy_sf56);
       ~modulate_impl();
 
       void set_sf(uint8_t sf);

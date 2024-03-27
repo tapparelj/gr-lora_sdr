@@ -29,6 +29,7 @@ namespace gr {
       bool m_ldro; ///< use low datarate optimisation
       unsigned int m_symb_numb; ///< number of symbols in the frame
       unsigned int m_symb_cnt; ///< number of symbol already output in current frame
+      bool m_legacy_sf56;                 ///< use of legacy SF5/6 mode of sx127x
 
       double m_Ps_est = 0;   // Signal Power estimation updated at each rx symbol
       double m_Pn_est = 0;   // Signal Power estimation updated at each rx symbo
@@ -95,7 +96,7 @@ namespace gr {
       std::vector<LLR> get_LLRs(const gr_complex *samples);
 
      public:
-      fft_demod_impl( bool soft_decoding, bool max_log_approx);
+      fft_demod_impl( bool soft_decoding, bool max_log_approx, bool legacy_sf56);
       ~fft_demod_impl();
 
       // Where all the action really happens

@@ -3,7 +3,7 @@
 
 
 #include <gnuradio/lora_sdr/gray_demap.h>
-
+// #define GRLORA_DEBUG
 namespace gr {
   namespace lora_sdr {
 

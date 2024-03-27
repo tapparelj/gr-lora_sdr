@@ -16,14 +16,14 @@ namespace gr {
     namespace lora_sdr {
 
         fft_demod::sptr
-        fft_demod::make( bool soft_decoding, bool max_log_approx) {
-            return gnuradio::get_initial_sptr(new fft_demod_impl(soft_decoding, max_log_approx));
+        fft_demod::make( bool soft_decoding, bool max_log_approx, bool legacy_sf56 = false) {
+            return gnuradio::get_initial_sptr(new fft_demod_impl(soft_decoding, max_log_approx, legacy_sf56));
         }
 
         /*
          * The private constructor
          */
-        fft_demod_impl::fft_demod_impl(bool soft_decoding, bool max_log_approx)
+        fft_demod_impl::fft_demod_impl(bool soft_decoding, bool max_log_approx, bool legacy_sf56)
             : gr::block("fft_demod",
                         gr::io_signature::make(1, 1, sizeof(gr_complex)),
                         gr::io_signature::make(1, 1, soft_decoding ? MAX_SF * sizeof(LLR) : sizeof(uint16_t))),
@@ -33,6 +33,7 @@ namespace gr {
             m_symb_cnt = 0;
             // m_samples_per_symbol = (uint32_t)(1u << m_sf);
             m_ldro = false;
+            m_legacy_sf56 = legacy_sf56;
 
             set_tag_propagation_policy(TPP_DONT);
 #ifdef GRLORA_MEASUREMENTS
@@ -65,7 +66,7 @@ namespace gr {
             ninput_items_required[0] = m_samples_per_symbol;
         }
         void fft_demod_impl::set_sf(int sf){//Set he new sf for the frame
-        // std::cout<<"[fft_demod_impl.cc] new sf received "<<sf<<std::endl;
+        // std::cout<<"[fft_demod_impl.cc] new sf received "<< sf <<std::endl;
         m_sf = sf;
         m_samples_per_symbol = (uint32_t)(1u << m_sf);
         m_upchirp.resize(m_samples_per_symbol);
@@ -213,8 +214,16 @@ namespace gr {
                 for (uint32_t i = 0; i < m_sf; i++) { // sf bits => sf LLRs
                     double max_X1(0), max_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        // LoRa: shift by -1 and use reduce rate if first block (header)
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1);
+                        // LoRa: shift by -1 and use reduce rate if first block (header) or LDRO
+                        uint32_t s;
+                        if(m_legacy_sf56)
+                        {
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header || m_ldro) ? 4 : 1);
+
+                        }
+                        else{
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf >= 7)||((!is_header && m_ldro)) ? 4 : 1);
+                        }
                         s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
                         if (s & (1u << i)) {  // if i-th bit of symbol n is '1'
                             if (LLs[n] > max_X1) max_X1 = LLs[n];
@@ -229,7 +238,13 @@ namespace gr {
                 for (uint32_t i = 0; i < m_sf; i++) {
                     double sum_X1(0), sum_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1);
+                        uint32_t s;
+                        if(m_legacy_sf56){
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header|| m_ldro) ? 4 : 1);       
+                        }
+                        else{
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header && m_sf >= 7)||((!is_header && m_ldro)) ? 4 : 1);
+                        }
                         s = (s ^ (s >> 1u));  // Gray demap
                         if (s & (1u << i)) sum_X1 += LLs[n]; // Likelihood
                         else sum_X0 += LLs[n];
@@ -310,7 +325,13 @@ namespace gr {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
                 } else {                                 // Hard decoding
                     // shift by -1 and use reduce rate if first block (header)
-                    output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header && m_sf>=7)||((!is_header && m_ldro)) ? 4 : 1));
+                    if(m_legacy_sf56)
+                    {
+                        output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header || m_ldro) ? 4 : 1));
+                    }
+                    else{
+                        output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header && m_sf >= 7)||((!is_header && m_ldro)) ? 4 : 1));
+                    }
                 }
 
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
@@ -343,6 +364,11 @@ namespace gr {
             {
                 print(RED<<"fft_demod not enough space in output buffer!!"<<RESET);
             }
+            // for (int i = 0; i < to_output; i++)
+            // {
+            //     std::cout<<std::hex<<"0x"<<output[i]<<std::dec<<std::endl;
+            // }
+            
             
             return to_output;
         }

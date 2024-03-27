@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(interleaver.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(e042ec01a2fc5bf489c2aa1a4fef7394) */
+/* BINDTOOL_HEADER_FILE_HASH(8e1b14613f32f4b65697bbe5db9cb12a) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,7 +37,8 @@ void bind_interleaver(py::module &m) {
              std::shared_ptr<interleaver>>(m, "interleaver", D(interleaver))
 
       .def(py::init(&interleaver::make), py::arg("cr"), py::arg("sf"),
-           py::arg("ldro"), py::arg("bw"), D(interleaver, make))
+           py::arg("ldro"), py::arg("bw"), py::arg("legacy_sf56"),
+           D(interleaver, make))
 
       .def("set_cr", &interleaver::set_cr, py::arg("cr"),
            D(interleaver, set_cr))

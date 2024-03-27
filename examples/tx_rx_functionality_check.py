@@ -36,14 +36,15 @@ class tx_rx_functionality_check(gr.top_block):
         self.bw = bw = 125000
         self.sync_word = sync_word = 0x12
         self.soft_decoding = soft_decoding = True
-        self.sf = sf = 8
+        self.sf = sf = 7
         self.samp_rate = samp_rate = bw*4
         self.preamb_len = preamb_len = 8
         self.pay_len = pay_len = 14
-        self.ldro = ldro = 1
+        self.legacy_sf56 = legacy_sf56 = False
+        self.ldro = ldro = 0
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
-        self.cr = cr = 1
+        self.cr = cr = 0
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
         self.SNRdB = SNRdB = 0
@@ -53,20 +54,19 @@ class tx_rx_functionality_check(gr.top_block):
         ##################################################
 
         self.lora_sdr_whitening_0 = lora_sdr.whitening(False,True,',','packet_len')
-        self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word], (int(20*2**sf*samp_rate/bw)),preamb_len)
+        self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, int(samp_rate), bw, [sync_word], (int(20*2**sf*samp_rate/bw)),preamb_len, legacy_sf56)
         self.lora_sdr_modulate_0.set_min_output_buffer(10000000)
-        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, bw)
+        self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro, bw, legacy_sf56)
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, ldro, True)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
-        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
+        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf, legacy_sf56)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [sync_word], (int(samp_rate/bw)),preamb_len)
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [sync_word], (int(samp_rate/bw)),preamb_len, legacy_sf56)
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True, legacy_sf56)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding,legacy_sf56)
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( 1, False)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
         self.channels_channel_model_0 = channels.channel_model(
@@ -85,10 +85,8 @@ class tx_rx_functionality_check(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_payload_id_inc_0, 'msg_in'))
         self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.lora_sdr_whitening_0, 'msg'))
         self.msg_connect((self.lora_sdr_header_decoder_0, 'frame_info'), (self.lora_sdr_frame_sync_0, 'frame_info'))
-        self.msg_connect((self.lora_sdr_payload_id_inc_0, 'msg_out'), (self.blocks_message_strobe_0_0, 'set_msg'))
         self.connect((self.blocks_delay_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.lora_sdr_frame_sync_0, 0))
@@ -159,6 +157,12 @@ class tx_rx_functionality_check(gr.top_block):
 
     def set_pay_len(self, pay_len):
         self.pay_len = pay_len
+
+    def get_legacy_sf56(self):
+        return self.legacy_sf56
+
+    def set_legacy_sf56(self, legacy_sf56):
+        self.legacy_sf56 = legacy_sf56
 
     def get_ldro(self):
         return self.ldro

@@ -36,7 +36,8 @@ namespace gr {
                     uint8_t sf,
                     bool soft_decoding,
                     uint8_t ldro,
-                    std::vector<bool> print_rx);
+                    std::vector<bool> print_rx,
+                    bool legacy_sf56);
         ~lora_rx() {};
     };
 
@@ -50,7 +51,8 @@ namespace gr {
                             uint8_t sf,
                             bool soft_decoding,
                             uint8_t ldro_mode,
-                            std::vector<bool> print_rx) : gr::hier_block2("lora_rx",
+                            std::vector<bool> print_rx,
+                            bool legacy_sf56) : gr::hier_block2("lora_rx",
                                                             gr::io_signature::make(1, 1, sizeof(gr_complex)*1),
                                                             gr::io_signature::make(1, 1, sizeof(char)*1)) {
 
@@ -66,10 +68,10 @@ namespace gr {
         this->lora_sdr_header_decoder_0 = lora_sdr::header_decoder::make(impl_head, cr, pay_len, has_crc, ldro_mode, print_header);
         this->lora_sdr_hamming_dec_0 = lora_sdr::hamming_dec::make(soft_decoding);
         this->lora_sdr_gray_mapping_0 = lora_sdr::gray_mapping::make(soft_decoding);
-        this->lora_sdr_frame_sync_0 = lora_sdr::frame_sync::make(center_freq, bw, sf, impl_head, sync_word, int(samp_rate/bw), preamble_len);
-        this->lora_sdr_fft_demod_0 = lora_sdr::fft_demod::make(soft_decoding, true);
+        this->lora_sdr_frame_sync_0 = lora_sdr::frame_sync::make(center_freq, bw, sf, impl_head, sync_word, int(samp_rate/bw), preamble_len, legacy_sf56);
+        this->lora_sdr_fft_demod_0 = lora_sdr::fft_demod::make(soft_decoding, true, legacy_sf56);
         this->lora_sdr_dewhitening_0 = lora_sdr::dewhitening::make();
-        this->lora_sdr_deinterleaver_0 = lora_sdr::deinterleaver::make(soft_decoding);
+        this->lora_sdr_deinterleaver_0 = lora_sdr::deinterleaver::make(soft_decoding, legacy_sf56);
         this->lora_sdr_crc_verif_0 = lora_sdr::crc_verif::make(print_payload, false);
 
         hier_block2::msg_connect(this->lora_sdr_crc_verif_0, "ascii", self(), "ascii");
@@ -95,7 +97,8 @@ namespace gr {
                         uint8_t sf,
                         bool soft_decoding,
                         uint8_t ldro_mode,
-                        std::vector<bool> print_rx) {
+                        std::vector<bool> print_rx,
+                        bool legacy_sf56) {
                                 
     return gnuradio::get_initial_sptr(new lora_rx(bw,
                                                     cr,
@@ -106,7 +109,8 @@ namespace gr {
                                                     sf,
                                                     soft_decoding,
                                                     ldro_mode,
-                                                    print_rx));
+                                                    print_rx,
+                                                    legacy_sf56));
     }
   };
 }

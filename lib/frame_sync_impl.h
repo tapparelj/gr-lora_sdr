@@ -51,6 +51,7 @@ namespace gr
       uint8_t m_os_factor;                ///< oversampling factor
       std::vector<uint16_t> m_sync_words; ///< vector containing the two sync words (network identifiers)
       bool m_ldro;                        ///< use of low datarate optimisation mode
+      bool m_legacy_sf56;                 ///< use of legacy SF5/6 mode of sx127x
 
       uint8_t m_n_up_req;            ///< number of consecutive upchirps required to trigger a detection
 
@@ -173,7 +174,7 @@ namespace gr
       float determine_snr(const gr_complex *samples);
 
     public:
-      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamb_len);
+      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamb_len, bool legacy_sf56);
       ~frame_sync_impl();
 
       // Where all the action really happens

@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::frame_sync::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len);
+      static sptr make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len, bool legacy_sf56);
     };
 
   } // namespace lora_sdr

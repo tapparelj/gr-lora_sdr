@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(deinterleaver.h) */
-/* BINDTOOL_HEADER_FILE_HASH(65d663d2dd00415de5989550a4b1fb3e) */
+/* BINDTOOL_HEADER_FILE_HASH(0133d140d577e6192dc9a4dee7f97045) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,7 +38,7 @@ void bind_deinterleaver(py::module &m) {
                                              D(deinterleaver))
 
       .def(py::init(&deinterleaver::make), py::arg("soft_decoding"),
-           D(deinterleaver, make))
+           py::arg("legacy_sf56"), D(deinterleaver, make))
 
       ;
 }

@@ -12,9 +12,10 @@ namespace gr {
         uint8_t m_cr; ///< Transmission coding rate
         uint8_t m_sf; ///< Transmission spreading factor
         int m_cnt; ///< count the number of processed items in the current frame
+        bool m_legacy_sf56;    ///< use of legacy SF5/6 mode of sx127x
 
      public:
-      hamming_enc_impl(uint8_t cr, uint8_t sf);
+      hamming_enc_impl(uint8_t cr, uint8_t sf, bool legacy_sf56);
       ~hamming_enc_impl();
 
 

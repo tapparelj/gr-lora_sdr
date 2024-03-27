@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 96.0]
+    coordinate: [792, 44.0]
     rotation: 0
     state: enabled
 - name: bw
@@ -54,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 88.0]
+    coordinate: [432, 12.0]
     rotation: 0
     state: enabled
 - name: center_freq
@@ -78,69 +78,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 92.0]
+    coordinate: [648, 28.0]
     rotation: 0
     state: enabled
-- name: cr
-  id: variable
-  parameters:
-    comment: ''
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [552, 16.0]
-    rotation: 0
-    state: enabled
-- name: has_crc
-  id: variable
-  parameters:
-    comment: ''
-    value: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [608, 16.0]
-    rotation: 0
-    state: enabled
-- name: impl_head
-  id: variable
-  parameters:
-    comment: ''
-    value: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [472, 16.0]
-    rotation: 0
-    state: enabled
-- name: pay_len
-  id: variable
-  parameters:
-    comment: ''
-    value: '255'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [680, 16.0]
-    rotation: 0
-    state: true
-- name: preamb_len
-  id: variable
-  parameters:
-    comment: ''
-    value: '8'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [912, 16.0]
-    rotation: 0
-    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -162,31 +102,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 88.0]
-    rotation: 0
-    state: enabled
-- name: soft_decoding
-  id: variable
-  parameters:
-    comment: ''
-    value: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [784, 16.0]
-    rotation: 0
-    state: enabled
-- name: sync_word
-  id: variable
-  parameters:
-    comment: ''
-    value: '0x12'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [616, 88.0]
+    coordinate: [528, 12.0]
     rotation: 0
     state: enabled
 - name: blocks_message_strobe_0_0
@@ -251,24 +167,25 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: '125000'
+    bw: bw
     comment: ''
     cr: '1'
     has_crc: 'True'
     impl_head: 'False'
     ldro: '2'
+    legacy_sf56: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     pay_len: '255'
     print_rx: '[True,True]'
-    samp_rate: '500000'
-    sf: '7'
+    samp_rate: samp_rate
+    sf: sf
     soft_decoding: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 364.0]
+    coordinate: [368, 372.0]
     rotation: 180
     state: true
 - name: lora_sdr_payload_id_inc_0
@@ -292,17 +209,18 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: '125000'
+    bw: bw
     comment: ''
     cr: '1'
     frame_zero_padd: '1280'
     has_crc: 'True'
     impl_head: 'False'
     ldro: '2'
+    legacy_sf56: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: '500000'
-    sf: '7'
+    samp_rate: samp_rate
+    sf: sf
   states:
     bus_sink: false
     bus_source: false

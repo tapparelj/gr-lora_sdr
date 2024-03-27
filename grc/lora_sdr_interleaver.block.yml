@@ -23,11 +23,17 @@ parameters:
     dtype: int
     default: '125000'
     hide: ${'none' if str(ldro) == '2' else 'all'}
+-   id: legacy_sf56
+    label: legacy_sf56
+    dtype: bool
+    hide: part
+    default: False
+    options: [False, True]
 
 cpp_templates:
     includes: ['#include <gnuradio/lora_sdr/interleaver.h>']
     declarations: 'lora_sdr::interleaver::sptr ${id};'
-    make: 'this->${id} = lora_sdr::interleaver::make(${cr}, ${sf}, ${ldro}, ${bw});'
+    make: 'this->${id} = lora_sdr::interleaver::make(${cr}, ${sf}, ${ldro}, ${bw}, ${legacy_sf56});'
     packages: ['gnuradio-lora_sdr']
     link: ['gnuradio::gnuradio-lora_sdr']
     translations:
@@ -46,7 +52,7 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.interleaver(${cr}, ${sf}, ${ldro}, ${bw})
+    make: lora_sdr.interleaver(${cr}, ${sf}, ${ldro}, ${bw}, ${legacy_sf56})
     callbacks:
         - set_cr(${cr})
         - set_sf(${sf})
@@ -57,7 +63,7 @@ documentation: |-
             CR: coding rate
             SF: spreading factor
             LDRO: Use of low datarate optimisation mode (Auto: enabled for symbols durations > 16ms)
-
+            legacy_sf56: Use legacy SF5/6 encoding  used by sx127x generation of chips
         Input:
             in: stream of bytes containing a codeword each
         Output:

@@ -14,15 +14,15 @@ namespace gr
     {
 
         frame_sync::sptr
-        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8)
+        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8, bool legacy_sf56 = false)
         {
-            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len));
+            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len, legacy_sf56));
         }
 
         /*
          * The private constructor
          */
-        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len)
+        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len, bool legacy_sf56)
             : gr::block("frame_sync",
                         gr::io_signature::make(1, 1, sizeof(gr_complex)),
                         gr::io_signature::make2(1, 2, sizeof(gr_complex), sizeof(float)))
@@ -31,6 +31,7 @@ namespace gr
             m_center_freq = center_freq;
             m_bw = bandwidth;
             m_sf = sf;
+            m_legacy_sf56 = legacy_sf56;
 
             m_sync_words = sync_word;
             m_os_factor = os_factor;
@@ -415,7 +416,12 @@ namespace gr
                 else
                     m_ldro = ldro_mode;
 
-                m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + (m_sf>=7?2:0) + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
+                if(m_legacy_sf56){
+                    m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + 2 + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
+                }
+                else{
+                    m_symb_numb = 8 + ceil((double)(2 * m_pay_len - m_sf + ((m_sf >= 7)?2:0) + !m_impl_head * 5 + m_has_crc * 4) / (m_sf - 2 * m_ldro)) * (4 + m_cr);
+                }
                 frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(false));
                 frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
                 frame_info = pmt::dict_delete(frame_info, pmt::intern("ldro_mode"));
@@ -802,7 +808,7 @@ namespace gr
 
                         m_received_head = false;
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
-                        if(m_sf < 7)//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
+                        if(m_sf < 7 && !m_legacy_sf56)//Semtech adds two null symbol in the beginning. Maybe for additional synchronization?
                         {
                             items_to_consume += 2*m_samples_per_symbol;
                         }

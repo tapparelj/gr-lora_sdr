@@ -11,18 +11,19 @@ namespace gr {
     namespace lora_sdr {
 
         deinterleaver::sptr
-        deinterleaver::make(bool soft_decoding) {
-            return gnuradio::get_initial_sptr(new deinterleaver_impl( soft_decoding));
+        deinterleaver::make(bool soft_decoding, bool legacy_sf56 = false) {
+            return gnuradio::get_initial_sptr(new deinterleaver_impl( soft_decoding, legacy_sf56));
         }
 
         /*
          * The private constructor
          */
-        deinterleaver_impl::deinterleaver_impl( bool soft_decoding)
+        deinterleaver_impl::deinterleaver_impl( bool soft_decoding, bool legacy_sf56)
             : gr::block("deinterleaver",
                         gr::io_signature::make(1, 1, soft_decoding ? MAX_SF * sizeof(LLR) : sizeof(uint16_t)),  // In reality: sf_app  < sf
                         gr::io_signature::make(1, 1, soft_decoding ? 8 * sizeof(LLR) : sizeof(uint8_t))),   // In reality: cw_len = cr_app + 4  < 8
-              m_soft_decoding(soft_decoding)
+              m_soft_decoding(soft_decoding),
+              m_legacy_sf56(legacy_sf56)
                {
             set_tag_propagation_policy(TPP_DONT);
         }
@@ -65,7 +66,12 @@ namespace gr {
                 add_item_tag(0, tags[0]);
 
             }
-            sf_app = ( m_sf>=7 && (m_is_header || m_ldro) || (m_sf<7 && !m_is_header && m_ldro )) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block for sf>=7
+            if(m_legacy_sf56){
+                sf_app = (m_is_header || m_ldro)? m_sf - 2 : m_sf;  // Use reduced rate for the first block 
+            }
+            else{
+                sf_app = ( m_sf >= 7 && (m_is_header || m_ldro) || (m_sf < 7 && !m_is_header && m_ldro )) ? m_sf - 2 : m_sf;  // Use reduced rate for the first block for sf >= 7
+            }
             cw_len = m_is_header ? 8 : m_cr + 4;
             // std::cout << "sf_app " << +sf_app << " cw_len " << +cw_len << std::endl;
 
@@ -114,7 +120,7 @@ namespace gr {
                         for (int j = 0; j < int(sf_app); j++) {
                             std::cout << inter_bin[i][j];
                         }
-                        std::cout <<std::hex<<"0x" << (int)in1[i+first_symbols_to_skip] <<std::dec<< std::endl;
+                        std::cout <<std::hex<<"0x" << (int)in1[i] <<std::dec<< std::endl;
                     }
                     std::cout << std::endl;
 #endif

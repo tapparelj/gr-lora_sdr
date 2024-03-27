@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::fft_demod::make is the public interface for
        * creating new instances.
        */
-      static sptr make(bool soft_decoding, bool max_log_approx);
+      static sptr make(bool soft_decoding, bool max_log_approx, bool legacy_sf56);
     };
 
   } // namespace lora_sdr

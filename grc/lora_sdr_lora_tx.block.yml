@@ -50,6 +50,12 @@ parameters:
     label: Frame zero padding
     hide: part
     default: '1280'
+-   id: legacy_sf56
+    label: legacy_sf56
+    dtype: bool
+    hide: part
+    default: False
+    options: [False, True]
 inputs:
 -   label: in
     domain: message
@@ -63,7 +69,7 @@ templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
     make: "lora_sdr.lora_sdr_lora_tx(\n    bw=${ bw },\n    cr=${ cr },\n    has_crc=${ has_crc\
         \ },\n    impl_head=${ impl_head },\n    samp_rate=${ samp_rate },\n    sf=${\
-        \ sf },\n ldro_mode=${ldro},frame_zero_padd=${frame_zero_padd} )"
+        \ sf },\n ldro_mode=${ldro},\n frame_zero_padd=${frame_zero_padd},\n   legacy_sf56=${legacy_sf56})"
     callbacks:
     - set_cr(${ cr })
     - set_sf(${ sf })
@@ -83,6 +89,7 @@ documentation: |-
         - CRC presence: Payload contains a CRC
         - LDRO: usage of low data rate optimisation mode (Auto will enable this mode when symbol period exceed 16ms)
         - Frame zero padding: number of null samples padded after each frame
+        - legacy_sf56: Use legacy SF5/6 encoding  used by sx127x generation of chips
     Inputs:
         - in: Message of the payload to transmitt
     Outputs

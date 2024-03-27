@@ -34,15 +34,8 @@ class tx_rx_hier_functionality_check(gr.top_block):
         # Variables
         ##################################################
         self.bw = bw = 125000
-        self.sync_word = sync_word = 0x12
-        self.soft_decoding = soft_decoding = False
         self.sf = sf = 5
         self.samp_rate = samp_rate = bw*4
-        self.preamb_len = preamb_len = 8
-        self.pay_len = pay_len = 255
-        self.impl_head = impl_head = False
-        self.has_crc = has_crc = True
-        self.cr = cr = 0
         self.clk_offset = clk_offset = 0
         self.center_freq = center_freq = 868.1e6
         self.SNRdB = SNRdB = 0
@@ -52,15 +45,17 @@ class tx_rx_hier_functionality_check(gr.top_block):
         ##################################################
 
         self.lora_tx_0 = lora_sdr.lora_sdr_lora_tx(
-            bw=125000,
+            bw=bw,
             cr=1,
             has_crc=True,
             impl_head=False,
-            samp_rate=500000,
-            sf=7,
-         ldro_mode=2,frame_zero_padd=1280 )
+            samp_rate=samp_rate,
+            sf=sf,
+         ldro_mode=2,
+         frame_zero_padd=1280,
+           legacy_sf56=False)
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, soft_decoding=True, ldro_mode=2, print_rx=[True,True])
+        self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=bw, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=samp_rate, sf=sf, soft_decoding=True, ldro_mode=2, print_rx=[True,True], legacy_sf56=False)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
             frequency_offset=(center_freq*clk_offset*1e-6/samp_rate),
@@ -91,23 +86,12 @@ class tx_rx_hier_functionality_check(gr.top_block):
         self.bw = bw
         self.set_samp_rate(self.bw*4)
 
-    def get_sync_word(self):
-        return self.sync_word
-
-    def set_sync_word(self, sync_word):
-        self.sync_word = sync_word
-
-    def get_soft_decoding(self):
-        return self.soft_decoding
-
-    def set_soft_decoding(self, soft_decoding):
-        self.soft_decoding = soft_decoding
-
     def get_sf(self):
         return self.sf
 
     def set_sf(self, sf):
         self.sf = sf
+        self.lora_tx_0.set_sf(self.sf)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -116,36 +100,6 @@ class tx_rx_hier_functionality_check(gr.top_block):
         self.samp_rate = samp_rate
         self.blocks_throttle_0.set_sample_rate((self.samp_rate*10))
         self.channels_channel_model_0.set_frequency_offset((self.center_freq*self.clk_offset*1e-6/self.samp_rate))
-
-    def get_preamb_len(self):
-        return self.preamb_len
-
-    def set_preamb_len(self, preamb_len):
-        self.preamb_len = preamb_len
-
-    def get_pay_len(self):
-        return self.pay_len
-
-    def set_pay_len(self, pay_len):
-        self.pay_len = pay_len
-
-    def get_impl_head(self):
-        return self.impl_head
-
-    def set_impl_head(self, impl_head):
-        self.impl_head = impl_head
-
-    def get_has_crc(self):
-        return self.has_crc
-
-    def set_has_crc(self, has_crc):
-        self.has_crc = has_crc
-
-    def get_cr(self):
-        return self.cr
-
-    def set_cr(self, cr):
-        self.cr = cr
 
     def get_clk_offset(self):
         return self.clk_offset

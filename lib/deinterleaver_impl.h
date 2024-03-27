@@ -17,9 +17,10 @@ namespace gr {
       bool m_is_header;    ///< Indicate that we need to deinterleave the first block with the default header parameters (cr=4/8, reduced rate)
       bool m_soft_decoding;   ///< Hard/Soft decoding
       bool m_ldro; ///< use low datarate optimization mode
+      bool m_legacy_sf56;                 ///< use of legacy SF5/6 mode of sx127x
 
      public:
-      deinterleaver_impl(bool soft_decoding);
+      deinterleaver_impl(bool soft_decoding, bool legacy_sf56);
       ~deinterleaver_impl();
 
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);

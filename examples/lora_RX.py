@@ -33,10 +33,10 @@ class lora_RX(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.soft_decoding = soft_decoding = False
+        self.soft_decoding = soft_decoding = True
         self.sf = sf = 6
         self.samp_rate = samp_rate = 500000
-        self.pay_len = pay_len = 17
+        self.pay_len = pay_len = 11
         self.impl_head = impl_head = False
         self.has_crc = has_crc = True
         self.cr = cr = 1
@@ -48,7 +48,7 @@ class lora_RX(gr.top_block):
         ##################################################
 
         self.uhd_usrp_source_0 = uhd.usrp_source(
-            ",".join(("addr=192.168.10.6", '')),
+            ",".join(("addr=192.168.10.7", '')),
             uhd.stream_args(
                 cpu_format="fc32",
                 args='',
@@ -60,15 +60,16 @@ class lora_RX(gr.top_block):
 
         self.uhd_usrp_source_0.set_center_freq(center_freq, 0)
         self.uhd_usrp_source_0.set_antenna('TX/RX', 0)
+        self.uhd_usrp_source_0.set_bandwidth(bw, 0)
         self.uhd_usrp_source_0.set_gain(0, 0)
         self.uhd_usrp_source_0.set_min_output_buffer((int(np.ceil(samp_rate/bw*(2**sf+2)))))
         self.lora_sdr_header_decoder_0 = lora_sdr.header_decoder(impl_head, cr, pay_len, has_crc, False, True)
         self.lora_sdr_hamming_dec_0 = lora_sdr.hamming_dec(soft_decoding)
         self.lora_sdr_gray_mapping_0 = lora_sdr.gray_mapping( soft_decoding)
-        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], (int(samp_rate/bw)),8)
-        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True)
+        self.lora_sdr_frame_sync_0 = lora_sdr.frame_sync(int(center_freq), bw, sf, impl_head, [18], (int(samp_rate/bw)),8, False)
+        self.lora_sdr_fft_demod_0 = lora_sdr.fft_demod( soft_decoding, True, False)
         self.lora_sdr_dewhitening_0 = lora_sdr.dewhitening()
-        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding)
+        self.lora_sdr_deinterleaver_0 = lora_sdr.deinterleaver( soft_decoding,False)
         self.lora_sdr_crc_verif_0 = lora_sdr.crc_verif( 1, False)
 
 
@@ -141,6 +142,7 @@ class lora_RX(gr.top_block):
 
     def set_bw(self, bw):
         self.bw = bw
+        self.uhd_usrp_source_0.set_bandwidth(self.bw, 0)
         self.uhd_usrp_source_0.set_bandwidth(self.bw, 1)
 
 

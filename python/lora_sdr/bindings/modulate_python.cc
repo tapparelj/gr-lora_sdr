@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(modulate.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(2d53e07518d5fe3cb922e161a563407a) */
+/* BINDTOOL_HEADER_FILE_HASH(6966c117d5dd747c7f81dbb5624a6be5) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,7 +38,7 @@ void bind_modulate(py::module &m) {
 
       .def(py::init(&modulate::make), py::arg("sf"), py::arg("samp_rate"),
            py::arg("bw"), py::arg("sync_words"), py::arg("inter_frame_padd"),
-           py::arg("preamble_len"), D(modulate, make))
+           py::arg("preamble_len"), py::arg("legacy_sf56"), D(modulate, make))
 
       .def("set_sf", &modulate::set_sf, py::arg("sf"), D(modulate, set_sf))
 

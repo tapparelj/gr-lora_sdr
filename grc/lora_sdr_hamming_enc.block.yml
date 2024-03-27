@@ -14,11 +14,17 @@ parameters:
     label: SF
     dtype: int
     default: 7
+-   id: legacy_sf56
+    label: legacy_sf56
+    dtype: bool
+    hide: part
+    default: False
+    options: [False, True]
 
 cpp_templates:
     includes: ['#include <gnuradio/lora_sdr/hamming_enc.h>']
     declarations: 'lora_sdr::hamming_enc::sptr ${id};'
-    make: 'this->${id} = lora_sdr::hamming_enc::make(${cr}, ${sf});'
+    make: 'this->${id} = lora_sdr::hamming_enc::make(${cr}, ${sf}, ${legacy_sf56});'
     packages: ['gnuradio-lora_sdr']
     link: ['gnuradio::gnuradio-lora_sdr']
     translations:
@@ -37,7 +43,7 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.hamming_enc(${cr}, ${sf})
+    make: lora_sdr.hamming_enc(${cr}, ${sf}, ${legacy_sf56})
     callbacks:
         - set_cr(${cr})
         - set_sf(${sf})
@@ -47,6 +53,7 @@ documentation: |-
         Parameters:
             CR: coding rate
             SF: spreading factor
+            legacy_sf56: Use legacy SF5/6 encoding  used by sx127x generation of chips
         Input:
             in: stream of nibble
         Output:
