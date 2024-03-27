@@ -39,6 +39,10 @@ namespace gr
             {
                 std::cerr << RED << " Preamble length should be greater than 5!" << RESET << std::endl;
             }
+            if (m_legacy_sf56 && !impl_head && sf<7)
+            {
+                std::cerr << RED << "Explicit header is not compatible with legacy nodes when using SF < 7" << RESET << std::endl;
+            }
 
             m_preamb_len = preamble_len;
             net_ids.resize(2, 0);
