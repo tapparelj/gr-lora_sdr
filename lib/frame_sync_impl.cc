@@ -80,6 +80,7 @@ namespace gr
             preamb_up_vals.resize(m_n_up_req, 0);
             frame_cnt = 0;
 
+            m_kiss_fft_cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             // register message ports
@@ -105,6 +106,7 @@ namespace gr
          */
         frame_sync_impl::~frame_sync_impl()
         {
+            kiss_fft_free(m_kiss_fft_cfg);
         }
         int frame_sync_impl::my_roundf(float number)
         {
@@ -320,8 +322,6 @@ namespace gr
             std::vector<float> fft_mag(m_number_of_bins);
             volk::vector<gr_complex> dechirped(m_number_of_bins);
 
-            kiss_fft_cfg cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
-
             // Multiply with ideal downchirp
             volk_32fc_x2_multiply_32fc(&dechirped[0], samples, ref_chirp, m_number_of_bins);
 
@@ -331,7 +331,7 @@ namespace gr
                 cx_in[i].i = dechirped[i].imag();
             }
             // do the FFT
-            kiss_fft(cfg, cx_in, cx_out);
+            kiss_fft(m_kiss_fft_cfg, cx_in, cx_out);
 
             // Get magnitude
             for (uint32_t i = 0u; i < m_number_of_bins; i++)
@@ -339,7 +339,6 @@ namespace gr
                 fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
                 sig_en += fft_mag[i];
             }
-            free(cfg);
             // Return argmax here
 
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
