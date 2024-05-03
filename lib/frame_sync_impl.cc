@@ -107,6 +107,8 @@ namespace gr
          */
         frame_sync_impl::~frame_sync_impl()
         {
+            delete[] cx_out;
+            delete[] cx_in;
             kiss_fft_free(m_kiss_fft_cfg);
         }
         int frame_sync_impl::my_roundf(float number)
