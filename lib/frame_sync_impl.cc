@@ -79,6 +79,7 @@ namespace gr
             k_hat = 0;
             preamb_up_vals.resize(m_n_up_req, 0);
             frame_cnt = 0;
+            m_symb_numb = 0;
 
             m_kiss_fft_cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             cx_in = new kiss_fft_cpx[m_number_of_bins];
@@ -404,6 +405,7 @@ namespace gr
                 symbol_cnt = 1;
                 k_hat = 0;
                 m_sto_frac = 0;
+                m_symb_numb = 0;
             }
             else
             {
