@@ -759,7 +759,8 @@ namespace gr
                     else // net ID 1 valid
                     {
                         net_id_off = netid1 - (int32_t)m_sync_words[0];
-                        if (mod(netid2 - net_id_off, m_number_of_bins) != (int32_t)m_sync_words[1]) // wrong id 2
+                        if (m_sync_words[1] != 0 && // match netid2 only if requested
+                            mod(netid2 - net_id_off, m_number_of_bins) != (int32_t)m_sync_words[1]) // wrong id 2
                         {
                             m_state = DETECT;
                             symbol_cnt = 1;
@@ -777,6 +778,8 @@ namespace gr
                             items_to_consume = -m_os_factor * net_id_off;
                             m_state = SFO_COMPENSATION;
                             frame_cnt++;
+                            if (m_sync_words[1] == 0)
+                                std::cout << "netid2 is " << netid2 << std::endl;
                         }
                     }
                     if (m_state != DETECT)
