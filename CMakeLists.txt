@@ -166,3 +166,6 @@ configure_package_config_file(
     INSTALL_DESTINATION ${GR_CMAKE_DIR}
 )
 
+install(FILES MANIFEST.yml
+    RENAME MANIFEST-${VERSION_MAJOR}.${VERSION_API}.${VERSION_ABI}${VERSION_PATCH}.yml
+    DESTINATION share/gnuradio/manifests/lora_sdr)
