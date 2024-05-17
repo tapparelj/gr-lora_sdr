@@ -1,3 +1,5 @@
+# v0.5.8
+- Add option to ignore sync words checks and print the received values
 # v0.5.7
 - Add optional print of received payload as hex values
 - Update conda-smithy configuration 
