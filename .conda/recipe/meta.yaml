@@ -19,7 +19,9 @@ source:
 
 build:
   number: 0
-
+  skip: true  # [win]
+  skip: true  # [py>=312]
+  
 requirements:
   build:
     - {{ compiler("c") }}

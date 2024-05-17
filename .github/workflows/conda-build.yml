@@ -6,7 +6,7 @@ name: Build conda package
 on:
   push:
     branches:
-      - master
+      - mskvortsov-frame-sync-perf
 
   pull_request:
 
