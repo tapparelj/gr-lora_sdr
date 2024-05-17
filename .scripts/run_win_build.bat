@@ -24,7 +24,7 @@ set "CONDA_LIBMAMBA_SOLVER_NO_CHANNELS_FROM_INSTALLED=1"
 
 :: Provision the necessary dependencies to build the recipe later
 echo Installing dependencies
-mamba.exe install "python=3.10" pip mamba conda-build boa conda-forge-ci-setup=4 -c conda-forge --strict-channel-priority --yes
+mamba.exe install "python=3.10" pip mamba conda-build conda-forge-ci-setup=4 "conda-build>=24.1" -c conda-forge --strict-channel-priority --yes
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 :: Set basic configuration
@@ -55,7 +55,7 @@ call :end_group
 
 :: Build the recipe
 echo Building recipe
-conda.exe mambabuild ".conda/recipe" -m .ci_support\%CONFIG%.yaml --suppress-variables %EXTRA_CB_OPTIONS%
+conda-build.exe ".conda/recipe" -m .ci_support\%CONFIG%.yaml --suppress-variables %EXTRA_CB_OPTIONS%
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 :: Prepare some environment variables for the upload step
