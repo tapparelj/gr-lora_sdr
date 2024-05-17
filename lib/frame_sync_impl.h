@@ -72,6 +72,7 @@ namespace gr
       uint16_t m_preamb_len; ///< Number of consecutive upchirps in preamble
       uint8_t additional_upchirps; ///< indicate the number of additional upchirps found in preamble (in addition to the minimum required to trigger a detection)
 
+      kiss_fft_cfg m_kiss_fft_cfg; ///< FFT configuration for symbols processing
       kiss_fft_cpx *cx_in;  ///<input of the FFT
       kiss_fft_cpx *cx_out; ///<output of the FFT
 
