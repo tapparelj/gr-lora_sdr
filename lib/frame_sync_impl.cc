@@ -708,7 +708,14 @@ namespace gr
                     int netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     one_symbol_off = 0;
 
-                    if (abs(netid1 - (int32_t)m_sync_words[0]) > 2) // wrong id 1, (we allow an offset of 2)
+                    if (m_sync_words[0] == 0) { // match netid1 only if requested
+                        items_to_consume = 0;
+                        m_state = SFO_COMPENSATION;
+                        frame_cnt++;
+                        std::cout << "netid1 is " << netid1 << ", netid2 is " << netid2 <<
+                            ", check skipped" << std::endl;
+                    }
+                    else if (abs(netid1 - (int32_t)m_sync_words[0]) > 2) // wrong id 1, (we allow an offset of 2)
                     {
 
                         // check if we are in fact checking the second net ID and that the first one was considered as a preamble upchirp
@@ -762,7 +769,8 @@ namespace gr
                     else // net ID 1 valid
                     {
                         net_id_off = netid1 - (int32_t)m_sync_words[0];
-                        if (mod(netid2 - net_id_off, m_number_of_bins) != (int32_t)m_sync_words[1]) // wrong id 2
+                        if (m_sync_words[1] != 0 && // match netid2 only if requested
+                            mod(netid2 - net_id_off, m_number_of_bins) != (int32_t)m_sync_words[1]) // wrong id 2
                         {
                             m_state = DETECT;
                             symbol_cnt = 1;
@@ -780,6 +788,8 @@ namespace gr
                             items_to_consume = -m_os_factor * net_id_off;
                             m_state = SFO_COMPENSATION;
                             frame_cnt++;
+                            if (m_sync_words[1] == 0)
+                                std::cout << "netid2 is " << netid2 << std::endl;
                         }
                     }
                     if (m_state != DETECT)
