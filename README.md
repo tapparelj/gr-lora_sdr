@@ -117,10 +117,6 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	sudo ldconfig 
 	```
-- You can test that the installation is successful by running
-  ```sh
-  make test
-  ```
 - Now you should be able to run some codes. For example, open the GNU Radio Companion user interface and check if the blocks of gr-lora_sdr are available on the blocks list (e.g. under LoRa_TX).
 	```sh
 	gnuradio-companion &
