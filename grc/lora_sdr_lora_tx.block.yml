@@ -46,6 +46,10 @@ parameters:
     options: ['0','1','2']
     option_labels: ['Disable','Enable','Auto']
     default: '2'
+-   id: sync_word
+    label: Sync word
+    hide: part
+    default: '[0x12]'
 -   id: frame_zero_padd
     label: Frame zero padding
     hide: part
@@ -63,7 +67,7 @@ templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
     make: "lora_sdr.lora_sdr_lora_tx(\n    bw=${ bw },\n    cr=${ cr },\n    has_crc=${ has_crc\
         \ },\n    impl_head=${ impl_head },\n    samp_rate=${ samp_rate },\n    sf=${\
-        \ sf },\n ldro_mode=${ldro},frame_zero_padd=${frame_zero_padd} )"
+        \ sf },\n ldro_mode=${ldro},frame_zero_padd=${frame_zero_padd},sync_word=${sync_word} )"
     callbacks:
     - set_cr(${ cr })
     - set_sf(${ sf })
@@ -82,7 +86,9 @@ documentation: |-
         - Coding rate: coding rate to use
         - CRC presence: Payload contains a CRC
         - LDRO: usage of low data rate optimisation mode (Auto will enable this mode when symbol period exceed 16ms)
+        - Sync word: Sync word to use (default 0x12 for private networks and 0x34 for LoRaWAN). Can be given as [0x12] (or directly the two modulated values [8,16])
         - Frame zero padding: number of null samples padded after each frame
+
     Inputs:
         - in: Message of the payload to transmitt
     Outputs

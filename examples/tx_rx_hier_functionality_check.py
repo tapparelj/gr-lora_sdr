@@ -58,9 +58,9 @@ class tx_rx_hier_functionality_check(gr.top_block):
             impl_head=False,
             samp_rate=500000,
             sf=7,
-         ldro_mode=2,frame_zero_padd=1280 )
+         ldro_mode=2,frame_zero_padd=1280,sync_word=[0x12] )
         self.lora_sdr_payload_id_inc_0 = lora_sdr.payload_id_inc(':')
-        self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, soft_decoding=True, ldro_mode=2, print_rx=[True,True])
+        self.lora_rx_0 = lora_sdr.lora_sdr_lora_rx( bw=125000, cr=1, has_crc=True, impl_head=False, pay_len=255, samp_rate=500000, sf=7, sync_word=[0x12], soft_decoding=True, ldro_mode=2, print_rx=[True,True])
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=(10**(-SNRdB/20)),
             frequency_offset=(center_freq*clk_offset*1e-6/samp_rate),
