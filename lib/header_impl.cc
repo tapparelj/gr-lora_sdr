@@ -31,7 +31,7 @@ namespace gr
             m_header.resize(5);
 
             set_tag_propagation_policy(TPP_DONT);
-            m_tags.resize(2);
+            m_tags.resize(3);
             m_cnt_header_nibbles = 0;
         }
 
@@ -76,7 +76,7 @@ namespace gr
                     nitems_to_process = std::min(tags[0].offset - nitems_read(0), (uint64_t)noutput_items);
                 else
                 {
-                    if (tags.size() >= 2)
+                    if (tags.size() >= 2) //2
                         nitems_to_process = std::min(tags[1].offset - tags[0].offset, (uint64_t)noutput_items);
 
                     m_payload_len = int(pmt::to_long(tags[0].value) / 2);
@@ -90,6 +90,15 @@ namespace gr
                     m_cnt_nibbles = 0;
 
                     m_tags[1] = tags[0];
+                    get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
+                    tags[0].offset = nitems_written(0);
+                    m_tags[2] = tags[0];
+
+                    pmt::pmt_t err = pmt::string_to_symbol("error");
+                    int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
+                    if (new_cr != m_cr) {
+                        m_cr = new_cr;
+                    }
                 }
             }
 
@@ -120,6 +129,7 @@ namespace gr
                     //add tag
                     add_item_tag(0, m_tags[0]);
                     add_item_tag(0, m_tags[1]);
+                    add_item_tag(0, m_tags[2]);
                 }
 
                 for (int i = 0; i < nitems_to_process; i++)
@@ -141,6 +151,7 @@ namespace gr
             {
                 add_item_tag(0, m_tags[0]);
                 add_item_tag(0, m_tags[1]);
+                add_item_tag(0, m_tags[2]);
             }
             for (int i = out_offset; i < nitems_to_process; i++)
             {
@@ -148,8 +159,6 @@ namespace gr
                 m_cnt_nibbles++;
                 m_cnt_header_nibbles = 0;
             }
-
-          
             consume_each(nitems_to_process - out_offset);
             return nitems_to_process;
         }

@@ -25,7 +25,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(uint32_t)),
               gr::io_signature::make(1, 1, sizeof(uint32_t)))
     {
-        m_sf=sf;
+        m_sf = sf;
         set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
@@ -46,6 +46,19 @@ namespace gr {
     {
       const uint32_t *in = (const uint32_t *) input_items[0];
       uint32_t *out = (uint32_t *) output_items[0];
+
+      std::vector<tag_t> tags;
+
+      get_tags_in_window(tags, 0, 0, noutput_items, pmt::string_to_symbol("configuration"));
+      if (tags.size() > 0) {
+          //Update cr and sf
+          pmt::pmt_t err_sf = pmt::string_to_symbol("error");
+          int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
+          if (new_sf != m_sf) {
+              m_sf = new_sf;
+              // std::cout<<"New sf gray demap "<< static_cast<int>(m_sf) <<std::endl;
+          }
+      }
       for(int i=0;i<noutput_items;i++){
         #ifdef GRLORA_DEBUG
         std::cout<<std::hex<<"0x"<<in[i]<<" -->  ";

@@ -61,21 +61,6 @@ namespace gr
             set_tag_propagation_policy(TPP_DONT);
             set_output_multiple(m_samples_per_symbol);
         }
-        void modulate_impl::set_sf(uint8_t sf){
-            m_sf = sf;
-            m_number_of_bins = (uint32_t)(1u << m_sf);
-            m_os_factor = m_samp_rate / m_bw;
-            m_samples_per_symbol = (uint32_t)(m_number_of_bins*m_os_factor);
-
-
-            m_downchirp.resize(m_samples_per_symbol);
-            m_upchirp.resize(m_samples_per_symbol);
-
-            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf,m_os_factor);
-            
-
-
-        } 
 
         /*
      * Our virtual destructor.
@@ -88,6 +73,34 @@ namespace gr
         modulate_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
         {
             ninput_items_required[0] = m_ninput_items_required;
+        }
+
+        void modulate_impl::update_var(int new_sf, int new_bw)
+        {
+            if (new_sf != m_sf) {
+                m_sf = new_sf;
+                std::cout<<"New sf Modulate "<< static_cast<int>(m_sf) <<std::endl;
+            }
+            if (new_bw != m_bw) {
+                m_bw = new_bw;
+                std::cout<<"New bw Modulate "<< static_cast<int>(m_bw) <<std::endl;
+                m_samp_rate = 4 * m_bw;
+                std::cout<<"New samp rate Modulate "<< static_cast<int>(m_bw) <<std::endl;
+            }
+            m_number_of_bins = (uint32_t)(1u << m_sf);
+            m_os_factor = m_samp_rate / m_bw;
+            m_samples_per_symbol = (uint32_t)(m_number_of_bins*m_os_factor);
+            m_ninput_items_required = 1;
+
+            //m_inter_frame_padding = frame_zero_padd; // add some empty samples at the end of a frame important for transmission with LimeSDR Mini or simulation
+
+            m_downchirp.resize(m_samples_per_symbol);
+            m_upchirp.resize(m_samples_per_symbol);
+
+
+            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf,m_os_factor);
+
+            set_output_multiple(m_samples_per_symbol);
         }
 
         int modulate_impl::general_work(int noutput_items,
@@ -114,11 +127,24 @@ namespace gr
                     if (frame_end)
                     {
                         m_frame_len = pmt::to_long(tags[0].value);
-                        tags[0].offset = nitems_written(0);
+                        m_framelen_tag = tags[0];
+                        get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
+                        m_config_tag = tags[0];
+                        m_config_tag.offset = nitems_written(0); 
 
-                        tags[0].value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
+                        pmt::pmt_t err_sf = pmt::string_to_symbol("error");
+                        pmt::pmt_t err_bw = pmt::string_to_symbol("error");
+                        int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
+                        int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
+                        update_var(new_sf, new_bw);
 
-                        add_item_tag(0, tags[0]);
+                        add_item_tag(0, m_config_tag);
+
+                        m_framelen_tag.offset = nitems_written(0);
+
+                        m_framelen_tag.value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
+
+                        add_item_tag(0, m_framelen_tag);                
 
                         samp_cnt = -1;
                         preamb_samp_cnt = 0;

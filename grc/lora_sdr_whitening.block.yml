@@ -29,7 +29,7 @@ parameters:
     label: is_hex
     dtype: bool
     default: false
-    hide: ${ ( 'none' if (str(source_type) == "file_source" and use_length_tag == 'False') else 'all') }
+    hide: part
 
 inputs:
 -   domain: stream
@@ -40,6 +40,8 @@ inputs:
     id: msg
     optional: ${ ( False if str(source_type) == "message_strobe" else True) }
     hide: ${ ( False if str(source_type) == "message_strobe" else True) }
+-   label: dict
+    domain: message
 outputs:
 -   domain: stream
     dtype: byte

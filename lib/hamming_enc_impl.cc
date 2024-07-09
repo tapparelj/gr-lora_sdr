@@ -63,6 +63,24 @@ namespace gr
 
       // read tags
       std::vector<tag_t> tags;
+      get_tags_in_window(tags, 0, 0, noutput_items, pmt::string_to_symbol("configuration"));
+
+      if (tags.size() > 0) {
+          // Update cr and sf
+          pmt::pmt_t err = pmt::string_to_symbol("error");
+          int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
+          int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
+          if (new_cr != m_cr) {
+              m_cr = new_cr;
+              // std::cout<<"New cr Hamming "<< static_cast<int>(m_cr) <<std::endl;
+          }
+          if (new_sf != m_sf) {
+              m_sf = new_sf;
+              // std::cout<<"New sf Hamming "<< static_cast<int>(m_sf) <<std::endl;
+          }
+      }
+      
+
       get_tags_in_window(tags, 0, 0, noutput_items, pmt::string_to_symbol("frame_len"));
       if (tags.size())
       {

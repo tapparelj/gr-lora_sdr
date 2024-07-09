@@ -22,8 +22,10 @@ namespace gr
       std::string m_length_tag_name;        ///< name/key of the length tag
       int m_input_byte_cnt;                 ///< number of bytes from the input already processed
       uint64_t m_tag_offset;                ///< offset of the length tag
-
+  
       void msg_handler(pmt::pmt_t message);
+      void frame_info_handler(pmt::pmt_t frame_info);
+
 
     public:
       whitening_impl(bool is_hex, bool use_length_tag, char separator, std::string length_tag_name);
