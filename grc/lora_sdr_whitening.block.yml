@@ -42,6 +42,7 @@ inputs:
     hide: ${ ( False if str(source_type) == "message_strobe" else True) }
 -   label: dict
     domain: message
+    optional: True
 outputs:
 -   domain: stream
     dtype: byte
@@ -62,6 +63,7 @@ documentation: |-
             msg: the payload as a PMT message string
                 or
             in: a file source with payloads separated by separator.
+            dict: a dictionary to set parameters such as sf, bw, cr
         Output:
             out: Stream of whitened payload nibbles
 

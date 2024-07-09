@@ -37,7 +37,6 @@ namespace gr {
     {
      public:
       typedef std::shared_ptr<modulate> sptr;
-      virtual void set_sf(uint8_t sf)=0;
 
       /*!
        * \brief Return a shared_ptr to a new instance of lora_sdr::modulate.

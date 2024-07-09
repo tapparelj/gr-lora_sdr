@@ -33,6 +33,7 @@ namespace gr
             set_tag_propagation_policy(TPP_DONT);
             m_tags.resize(3);
             m_cnt_header_nibbles = 0;
+            m_has_config_tag = false;
         }
 
         void header_impl::set_cr(uint8_t cr){
@@ -91,13 +92,17 @@ namespace gr
 
                     m_tags[1] = tags[0];
                     get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
-                    tags[0].offset = nitems_written(0);
-                    m_tags[2] = tags[0];
+                    if(tags.size() > 0)
+                    {
+                        tags[0].offset = nitems_written(0);
+                        m_tags[2] = tags[0];
 
-                    pmt::pmt_t err = pmt::string_to_symbol("error");
-                    int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
-                    if (new_cr != m_cr) {
-                        m_cr = new_cr;
+                        pmt::pmt_t err = pmt::string_to_symbol("error");
+                        int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
+                        if (new_cr != m_cr) {
+                            m_cr = new_cr;
+                        }
+                        m_has_config_tag = true;
                     }
                 }
             }
@@ -129,7 +134,8 @@ namespace gr
                     //add tag
                     add_item_tag(0, m_tags[0]);
                     add_item_tag(0, m_tags[1]);
-                    add_item_tag(0, m_tags[2]);
+                    if(m_has_config_tag) add_item_tag(0, m_tags[2]);
+                    m_has_config_tag = false;
                 }
 
                 for (int i = 0; i < nitems_to_process; i++)
@@ -151,7 +157,8 @@ namespace gr
             {
                 add_item_tag(0, m_tags[0]);
                 add_item_tag(0, m_tags[1]);
-                add_item_tag(0, m_tags[2]);
+                if(m_has_config_tag) add_item_tag(0, m_tags[2]);
+                m_has_config_tag = false;
             }
             for (int i = out_offset; i < nitems_to_process; i++)
             {

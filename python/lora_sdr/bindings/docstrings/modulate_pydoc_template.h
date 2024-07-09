@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Free Software Foundation, Inc.
+ * Copyright 2024 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -16,10 +16,6 @@
 
 static const char *__doc_gr_lora_sdr_modulate = R"doc()doc";
 
-static const char *__doc_gr_lora_sdr_modulate_modulate_0 = R"doc()doc";
-
-static const char *__doc_gr_lora_sdr_modulate_modulate_1 = R"doc()doc";
-
-static const char *__doc_gr_lora_sdr_modulate_set_sf = R"doc()doc";
+static const char *__doc_gr_lora_sdr_modulate_modulate = R"doc()doc";
 
 static const char *__doc_gr_lora_sdr_modulate_make = R"doc()doc";

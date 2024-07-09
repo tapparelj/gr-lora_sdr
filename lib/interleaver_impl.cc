@@ -39,6 +39,7 @@ namespace gr
       cw_cnt = 0;
 
       set_tag_propagation_policy(TPP_DONT);
+      m_has_config_tag = false;
     }
 
     void interleaver_impl::set_cr(uint8_t cr){
@@ -115,16 +116,20 @@ namespace gr
           m_frame_len = pmt::to_long(tags[0].value);
           m_framelen_tag =  tags[0];
           get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
-          m_config_tag = tags[0];
-          m_config_tag.offset = nitems_written(0); 
+          if(tags.size()>0)
+          {
+            m_has_config_tag = true;
+            m_config_tag = tags[0];
+            m_config_tag.offset = nitems_written(0); 
 
-          pmt::pmt_t err_cr = pmt::string_to_symbol("error");
-          pmt::pmt_t err_sf = pmt::string_to_symbol("error");
-          pmt::pmt_t err_bw = pmt::string_to_symbol("error");
-          int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err_cr));
-          int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
-          int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
-          update_var(new_cr, new_sf, new_bw, ldro_pass);
+            pmt::pmt_t err_cr = pmt::string_to_symbol("error");
+            pmt::pmt_t err_sf = pmt::string_to_symbol("error");
+            pmt::pmt_t err_bw = pmt::string_to_symbol("error");
+            int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err_cr));
+            int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
+            int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
+            update_var(new_cr, new_sf, new_bw, ldro_pass);
+          }
           // std::cout<<"update tag"<<std::endl;
           // std::cout<<"Sf Interleaver inside "<< static_cast<int>(m_sf) <<std::endl;
           m_framelen_tag.value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
@@ -150,7 +155,11 @@ namespace gr
         //propagate tag
         if(!cw_cnt){
           add_item_tag(0, m_framelen_tag);
-          add_item_tag(0, m_config_tag);
+          if(m_has_config_tag){
+            add_item_tag(0, m_config_tag);
+            m_has_config_tag = false;
+          }
+
         }
         //Create the empty matrices
         std::vector<std::vector<bool>> cw_bin(sf_app);

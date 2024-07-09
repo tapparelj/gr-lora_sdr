@@ -129,16 +129,19 @@ namespace gr
                         m_frame_len = pmt::to_long(tags[0].value);
                         m_framelen_tag = tags[0];
                         get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
-                        m_config_tag = tags[0];
-                        m_config_tag.offset = nitems_written(0); 
+                        if(tags.size()>0)
+                        {
+                            m_config_tag = tags[0];
+                            m_config_tag.offset = nitems_written(0); 
 
-                        pmt::pmt_t err_sf = pmt::string_to_symbol("error");
-                        pmt::pmt_t err_bw = pmt::string_to_symbol("error");
-                        int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
-                        int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
-                        update_var(new_sf, new_bw);
+                            pmt::pmt_t err_sf = pmt::string_to_symbol("error");
+                            pmt::pmt_t err_bw = pmt::string_to_symbol("error");
+                            int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
+                            int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
+                            update_var(new_sf, new_bw);
 
-                        add_item_tag(0, m_config_tag);
+                            add_item_tag(0, m_config_tag);
+                        }
 
                         m_framelen_tag.offset = nitems_written(0);
 

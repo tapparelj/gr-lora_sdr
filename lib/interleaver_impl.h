@@ -20,6 +20,7 @@ namespace gr {
         bool ldro_pass;
         tag_t m_config_tag;
         tag_t m_framelen_tag;
+        bool m_has_config_tag; ///<indicate that a configuration tag was received
 
 
      public:
