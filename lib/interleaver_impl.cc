@@ -28,6 +28,7 @@ namespace gr
       m_sf = sf;
       m_cr = cr;
       m_bw = bw;
+      m_ldro_mode = ldro;
       if (ldro == AUTO){
         m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
       } 
@@ -35,7 +36,6 @@ namespace gr
       {
         m_ldro = ldro;
       }
-      ldro_pass = ldro;
       cw_cnt = 0;
 
       set_tag_propagation_policy(TPP_DONT);
@@ -48,6 +48,13 @@ namespace gr
 
     void interleaver_impl::set_sf(uint8_t sf){
       m_sf = sf;
+      if (m_ldro_mode == AUTO){
+        //m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+        m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
+      }
+      else {
+        m_ldro = m_ldro_mode;
+      }
     } 
 
     uint8_t interleaver_impl::get_cr(){
@@ -67,7 +74,7 @@ namespace gr
       ninput_items_required[0] = 1;
     }
 
-    void interleaver_impl::update_var(int new_cr, int new_sf, int new_bw, bool ldro_pass)
+    void interleaver_impl::update_var(int new_cr, int new_sf, int new_bw)
     {
       if (new_cr != m_cr) {
           m_cr = new_cr;
@@ -81,12 +88,12 @@ namespace gr
           m_bw = new_bw;
           // std::cout<<"New bw Interleaver "<< static_cast<int>(m_bw) <<std::endl;
       }
-      if (ldro_pass == AUTO){
+      if (m_ldro_mode == AUTO){
         //m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
         m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
       }
       else {
-        m_ldro = ldro_pass;
+        m_ldro = m_ldro_mode;
       }
     }
 
@@ -128,7 +135,7 @@ namespace gr
             int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err_cr));
             int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
             int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
-            update_var(new_cr, new_sf, new_bw, ldro_pass);
+            update_var(new_cr, new_sf, new_bw);
           }
           // std::cout<<"update tag"<<std::endl;
           // std::cout<<"Sf Interleaver inside "<< static_cast<int>(m_sf) <<std::endl;

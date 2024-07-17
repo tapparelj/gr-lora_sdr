@@ -17,7 +17,7 @@ namespace gr {
         int m_frame_len; ///<length of the frame in number of items
         bool m_ldro; ///< use the low datarate optimisation mode
         int m_bw;
-        bool ldro_pass;
+        uint8_t m_ldro_mode; ///< mode of the low datarate optimisation (0: off, 1: on, 2: auto)
         tag_t m_config_tag;
         tag_t m_framelen_tag;
         bool m_has_config_tag; ///<indicate that a configuration tag was received
@@ -30,7 +30,7 @@ namespace gr {
       void set_cr(uint8_t cr);
       uint8_t get_cr();
       void set_sf(uint8_t sf);
-      void update_var(int new_cr, int new_sf, int new_bw, bool ldro_pass);
+      void update_var(int new_cr, int new_sf, int new_bw);
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
       int general_work(int noutput_items,
