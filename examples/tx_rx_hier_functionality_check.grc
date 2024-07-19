@@ -264,6 +264,7 @@ blocks:
     samp_rate: '500000'
     sf: '7'
     soft_decoding: 'True'
+    sync_word: '[0x12]'
   states:
     bus_sink: false
     bus_source: false
@@ -303,6 +304,7 @@ blocks:
     minoutbuf: '0'
     samp_rate: '500000'
     sf: '7'
+    sync_word: '[0x12]'
   states:
     bus_sink: false
     bus_source: false

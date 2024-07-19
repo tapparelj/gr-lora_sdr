@@ -42,8 +42,6 @@ outputs:
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
     make: lora_sdr.modulate(${sf}, ${samp_rate}, ${bw}, ${sync_words}, ${frame_zero_padd},${preamb_len})
-    callbacks:
-        - set_sf(${sf})
 asserts:
 - ${ (samp_rate/bw).is_integer()}
 - ${frame_zero_padd>=0}

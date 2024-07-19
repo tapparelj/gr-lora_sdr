@@ -17,6 +17,8 @@ namespace gr {
       unsigned int m_cnt_header_nibbles; ///< count the number of explicit header nibbles output
       std::vector<uint8_t> m_header; ///< contain the header to prepend
 
+      bool m_has_config_tag; ///<indicate that a configuration tag was received
+
 
       std::vector<tag_t> m_tags;
       void msg_handler(pmt::pmt_t message);

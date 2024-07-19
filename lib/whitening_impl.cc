@@ -34,9 +34,13 @@ namespace gr
             m_is_hex = use_length_tag?false:is_hex;// cant use length tag if input is given as a string of hex values
             m_tag_offset = 1;
 
+            message_port_register_in(pmt::mp("dict"));
+            set_msg_handler(pmt::mp("dict"), [this](pmt::pmt_t dict)
+                            { this->frame_info_handler(dict); });
+
             message_port_register_in(pmt::mp("msg"));
             set_msg_handler(pmt::mp("msg"), [this](pmt::pmt_t msg)
-                            { this->msg_handler(msg); });
+                            { this->msg_handler(msg); });   
         }
 
         /*
@@ -53,13 +57,25 @@ namespace gr
             //  payload_str.push_back(random_string(rand()%253+2));
             // payload_str.push_back(rand()%2?"12345":"abcdefghijklmnop");
             payload_str.push_back(pmt::symbol_to_string(message));
-            // std::copy(payload_str.begin(), payload_str.end(), std::back_inserter(m_payload));
+        }
+        void whitening_impl::frame_info_handler(pmt::pmt_t frame_info)
+        {
+            // std::cout<<" info "<<std::endl;
+
+            pmt::pmt_t err = pmt::string_to_symbol("error");
+
+            int m_cr = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("cr"), err));
+            std::cout<<m_cr<<std::endl;
+
+            add_item_tag(0, nitems_written(0), pmt::string_to_symbol("configuration"), frame_info);
+
         }
 
         int whitening_impl::work(int noutput_items,
                                  gr_vector_const_void_star &input_items,
                                  gr_vector_void_star &output_items)
         {
+            // std::lock_guard<std::mutex> lock(m_payload_mutex);
             // check if input file is used
             uint8_t *in;
             if (input_items.size())
