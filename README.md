@@ -92,9 +92,9 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 		```sh
 		source ~/.bashrc
 		```
-	- Now copy our environment to install all the dependencies of the module automatically. Note that it will take quite some time (~20 min).
+	- Now copy our environment to install all the dependencies of the module automatically
 		```sh
-		conda env create -f environment.yml 
+		conda env create -f environment.yml
 		```
 	- Start the conda environment GNU Radio 3.10 you just created
 		```sh
