@@ -82,11 +82,11 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	You can follow this [tutorial](https://www.how2shout.com/how-to/install-anaconda-wsl-windows-10-ubuntu-linux-app.html) or simply following:
 	- First download the latest release of conda, for example:
 		```sh
-		wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh
+		wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 		```
 	- Now run the downloaded file which is the Anaconda Installer script
 		```sh
-	 	bash Miniconda3-py39_4.12.0-Linux-x86_64.sh
+	 	bash Miniconda3-latest-Linux-x86_64.sh
 		```
 	- And reload the Shell
 		```sh
