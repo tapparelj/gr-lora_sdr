@@ -29,12 +29,6 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: linux_64_numpy1.22python3.8.____cpython
-            UPLOAD_PACKAGES: True
-            os: ubuntu
-            runs_on: ['ubuntu-latest']
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
           - CONFIG: linux_64_numpy1.22python3.9.____cpython
             SHORT_CONFIG: linux_64_numpy1.22python3.9.____cpython
             UPLOAD_PACKAGES: True
@@ -47,14 +41,14 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_aarch64_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: linux_aarch64_numpy1.22python3.10.____cpython
+          - CONFIG: linux_64_numpy1.26python3.12.____cpython
+            SHORT_CONFIG: linux_64_numpy1.26python3.12.____cpython
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_aarch64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: linux_aarch64_numpy1.22python3.8.____cpython
+          - CONFIG: linux_aarch64_numpy1.22python3.10.____cpython
+            SHORT_CONFIG: linux_aarch64_numpy1.22python3.10.____cpython
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
@@ -71,14 +65,14 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_ppc64le_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: linux_ppc64le_numpy1.22python3.10.____cpython
+          - CONFIG: linux_aarch64_numpy1.26python3.12.____cpython
+            SHORT_CONFIG: linux_aarch64_numpy1.26python3.12.____cpython
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
-          - CONFIG: linux_ppc64le_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: linux_ppc64le_numpy1.22python3.8.____cpython
+          - CONFIG: linux_ppc64le_numpy1.22python3.10.____cpython
+            SHORT_CONFIG: linux_ppc64le_numpy1.22python3.10.____cpython
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
@@ -95,13 +89,14 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_ppc64le_numpy1.26python3.12.____cpython
+            SHORT_CONFIG: linux_ppc64le_numpy1.26python3.12.____cpython
+            UPLOAD_PACKAGES: True
+            os: ubuntu
+            runs_on: ['ubuntu-latest']
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
           - CONFIG: osx_64_numpy1.22python3.10.____cpython
             SHORT_CONFIG: osx_64_numpy1.22python3.10.____cpython
-            UPLOAD_PACKAGES: True
-            os: macos
-            runs_on: ['macos-13']
-          - CONFIG: osx_64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: osx_64_numpy1.22python3.8.____cpython
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-13']
@@ -115,13 +110,13 @@ jobs:
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-13']
-          - CONFIG: osx_arm64_numpy1.22python3.10.____cpython
-            SHORT_CONFIG: osx_arm64_numpy1.22python3.10.____cpython
+          - CONFIG: osx_64_numpy1.26python3.12.____cpython
+            SHORT_CONFIG: osx_64_numpy1.26python3.12.____cpython
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-13']
-          - CONFIG: osx_arm64_numpy1.22python3.8.____cpython
-            SHORT_CONFIG: osx_arm64_numpy1.22python3.8.____cpython
+          - CONFIG: osx_arm64_numpy1.22python3.10.____cpython
+            SHORT_CONFIG: osx_arm64_numpy1.22python3.10.____cpython
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-13']
@@ -135,10 +130,15 @@ jobs:
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-13']
+          - CONFIG: osx_arm64_numpy1.26python3.12.____cpython
+            SHORT_CONFIG: osx_arm64_numpy1.26python3.12.____cpython
+            UPLOAD_PACKAGES: True
+            os: macos
+            runs_on: ['macos-13']
     steps:
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       with:
         fetch-depth: 0
 
@@ -191,13 +191,6 @@ jobs:
         fi
         ./.scripts/run_osx_build.sh
 
-    - name: Install Miniconda for windows
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        miniforge-version: latest
-        miniforge-variant: Mambaforge
-      if: matrix.os == 'windows'
-
     - name: Build on windows
       shell: cmd
       run: |
@@ -206,6 +199,7 @@ jobs:
         set "sha=%GITHUB_SHA%"
         call ".scripts\run_win_build.bat"
       env:
+        MINIFORGE_HOME: D:\Miniforge
         PYTHONUNBUFFERED: 1
         CONFIG: ${{ matrix.CONFIG }}
         CI: github_actions
@@ -221,6 +215,7 @@ jobs:
         CONFIG: ${{ matrix.CONFIG }}
         SHORT_CONFIG: ${{ matrix.SHORT_CONFIG }}
         OS: ${{ matrix.os }}
+        MINIFORGE_HOME_WIN: D:\Miniforge
       run: |
         export CI=github_actions
         export CI_RUN_ID=$GITHUB_RUN_ID
@@ -229,7 +224,7 @@ jobs:
         if [ $OS == "macos" ]; then
           export CONDA_BLD_DIR="${MINIFORGE_HOME:-${HOME}/miniforge3}/conda-bld"
         elif [ $OS == "windows" ]; then
-          export CONDA_BLD_DIR="${CONDA//\\//}/conda-bld"
+          export CONDA_BLD_DIR="${MINIFORGE_HOME_WIN//\\//}/conda-bld"
         else
           export CONDA_BLD_DIR="build_artifacts"
         fi
@@ -248,7 +243,7 @@ jobs:
       continue-on-error: true
 
     - name: Store conda build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
       if: ${{ always() && steps.prepare-artifacts.outcome == 'success' }}
       with:
         name: ${{ steps.prepare-artifacts.outputs.BLD_ARTIFACT_NAME }}
@@ -257,7 +252,7 @@ jobs:
       continue-on-error: true
 
     - name: Store conda build environment artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
       if: ${{ failure() && steps.prepare-artifacts.outcome == 'success' }}
       with:
         name: ${{ steps.prepare-artifacts.outputs.ENV_ARTIFACT_NAME }}
