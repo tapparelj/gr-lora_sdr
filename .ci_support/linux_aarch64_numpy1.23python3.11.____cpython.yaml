@@ -1,9 +1,11 @@
 BUILD:
 - aarch64-conda_cos7-linux-gnu
+ace:
+- 8.0.1
 c_compiler:
 - gcc
 c_compiler_version:
-- '12'
+- '13'
 cdt_arch:
 - aarch64
 cdt_name:
@@ -15,13 +17,13 @@ channel_targets:
 cxx_compiler:
 - gxx
 cxx_compiler_version:
-- '12'
+- '13'
 docker_image:
 - quay.io/condaforge/linux-anvil-cos7-x86_64
 gmp:
 - '6'
 gnuradio_core:
-- 3.10.6
+- 3.10.11
 gnuradio_extra_pin:
 - ''
 numpy:

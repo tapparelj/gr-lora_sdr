@@ -31,17 +31,19 @@ pkgs_dirs:
 solver: libmamba
 
 CONDARC
+mv /opt/conda/conda-meta/history /opt/conda/conda-meta/history.$(date +%Y-%m-%d-%H-%M-%S)
+echo > /opt/conda/conda-meta/history
+micromamba install --root-prefix ~/.conda --prefix /opt/conda \
+    --yes --override-channels --channel conda-forge --strict-channel-priority \
+    pip  python=3.12 conda-build conda-forge-ci-setup=4 "conda-build>=24.1"
 export CONDA_LIBMAMBA_SOLVER_NO_CHANNELS_FROM_INSTALLED=1
-
-mamba install --update-specs --yes --quiet --channel conda-forge --strict-channel-priority \
-    pip mamba conda-build conda-forge-ci-setup=4 "conda-build>=24.1"
-mamba update --update-specs --yes --quiet --channel conda-forge --strict-channel-priority \
-    pip mamba conda-build conda-forge-ci-setup=4 "conda-build>=24.1"
 
 # set up the condarc
 setup_conda_rc "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CONFIG_FILE}"
 
 source run_conda_forge_build_setup
+
+
 
 # make the build number clobber
 make_build_number "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CONFIG_FILE}"
@@ -72,6 +74,12 @@ else
         --suppress-variables ${EXTRA_CB_OPTIONS:-} \
         --clobber-file "${CI_SUPPORT}/clobber_${CONFIG}.yaml" \
         --extra-meta flow_run_id="${flow_run_id:-}" remote_url="${remote_url:-}" sha="${sha:-}"
+    ( startgroup "Inspecting artifacts" ) 2> /dev/null
+
+    # inspect_artifacts was only added in conda-forge-ci-setup 4.9.4
+    command -v inspect_artifacts >/dev/null 2>&1 && inspect_artifacts --recipe-dir "${RECIPE_ROOT}" -m "${CONFIG_FILE}" || echo "inspect_artifacts needs conda-forge-ci-setup >=4.9.4"
+
+    ( endgroup "Inspecting artifacts" ) 2> /dev/null
 
     ( startgroup "Uploading packages" ) 2> /dev/null
 
