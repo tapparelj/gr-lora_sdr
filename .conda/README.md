@@ -24,7 +24,7 @@ Packages for GNU Radio and some out-of-tree (OOT) modules are available through 
         conda install -n base conda-build conda-forge-pinning
         conda upgrade -n base conda-build conda-forge-pinning
 
-    **Windows users only**: you will also need to have Microsoft's Visual C++ build tools installed. Usually you can do this by installing the [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) and then selecting a MSVC C++ x64/x86 build tools component under the list of "Individual components". As of this writing, you will specifically need MSVC v143, i.e. the "MSVC v143 - VS2022 C++ x64/x86 build tools (v14.41-17.11)" component. If the build fails to find the version of MSVC it is looking for, try installing other (newer) versions.
+    **Windows users only**: you will also need to have Microsoft's Visual C++ build tools installed. Usually you can do this by installing the [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) and then selecting a MSVC C++ x64/x86 build tools component under the list of "Individual components". As of this writing, you will specifically need MSVC v143, i.e. the "MSVC v143 - VS2022 C++ x64/x86 build tools (Latest)" component. If the build fails to find the version of MSVC it is looking for, try installing other (newer) versions.
 
 2. Download the source code for this OOT module (which includes this recipe). Typically, this is done by using `git` and cloning the module's repository:
 
