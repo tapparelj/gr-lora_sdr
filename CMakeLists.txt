@@ -14,7 +14,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 ########################################################################
 # Project setup
 ########################################################################
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16)
 project(gr-lora_sdr CXX C)
 enable_testing()
 
