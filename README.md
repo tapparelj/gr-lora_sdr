@@ -109,11 +109,11 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	cmake .. -DCMAKE_INSTALL_PREFIX=<your prefix> # default to usr/local, CONDA_PREFIX or PYBOMB_PREFIX if no install prefix selected here
 	```
-- Finally compile the custom GNU Radio blocks composing the LoRa transceiver. Replacing \<X> with the number of core you want to use to speed up the compilation.
+- Finally compile the custom GNU Radio blocks composing the LoRa transceiver.
 	```sh
-	(sudo) make install -j<X>
+	(sudo) make install -j$(nproc)
 	```
-- if you installed as sudo run
+- If you installed as sudo run
 	```sh
 	sudo ldconfig 
 	```
