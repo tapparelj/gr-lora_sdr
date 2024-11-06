@@ -66,7 +66,6 @@ If you find this implementation useful for your project, please consider citing 
 - gxx
 - pybind11
 
-The conda environment used to develop this module is described by the environment.yml file. 
 ## Installation
 The out of tree module gr-lora_sdr can be installed from source or directly as a conda package.
 ### From source
@@ -78,7 +77,7 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	cd gr-lora_sdr/
 	```
-- You can optionally install the required dependecies using the provided conda environment, or directly install the dependecies independently and skip to the next step.
+- You can optionally install the required dependecies using the provided conda environment, or directly install the dependecies independently and bypass the use of conda.
 	You can follow this [tutorial](https://www.how2shout.com/how-to/install-anaconda-wsl-windows-10-ubuntu-linux-app.html) or simply following:
 	- First download the latest release of conda, for example:
 		```sh
