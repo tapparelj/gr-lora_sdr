@@ -6,6 +6,7 @@ build_platform:
   linux_aarch64: linux_64
   linux_ppc64le: linux_64
   osx_arm64: osx_64
+  win_64: win_64
 clone_depth: 0
 github_actions:
   store_build_artifacts: true
@@ -14,7 +15,7 @@ os_version:
 provider:
   linux: github_actions
   osx: github_actions
-  #win: github_actions
+  win: github_actions
   # uncomment to enable additional linux platforms
   #linux_aarch64: github_actions
   #linux_ppc64le: github_actions
