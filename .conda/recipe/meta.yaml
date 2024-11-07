@@ -19,8 +19,8 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
-  skip: true  # [py>=313]
+  skip: false  # [win]
+  skip: false  # [py>=313]
   
 requirements:
   build:
