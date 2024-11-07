@@ -19,8 +19,8 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
-  skip: true  # [py>=312]
+  skip: false  # [win]
+  skip: false  # [py>=313]
   
 requirements:
   build:
@@ -36,8 +36,8 @@ requirements:
     - numpy                               # [build_platform != target_platform]
     - pybind11                            # [build_platform != target_platform]
     # Add extra build tool dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
   host:
     - gmp  # [linux]
@@ -49,15 +49,15 @@ requirements:
     - python
     - numpy
     # Add/remove library dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
   run:
     - numpy
     - python
     # Add/remove runtime dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
 test:
   requires:

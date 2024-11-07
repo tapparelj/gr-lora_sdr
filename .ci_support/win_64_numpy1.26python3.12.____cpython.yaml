@@ -1,37 +1,25 @@
 c_compiler:
-- gcc
-c_compiler_version:
-- '13'
-cdt_name:
-- cos7
+- vs2019
 channel_sources:
 - conda-forge
 channel_targets:
 - tapparelj main
 cxx_compiler:
-- gxx
-cxx_compiler_version:
-- '13'
-docker_image:
-- quay.io/condaforge/linux-anvil-cos7-x86_64
-gmp:
-- '6'
+- vs2019
 gnuradio_core:
 - 3.10.11
 gnuradio_extra_pin:
 - ''
 numpy:
-- '1.23'
+- '1.26'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.11.* *_cpython
+- 3.12.* *_cpython
 target_platform:
-- linux-ppc64le
+- win-64
 zip_keys:
-- - c_compiler_version
-  - cxx_compiler_version
 - - python
   - numpy
