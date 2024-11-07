@@ -6,6 +6,8 @@ name: Build conda package
 on:
   push:
     branches:
+      - master
+
   pull_request:
 
 concurrency:
