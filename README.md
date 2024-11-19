@@ -1,4 +1,4 @@
-[![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
+![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
 ![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.11-important)
 ![version](https://img.shields.io/badge/Version-0.5.8-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
@@ -49,9 +49,15 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 
 \* Spreading factors 5 and 6 are not compatible with SX126x.
 ## Reference
+### Original publication
 J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming and A. Burg, "An Open-Source LoRa Physical Layer Prototype on GNU Radio," 2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC), Atlanta, GA, USA, 2020, pp. 1-5.
-
 [IEEE Xplore link](https://ieeexplore.ieee.org/document/9154273), [arXiv link](https://arxiv.org/abs/2002.08208)
+
+### Updated publication
+
+J, Tapparel and A. Burg, "Design and Implementation of LoRa Physical Layer in GNU Radio". Proceedings of the GNU Radio Conference, Knoxville, TN, USA, 2024.
+[GNU Radio Proceedings](https://pubs.gnuradio.org/index.php/grcon/article/view/145)
+
 
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
