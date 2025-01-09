@@ -82,7 +82,7 @@ namespace gr
       std::vector<gr_complex> additional_symbol_samp;  ///< save the value of the last 1.25 downchirp as it might contain the first payload symbol
       std::vector<gr_complex> preamble_raw;      ///<vector containing the preamble upchirps without any synchronization
       std::vector<gr_complex> preamble_raw_up;  ///<vector containing the upsampled preamble upchirps without any synchronization
-      std::vector<gr_complex> downchirp_raw;    ///< vetor containing the preamble downchirps without any synchronization
+      std::vector<gr_complex> downchirp_raw;    ///< vector containing the preamble downchirps without any synchronization
       std::vector<gr_complex> preamble_upchirps; ///<vector containing the preamble upchirps
       std::vector<gr_complex> net_id_samp;       ///< vector of the oversampled network identifier samples
       std::vector<int> net_ids;                  ///< values of the network identifiers received

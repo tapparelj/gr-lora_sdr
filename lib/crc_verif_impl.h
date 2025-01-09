@@ -20,7 +20,7 @@ namespace gr {
         std::vector<uint8_t> in_buff;///< input buffer containing the data bytes and CRC if any
         int print_rx_msg;  ///< print received message in terminal. 0: no print, 1: ASCII, 2: HEX
         bool output_crc_check; ///< output the result of the payload CRC check
-        tag_t curent_tag; ///< the most recent tag for the packet we are currently processing
+        tag_t current_tag; ///< the most recent tag for the packet we are currently processing
         
 
         uint32_t cnt=0;///< count the number of frame

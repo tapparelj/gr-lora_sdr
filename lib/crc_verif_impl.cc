@@ -92,7 +92,7 @@ namespace gr
                 pmt::pmt_t err = pmt::string_to_symbol("error");
                 m_crc_presence = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err));
                 m_payload_len = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err));
-                curent_tag = tags[0];
+                current_tag = tags[0];
                 // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
                 // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 
@@ -149,9 +149,9 @@ namespace gr
                         produce(1,1);
                     }
 					if (output_items.size()){
-		                curent_tag.value = pmt::dict_add(curent_tag.value, pmt::string_to_symbol("crc_valid"), pmt::from_bool(crc_valid == 1));
-		                curent_tag.offset = nitems_written(0);
-		                add_item_tag(0, curent_tag);
+		                current_tag.value = pmt::dict_add(current_tag.value, pmt::string_to_symbol("crc_valid"), pmt::from_bool(crc_valid == 1));
+		                current_tag.offset = nitems_written(0);
+		                add_item_tag(0, current_tag);
                     }
                     if (print_rx_msg != NONE)
                     {
@@ -187,8 +187,8 @@ namespace gr
             else if ((in_buff.size()>= m_payload_len) && !m_crc_presence)
             {
                 if (output_items.size()){
-		            curent_tag.offset = nitems_written(0);
-		            add_item_tag(0, curent_tag);
+		            current_tag.offset = nitems_written(0);
+		            add_item_tag(0, current_tag);
 				}
                 // get payload as string
                 message_str.clear();

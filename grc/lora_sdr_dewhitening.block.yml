@@ -21,7 +21,7 @@ documentation: |-
         Input:
             in: stream of payload and CRC nibbles
             pay_len: payload length in bytes
-            new_frame: indicate begining of new frame
+            new_frame: indicate beginning of new frame
             CRC: payload crc presence
         Output:
             out: dewhitened payload bytes (and CRC if present)
