@@ -83,7 +83,7 @@ def utoascii(text):
     if text is None:
         return ''
     out = text.encode('ascii', 'replace')
-    # swig will require us to replace blackslash with 4 backslashes
+    # swig will require us to replace backslash with 4 backslashes
     # TODO: evaluate what this should be for pybind11
     out = out.replace(b'\\', b'\\\\\\\\')
     out = out.replace(b'"', b'\\"').decode('ascii')

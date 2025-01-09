@@ -90,7 +90,7 @@ documentation: |-
         - Frame zero padding: number of null samples padded after each frame
 
     Inputs:
-        - in: Message of the payload to transmitt
+        - in: Message of the payload to transmit
     Outputs
         - out: Stream of baseband complex samples that can be fed to the SDR frontend
 

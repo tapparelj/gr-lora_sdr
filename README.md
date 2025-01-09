@@ -83,7 +83,7 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	cd gr-lora_sdr/
 	```
-- You can optionally install the required dependecies using the provided conda environment, or directly install the dependecies independently and bypass the use of conda.
+- You can optionally install the required dependencies using the provided conda environment, or directly install the dependencies independently and bypass the use of conda.
 	You can follow this [tutorial](https://www.how2shout.com/how-to/install-anaconda-wsl-windows-10-ubuntu-linux-app.html) or simply following:
 	- First download the latest release of conda, for example:
 		```sh
