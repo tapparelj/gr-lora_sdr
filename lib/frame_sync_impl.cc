@@ -60,17 +60,14 @@ namespace gr
 
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_samples_per_symbol = m_number_of_bins * m_os_factor;
-            additional_symbol_samp.resize(2 * m_samples_per_symbol);
             m_upchirp.resize(m_number_of_bins);
             m_downchirp.resize(m_number_of_bins);
-            preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
-            preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
-            preamble_raw.resize(m_preamb_len * m_number_of_bins);
-            net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
+
+            received_preamble.resize((m_preamb_len + 2 + 2 + 2.25) * m_samples_per_symbol);
 
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
@@ -94,8 +91,12 @@ namespace gr
                             { this->noise_est_handler(msg); });
 
 #ifdef GRLORA_DEBUG
-            preamb_file.open("../../matlab/SFO/preamb.txt", std::ios::out | std::ios::trunc);
+            debug_file.open("../debugSF12/sync_payload.bin", std::ios::out | std::ios::trunc);
+            debug_file2.open("../debugSF12/sync_preamb.bin", std::ios::out | std::ios::trunc);
+            debug_file3.open("../debugSF12/tmp.bin", std::ios::out | std::ios::trunc);
+            debug_file4.open("../debugSF12/tmp2.bin", std::ios::out | std::ios::trunc);
 #endif
+
             // start_off_file.open("../../matlab/Raspi_HAT/start_off_file.txt", std::ios::out | std::ios::trunc);
             // detect_file.open("../../matlab/SFO/detect.txt", std::ios::out | std::ios::trunc);
             // netid_file.open("../../matlab/SFO/net_id.txt", std::ios::out | std::ios::trunc);
@@ -187,17 +188,15 @@ namespace gr
                 CFO_frac_correc_aug[n] = gr_expj(-2 * M_PI * (cfo_frac) / m_number_of_bins * n);
             }
 
-            volk_32fc_x2_multiply_32fc(&preamble_upchirps[0], samples, &CFO_frac_correc_aug[0], up_symb_to_use * m_number_of_bins);
-
             return cfo_frac;
         }
-        float frame_sync_impl::estimate_CFO_frac_Bernier(gr_complex *samples)
+        float frame_sync_impl::estimate_CFO_frac_Xhonneux(gr_complex *samples, int symb_to_use)
         {
-            std::vector<int> k0(up_symb_to_use);
+            std::vector<int> k0(symb_to_use);
             float cfo_frac;
-            std::vector<gr_complex> CFO_frac_correc_aug(up_symb_to_use * m_number_of_bins); ///< CFO frac correction vector
-            std::vector<double> k0_mag(up_symb_to_use);
-            std::vector<gr_complex> fft_val(up_symb_to_use * m_number_of_bins);
+            std::vector<gr_complex> CFO_frac_correc_aug(symb_to_use * m_number_of_bins); ///< CFO frac correction vector
+            std::vector<double> k0_mag(symb_to_use);
+            std::vector<gr_complex> fft_val(symb_to_use * m_number_of_bins);
 
             std::vector<gr_complex> dechirped(m_number_of_bins);
             kiss_fft_cpx *cx_in_cfo = new kiss_fft_cpx[m_number_of_bins];
@@ -208,7 +207,8 @@ namespace gr
                 fft_mag_sq[i] = 0;
             }
             kiss_fft_cfg cfg_cfo = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
-            for (int i = 0; i < up_symb_to_use; i++)
+
+            for (int i = 0; i < symb_to_use; i++)
             {
                 // Dechirping
                 volk_32fc_x2_multiply_32fc(&dechirped[0], &samples[m_number_of_bins * i], &m_downchirp[0], m_number_of_bins);
@@ -237,21 +237,17 @@ namespace gr
             // get argmax
             int idx_max = k0[std::distance(std::begin(k0_mag), std::max_element(std::begin(k0_mag), std::end(k0_mag)))];
             gr_complex four_cum(0.0f, 0.0f);
-            for (int i = 0; i < up_symb_to_use - 1; i++)
+            for (int i = 0; i < symb_to_use - 1; i++)
             {
                 four_cum += fft_val[idx_max + m_number_of_bins * i] * std::conj(fft_val[idx_max + m_number_of_bins * (i + 1)]);
             }
             cfo_frac = -std::arg(four_cum) / 2 / M_PI;
-            // Correct CFO in preamble
-            for (uint32_t n = 0; n < up_symb_to_use * m_number_of_bins; n++)
-            {
-                CFO_frac_correc_aug[n] = gr_expj(-2 * M_PI * cfo_frac / m_number_of_bins * n);
-            }
-            volk_32fc_x2_multiply_32fc(&preamble_upchirps[0], samples, &CFO_frac_correc_aug[0], up_symb_to_use * m_number_of_bins);
+
+            debug_print("CFO frac: " << cfo_frac, "frame_sync", BLUE);
             return cfo_frac;
         }
 
-        float frame_sync_impl::estimate_STO_frac()
+        float frame_sync_impl::estimate_STO_frac(gr_complex *samples)
         {
             int k0;
             double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
@@ -271,7 +267,7 @@ namespace gr
             for (int i = 0; i < up_symb_to_use; i++)
             {
                 // Dechirping
-                volk_32fc_x2_multiply_32fc(&dechirped[0], &preamble_upchirps[m_number_of_bins * i], &m_downchirp[0], m_number_of_bins);
+                volk_32fc_x2_multiply_32fc(&dechirped[0], &samples[m_number_of_bins * i], &m_downchirp[0], m_number_of_bins);
 
                 // prepare FFT
                 for (uint32_t j = 0; j < 2 * m_number_of_bins; j++)
@@ -316,6 +312,8 @@ namespace gr
             k_residual = fmod((k0 + ka) / 2, 1);
             sto_frac = k_residual - (k_residual > 0.5 ? 1 : 0);
 
+            debug_print("STO frac: " << sto_frac, "frame_sync", BLUE);
+
             return sto_frac;
         }
 
@@ -343,6 +341,7 @@ namespace gr
                 sig_en += fft_mag[i];
             }
             // Return argmax here
+            // debug_print("val magnitude: " << *std::max_element(std::begin(fft_mag), std::end(fft_mag)), "frame_sync", BLUE);
 
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
@@ -432,17 +431,13 @@ namespace gr
             m_sf = sf;
             m_number_of_bins = (uint32_t)(1u << m_sf);
             m_samples_per_symbol = m_number_of_bins * m_os_factor;
-            additional_symbol_samp.resize(2 * m_samples_per_symbol);
             m_upchirp.resize(m_number_of_bins);
             m_downchirp.resize(m_number_of_bins);
-            preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
-            preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
+            received_preamble.resize((m_preamb_len + 2 + 2 + 2.25) * m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
-            preamble_raw.resize(m_preamb_len * m_number_of_bins);
-            net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
             cx_in = new kiss_fft_cpx[m_number_of_bins];
@@ -491,20 +486,21 @@ namespace gr
 
                     int sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
                     set_sf(sf);
-
-                    // std::cout<<"\nhamming_cr "<<tags[0].offset<<" - cr: "<<(int)m_cr<<"\n";
                 }
             }
 
             // downsampling
             for (uint32_t ii = 0; ii < m_number_of_bins; ii++)
-                in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
+            {
+                in_down[ii] = in[(int)(m_os_factor * ii)];
+            }
 
             switch (m_state)
             {
             case DETECT:
             {
                 bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
+                // debug_print("bin_idx_new:" << bin_idx_new, "frame_sync", BLUE);
 
                 if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
                 {
@@ -512,16 +508,19 @@ namespace gr
                         preamb_up_vals[0] = bin_idx;
 
                     preamb_up_vals[symbol_cnt] = bin_idx_new;
-                    memcpy(&preamble_raw[m_number_of_bins * symbol_cnt], &in_down[0], m_number_of_bins * sizeof(gr_complex));
-                    memcpy(&preamble_raw_up[m_samples_per_symbol * symbol_cnt], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+
+                    // append the received symbol
+                    memcpy(&received_preamble[m_samples_per_symbol * (symbol_cnt + 1)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
 
                     symbol_cnt++;
                 }
                 else
                 {
-                    memcpy(&preamble_raw[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
-                    memcpy(&preamble_raw_up[0], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+                    // shift the received_preamble by one symbol
+                    std::rotate(received_preamble.begin(), received_preamble.begin() + m_samples_per_symbol, received_preamble.end());
 
+                    // copy new symbol
+                    memcpy(&received_preamble[m_samples_per_symbol], &in[0], m_samples_per_symbol * sizeof(gr_complex));
                     symbol_cnt = 1;
                 }
                 bin_idx = bin_idx_new;
@@ -532,7 +531,9 @@ namespace gr
                     symbol_cnt = 0;
                     cfo_frac_sto_frac_est = false;
                     k_hat = most_frequent(&preamb_up_vals[0], preamb_up_vals.size());
-                    memcpy(&net_id_samp[0], &in[int(0.75 * m_samples_per_symbol - k_hat * m_os_factor)], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    debug_print("k_hat:" << k_hat, "frame_sync", BLUE);
+
+                    std::rotate(received_preamble.begin(), received_preamble.begin() + int(m_os_factor * (m_number_of_bins - k_hat)), received_preamble.end());
 
                     // perform the coarse synchronization
                     items_to_consume = m_os_factor * ((int)(m_number_of_bins - k_hat));
@@ -540,236 +541,230 @@ namespace gr
                 else
                     items_to_consume = m_samples_per_symbol;
                 items_to_output = 0;
+
                 break;
             }
             case SYNC:
             {
                 items_to_output = 0;
-                if (!cfo_frac_sto_frac_est)
-                {
-                    m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
-                    m_sto_frac = estimate_STO_frac();
-                    // create correction vector
-                    for (uint32_t n = 0; n < m_number_of_bins; n++)
-                    {
-                        CFO_frac_correc[n] = gr_expj(-2 * M_PI * m_cfo_frac / m_number_of_bins * n);
-                    }
-                    cfo_frac_sto_frac_est = true;
-                }
-                items_to_consume = m_samples_per_symbol;
-                // apply cfo correction
-                volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0], m_number_of_bins);
 
-                bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+                items_to_consume = m_samples_per_symbol;
+
+                bin_idx = get_symbol_val(&in_down[0], &m_downchirp[0]);
+                debug_print("bin_idx:" << bin_idx, "frame_sync", BLUE);
+
                 switch (symbol_cnt)
                 {
                 case NET_ID1:
-                {
+                { // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                     if (bin_idx == 0 || bin_idx == 1 || (uint32_t)bin_idx == m_number_of_bins - 1)
-                    { // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
-                        memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
-                        if (additional_upchirps >= 3)
+                    {
+                        if (additional_upchirps >= 4)
                         {
-                            std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
-                            memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            std::rotate(received_preamble.begin(), received_preamble.begin() + m_samples_per_symbol, received_preamble.end());
+                            // copy new symbol
+                            memcpy(&received_preamble[m_samples_per_symbol * (m_n_up_req + 4)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
                         }
                         else
                         {
-                            memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            memcpy(&received_preamble[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
                             additional_upchirps++;
                         }
                     }
                     else
-                    { // network identifier 1 correct or off by one
+                    {
+                        memcpy(&received_preamble[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
+                        // rotate buffer if needed (e.g. missed upchirps)
+                        debug_print("additional_upchirps: " << (int)additional_upchirps << ", m_n_up_req: " << (int)m_n_up_req << ", m_preamb_len: " << m_preamb_len, "frame_sync", BLUE);
+                        if (m_n_up_req + additional_upchirps <= m_preamb_len)
+                        {
+                            debug_print("should realign, rotate by " << (m_n_up_req + additional_upchirps - m_preamb_len - 1) << " symbols", "frame_sync", RED);
+                            debug_print("should realign, copy at " << m_samples_per_symbol * (m_preamb_len + 1 - (m_n_up_req + additional_upchirps)) << " symbols", "frame_sync", RED);
+                            memcpy(&received_preamble[m_samples_per_symbol * (m_preamb_len + 1 - (m_n_up_req + additional_upchirps))], &received_preamble[0], m_samples_per_symbol * (m_n_up_req + additional_upchirps + 1) * sizeof(gr_complex));
+
+                            // set the missing values to 0
+                            for (int i = 0; i < m_samples_per_symbol * (m_preamb_len + 1 - (m_n_up_req + additional_upchirps)); i++)
+                            {
+                                received_preamble[i] = 0;
+                            }
+                        }
                         symbol_cnt = NET_ID2;
-                        memcpy(&net_id_samp[0.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-                        net_ids[0] = bin_idx;
                     }
                     break;
                 }
                 case NET_ID2:
                 {
+                    memcpy(&received_preamble[m_samples_per_symbol * (m_preamb_len + 1 + symbol_cnt)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
 
                     symbol_cnt = DOWNCHIRP1;
-                    memcpy(&net_id_samp[1.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * (m_number_of_bins + 1) * m_os_factor);
-                    net_ids[1] = bin_idx;
-
                     break;
                 }
                 case DOWNCHIRP1:
                 {
-                    memcpy(&net_id_samp[2.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    memcpy(&received_preamble[m_samples_per_symbol * (m_preamb_len + 1 + symbol_cnt)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
                     symbol_cnt = DOWNCHIRP2;
                     break;
                 }
                 case DOWNCHIRP2:
                 {
-                    down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
-                    memcpy(&additional_symbol_samp[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                    memcpy(&received_preamble[m_samples_per_symbol * (m_preamb_len + 1 + symbol_cnt)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
                     symbol_cnt = QUARTER_DOWN;
                     break;
                 }
                 case QUARTER_DOWN:
                 {
-                    memcpy(&additional_symbol_samp[m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-                    if ((uint32_t)down_val < m_number_of_bins / 2)
-                    {
-                        m_cfo_int = floor(down_val / 2);
-                    }
-                    else
-                    {
-                        m_cfo_int = floor(double(down_val - (int)m_number_of_bins) / 2);
-                    }
+                    memcpy(&received_preamble[m_samples_per_symbol * (m_preamb_len + 1 + symbol_cnt)], &in[0], m_samples_per_symbol * sizeof(gr_complex));
+                    m_sfo_hat = 0;
 
+                    // We now have the full preamble in received_preamble + 1 symbol in front and back for realignment
+
+                    // Actual synchronization starts here
+                    std::vector<gr_complex> decim_preamb((m_preamb_len + 2 + 2 + 2.25) * m_number_of_bins); // TODO only declare once
+                    for (int sync_pass = 0; sync_pass < 2; sync_pass++)
+                    {
+                        // decim received preamb
+
+                        for (uint32_t i = 0; i < (m_preamb_len + 2 + 2 + 2.25) * m_number_of_bins; i++)
+                        {
+                            decim_preamb[i] = received_preamble[i * m_os_factor];
+                        }
+
+                        // Compensate SFO if sfo_hat not null
+                        std::vector<gr_complex> sfo_comp_vect(decim_preamb.size());
+                        if (m_sfo_hat != 0)
+                        {
+                            double clk_off = m_sfo_hat / m_number_of_bins;
+                            double fs = m_bw;
+                            double fs_p = m_bw * (1 - clk_off);
+                            int N = m_number_of_bins;
+                            bool tmp = false;
+                            for (uint32_t n = 0; n < decim_preamb.size(); n++)
+                            {
+                                //Based on asilomar sfo synch paper
+                                sfo_comp_vect[n] = gr_expj(-2 * M_PI * (pow(m_bw, 2) * pow(lora_sdr::mod(n, N), 2) / (2 * N) * (pow(fs, 2) - pow(fs_p, 2)) / (pow(fs, 2) * pow(fs_p, 2)) + (std::floor((float)n / N) * (pow(m_bw / fs_p, 2) - m_bw / fs_p) + m_bw / 2 * ((fs_p - fs) / (fs * fs_p))) * lora_sdr::mod(n, N)));
+                                if (n >= m_number_of_bins * (m_preamb_len + 1 + 2))
+                                {
+                                    // this is downchirps
+                                    sfo_comp_vect[n] = conj(sfo_comp_vect[n]);
+                                }
+                                decim_preamb[n] *= sfo_comp_vect[n];
+                            }
+                        }
+
+                        if(sync_pass==0){
+                        // estimate CFO frac on first pass
+                        m_cfo_frac = estimate_CFO_frac_Xhonneux(&decim_preamb[m_number_of_bins], up_symb_to_use);
+                        }
+
+                        // compensate CFO frac
+                        for (uint32_t i = 0; i < decim_preamb.size(); i++)
+                        {
+                            decim_preamb[i] *= gr_expj(-2 * M_PI * m_cfo_frac / m_number_of_bins * i);
+                        }
+
+                        m_sto_frac = estimate_STO_frac(&decim_preamb[m_number_of_bins]);
+
+                        // compensate STO frac
+
+                        for (uint32_t i = 0; i < decim_preamb.size(); i++)
+                        {
+                            if ((int(i * m_os_factor) - my_roundf(m_sto_frac * m_os_factor)) > 0)
+                            {
+                                gr_complex cfo_frac_comp = gr_expj(-2 * M_PI * m_cfo_frac / m_number_of_bins * i);
+                                if (sync_pass == 1)
+                                {
+                                    decim_preamb[i] = received_preamble[i * m_os_factor - my_roundf(m_sto_frac * m_os_factor)] * sfo_comp_vect[i] * cfo_frac_comp;
+                                }
+                                else
+                                    decim_preamb[i] = received_preamble[i * m_os_factor - my_roundf(m_sto_frac * m_os_factor)] * cfo_frac_comp;
+                            }
+                            else
+                            {
+                                decim_preamb[i] = 0;
+                            }
+                        }
+
+                        // get integer offsets
+                        std::vector<int> up_vals(m_preamb_len, 0);
+                        for (int i = 0; i < m_preamb_len; i++)
+                        {
+                            up_vals[i] = get_symbol_val(&decim_preamb[m_number_of_bins * (i + 1)], &m_downchirp[0]);
+                        }
+                        // get most frequent
+                        int up_val = most_frequent(&up_vals[0], up_vals.size());
+                        if (up_val != 0)
+                            debug_print("up val not 0 but: " << up_val, "frame_sync", RED);
+
+                        int down_val = get_symbol_val(&decim_preamb[(m_preamb_len + 1 + 2) * m_number_of_bins], &m_upchirp[0]);
+                        debug_print("down_val1: " << down_val, "frame_sync", BLUE);
+
+                        int k = mod(up_val + down_val, m_number_of_bins);
+                        m_cfo_int = floor(0.5 * (k - (int)m_number_of_bins * ((k - (int)m_number_of_bins / 2) >= 0 ? 1 : 0)));
+
+                        m_sto_int = mod(up_val - m_cfo_int, m_number_of_bins);
+                        // m_sto_int -= (m_sto_int < (m_number_of_bins / 2) ? 0 : (m_number_of_bins));
+
+                        debug_print("m_cfo_int: " << m_cfo_int << ", m_sto_int: " << m_sto_int, "frame_sync", BLUE);
+
+                        // correct SFO in the preamble upchirps
+                        m_sfo_hat = float((m_cfo_int + m_cfo_frac) * m_bw) / m_center_freq;
+                        debug_print("sfo_hat: " << m_sfo_hat, "frame_sync", BLUE);
+                    }
                     // correct STOint and CFOint in the preamble upchirps
-                    std::rotate(preamble_upchirps.begin(), preamble_upchirps.begin() + mod(m_cfo_int, m_number_of_bins), preamble_upchirps.end());
-
-                    std::vector<gr_complex> CFO_int_correc;
-                    CFO_int_correc.resize((m_n_up_req + additional_upchirps) * m_number_of_bins);
-                    for (uint32_t n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
-                    {
-                        CFO_int_correc[n] = gr_expj(-2 * M_PI * (m_cfo_int) / m_number_of_bins * n);
+                    // STO
+                    if(m_sto_int>=m_number_of_bins/2){
+                        std::rotate(decim_preamb.begin(), decim_preamb.begin() + (m_number_of_bins - m_sto_int), decim_preamb.end());
+                    }
+                    else{
+                        std::rotate(decim_preamb.begin(),decim_preamb.end() - m_sto_int, decim_preamb.end());
                     }
 
-                    volk_32fc_x2_multiply_32fc(&preamble_upchirps[0], &preamble_upchirps[0], &CFO_int_correc[0], up_symb_to_use * m_number_of_bins);
-
-                    // correct SFO in the preamble upchirps
-
-                    sfo_hat = float((m_cfo_int + m_cfo_frac) * m_bw) / m_center_freq;
-                    double clk_off = sfo_hat / m_number_of_bins;
-                    double fs = m_bw;
-                    double fs_p = m_bw * (1 - clk_off);
-                    int N = m_number_of_bins;
-                    std::vector<gr_complex> sfo_corr_vect;
-                    sfo_corr_vect.resize((m_n_up_req + additional_upchirps) * m_number_of_bins, 0);
-                    for (uint32_t n = 0; n < (m_n_up_req + additional_upchirps) * m_number_of_bins; n++)
+                    // CFO
+                    for (uint32_t n = 0; n < decim_preamb.size(); n++)
                     {
-                        sfo_corr_vect[n] = gr_expj(-2 * M_PI * (pow(mod(n, N), 2) / 2 / N * (m_bw / fs_p * m_bw / fs_p - m_bw / fs * m_bw / fs) + (std::floor((float)n / N) * (m_bw / fs_p * m_bw / fs_p - m_bw / fs_p) + m_bw / 2 * (1 / fs - 1 / fs_p)) * mod(n, N)));
+                        decim_preamb[n] *= gr_expj(-2 * M_PI * (m_cfo_int) / m_number_of_bins * n);
                     }
 
-                    volk_32fc_x2_multiply_32fc(&preamble_upchirps[0], &preamble_upchirps[0], &sfo_corr_vect[0], up_symb_to_use * m_number_of_bins);
-
-                    float tmp_sto_frac = estimate_STO_frac(); // better estimation of sto_frac in the beginning of the upchirps
-                    float diff_sto_frac = m_sto_frac - tmp_sto_frac;
-
-                    if (abs(diff_sto_frac) <= float(m_os_factor - 1) / m_os_factor) // avoid introducing off-by-one errors by estimating fine_sto=-0.499 , rough_sto=0.499
-                        m_sto_frac = tmp_sto_frac;
-
-                    // get SNR estimate from preamble
-                    // downsample preab_raw
-                    std::vector<gr_complex> corr_preamb;
-                    corr_preamb.resize((m_n_up_req + additional_upchirps) * m_number_of_bins, 0);
-                    // apply sto correction
-                    for (uint32_t i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
-                    {
-                        corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
-                    }
-                    std::rotate(corr_preamb.begin(), corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end());
-                    // apply cfo correction
-                    volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &CFO_int_correc[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
-                    for (int i = 0; i < (m_n_up_req + additional_upchirps); i++)
-                    {
-                        volk_32fc_x2_multiply_32fc(&corr_preamb[m_number_of_bins * i], &corr_preamb[m_number_of_bins * i], &CFO_frac_correc[0], m_number_of_bins);
-                    }
-
-                    // //apply sfo correction
-                    volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &sfo_corr_vect[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
+#ifdef GRLORA_DEBUG
+                    // synchronized preamble
+                    debug_file2.write((char *)&decim_preamb[0], decim_preamb.size() * sizeof(gr_complex));
+#endif
 
                     float snr_est = 0;
                     for (int i = 0; i < up_symb_to_use; i++)
                     {
-                        snr_est += determine_snr(&corr_preamb[i * m_number_of_bins]);
+                        snr_est += determine_snr(&decim_preamb[(i + 1) * m_number_of_bins]);
+
                     }
                     snr_est /= up_symb_to_use;
 
-                    // update sto_frac to its value at the beginning of the net id
-                    m_sto_frac += sfo_hat * m_preamb_len;
-                    // ensure that m_sto_frac is in [-0.5,0.5]
-                    if (abs(m_sto_frac) > 0.5)
-                    {
-                        m_sto_frac = m_sto_frac + (m_sto_frac > 0 ? -1 : 1);
-                    }
-                    // decim net id according to new sto_frac and sto int
-                    std::vector<gr_complex> net_ids_samp_dec;
-                    net_ids_samp_dec.resize(2 * m_number_of_bins, 0);
-                    // start_off gives the offset in the net_id_samp vector required to be aligned in time (CFOint is equivalent to STOint since upchirp_val was forced to 0)
-                    int start_off = (int)m_os_factor / 2 - (my_roundf(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
-                    for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
-                    {
-                        net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
-                    }
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_int_correc[0], 2 * m_number_of_bins);
+                    //-------- check networks ids -----
+                    int netid1 = get_symbol_val(&decim_preamb[(m_preamb_len + 1) * m_number_of_bins], &m_downchirp[0]);
+                    int netid2 = get_symbol_val(&decim_preamb[(m_preamb_len + 2) * m_number_of_bins], &m_downchirp[0]);
+                    // one_symbol_off = 0;
 
-                    // correct CFO_frac in the network ids
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_frac_correc[0], m_number_of_bins);
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[m_number_of_bins], &net_ids_samp_dec[m_number_of_bins], &CFO_frac_correc[0], m_number_of_bins);
+                    debug_print("netid1: " << netid1 << " netid2: " << netid2, "frame_sync", GREEN);
 
-                    int netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
-                    int netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
-                    one_symbol_off = 0;
-
-                    if (m_sync_words[0] == 0) { // match netid1 only if requested
+                    if (m_sync_words[0] == 0)
+                    { // match netid1 only if requested
                         items_to_consume = 0;
                         m_state = SFO_COMPENSATION;
                         frame_cnt++;
-                        std::cout << "netid1 is " << netid1 << ", netid2 is " << netid2 <<
-                            ", check skipped" << std::endl;
+                        std::cout << "netid1 is " << netid1 << ", netid2 is " << netid2 << ", check skipped" << std::endl;
                     }
                     else if (abs(netid1 - (int32_t)m_sync_words[0]) > 2) // wrong id 1, (we allow an offset of 2)
-                    {
-
-                        // check if we are in fact checking the second net ID and that the first one was considered as a preamble upchirp
-                        if (abs(netid1 - (int32_t)m_sync_words[1]) <= 2)
-                        {
-                            net_id_off = netid1 - (int32_t)m_sync_words[1];
-                            for (int i = m_preamb_len - 2; i < (m_n_up_req + additional_upchirps); i++)
-                            {
-                                if (get_symbol_val(&corr_preamb[i * m_number_of_bins], &m_downchirp[0]) + net_id_off == m_sync_words[0]) // found the first netID
-                                {
-                                    one_symbol_off = 1;
-                                    if (net_id_off != 0 && abs(net_id_off) > 1)
-                                        std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
-                                    if (m_should_log)
-                                        off_by_one_id = net_id_off != 0;
-                                    items_to_consume = -m_os_factor * net_id_off;
-                                    // the first symbol was mistaken for the end of the downchirp. we should correct and output it.
-
-                                    int start_off = (int)m_os_factor / 2 - my_roundf(m_sto_frac * m_os_factor) + m_os_factor * (0.25 * m_number_of_bins + m_cfo_int);
-                                    for (int i = start_off; i < 1.25 * m_samples_per_symbol; i += m_os_factor)
-                                    {
-
-                                        out[int((i - start_off) / m_os_factor)] = additional_symbol_samp[i];
-                                    }
-                                    items_to_output = m_number_of_bins;
-                                    m_state = SFO_COMPENSATION;
-                                    symbol_cnt = 1;
-                                    frame_cnt++;
-                                }
-                            }
-                            if (!one_symbol_off)
-                            {
-                                m_state = DETECT;
-                                symbol_cnt = 1;
-                                items_to_output = 0;
-                                k_hat = 0;
-                                m_sto_frac = 0;
-                                items_to_consume = 0;
-                            }
-                        }
-                        else
-                        {
-                            m_state = DETECT;
-                            symbol_cnt = 1;
-                            items_to_output = 0;
-                            k_hat = 0;
-                            m_sto_frac = 0;
-                            items_to_consume = 0;
-                        }
+                    {                    
+                        m_state = DETECT;
+                        symbol_cnt = 1;
+                        items_to_output = 0;
+                        k_hat = 0;
+                        m_sto_frac = 0;
+                        items_to_consume = 0;
                     }
                     else // net ID 1 valid
                     {
                         net_id_off = netid1 - (int32_t)m_sync_words[0];
-                        if (m_sync_words[1] != 0 && // match netid2 only if requested
+                        if (m_sync_words[1] != 0 &&                                                 // match netid2 only if requested
                             mod(netid2 - net_id_off, m_number_of_bins) != (int32_t)m_sync_words[1]) // wrong id 2
                         {
                             m_state = DETECT;
@@ -794,9 +789,24 @@ namespace gr
                     }
                     if (m_state != DETECT)
                     {
+                        // compensate SFO accumulated in the preamble
+                        m_sfo_cum = (m_preamb_len + 2 + 2.25) * m_sfo_hat;
+
+                        debug_print("m_sto_frac: " << m_sto_frac, "frame_sync", BLUE);
+                        if(m_sto_int>=m_number_of_bins/2){
+                         items_to_consume = m_samples_per_symbol / 4 + m_os_factor * (m_number_of_bins - m_sto_int) - my_roundf(m_sto_frac * m_os_factor);
+                        }
+                        else{
+                         items_to_consume = m_samples_per_symbol / 4 - m_os_factor * m_sto_int - my_roundf(m_sto_frac * m_os_factor);
+                        }
+                        while (abs(m_sfo_cum) > 1.0 / 2 / m_os_factor)
+                        {
+                            items_to_consume -= (-2 * signbit(m_sfo_cum) + 1);
+                            m_sfo_cum -= (float)(-2 * signbit(m_sfo_cum) + 1) / m_os_factor;
+                        }
                         // update sto_frac to its value at the payload beginning
-                        m_sto_frac += sfo_hat * 4.25;
-                        sfo_cum = ((m_sto_frac * m_os_factor) - my_roundf(m_sto_frac * m_os_factor)) / m_os_factor;
+                        // m_sto_frac += sfo_hat * 12.25;
+                        // m_sfo_cum = ((m_sto_frac * m_os_factor) - my_roundf(m_sto_frac * m_os_factor)) / m_os_factor;
 
                         pmt::pmt_t frame_info = pmt::make_dict();
                         frame_info = pmt::dict_add(frame_info, pmt::intern("is_header"), pmt::from_bool(true));
@@ -807,25 +817,19 @@ namespace gr
                         add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), frame_info);
 
                         m_received_head = false;
-                        items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
-                        symbol_cnt = one_symbol_off;
-                        float snr_est2 = 0;
 
+                        // symbol_cnt = one_symbol_off;
+                        symbol_cnt = 0;
+
+                        
                         if (m_should_log)
                         {
-                            // estimate SNR
-
-                            for (int i = 0; i < up_symb_to_use; i++)
-                            {
-                                snr_est2 += determine_snr(&preamble_upchirps[i * m_number_of_bins]);
-                            }
-                            snr_est2 /= up_symb_to_use;
                             float cfo_log = m_cfo_int + m_cfo_frac;
                             float sto_log = k_hat - m_cfo_int + m_sto_frac;
-                            float srn_log = snr_est;
-                            float sfo_log = sfo_hat;
+                            float snr_log = snr_est;
+                            float sfo_log = m_sfo_hat;
 
-                            sync_log_out[0] = srn_log;
+                            sync_log_out[0] = snr_log;
                             sync_log_out[1] = cfo_log;
                             sync_log_out[2] = sto_log;
                             sync_log_out[3] = sfo_log;
@@ -833,7 +837,6 @@ namespace gr
                             produce(1, 5);
                         }
 #ifdef PRINT_INFO
-
                         std::cout << "[frame_sync_impl.cc] " << frame_cnt << " CFO estimate: " << m_cfo_int + m_cfo_frac << ", STO estimate: " << k_hat - m_cfo_int + m_sto_frac << " snr est: " << snr_est << std::endl;
 #endif
                     }
@@ -845,6 +848,8 @@ namespace gr
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
+                // debug_print("symbol_cnt: " << symbol_cnt, "frame_sync", RED);
+                // debug_print("m_sfo_hat: " << m_sfo_hat, "frame_sync", RED);
 
                 if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
                 {
@@ -853,13 +858,14 @@ namespace gr
                     items_to_consume = m_samples_per_symbol;
 
                     //   update sfo evolution
-                    if (abs(sfo_cum) > 1.0 / 2 / m_os_factor)
+                    if (abs(m_sfo_cum) > 1.0 / 2 / m_os_factor)
                     {
-                        items_to_consume -= (-2 * signbit(sfo_cum) + 1);
-                        sfo_cum -= (-2 * signbit(sfo_cum) + 1) * 1.0 / m_os_factor;
+                        items_to_consume -= (-2 * signbit(m_sfo_cum) + 1);
+                        m_sfo_cum -= (-2 * signbit(m_sfo_cum) + 1) * 1.0 / m_os_factor;
+                        // debug_print("drop samples for SFO: "<<(-2 * signbit(m_sfo_cum) + 1)<<" at symbol "<<symbol_cnt, "frame_sync", YELLOW);
                     }
 
-                    sfo_cum += sfo_hat;
+                    m_sfo_cum += m_sfo_hat;
 
                     items_to_output = m_number_of_bins;
                     symbol_cnt++;
@@ -886,8 +892,13 @@ namespace gr
                 break;
             }
             }
+
             consume_each(items_to_consume);
             produce(0, items_to_output);
+#ifdef GRLORA_DEBUG
+            debug_file.write((char *)&in_down[0], items_to_output * sizeof(gr_complex));
+#endif
+
             return WORK_CALLED_PRODUCE;
         }
     } /* namespace lora_sdr */
