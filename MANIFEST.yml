@@ -1,0 +1,19 @@
+title: The LORA_SDR OOT Module
+version: 1.0
+brief: OOT Module containing all blocks requiring for a functional LoRa transceiver
+tags: # Tags are arbitrary, but look at CGRAN what other authors are using
+  - SDR
+  - LoRa
+author:
+  - Tapparel Joachim <joachim.tapparel@epfl.ch>
+copyright_owner:
+  - Tapparel Joachim
+license: GPL-3.0-or-later
+gr_supported_version:
+  - 3.10
+repo: https://github.com/tapparelj/gr-lora_sdr
+website: https://github.com/tapparelj/gr-lora_sdr
+#icon: # Put a URL to a square image here that will be used as an icon
+description: |-
+  This is the fully-functional GNU Radio software-defined radio (SDR) implementation of a LoRa transceiver with all the necessary receiver components to operate correctly even at very low SNRs. The transceiver is available as a module for GNU Radio 3.10. This work has been conducted at the Telecommunication Circuits Laboratory, EPFL.
+file_format: 1
