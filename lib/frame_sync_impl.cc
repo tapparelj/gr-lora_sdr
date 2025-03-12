@@ -727,8 +727,8 @@ namespace gr
                                 if (get_symbol_val(&corr_preamb[i * m_number_of_bins], &m_downchirp[0]) + net_id_off == m_sync_words[0]) // found the first netID
                                 {
                                     one_symbol_off = 1;
-                                    if (net_id_off != 0 && abs(net_id_off) > 1)
-                                        std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                                    // if (net_id_off != 0 && abs(net_id_off) > 1)
+                                    //     std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
                                     if (m_should_log)
                                         off_by_one_id = net_id_off != 0;
                                     items_to_consume = -m_os_factor * net_id_off;
@@ -781,8 +781,8 @@ namespace gr
                         }
                         else
                         {
-                            if (net_id_off != 0 && abs(net_id_off) > 1)
-                                std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                            // if (net_id_off != 0 && abs(net_id_off) > 1)
+                            //    std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
                             if (m_should_log)
                                 off_by_one_id = net_id_off != 0;
                             items_to_consume = -m_os_factor * net_id_off;
