@@ -71,8 +71,8 @@ namespace gr {
                 }
 
 #ifdef GRLORA_DEBUG
-                std::cout << std::hex << "0x" << in[i] << " ---> "
-                          << "0x" << out[i] << std::dec << std::endl; 
+                std::cout << std::hex << "0x" << in1[i] << " ---> "
+                          << "0x" << out1[i] << std::dec << std::endl; 
 #endif
             }
             return nitems_to_process;

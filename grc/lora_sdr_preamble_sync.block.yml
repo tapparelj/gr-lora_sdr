@@ -1,0 +1,86 @@
+
+id: lora_sdr_preamble_sync
+label: Preamble sync
+category: '[LoRa_RX]'
+flags: [python,cpp]
+
+parameters:
+-   id: center_freq
+    label: Center_freq
+    dtype: int
+-   id: bandwidth
+    label: Bandwidth
+    dtype: int
+-   id: sf
+    label: Sf
+    dtype: int
+-   id: impl_head
+    label: Impl_head
+    dtype: bool
+-   id: sync_word
+    label: Sync word
+    dtype: int_vector
+    default: 0x12
+    hide: part
+-   id: preamb_len
+    label: Preamble_len
+    dtype: int
+    default: 8
+    hide: part
+-   id: os_factor
+    label: os_factor
+    dtype: int
+    default: 4
+-   id: show_log_port
+    dtype: enum
+    options: ['True', 'False']
+    hide: part
+    default: 'False'
+
+
+inputs:
+-   domain: stream
+    dtype: complex
+
+outputs:
+-   domain: stream
+    dtype: complex
+-   domain: stream
+    label: log
+    dtype: float
+    optional: 1
+    hide: ${False if str(show_log_port)=='True' else True}
+
+templates:
+    imports: import gnuradio.lora_sdr as lora_sdr
+    make: lora_sdr.preamble_sync(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len})
+
+cpp_templates:
+    includes: ['#include "preamble_sync.h"']
+    declarations: 'lora_sdr::preamble_sync::sptr ${id};'
+    make: 'this->${id} = lora_sdr::preamble_sync::make(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len});'
+    translations:
+        'False': 'false'
+        'True': 'true'
+        \[: '{'
+        \]: '}'
+ 
+
+documentation: |-
+    Block taking care of the preamble detection, CFO and STO estimation and correction.
+        Parameters:
+            center_freq: the RF center frequency [Hz]
+            Bandwidth: Bandwidth [Hz]
+            sf: spreading factor
+            impl_head: usage of an implicit header (explicit will be used otherwise)
+            sync_word: The frame sync word. Can be specified as an hex or dec value (e.g. 0x12 or 18), or directly as the decimal values modulating the two network identifiers upchirps in the preamble (e.g [8,16]). The values [0,0] will ignore sync word verification and print the detected values.
+            preamb_len: Number of upchirps in the preamble. Should be in [6-65535] (default value 8);
+            os_factor: oversampling factor of the input stream compared to the signal bandwidth. Oversampling is used to compensate STO and SFO.
+        Input:
+            in: stream of complex valued sampled
+            frame_info: message produced by the block header decoder, containing the frame coding rate, the payload length, and the presence of a payload crc.
+
+        Output:
+            out: stream of complex samples with tags indicating the beginning of the header and preamble part of each frame alongside all information necessary to the demodulation, such as: spreading factor, coding rate, payload length, CRC presence, CFO estimate, and usage of LDRO.
+            log: (Optional) Output the estimated value of SNR, CFO, STO, SFO, Off-by-one as a stream of float. Those values can be logged by a file_sink and read in an external application (MATLAB, Python, ...)
+file_format: 1

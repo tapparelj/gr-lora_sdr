@@ -36,6 +36,7 @@ list(APPEND lora_sdr_python_files
         dewhitening_python.cc
         fft_demod_python.cc
         frame_sync_python.cc
+        preamble_sync_python.cc
         gray_demap_python.cc
         gray_mapping_python.cc
         hamming_dec_python.cc

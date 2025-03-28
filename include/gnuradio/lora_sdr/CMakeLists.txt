@@ -27,6 +27,7 @@ install(FILES
     fft_demod.h
     data_source.h
     frame_sync.h
+    preamble_sync.h
     deinterleaver.h
     payload_id_inc.h
     utilities.h

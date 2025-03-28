@@ -28,6 +28,7 @@ void bind_deinterleaver(py::module& m);
 void bind_dewhitening(py::module& m);
 void bind_fft_demod(py::module& m);
 void bind_frame_sync(py::module& m);
+void bind_preamble_sync(py::module& m);
 void bind_gray_demap(py::module& m);
 void bind_gray_mapping(py::module& m);
 void bind_hamming_dec(py::module& m);
@@ -74,6 +75,7 @@ PYBIND11_MODULE(lora_sdr_python, m)
     bind_dewhitening(m);
     bind_fft_demod(m);
     bind_frame_sync(m);
+    bind_preamble_sync(m);
     bind_gray_demap(m);
     bind_gray_mapping(m);
     bind_hamming_dec(m);

@@ -31,6 +31,7 @@ list(APPEND lora_sdr_sources
     fft_demod_impl.cc
     data_source_impl.cc
     frame_sync_impl.cc
+    preamble_sync_impl.cc
     deinterleaver_impl.cc
     payload_id_inc_impl.cc )
 

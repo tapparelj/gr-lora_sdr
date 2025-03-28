@@ -6,24 +6,24 @@
 #include <vector>
 #include <gnuradio/io_signature.h>
 #include <volk/volk_alloc.hh>
-#include "frame_sync_impl.h"
+#include "preamble_sync_impl.h"
 
 namespace gr
 {
     namespace lora_sdr
     {
 
-        frame_sync::sptr
-        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8)
+        preamble_sync::sptr
+        preamble_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8)
         {
-            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len));
+            return gnuradio::get_initial_sptr(new preamble_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len));
         }
 
         /*
          * The private constructor
          */
-        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len)
-            : gr::block("frame_sync",
+        preamble_sync_impl::preamble_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len)
+            : gr::block("preamble_sync",
                         gr::io_signature::make(1, 1, sizeof(gr_complex)),
                         gr::io_signature::make2(1, 2, sizeof(gr_complex), sizeof(float)))
         {
@@ -38,7 +38,8 @@ namespace gr
             {
                 std::cerr << RED << " Preamble length should be greater than 5!" << RESET << std::endl;
             }
-
+	    preamble_len = 12;
+	    // std::cout << "Preamble len: " << preamble_len << std::endl;
             m_preamb_len = preamble_len;
             net_ids.resize(2, 0);
 
@@ -72,7 +73,11 @@ namespace gr
             preamble_raw.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
 
-            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
+	    if (m_center_freq > 2000000000) {
+            	build_ref_chirps(&m_downchirp[0], &m_upchirp[0], m_sf);
+	    } else {
+		build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
+	    }
 
             bin_idx = 0;
             symbol_cnt = 1;
@@ -85,13 +90,13 @@ namespace gr
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             // register message ports
-            message_port_register_in(pmt::mp("frame_info"));
-            set_msg_handler(pmt::mp("frame_info"), [this](pmt::pmt_t msg)
-                            { this->frame_info_handler(msg); });
+            // message_port_register_in(pmt::mp("frame_info"));
+            // set_msg_handler(pmt::mp("frame_info"), [this](pmt::pmt_t msg)
+                            // { this->frame_info_handler(msg); });
 
-            message_port_register_in(pmt::mp("noise_est"));
-            set_msg_handler(pmt::mp("noise_est"), [this](pmt::pmt_t msg)
-                            { this->noise_est_handler(msg); });
+            // message_port_register_in(pmt::mp("noise_est"));
+            // set_msg_handler(pmt::mp("noise_est"), [this](pmt::pmt_t msg)
+                           // { this->noise_est_handler(msg); });
 
 #ifdef GRLORA_DEBUG
             preamb_file.open("../../matlab/SFO/preamb.txt", std::ios::out | std::ios::trunc);
@@ -105,23 +110,23 @@ namespace gr
         /*
          * Our virtual destructor.
          */
-        frame_sync_impl::~frame_sync_impl()
+        preamble_sync_impl::~preamble_sync_impl()
         {
             delete[] cx_out;
             delete[] cx_in;
             kiss_fft_free(m_kiss_fft_cfg);
         }
-        int frame_sync_impl::my_roundf(float number)
+        int preamble_sync_impl::my_roundf(float number)
         {
             int ret_val = (int)(number > 0 ? int(number + 0.5) : std::ceil(number - 0.5));
             return ret_val;
         }
-        void frame_sync_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+        void preamble_sync_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
         {
             ninput_items_required[0] = (m_os_factor * (m_number_of_bins + 2));
         }
 
-        float frame_sync_impl::estimate_CFO_frac(gr_complex *samples)
+        float preamble_sync_impl::estimate_CFO_frac(gr_complex *samples)
         {
             int k0;
             float cfo_frac;
@@ -191,7 +196,7 @@ namespace gr
 
             return cfo_frac;
         }
-        float frame_sync_impl::estimate_CFO_frac_Bernier(gr_complex *samples)
+        float preamble_sync_impl::estimate_CFO_frac_Bernier(gr_complex *samples)
         {
             std::vector<int> k0(up_symb_to_use);
             float cfo_frac;
@@ -251,7 +256,7 @@ namespace gr
             return cfo_frac;
         }
 
-        float frame_sync_impl::estimate_STO_frac()
+        float preamble_sync_impl::estimate_STO_frac()
         {
             int k0;
             double Y_1, Y0, Y1, u, v, ka, wa, k_residual;
@@ -319,7 +324,7 @@ namespace gr
             return sto_frac;
         }
 
-        uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
+        uint32_t preamble_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
         {
             double sig_en = 0;
             std::vector<float> fft_mag(m_number_of_bins);
@@ -347,7 +352,7 @@ namespace gr
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
         }
 
-        float frame_sync_impl::determine_energy(const gr_complex *samples, int length = 1)
+        float preamble_sync_impl::determine_energy(const gr_complex *samples, int length = 1)
         {
             volk::vector<float> magsq_chirp(m_number_of_bins * length);
             float energy_chirp = 0;
@@ -355,7 +360,7 @@ namespace gr
             volk_32f_accumulator_s32f(&energy_chirp, &magsq_chirp[0], m_number_of_bins * length);
             return energy_chirp / m_number_of_bins / length;
         }
-        float frame_sync_impl::determine_snr(const gr_complex *samples)
+        float preamble_sync_impl::determine_snr(const gr_complex *samples)
         {
             double tot_en = 0;
             std::vector<float> fft_mag(m_number_of_bins);
@@ -387,12 +392,13 @@ namespace gr
             return 10 * log10(sig_en / (tot_en - sig_en));
         }
 
-        void frame_sync_impl::noise_est_handler(pmt::pmt_t noise_est)
+        void preamble_sync_impl::noise_est_handler(pmt::pmt_t noise_est)
         {
             m_noise_est = pmt::to_double(noise_est);
         }
-        void frame_sync_impl::frame_info_handler(pmt::pmt_t frame_info)
+        void preamble_sync_impl::frame_info_handler(pmt::pmt_t frame_info)
         {
+            std::cout << "Frame info handler " << std::endl;
             pmt::pmt_t err = pmt::string_to_symbol("error");
 
             m_cr = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("cr"), err));
@@ -427,7 +433,7 @@ namespace gr
             }
         }
 
-        void frame_sync_impl::set_sf(int sf)
+        void preamble_sync_impl::set_sf(int sf)
         {
             m_sf = sf;
             m_number_of_bins = (uint32_t)(1u << m_sf);
@@ -443,14 +449,14 @@ namespace gr
             in_down.resize(m_number_of_bins);
             preamble_raw.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
-            build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
+            build_ref_chirps(&m_downchirp[0], &m_upchirp[0], m_sf);
 
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             set_output_multiple(m_number_of_bins);
         }
 
-        int frame_sync_impl::general_work(int noutput_items,
+        int preamble_sync_impl::general_work(int noutput_items,
                                           gr_vector_int &ninput_items,
                                           gr_vector_const_void_star &input_items,
                                           gr_vector_void_star &output_items)
@@ -462,6 +468,7 @@ namespace gr
             // check if there is enough space in the output buffer
             if ((uint32_t)noutput_items < m_number_of_bins)
             {
+		std::cout << "not enough space" << std::endl;
                 return 0;
             }
 
@@ -504,6 +511,7 @@ namespace gr
             {
             case DETECT:
             {
+		// std::cout << "Detect" << std::endl;
                 bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
 
                 if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
@@ -516,6 +524,7 @@ namespace gr
                     memcpy(&preamble_raw_up[m_samples_per_symbol * symbol_cnt], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
 
                     symbol_cnt++;
+		    // std::cout << "symbol_cnt " << symbol_cnt << std::endl;
                 }
                 else
                 {
@@ -525,8 +534,11 @@ namespace gr
                     symbol_cnt = 1;
                 }
                 bin_idx = bin_idx_new;
+		// std::cout << "req len: " << (int)(m_n_up_req) << std::endl;
+		// std::cout << "actual len: " << symbol_cnt << std::endl;
                 if (symbol_cnt == (int)(m_n_up_req))
                 {
+                    std::cout << "Found Preamble." << std::endl;
                     additional_upchirps = 0;
                     m_state = SYNC;
                     symbol_cnt = 0;
@@ -544,6 +556,15 @@ namespace gr
             }
             case SYNC:
             {
+		// std::cout << "Sync" << std::endl;
+		m_state = DETECT;
+                symbol_cnt = 1;
+                items_to_output = 0;
+                k_hat = 0;
+                m_sto_frac = 0;
+                items_to_consume = 0;
+                break;            
+                            
                 items_to_output = 0;
                 if (!cfo_frac_sto_frac_est)
                 {
@@ -728,7 +749,7 @@ namespace gr
                                 {
                                     one_symbol_off = 1;
                                     if (net_id_off != 0 && abs(net_id_off) > 1)
-                                        std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                                        std::cout << RED << "[preamble_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
                                     if (m_should_log)
                                         off_by_one_id = net_id_off != 0;
                                     items_to_consume = -m_os_factor * net_id_off;
@@ -782,7 +803,7 @@ namespace gr
                         else
                         {
                             if (net_id_off != 0 && abs(net_id_off) > 1)
-                                std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                                std::cout << RED << "[preamble_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
                             if (m_should_log)
                                 off_by_one_id = net_id_off != 0;
                             items_to_consume = -m_os_factor * net_id_off;
@@ -834,7 +855,7 @@ namespace gr
                         }
 #ifdef PRINT_INFO
 
-                        std::cout << "[frame_sync_impl.cc] " << frame_cnt << " CFO estimate: " << m_cfo_int + m_cfo_frac << ", STO estimate: " << k_hat - m_cfo_int + m_sto_frac << " snr est: " << snr_est << std::endl;
+                        std::cout << "[preamble_sync_impl.cc] " << frame_cnt << " CFO estimate: " << m_cfo_int + m_cfo_frac << ", STO estimate: " << k_hat - m_cfo_int + m_sto_frac << " snr est: " << snr_est << std::endl;
 #endif
                     }
                 }

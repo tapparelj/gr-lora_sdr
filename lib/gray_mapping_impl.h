@@ -1,6 +1,6 @@
 #ifndef INCLUDED_LORA_GRAY_MAPPING_IMPL_H
 #define INCLUDED_LORA_GRAY_MAPPING_IMPL_H
-// #define GRLORA_DEBUG
+#define GRLORA_DEBUG
 #include <gnuradio/lora_sdr/gray_mapping.h>
 
 
