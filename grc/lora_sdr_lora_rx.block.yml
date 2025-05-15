@@ -57,6 +57,10 @@ parameters:
     options: ['0','1','2']
     option_labels: ['Disable','Enable','Auto']
     default: '2'
+-   id: sync_word
+    label: Sync word
+    hide: part
+    default: '[0x12]'
 -   id: print_rx
     label: Print info 
     dtype: enum
@@ -84,7 +88,7 @@ templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
     make: "lora_sdr.lora_sdr_lora_rx( bw=${ bw }, cr=${ cr }, has_crc=${ has_crc},
      impl_head=${ impl_head }, pay_len=${ pay_len }, samp_rate=${samp_rate },
-      sf=${ sf }, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx})"
+      sf=${ sf }, sync_word=${sync_word}, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx})"
 asserts:
 - ${ (samp_rate/bw).is_integer()}
 
@@ -101,6 +105,7 @@ documentation: |-
         - CRC presence: Payload contains a CRC (only for implicit mode)
         - Payload length: Length of the payload in bytes (only for implicit mode)
         - Use soft-decision decoding: Use soft-decision decoding
+        - Sync word: Sync word to use (default 0x12 for private networks and 0x34 for LoRaWAN). Can be given as [0x12] (or directly the two modulated values [8,16])
         - Print info: Print received payload/header in the terminal
     Inputs:
         - in: Stream of complex samples

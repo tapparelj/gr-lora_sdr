@@ -1,9 +1,9 @@
-[![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
-![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.6-important)
-![version](https://img.shields.io/badge/Version-0.5.7-brightgreen)
+![GitHub last commit](https://img.shields.io/github/last-commit/tapparelj/gr-lora_sdr)
+![gnuradio](https://img.shields.io/badge/GNU%20Radio-3.10.11-important)
+![version](https://img.shields.io/badge/Version-0.5.8-brightgreen)
 [![arXiv](https://img.shields.io/badge/arXiv-2002.08208-<COLOR>.svg)](https://arxiv.org/abs/2002.08208)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ftapparelj%2Fgr-lora_sdr&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-[![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
+[![Build conda package](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml/badge.svg?branch=master)](https://github.com/tapparelj/gr-lora_sdr/actions/workflows/conda-build.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
 
@@ -49,9 +49,15 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 
 \* Spreading factors 5 and 6 are not compatible with SX126x.
 ## Reference
+### Original publication
 J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming and A. Burg, "An Open-Source LoRa Physical Layer Prototype on GNU Radio," 2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC), Atlanta, GA, USA, 2020, pp. 1-5.
-
 [IEEE Xplore link](https://ieeexplore.ieee.org/document/9154273), [arXiv link](https://arxiv.org/abs/2002.08208)
+
+### Updated publication
+
+J, Tapparel and A. Burg, "Design and Implementation of LoRa Physical Layer in GNU Radio". Proceedings of the GNU Radio Conference, Knoxville, TN, USA, 2024.
+[GNU Radio Proceedings](https://pubs.gnuradio.org/index.php/grcon/article/view/145)
+
 
 If you find this implementation useful for your project, please consider citing the aforementioned paper.
 
@@ -66,7 +72,6 @@ If you find this implementation useful for your project, please consider citing 
 - gxx
 - pybind11
 
-The conda environment used to develop this module is described by the environment.yml file. 
 ## Installation
 The out of tree module gr-lora_sdr can be installed from source or directly as a conda package.
 ### From source
@@ -78,23 +83,23 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	cd gr-lora_sdr/
 	```
-- A functioning environment with all dependencies can be installed with conda or you can install them individually and skip to the next step.
+- You can optionally install the required dependencies using the provided conda environment, or directly install the dependencies independently and bypass the use of conda.
 	You can follow this [tutorial](https://www.how2shout.com/how-to/install-anaconda-wsl-windows-10-ubuntu-linux-app.html) or simply following:
 	- First download the latest release of conda, for example:
 		```sh
-		wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh
+		wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 		```
 	- Now run the downloaded file which is the Anaconda Installer script
 		```sh
-	 	bash Miniconda3-py39_4.12.0-Linux-x86_64.sh
+	 	bash Miniconda3-latest-Linux-x86_64.sh
 		```
 	- And reload the Shell
 		```sh
 		source ~/.bashrc
 		```
-	- Now copy our environment to install all the dependencies of the module automatically. Note that it will take quite some time (~20 min).
+	- Now copy our environment to install all the dependencies of the module automatically
 		```sh
-		conda env create -f environment.yml 
+		conda env create -f environment.yml
 		```
 	- Start the conda environment GNU Radio 3.10 you just created
 		```sh
@@ -109,18 +114,14 @@ The out of tree module gr-lora_sdr can be installed from source or directly as a
 	```sh
 	cmake .. -DCMAKE_INSTALL_PREFIX=<your prefix> # default to usr/local, CONDA_PREFIX or PYBOMB_PREFIX if no install prefix selected here
 	```
-- Finally compile the custom GNU Radio blocks composing the LoRa transceiver. Replacing \<X> with the number of core you want to use to speed up the compilation.
+- Finally compile the custom GNU Radio blocks composing the LoRa transceiver.
 	```sh
-	(sudo) make install -j<X>
+	(sudo) make install -j$(nproc)
 	```
-- if you installed as sudo run
+- If you installed as sudo run
 	```sh
 	sudo ldconfig 
 	```
-- You can test that the installation is successful by running
-  ```sh
-  make test
-  ```
 - Now you should be able to run some codes. For example, open the GNU Radio Companion user interface and check if the blocks of gr-lora_sdr are available on the blocks list (e.g. under LoRa_TX).
 	```sh
 	gnuradio-companion &
@@ -184,6 +185,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- Add option to ignore sync words checks and print the received values
 - Add optional print of received payload as hex values
 - Added tagged stream input support (for frame definition of frame length)
 - Fixed LLR stream format between _fft\_demod_ and _deinterleaver_ 
@@ -191,7 +193,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 - added separator option for file input
 - added preamble length option
 - added parameter for frame zero-padding
-- add low datarate optimisation support
+- add low data-rate optimization support
 - add support of spreading factors smaller than 7
 
  	<font size="10"> [...](./Changelog.md)</font>

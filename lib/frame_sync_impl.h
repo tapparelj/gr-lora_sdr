@@ -93,6 +93,20 @@ namespace gr
       std::vector<gr_complex> preamble_upchirps;      ///< vector containing the preamble upchirps
       std::vector<gr_complex> net_id_samp;            ///< vector of the oversampled network identifier samples
       std::vector<int> net_ids;                       ///< values of the network identifiers received
+      kiss_fft_cfg m_kiss_fft_cfg;                    ///< FFT configuration for symbols processing
+      kiss_fft_cpx *cx_in;                            ///< input of the FFT
+      kiss_fft_cpx *cx_out;                           ///< output of the FFT
+
+      int items_to_consume; ///< Number of items to consume after each iteration of the general_work function
+
+      int one_symbol_off;                             ///< indicate that we are offset by one symbol after the preamble
+      std::vector<gr_complex> additional_symbol_samp; ///< save the value of the last 1.25 downchirp as it might contain the first payload symbol
+      std::vector<gr_complex> preamble_raw;           ///< vector containing the preamble upchirps without any synchronization
+      std::vector<gr_complex> preamble_raw_up;        ///< vector containing the upsampled preamble upchirps without any synchronization
+      std::vector<gr_complex> downchirp_raw;          ///< vector containing the preamble downchirps without any synchronization
+      std::vector<gr_complex> preamble_upchirps;      ///< vector containing the preamble upchirps
+      std::vector<gr_complex> net_id_samp;            ///< vector of the oversampled network identifier samples
+      std::vector<int> net_ids;                       ///< values of the network identifiers received
 
       int up_symb_to_use;                   ///< number of upchirp symbols to use for CFO and STO frac estimation
       int k_hat;                            ///< integer part of CFO+STO

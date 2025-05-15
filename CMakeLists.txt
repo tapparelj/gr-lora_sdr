@@ -14,7 +14,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 ########################################################################
 # Project setup
 ########################################################################
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16)
 project(gr-lora_sdr CXX C)
 enable_testing()
 
@@ -166,3 +166,6 @@ configure_package_config_file(
     INSTALL_DESTINATION ${GR_CMAKE_DIR}
 )
 
+install(FILES MANIFEST.yml
+    RENAME MANIFEST-${VERSION_MAJOR}.${VERSION_API}.${VERSION_ABI}${VERSION_PATCH}.yml
+    DESTINATION share/gnuradio/manifests/lora_sdr)

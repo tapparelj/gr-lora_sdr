@@ -18,12 +18,14 @@ namespace gr
       std::vector<uint8_t> m_payload;       ///< store the payload bytes
       std::vector<std::string> payload_str; ///< payload as a string
       bool m_file_source;                   ///< indicate that the payload are provided by a file through an input stream
-      bool m_use_length_tag;                ///< wheter to use the length tag to separate frames or the separator character
+      bool m_use_length_tag;                ///< whether to use the length tag to separate frames or the separator character
       std::string m_length_tag_name;        ///< name/key of the length tag
       int m_input_byte_cnt;                 ///< number of bytes from the input already processed
       uint64_t m_tag_offset;                ///< offset of the length tag
-
+  
       void msg_handler(pmt::pmt_t message);
+      void frame_info_handler(pmt::pmt_t frame_info);
+
 
     public:
       whitening_impl(bool is_hex, bool use_length_tag, char separator, std::string length_tag_name);

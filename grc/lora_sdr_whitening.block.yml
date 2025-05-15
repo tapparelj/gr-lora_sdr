@@ -29,7 +29,7 @@ parameters:
     label: is_hex
     dtype: bool
     default: false
-    hide: ${ ( 'none' if (str(source_type) == "file_source" and use_length_tag == 'False') else 'all') }
+    hide: part
 
 inputs:
 -   domain: stream
@@ -40,6 +40,9 @@ inputs:
     id: msg
     optional: ${ ( False if str(source_type) == "message_strobe" else True) }
     hide: ${ ( False if str(source_type) == "message_strobe" else True) }
+-   label: dict
+    domain: message
+    optional: True
 outputs:
 -   domain: stream
     dtype: byte
@@ -60,6 +63,7 @@ documentation: |-
             msg: the payload as a PMT message string
                 or
             in: a file source with payloads separated by separator.
+            dict: a dictionary to set parameters such as sf, bw, cr
         Output:
             out: Stream of whitened payload nibbles
 

@@ -19,7 +19,9 @@ source:
 
 build:
   number: 0
-
+  skip: false  # [win]
+  skip: false  # [py>=313]
+  
 requirements:
   build:
     - {{ compiler("c") }}
@@ -34,8 +36,8 @@ requirements:
     - numpy                               # [build_platform != target_platform]
     - pybind11                            # [build_platform != target_platform]
     # Add extra build tool dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
   host:
     - gmp  # [linux]
@@ -47,15 +49,15 @@ requirements:
     - python
     - numpy
     # Add/remove library dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
   run:
     - numpy
     - python
     # Add/remove runtime dependencies here
-    - boost-cpp=1.78.0
-    - volk=3.0.0
+    - boost-cpp=1.84.0
+    - volk=3.1.2
 
 test:
   requires:
@@ -84,8 +86,8 @@ test:
     # verify that examples get installed
     {% set example_grcs = ["lora_RX", "lora_TX", "tx_rx_functionality_check", "tx_rx_simulation", "tx_rx_usrp"] %}
     {% for eg in example_grcs %}
-    - grcc $PREFIX/share/gr-{{ oot_name }}/examples/{{ eg }}.grc  # [not win]
-    - grcc %PREFIX%\\Library\\share\\gr-{{ oot_name}}\\examples\\{{ eg }}.grc  # [win]
+    - grcc $PREFIX/share/gnuradio/examples/{{ oot_name }}/{{ eg }}.grc  # [not win]
+    - grcc %PREFIX%\\Library\\share\\gnuradio\\examples\\{{ oot_name }}\\{{ eg }}.grc  # [win]
     {% endfor %}
 
   imports:
@@ -115,10 +117,10 @@ about:
         - (Windows) `%CONDA_PREFIX%\share\gr-lora_sdr\examples`
     <br>
     If you find this module useful for your project, please consider citing the
-    publication "An Open-Source LoRa Physical Layer Prototype on GNU Radio" 
-    (<a href="https://ieeexplore.ieee.org/document/9154273">IEEE Xplore</a>,  
+    publication "An Open-Source LoRa Physical Layer Prototype on GNU Radio"
+    (<a href="https://ieeexplore.ieee.org/document/9154273">IEEE Xplore</a>,
     <a href="https://arxiv.org/abs/2002.08208">arXiv</a>)
     <h3>Installation issue</h3>
     Add conda-forge to the list of channel for installation with:<br>
     `conda install -c tapparelj -c conda-forge gnuradio-lora_sdr`
-    
+

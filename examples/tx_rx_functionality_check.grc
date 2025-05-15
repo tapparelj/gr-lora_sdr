@@ -85,7 +85,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '0'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -206,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1448, 240.0]
+    coordinate: [1448, 236.0]
     rotation: 0
     state: true
 - name: blocks_message_strobe_0_0
@@ -223,26 +223,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [120, 228.0]
+    coordinate: [128, 212.0]
     rotation: 0
     state: enabled
-- name: blocks_throttle_0
-  id: blocks_throttle
+- name: blocks_throttle2_0
+  id: blocks_throttle2
   parameters:
     affinity: ''
     alias: ''
     comment: ''
     ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate*10
+    samples_per_second: samp_rate
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1584, 244.0]
+    coordinate: [1600, 228.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -527,7 +529,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [152, 172.0]
+    coordinate: [160, 156.0]
     rotation: 180
     state: enabled
 - name: lora_sdr_whitening_0
@@ -547,15 +549,15 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [392, 236.0]
+    coordinate: [392, 224.0]
     rotation: 0
     state: true
 
 connections:
-- [blocks_delay_0, '0', blocks_throttle_0, '0']
+- [blocks_delay_0, '0', blocks_throttle2_0, '0']
 - [blocks_message_strobe_0_0, strobe, lora_sdr_payload_id_inc_0, msg_in]
 - [blocks_message_strobe_0_0, strobe, lora_sdr_whitening_0, msg]
-- [blocks_throttle_0, '0', channels_channel_model_0, '0']
+- [blocks_throttle2_0, '0', channels_channel_model_0, '0']
 - [channels_channel_model_0, '0', lora_sdr_frame_sync_0, '0']
 - [lora_sdr_add_crc_0, '0', lora_sdr_hamming_enc_0, '0']
 - [lora_sdr_deinterleaver_0, '0', lora_sdr_hamming_dec_0, '0']

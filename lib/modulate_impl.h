@@ -41,6 +41,8 @@ namespace gr {
         uint64_t frame_cnt; ///< counter of the number of frame sent
         bool frame_end; ///< indicate that we send a full frame
 
+        tag_t m_config_tag;
+        tag_t m_framelen_tag;
 
      public:
       modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len);
@@ -50,7 +52,7 @@ namespace gr {
 
       // Where all the action really happens
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
+      void update_var(int new_sf, int new_bw);
       int general_work(int noutput_items,
            gr_vector_int &ninput_items,
            gr_vector_const_void_star &input_items,

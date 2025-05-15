@@ -16,6 +16,7 @@ namespace gr {
       gray_demap_impl(uint8_t sf);
       ~gray_demap_impl();
       void set_sf(uint8_t sf);
+      void frame_info_handler(pmt::pmt_t frame_info);
 
       int work(
               int noutput_items,

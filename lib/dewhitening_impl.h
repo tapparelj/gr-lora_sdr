@@ -11,7 +11,7 @@ namespace gr {
     {
      private:
         int m_payload_len;  ///< Payload length in bytes
-        int m_crc_presence; ///< indicate the precence of a CRC
+        int m_crc_presence; ///< indicate the presence of a CRC
         int offset = 0;       ///< The offset in the whitening table
         std::vector<uint8_t> dewhitened; ///< The dewhitened bytes
 

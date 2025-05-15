@@ -5,7 +5,7 @@ channel_targets:
 # override the conda-forge pin for gnuradio-core by uncommenting
 # and specifying a different version here
 gnuradio_core:
-  - "3.10.6"
+  - "3.10.11"
 gnuradio_extra_pin:
   # always leave one entry with the empty string
   - ""

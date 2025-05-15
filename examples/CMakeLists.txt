@@ -10,4 +10,4 @@ install(
           tx_rx_hier_functionality_check.grc
           tx_rx_simulation.grc
           tx_rx_usrp.grc
-    DESTINATION ${GR_PKG_DATA_DIR}/examples)
+    DESTINATION share/gnuradio/examples/lora_sdr)

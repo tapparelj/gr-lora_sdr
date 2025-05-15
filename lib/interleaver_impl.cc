@@ -28,14 +28,18 @@ namespace gr
       m_sf = sf;
       m_cr = cr;
       m_bw = bw;
-      if (ldro == AUTO)
+      m_ldro_mode = ldro;
+      if (ldro == AUTO){
         m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+      } 
       else
+      {
         m_ldro = ldro;
-
+      }
       cw_cnt = 0;
 
       set_tag_propagation_policy(TPP_DONT);
+      m_has_config_tag = false;
     }
 
     void interleaver_impl::set_cr(uint8_t cr){
@@ -44,6 +48,13 @@ namespace gr
 
     void interleaver_impl::set_sf(uint8_t sf){
       m_sf = sf;
+      if (m_ldro_mode == AUTO){
+        //m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+        m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
+      }
+      else {
+        m_ldro = m_ldro_mode;
+      }
     } 
 
     uint8_t interleaver_impl::get_cr(){
@@ -61,6 +72,29 @@ namespace gr
     interleaver_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required)
     {
       ninput_items_required[0] = 1;
+    }
+
+    void interleaver_impl::update_var(int new_cr, int new_sf, int new_bw)
+    {
+      if (new_cr != m_cr) {
+          m_cr = new_cr;
+          // std::cout<<"New cr Interleaver "<< static_cast<int>(m_cr) <<std::endl;
+      }
+      if (new_sf != m_sf) {
+          m_sf = new_sf;
+          // std::cout<<"New sf Interleaver "<< static_cast<int>(m_sf) <<std::endl;
+      }
+      if (new_bw != m_bw) {
+          m_bw = new_bw;
+          // std::cout<<"New bw Interleaver "<< static_cast<int>(m_bw) <<std::endl;
+      }
+      if (m_ldro_mode == AUTO){
+        //m_ldro = (float)(1u<<sf)*1e3/bw > LDRO_MAX_DURATION_MS;
+        m_ldro = (float)(1u<<m_sf)*1e3/m_bw > LDRO_MAX_DURATION_MS;
+      }
+      else {
+        m_ldro = m_ldro_mode;
+      }
     }
 
     int
@@ -87,8 +121,26 @@ namespace gr
           }
           cw_cnt = 0;
           m_frame_len = pmt::to_long(tags[0].value);
-          tags[0].value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
-          tags[0].offset = nitems_written(0); 
+          m_framelen_tag =  tags[0];
+          get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("configuration"));
+          if(tags.size()>0)
+          {
+            m_has_config_tag = true;
+            m_config_tag = tags[0];
+            m_config_tag.offset = nitems_written(0); 
+
+            pmt::pmt_t err_cr = pmt::string_to_symbol("error");
+            pmt::pmt_t err_sf = pmt::string_to_symbol("error");
+            pmt::pmt_t err_bw = pmt::string_to_symbol("error");
+            int new_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err_cr));
+            int new_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err_sf));
+            int new_bw = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("bw"), err_bw));
+            update_var(new_cr, new_sf, new_bw);
+          }
+          // std::cout<<"update tag"<<std::endl;
+          // std::cout<<"Sf Interleaver inside "<< static_cast<int>(m_sf) <<std::endl;
+          m_framelen_tag.value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
+          m_framelen_tag.offset = nitems_written(0); 
         }
       }
 
@@ -108,9 +160,14 @@ namespace gr
       if (nitems_to_process >= sf_app || cw_cnt + nitems_to_process == (uint32_t)m_frame_len)
       {        
         //propagate tag
-        if(!cw_cnt)
-          add_item_tag(0, tags[0]);
+        if(!cw_cnt){
+          add_item_tag(0, m_framelen_tag);
+          if(m_has_config_tag){
+            add_item_tag(0, m_config_tag);
+            m_has_config_tag = false;
+          }
 
+        }
         //Create the empty matrices
         std::vector<std::vector<bool>> cw_bin(sf_app);
         std::vector<bool> init_bit(m_sf, 0);

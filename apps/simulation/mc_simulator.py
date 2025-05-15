@@ -22,7 +22,7 @@ center_freq = 868.1     # Center frequency in MHz
 clk_offset_ppm = 0      # crystal offset in ppm
 pay_len = 32            # in bytes
 ldro = False            # usage of low datarate optimisation mode
-soft_decoding = True   # usage of soft-decision decoding in hte receiver
+soft_decoding = True   # usage of soft-decision decoding in the receiver
 
 
 # Result variables initialisation

@@ -186,7 +186,7 @@ namespace gr
                 for (int i = 0; i < nitem_to_process; i++)
                 {
                     if (pay_cnt < (uint32_t)m_payload_len * 2 + (m_has_crc ? 4 : 0))
-                    { //only output usefull value (payload and CRC if any)
+                    { //only output useful value (payload and CRC if any)
                         nout++;
                         pay_cnt++;
                         out[i] = in[i];

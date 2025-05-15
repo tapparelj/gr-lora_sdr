@@ -100,9 +100,16 @@ namespace gr
                     m_frame_len = pmt::to_long(tags[0].value);
                     tags[0].offset = nitems_written(0);
                     tags[0].value = pmt::from_long(m_frame_len + (m_has_crc ? 4 : 0));
-
                     if (nitems_to_process)
                         add_item_tag(0, tags[0]);
+                  
+                    get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("configuration"));
+                    if(tags.size() > 0)
+                    {
+                        tags[0].offset = nitems_written(0);
+
+                        if (nitems_to_process) add_item_tag(0, tags[0]);
+                    }
 
                     m_cnt = 0;
                 }
