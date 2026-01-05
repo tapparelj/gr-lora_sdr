@@ -25,7 +25,7 @@ set "MICROMAMBA_EXE=%MICROMAMBA_TMPDIR%\micromamba.exe"
 
 echo Downloading micromamba %MICROMAMBA_VERSION%
 if not exist "%MICROMAMBA_TMPDIR%" mkdir "%MICROMAMBA_TMPDIR%"
-certutil -urlcache -split -f "%MICROMAMBA_URL%" "%MICROMAMBA_EXE%"
+powershell -ExecutionPolicy Bypass -Command "(New-Object Net.WebClient).DownloadFile('%MICROMAMBA_URL%', '%MICROMAMBA_EXE%')"
 if !errorlevel! neq 0 exit /b !errorlevel!
 
 echo Creating environment
@@ -34,8 +34,9 @@ call "%MICROMAMBA_EXE%" create --yes --root-prefix "%MAMBA_ROOT_PREFIX%" --prefi
     pip python=3.12 conda-build conda-forge-ci-setup=4 "conda-build>=24.1"
 if !errorlevel! neq 0 exit /b !errorlevel!
 echo Removing %MAMBA_ROOT_PREFIX%
-del /S /Q "%MAMBA_ROOT_PREFIX%"
-del /S /Q "%MICROMAMBA_TMPDIR%"
+del /S /Q "%MAMBA_ROOT_PREFIX%" >nul
+del /S /Q "%MICROMAMBA_TMPDIR%" >nul
+call :end_group
 
 call :start_group "Configuring conda"
 
