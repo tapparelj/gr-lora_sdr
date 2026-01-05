@@ -13,6 +13,7 @@ dependencies:
   - pkg-config
   - pybind11
   - python>=3.12
+  - pip
   - uhd
   - volk
   - pip:
