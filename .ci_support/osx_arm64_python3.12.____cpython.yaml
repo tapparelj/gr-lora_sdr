@@ -20,8 +20,6 @@ gnuradio_extra_pin:
 - ''
 macos_machine:
 - arm64-apple-darwin20.0.0
-numpy:
-- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
