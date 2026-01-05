@@ -28,6 +28,8 @@ python:
 - 3.13.* *_cp313
 target_platform:
 - linux-ppc64le
+volk:
+- '3.2'
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
