@@ -33,10 +33,10 @@ requirements:
     # cross-compilation requirements
     - python                              # [build_platform != target_platform]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - numpy                               # [build_platform != target_platform]
+    - numpy=2.4                               # [build_platform != target_platform]
     - pybind11                            # [build_platform != target_platform]
     # Add extra build tool dependencies here
-    - boost-cpp=1.86.0
+    - boost-cpp=1.84.0
     - volk=3.1.2
 
   host:
@@ -47,16 +47,16 @@ requirements:
     - pip  # [win]
     - pybind11
     - python
-    - numpy
+    - numpy=2.4 
     # Add/remove library dependencies here
-    - boost-cpp=1.86.0
+    - boost-cpp=1.84.0
     - volk=3.1.2
 
   run:
-    - numpy
+    - numpy=2.4 
     - python
     # Add/remove runtime dependencies here
-    - boost-cpp=1.86.0
+    - boost-cpp=1.84.0
     - volk=3.1.2
 
 test:
