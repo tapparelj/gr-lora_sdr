@@ -19,6 +19,4 @@ workflows:
   build_and_test:
     jobs:
       - build:
-          filters:
-            branches:
-              ignore: []
+          
