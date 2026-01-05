@@ -11,6 +11,8 @@ github_actions:
   store_build_artifacts: true
 os_version:
   linux_64: cos7
+  osx_64: 14
+  osx_arm64: 14
 provider:
   linux: github_actions
   osx: github_actions

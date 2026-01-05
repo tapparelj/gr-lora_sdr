@@ -20,6 +20,6 @@ workflows:
     jobs:
       - build:
           filters:
-            branches:
+            branches: *
               ignore:
                 - /.*/
