@@ -21,6 +21,7 @@ workflows:
       - build:
           filters:
             branches: 
-              - '*'
+              only:
+                - github_action_fix
               ignore:
                 - /.*/
