@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <complex>
 #include <gnuradio/io_signature.h>
 #include <volk/volk_alloc.hh>
 #include "frame_sync_impl.h"
@@ -65,19 +66,25 @@ namespace gr
             m_downchirp.resize(m_number_of_bins);
             preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
             preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
+            preamble_raw_up_conj.resize((m_preamb_len + 3) * m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
+            in_down_conj.resize(m_number_of_bins);
             preamble_raw.resize(m_preamb_len * m_number_of_bins);
+            preamble_raw_conj.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
 
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
             bin_idx = 0;
+            bin_idx_conj = 0;
             symbol_cnt = 1;
+            symbol_cnt_conj = 1;
             k_hat = 0;
             preamb_up_vals.resize(m_n_up_req, 0);
+            preamb_up_vals_conj.resize(m_n_up_req, 0);
             frame_cnt = 0;
             m_symb_numb = 0;
 
@@ -404,7 +411,16 @@ namespace gr
             if (m_invalid_header)
             {
                 m_state = DETECT;
+                if (m_is_downchirp)
+                {
+                    symbol_cnt_conj = 1;
+                }
+                else
+                {
+                    symbol_cnt = 1;
+                }
                 symbol_cnt = 1;
+                symbol_cnt_conj = 1;
                 k_hat = 0;
                 m_sto_frac = 0;
                 m_symb_numb = 0;
@@ -437,11 +453,14 @@ namespace gr
             m_downchirp.resize(m_number_of_bins);
             preamble_upchirps.resize(m_preamb_len * m_number_of_bins);
             preamble_raw_up.resize((m_preamb_len + 3) * m_samples_per_symbol);
+            preamble_raw_up_conj.resize((m_preamb_len + 3) + m_samples_per_symbol);
             CFO_frac_correc.resize(m_number_of_bins);
             CFO_SFO_frac_correc.resize(m_number_of_bins);
             symb_corr.resize(m_number_of_bins);
             in_down.resize(m_number_of_bins);
+            in_down_conj.resize(m_number_of_bins);
             preamble_raw.resize(m_preamb_len * m_number_of_bins);
+            preamble_raw_conj.resize(m_preamb_len * m_number_of_bins);
             net_id_samp.resize(m_samples_per_symbol * 2.5); // we should be able to move up to one quarter of symbol in each direction
             build_ref_chirps(&m_upchirp[0], &m_downchirp[0], m_sf);
 
@@ -455,7 +474,13 @@ namespace gr
                                           gr_vector_const_void_star &input_items,
                                           gr_vector_void_star &output_items)
         {
+
             const gr_complex *in = (const gr_complex *)input_items[0];
+            std::vector<gr_complex> in_conj(ninput_items[0]);
+            for (int i = 0; i < ninput_items[0]; i++)
+            {
+                in_conj[i] = std::conj(in[i]);
+            }
             gr_complex *out = (gr_complex *)output_items[0];
             int items_to_output = 0;
 
@@ -496,9 +521,18 @@ namespace gr
                 }
             }
 
-            // downsampling
+            // use the specified oversampling factor to downsample the signal
             for (uint32_t ii = 0; ii < m_number_of_bins; ii++)
+            {
                 in_down[ii] = in[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
+                in_down_conj[ii] = in_conj[(int)(m_os_factor / 2 + m_os_factor * ii - my_roundf(m_sto_frac * m_os_factor))];
+            }
+
+            /**
+             * States:
+             * - DETECT:    look for the preamble (starting state)
+             * - SYNC:      synchronize the frame
+             */
 
             switch (m_state)
             {
@@ -525,14 +559,50 @@ namespace gr
                     symbol_cnt = 1;
                 }
                 bin_idx = bin_idx_new;
-                if (symbol_cnt == (int)(m_n_up_req))
+
+                // analog for downchirp detection
+                bin_idx_new_conj = get_symbol_val(&in_down_conj[0], &m_downchirp[0]);
+
+                if (abs(mod(abs(bin_idx_new_conj - bin_idx_conj) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new_conj != -1) // look for consecutive reference downchirps (with a margin of ±1)
                 {
+                    if (symbol_cnt_conj == 1 && bin_idx_conj != -1)
+                        preamb_up_vals_conj[0] = bin_idx_conj;
+
+                    preamb_up_vals_conj[symbol_cnt_conj] = bin_idx_new_conj;
+                    memcpy(&preamble_raw_conj[m_number_of_bins * symbol_cnt_conj], &in_down_conj[0], m_number_of_bins * sizeof(gr_complex));
+                    memcpy(&preamble_raw_up_conj[m_samples_per_symbol * symbol_cnt_conj], &in_conj[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+
+                    symbol_cnt_conj++;
+                }
+                else
+                {
+                    memcpy(&preamble_raw_conj[0], &in_down_conj[0], m_number_of_bins * sizeof(gr_complex));
+                    memcpy(&preamble_raw_up_conj[0], &in_conj[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+
+                    symbol_cnt_conj = 1;
+                }
+                bin_idx_conj = bin_idx_new_conj;
+
+                if (symbol_cnt == (int)(m_n_up_req) || symbol_cnt_conj == (int)(m_n_up_req))
+                {
+                    // check if it is a upchirp or downchirp preamble
+                    m_is_downchirp = symbol_cnt_conj > symbol_cnt;
+
                     additional_upchirps = 0;
                     m_state = SYNC;
                     symbol_cnt = 0;
+                    symbol_cnt_conj = 0;
                     cfo_frac_sto_frac_est = false;
-                    k_hat = most_frequent(&preamb_up_vals[0], preamb_up_vals.size());
-                    memcpy(&net_id_samp[0], &in[int(0.75 * m_samples_per_symbol - k_hat * m_os_factor)], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    if (m_is_downchirp)
+                    {
+                        k_hat = most_frequent(&preamb_up_vals_conj[0], preamb_up_vals_conj.size());
+                        memcpy(&net_id_samp[0], &in_conj[int(0.75 * m_samples_per_symbol - k_hat * m_os_factor)], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    }
+                    else
+                    {
+                        k_hat = most_frequent(&preamb_up_vals[0], preamb_up_vals.size());
+                        memcpy(&net_id_samp[0], &in[int(0.75 * m_samples_per_symbol - k_hat * m_os_factor)], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    }
 
                     // perform the coarse synchronization
                     items_to_consume = m_os_factor * ((int)(m_number_of_bins - k_hat));
@@ -540,15 +610,24 @@ namespace gr
                 else
                     items_to_consume = m_samples_per_symbol;
                 items_to_output = 0;
+
                 break;
-            }
+            } // end of case DETECT
             case SYNC:
             {
                 items_to_output = 0;
                 if (!cfo_frac_sto_frac_est)
                 {
-                    m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
-                    m_sto_frac = estimate_STO_frac();
+                    if (m_is_downchirp)
+                    {
+                        m_cfo_frac = estimate_CFO_frac(&preamble_raw_conj[m_number_of_bins - k_hat]);
+                        m_sto_frac = estimate_STO_frac();
+                    }
+                    else
+                    {
+                        m_cfo_frac = estimate_CFO_frac_Bernier(&preamble_raw[m_number_of_bins - k_hat]);
+                        m_sto_frac = estimate_STO_frac();
+                    }
                     // create correction vector
                     for (uint32_t n = 0; n < m_number_of_bins; n++)
                     {
@@ -558,32 +637,77 @@ namespace gr
                 }
                 items_to_consume = m_samples_per_symbol;
                 // apply cfo correction
-                volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0], m_number_of_bins);
+                if (m_is_downchirp)
+                {
+                    volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down_conj[0], &CFO_frac_correc[0], m_number_of_bins);
+                    // bin_idx_conj = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+
+                    symbol_cnt = symbol_cnt_conj;
+                }
+                else
+                {
+                    volk_32fc_x2_multiply_32fc(&symb_corr[0], &in_down[0], &CFO_frac_correc[0], m_number_of_bins);
+                    // bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+                }
 
                 bin_idx = get_symbol_val(&symb_corr[0], &m_downchirp[0]);
+                bin_idx_conj = bin_idx;
+
                 switch (symbol_cnt)
                 {
                 case NET_ID1:
                 {
-                    if (bin_idx == 0 || bin_idx == 1 || (uint32_t)bin_idx == m_number_of_bins - 1)
-                    { // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
-                        memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
-                        if (additional_upchirps >= 3)
+                    if (bin_idx == 0 || bin_idx == 1) // || (uint32_t)bin_idx == m_number_of_bins - 1)
+                    {                                 // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
+                        if (m_is_downchirp)
                         {
-                            std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
-                            memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            memcpy(&net_id_samp[0], &in_conj[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
                         }
                         else
                         {
-                            memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                        }
+
+                        if (additional_upchirps >= 3)
+                        {
+                            if (m_is_downchirp)
+                            {
+                                std::rotate(preamble_raw_up_conj.begin(), preamble_raw_up_conj.begin() + m_samples_per_symbol, preamble_raw_up_conj.end());
+                                memcpy(&preamble_raw_up_conj[m_samples_per_symbol * (m_n_up_req + 3)], &in_conj[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            }
+                            else
+                            {
+                                std::rotate(preamble_raw_up.begin(), preamble_raw_up.begin() + m_samples_per_symbol, preamble_raw_up.end());
+                                memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + 3)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            }
+                        }
+                        else
+                        {
+                            if (m_is_downchirp)
+                            {
+                                memcpy(&preamble_raw_up_conj[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in_conj[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            }
+                            else
+                            {
+                                memcpy(&preamble_raw_up[m_samples_per_symbol * (m_n_up_req + additional_upchirps)], &in[(int)(m_os_factor / 2) + k_hat * m_os_factor], m_samples_per_symbol * sizeof(gr_complex));
+                            }
                             additional_upchirps++;
                         }
                     }
                     else
                     { // network identifier 1 correct or off by one
                         symbol_cnt = NET_ID2;
-                        memcpy(&net_id_samp[0.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-                        net_ids[0] = bin_idx;
+                        symbol_cnt_conj = NET_ID2;
+                        if (m_is_downchirp)
+                        {
+                            memcpy(&net_id_samp[0.25 * m_samples_per_symbol], &in_conj[0], sizeof(gr_complex) * m_samples_per_symbol);
+                            net_ids[0] = bin_idx; // test if this is correct
+                        }
+                        else
+                        {
+                            memcpy(&net_id_samp[0.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                            net_ids[0] = bin_idx;
+                        }
                     }
                     break;
                 }
@@ -591,27 +715,59 @@ namespace gr
                 {
 
                     symbol_cnt = DOWNCHIRP1;
-                    memcpy(&net_id_samp[1.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * (m_number_of_bins + 1) * m_os_factor);
-                    net_ids[1] = bin_idx;
+                    symbol_cnt_conj = DOWNCHIRP1;
+                    if (m_is_downchirp)
+                    {
+                        memcpy(&net_id_samp[1.25 * m_samples_per_symbol], &in_conj[0], sizeof(gr_complex) * m_samples_per_symbol);
+                        net_ids[1] = bin_idx; // test if this is correct
+                    }
+                    else
+                    {
+                        memcpy(&net_id_samp[1.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * (m_number_of_bins + 1) * m_os_factor);
+                        net_ids[1] = bin_idx;
+                    }
 
                     break;
                 }
                 case DOWNCHIRP1:
                 {
-                    memcpy(&net_id_samp[2.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
-                    symbol_cnt = DOWNCHIRP2;
+                    if (m_is_downchirp)
+                    {
+                        memcpy(&net_id_samp[2.25 * m_samples_per_symbol], &in_conj[0], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                        symbol_cnt_conj = DOWNCHIRP2;
+                    }
+                    else
+                    {
+                        memcpy(&net_id_samp[2.25 * m_samples_per_symbol], &in[0], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                        symbol_cnt = DOWNCHIRP2;
+                    }
                     break;
                 }
                 case DOWNCHIRP2:
                 {
                     down_val = get_symbol_val(&symb_corr[0], &m_upchirp[0]);
-                    memcpy(&additional_symbol_samp[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
-                    symbol_cnt = QUARTER_DOWN;
+                    if (m_is_downchirp)
+                    {
+                        memcpy(&additional_symbol_samp[0], &in_conj[0], sizeof(gr_complex) * m_samples_per_symbol);
+                        symbol_cnt_conj = QUARTER_DOWN;
+                    }
+                    else
+                    {
+                        memcpy(&additional_symbol_samp[0], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                        symbol_cnt = QUARTER_DOWN;
+                    }
                     break;
                 }
                 case QUARTER_DOWN:
                 {
-                    memcpy(&additional_symbol_samp[m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                    if (m_is_downchirp)
+                    {
+                        memcpy(&additional_symbol_samp[m_samples_per_symbol], &in_conj[0], sizeof(gr_complex) * m_samples_per_symbol);
+                    }
+                    else
+                    {
+                        memcpy(&additional_symbol_samp[m_samples_per_symbol], &in[0], sizeof(gr_complex) * m_samples_per_symbol);
+                    }
                     if ((uint32_t)down_val < m_number_of_bins / 2)
                     {
                         m_cfo_int = floor(down_val / 2);
@@ -660,10 +816,18 @@ namespace gr
                     std::vector<gr_complex> corr_preamb;
                     corr_preamb.resize((m_n_up_req + additional_upchirps) * m_number_of_bins, 0);
                     // apply sto correction
-                    for (uint32_t i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
+
+                    if (m_is_downchirp)
                     {
-                        corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
+                        for (uint32_t i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
+                            corr_preamb[i] = preamble_raw_up_conj[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
                     }
+                    else
+                    {
+                        for (uint32_t i = 0; i < (m_n_up_req + additional_upchirps) * m_number_of_bins; i++)
+                            corr_preamb[i] = preamble_raw_up[m_os_factor * (m_number_of_bins - k_hat + i) - int(my_roundf(m_os_factor * m_sto_frac))];
+                    }
+
                     std::rotate(corr_preamb.begin(), corr_preamb.begin() + mod(m_cfo_int, m_number_of_bins), corr_preamb.end());
                     // apply cfo correction
                     volk_32fc_x2_multiply_32fc(&corr_preamb[0], &corr_preamb[0], &CFO_int_correc[0], (m_n_up_req + additional_upchirps) * m_number_of_bins);
@@ -728,7 +892,7 @@ namespace gr
                                 {
                                     one_symbol_off = 1;
                                     if (net_id_off != 0 && abs(net_id_off) > 1)
-                                        std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                                        std::cout << RED << "[frame_sync_impl.cc 1] net id offset >1: " << net_id_off << RESET << std::endl;
                                     if (m_should_log)
                                         off_by_one_id = net_id_off != 0;
                                     items_to_consume = -m_os_factor * net_id_off;
@@ -737,12 +901,12 @@ namespace gr
                                     int start_off = (int)m_os_factor / 2 - my_roundf(m_sto_frac * m_os_factor) + m_os_factor * (0.25 * m_number_of_bins + m_cfo_int);
                                     for (int i = start_off; i < 1.25 * m_samples_per_symbol; i += m_os_factor)
                                     {
-
                                         out[int((i - start_off) / m_os_factor)] = additional_symbol_samp[i];
                                     }
                                     items_to_output = m_number_of_bins;
                                     m_state = SFO_COMPENSATION;
                                     symbol_cnt = 1;
+                                    symbol_cnt_conj = 1;
                                     frame_cnt++;
                                 }
                             }
@@ -750,6 +914,7 @@ namespace gr
                             {
                                 m_state = DETECT;
                                 symbol_cnt = 1;
+                                symbol_cnt_conj = 1;
                                 items_to_output = 0;
                                 k_hat = 0;
                                 m_sto_frac = 0;
@@ -760,6 +925,7 @@ namespace gr
                         {
                             m_state = DETECT;
                             symbol_cnt = 1;
+                            symbol_cnt_conj = 1;
                             items_to_output = 0;
                             k_hat = 0;
                             m_sto_frac = 0;
@@ -774,6 +940,7 @@ namespace gr
                         {
                             m_state = DETECT;
                             symbol_cnt = 1;
+                            symbol_cnt_conj = 1;
                             items_to_output = 0;
                             k_hat = 0;
                             m_sto_frac = 0;
@@ -782,7 +949,7 @@ namespace gr
                         else
                         {
                             if (net_id_off != 0 && abs(net_id_off) > 1)
-                                std::cout << RED << "[frame_sync_impl.cc] net id offset >1: " << net_id_off << RESET << std::endl;
+                                std::cout << RED << "[frame_sync_impl.cc 2] net id offset >1: " << net_id_off << RESET << std::endl;
                             if (m_should_log)
                                 off_by_one_id = net_id_off != 0;
                             items_to_consume = -m_os_factor * net_id_off;
@@ -809,12 +976,12 @@ namespace gr
                         m_received_head = false;
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
                         symbol_cnt = one_symbol_off;
+                        symbol_cnt_conj = one_symbol_off;
                         float snr_est2 = 0;
 
                         if (m_should_log)
                         {
                             // estimate SNR
-
                             for (int i = 0; i < up_symb_to_use; i++)
                             {
                                 snr_est2 += determine_snr(&preamble_upchirps[i * m_number_of_bins]);
@@ -845,11 +1012,22 @@ namespace gr
             case SFO_COMPENSATION:
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
+                if (m_is_downchirp)
+                {
+                    symbol_cnt = symbol_cnt_conj;
+                }
 
-                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
+                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head)) // || (symbol_cnt_conj < 8 || ((uint32_t)symbol_cnt_conj < m_symb_numb && m_received_head)))
                 {
                     // output downsampled signal (with no STO but with CFO)
-                    memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
+                    if (m_is_downchirp)
+                    {
+                        memcpy(&out[0], &in_down_conj[0], m_number_of_bins * sizeof(gr_complex));
+                    }
+                    else
+                    {
+                        memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
+                    }
                     items_to_consume = m_samples_per_symbol;
 
                     //   update sfo evolution
@@ -862,7 +1040,14 @@ namespace gr
                     sfo_cum += sfo_hat;
 
                     items_to_output = m_number_of_bins;
-                    symbol_cnt++;
+                    if (m_is_downchirp)
+                    {
+                        symbol_cnt_conj++;
+                    }
+                    else
+                    {
+                        symbol_cnt++;
+                    }
                 }
                 else if (!m_received_head)
                 { // Wait for the header to be decoded
@@ -873,6 +1058,7 @@ namespace gr
                 {
                     m_state = DETECT;
                     symbol_cnt = 1;
+                    symbol_cnt_conj = 1;
                     items_to_consume = m_samples_per_symbol;
                     items_to_output = 0;
                     k_hat = 0;
