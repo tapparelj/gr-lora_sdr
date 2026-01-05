@@ -6,7 +6,7 @@ name: Build conda package
 on:
   push:
     branches:
-      # - master
+      - master
 
   pull_request:
 
@@ -41,12 +41,6 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
-          - CONFIG: linux_64_python3.13.____cp313
-            SHORT_CONFIG: linux_64_python3.13.____cp313
-            UPLOAD_PACKAGES: True
-            os: ubuntu
-            runs_on: ['ubuntu-latest']
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
           - CONFIG: linux_aarch64_python3.10.____cpython
             SHORT_CONFIG: linux_aarch64_python3.10.____cpython
             UPLOAD_PACKAGES: True
@@ -61,12 +55,6 @@ jobs:
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
           - CONFIG: linux_aarch64_python3.12.____cpython
             SHORT_CONFIG: linux_aarch64_python3.12.____cpython
-            UPLOAD_PACKAGES: True
-            os: ubuntu
-            runs_on: ['ubuntu-latest']
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
-          - CONFIG: linux_aarch64_python3.13.____cp313
-            SHORT_CONFIG: linux_aarch64_python3.13.____cp313
             UPLOAD_PACKAGES: True
             os: ubuntu
             runs_on: ['ubuntu-latest']
@@ -89,12 +77,6 @@ jobs:
             os: ubuntu
             runs_on: ['ubuntu-latest']
             DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
-          - CONFIG: linux_ppc64le_python3.13.____cp313
-            SHORT_CONFIG: linux_ppc64le_python3.13.____cp313
-            UPLOAD_PACKAGES: True
-            os: ubuntu
-            runs_on: ['ubuntu-latest']
-            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-x86_64:cos7
           - CONFIG: osx_64_python3.10.____cpython
             SHORT_CONFIG: osx_64_python3.10.____cpython
             UPLOAD_PACKAGES: True
@@ -107,11 +89,6 @@ jobs:
             runs_on: ['macos-15-intel']
           - CONFIG: osx_64_python3.12.____cpython
             SHORT_CONFIG: osx_64_python3.12.____cpython
-            UPLOAD_PACKAGES: True
-            os: macos
-            runs_on: ['macos-15-intel']
-          - CONFIG: osx_64_python3.13.____cp313
-            SHORT_CONFIG: osx_64_python3.13.____cp313
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-15-intel']
@@ -130,11 +107,6 @@ jobs:
             UPLOAD_PACKAGES: True
             os: macos
             runs_on: ['macos-15-intel']
-          - CONFIG: osx_arm64_python3.13.____cp313
-            SHORT_CONFIG: osx_arm64_python3.13.____cp313
-            UPLOAD_PACKAGES: True
-            os: macos
-            runs_on: ['macos-15-intel']
           - CONFIG: win_64_python3.10.____cpython
             SHORT_CONFIG: win_64_python3.10.____cpython
             UPLOAD_PACKAGES: True
@@ -147,11 +119,6 @@ jobs:
             runs_on: ['windows-latest']
           - CONFIG: win_64_python3.12.____cpython
             SHORT_CONFIG: win_64_python3.12.____cpython
-            UPLOAD_PACKAGES: True
-            os: windows
-            runs_on: ['windows-latest']
-          - CONFIG: win_64_python3.13.____cp313
-            SHORT_CONFIG: win_64_python3.13.____cp313
             UPLOAD_PACKAGES: True
             os: windows
             runs_on: ['windows-latest']
