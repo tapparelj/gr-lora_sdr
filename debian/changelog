@@ -1,0 +1,6 @@
+gr-lora-sdr (0-1) UNRELEASED; urgency=medium
+
+  * Placeholder entry. Real package version is generated at build time
+    by debian/build-snapshot.sh from the current git commit.
+
+ -- Michael Mohr <akihana@gmail.com>  Wed, 06 May 2026 21:26:24 -0700
