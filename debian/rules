@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+%:
+	dh $@ --with python3
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DENABLE_PYTHON=ON \
+		-DENABLE_DOXYGEN=OFF \
+		-DGR_PYTHON_DIR=/usr/lib/python3/dist-packages \
+		-DCMAKE_MODULES_DIR=lib/$(DEB_HOST_MULTIARCH)/cmake
+
+override_dh_auto_test:
+	# Upstream tests require GNU Radio runtime fixtures and are not
+	# reliable in a clean buildd chroot; skip during package build.
