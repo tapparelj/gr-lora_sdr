@@ -84,7 +84,7 @@ namespace gr {
             kiss_fft_cpx *cx_out = new kiss_fft_cpx[m_samples_per_symbol];
 
             // Multiply with ideal downchirp
-            volk_32fc_x2_multiply_32fc(&m_dechirped[0], samples, &m_downchirp[0], m_samples_per_symbol);
+            volk_32fc_x2_multiply_32fc(&m_dechirped[0], samples, &(*m_ref_chirp_ptr)[0], m_samples_per_symbol);
             for (uint32_t i = 0; i < m_samples_per_symbol; i++) {
                 cx_in[i].r = m_dechirped[i].real();
                 cx_in[i].i = m_dechirped[i].imag();
@@ -214,7 +214,12 @@ namespace gr {
                     double max_X1(0), max_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
                         // LoRa: shift by -1 and use reduce rate if first block (header)
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+                        uint32_t s;
+                        if (is_uplink)
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+                        else
+                            s = mod(m_samples_per_symbol - n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+
                         s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
                         if (s & (1u << i)) {  // if i-th bit of symbol n is '1'
                             if (LLs[n] > max_X1) max_X1 = LLs[n];
@@ -229,7 +234,12 @@ namespace gr {
                 for (uint32_t i = 0; i < m_sf; i++) {
                     double sum_X1(0), sum_X0(0); // X1 = set of symbols where i-th bit is '1'
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro)? 4 : 1);
+                        uint32_t s;
+                        if (is_uplink)
+                            s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+                        else
+                            s = mod(m_samples_per_symbol - n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+
                         s = (s ^ (s >> 1u));  // Gray demap
                         if (s & (1u << i)) sum_X1 += LLs[n]; // Likelihood
                         else sum_X0 += LLs[n];
@@ -272,21 +282,33 @@ namespace gr {
             if (tags.size()) 
             {
                 pmt::pmt_t err = pmt::string_to_symbol("error");
+                
                 is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));
                 if (is_header) // new frame beginning
                 {
+                    is_uplink = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_uplink"), err));
+    
                     int cfo_int = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cfo_int"), err));
                     float cfo_frac = pmt::to_float(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cfo_frac"), err));
                     int sf = pmt::to_double(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
                     if(sf != m_sf)
                         set_sf(sf);
-                     //create downchirp taking CFO_int into account
-                    build_upchirp(&m_upchirp[0], mod(cfo_int, m_samples_per_symbol), m_sf);
-                    volk_32fc_conjugate_32fc(&m_downchirp[0], &m_upchirp[0], m_samples_per_symbol);
-                    // adapt the downchirp to the cfo_frac of the frame
+
+                    //create downchirp taking CFO_int into account
+                    if (is_uplink){
+                        build_upchirp(&m_upchirp[0], mod(cfo_int, m_samples_per_symbol), m_sf);
+                        volk_32fc_conjugate_32fc(&m_downchirp[0], &m_upchirp[0], m_samples_per_symbol);
+                        m_ref_chirp_ptr = &m_downchirp;
+                    }
+                    else{
+                        build_upchirp(&m_upchirp[0], mod(-cfo_int, m_samples_per_symbol), m_sf);
+                        m_ref_chirp_ptr = &m_upchirp;
+                    }
+
+                    // adapt the reference chirp to the cfo_frac of the frame
                     for (uint32_t n = 0; n < m_samples_per_symbol; n++)
-                    {
-                        m_downchirp[n] = m_downchirp[n] * gr_expj(-2 * M_PI * cfo_frac / m_samples_per_symbol * n);
+                    {   
+                        (*m_ref_chirp_ptr)[n] = (*m_ref_chirp_ptr)[n] * gr_expj(-2 * M_PI * cfo_frac / m_samples_per_symbol * n);
                     }
                     output.clear();
                 } 
@@ -309,8 +331,14 @@ namespace gr {
                 if (m_soft_decoding) {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
                 } else {                                 // Hard decoding
+                    uint16_t symb = get_symbol_val(in);
+
+                    // adjust symbol if downlink
+                    if (!is_uplink)
+                        symb = m_samples_per_symbol - symb;
+                    
                     // shift by -1 and use reduce rate if first block (header)
-                    output.push_back(mod(get_symbol_val(in) - 1, (1 << m_sf)) / ((is_header||m_ldro) ? 4 : 1));
+                    output.push_back(mod(symb - 1, (1 << m_sf)) / ((is_header||m_ldro) ? 4 : 1));
                 }
 
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
@@ -329,6 +357,7 @@ namespace gr {
                     to_output = 0;
                 }
                 consume_each(m_samples_per_symbol);
+
                 m_symb_cnt += 1;
                 if(m_symb_cnt == m_symb_numb){
                 // std::cout<<"fft_demod_impl.cc end of frame\n";

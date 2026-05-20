@@ -53,7 +53,7 @@ namespace gr
             ninput_items_required[0] = noutput_items;
         }
 
-        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, uint8_t ldro_mode, int err)
+        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, uint8_t ldro_mode, int err, bool is_uplink)
         {
 
             pmt::pmt_t header_content = pmt::make_dict();
@@ -63,9 +63,12 @@ namespace gr
             header_content = pmt::dict_add(header_content, pmt::intern("crc"), pmt::from_long(crc));
             header_content = pmt::dict_add(header_content, pmt::intern("ldro_mode"), pmt::from_long(ldro_mode));
             header_content = pmt::dict_add(header_content, pmt::intern("err"), pmt::from_long(err));
+            
             message_port_pub(pmt::intern("frame_info"), header_content);
-            if(!err) //don't propagate downstream that a frame was detected
+            if(!err){ //don't propagate downstream that a frame was detected
+                header_content = pmt::dict_add(header_content, pmt::intern("is_uplink"), pmt::from_bool(is_uplink));        // propagate rx direction for downstream blocks
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), header_content);
+            }
         }
 
         int header_decoder_impl::general_work(int noutput_items,
@@ -101,6 +104,7 @@ namespace gr
                     // print("ac ishead: "<<is_header);
                     if (is_header)
                     {
+                        is_uplink = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_uplink"), pmt::from_bool(false)));
                         pay_cnt = 0;
                     }
                 }
@@ -113,7 +117,7 @@ namespace gr
             {
                 if (m_impl_header)
                 { //implicit header, all parameters should have been provided
-                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro_mode, 0);
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro_mode, 0, is_uplink);
 
                     for (int i = 0; i < nitem_to_process; i++)
                     {
@@ -169,7 +173,7 @@ namespace gr
 #endif
                         noutput_items = nitem_to_process - header_len;
                     }
-                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro_mode, head_err);
+                    publish_frame_info(m_cr, m_payload_len, m_has_crc, m_ldro_mode, head_err, is_uplink);
                     // print("pub header info");
                     for (int i = header_len, j = 0; i < nitem_to_process; i++, j++)
                     {

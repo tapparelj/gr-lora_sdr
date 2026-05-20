@@ -96,6 +96,8 @@ namespace gr
                 // std::cout<<m_payload_len<<" "<<nitem_to_process<<std::endl;
                 // std::cout<<"\ncrc_crc "<<tags[0].offset<<" - crc: "<<(int)m_crc_presence<<" - pay_len: "<<(int)m_payload_len<<"\n";
                 
+                is_uplink = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_uplink"), err));
+                // is_uplink = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::intern("is_uplink"), err));
                 
             }
             //append received bytes to buffer
@@ -155,6 +157,11 @@ namespace gr
                     }
                     if (print_rx_msg != NONE)
                     {
+                        if (is_uplink)
+                            std::cout << ">----Uplink frame----<" << std::endl;
+                        else
+                            std::cout << ">---Downlink frame---<" << std::endl;
+
                         if(print_rx_msg == ASCII)
                             std::cout << "rx msg: " << message_str << std::endl;                        
                         else if(print_rx_msg == HEX){

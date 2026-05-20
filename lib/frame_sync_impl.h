@@ -66,8 +66,11 @@ namespace gr
 
       unsigned int frame_cnt;      ///< Number of frame received
       int32_t symbol_cnt;  ///< Number of symbols already received
-      int32_t bin_idx;     ///< value of previous lora symbol
-      int32_t bin_idx_new; ///< value of newly demodulated symbol
+      int32_t upchirp_cnt;  /// < Number of preamble upchirps already received
+      int32_t downchirp_cnt;  /// < Number of preamble downchirps already received (downlink rx)
+      int32_t bin_idx_up;     ///< value of previous lora upchirp symbol
+      int32_t bin_idx_down;     ///< value of previous lora downchirp symbol (downlink rx)
+      int32_t bin_idx_new; ///< value of newly demodulated upchip/downchirp symbol
 
       uint16_t m_preamb_len; ///< Number of consecutive upchirps in preamble
       uint8_t additional_upchirps; ///< indicate the number of additional upchirps found in preamble (in addition to the minimum required to trigger a detection)
@@ -80,16 +83,24 @@ namespace gr
 
       int one_symbol_off; ///< indicate that we are offset by one symbol after the preamble 
       std::vector<gr_complex> additional_symbol_samp;  ///< save the value of the last 1.25 downchirp as it might contain the first payload symbol
-      std::vector<gr_complex> preamble_raw;      ///<vector containing the preamble upchirps without any synchronization
-      std::vector<gr_complex> preamble_raw_up;  ///<vector containing the upsampled preamble upchirps without any synchronization
-      std::vector<gr_complex> downchirp_raw;    ///< vector containing the preamble downchirps without any synchronization
-      std::vector<gr_complex> preamble_upchirps; ///<vector containing the preamble upchirps
+      std::vector<gr_complex> preamble_up_raw;      ///< vector containing the preamble upchirps without any synchronization
+      std::vector<gr_complex> preamble_down_raw;      ///< vector containing the preamble downchirps without any synchronization (for a downlink rx)
+      std::vector<gr_complex> preamble_up_raw_os;  ///< vector containing the oversampled preamble upchirps without any synchronization
+      std::vector<gr_complex> preamble_down_raw_os;  ///< vector containing the oversampled preamble downchirps without any synchronization (for a downlink rx)
+      // std::vector<gr_complex> downchirp_raw;    ///< vector containing the preamble downchirps without any synchronization
+      std::vector<gr_complex> preamble_chirps; ///< vector containing the synchronized preamble upchirps/downchirps
+      std::vector<gr_complex> *preamble_raw_ptr;   ///< pointer to the preamble chirp samples: preamble_up_raw/preamble_down_raw for uplink/downlink
+      std::vector<gr_complex> *preamble_raw_os_ptr;   ///< pointer to the oversampled preamble chirp samples: preamble_up_raw_os/preamble_down_raw_os for uplink/downlink
+      std::vector<gr_complex> *m_ref_chirp_ptr;   ///< pointer to reference chirp: m_downchirp/m_upchirp for uplink/downlink
+      std::vector<gr_complex> *m_ref_chirp_conj_ptr;   ///< pointer to conjugate reference chirp: m_upchirp/m_downchirp for uplink/downlink
       std::vector<gr_complex> net_id_samp;       ///< vector of the oversampled network identifier samples
       std::vector<int> net_ids;                  ///< values of the network identifiers received
 
       int up_symb_to_use;              ///< number of upchirp symbols to use for CFO and STO frac estimation
       int k_hat;                       ///< integer part of CFO+STO
       std::vector<int> preamb_up_vals; ///< value of the preamble upchirps
+      std::vector<int> preamb_down_vals; ///< value of the preamble downchirps (downlink rx)
+      bool is_uplink = true;        ///< Indicate whether the current rx is uplink/downlink
 
       float m_cfo_frac;                            ///< fractional part of CFO
       float m_cfo_frac_bernier;                    ///< fractional part of CFO using Berniers algo

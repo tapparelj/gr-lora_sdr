@@ -184,6 +184,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- Add downlink rx support.
 - Add option to ignore sync words checks and print the received values
 - Add optional print of received payload as hex values
 - Added tagged stream input support (for frame definition of frame length)

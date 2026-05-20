@@ -21,6 +21,7 @@ namespace gr {
         int print_rx_msg;  ///< print received message in terminal. 0: no print, 1: ASCII, 2: HEX
         bool output_crc_check; ///< output the result of the payload CRC check
         tag_t current_tag; ///< the most recent tag for the packet we are currently processing
+        bool is_uplink;    ///< Indicate whether the current rx is uplink/downlink
         
 
         uint32_t cnt=0;///< count the number of frame

@@ -41,11 +41,13 @@ namespace gr {
       std::vector<gr_complex> m_downchirp; ///< Reference downchirp
       std::vector<gr_complex> m_dechirped; ///< Dechirped symbol
       std::vector<gr_complex> m_fft;       ///< Result of the FFT
+      std::vector<gr_complex> *m_ref_chirp_ptr;  ///< Pointer to reference chirp used for in demodulation: points to m_downchirp/m_upchirp
 
       std::vector<uint16_t> output;   ///< Stores the value to be outputted once a full bloc has been received
       std::vector< std::vector<LLR> > LLRs_block; ///< Stores the LLRs to be outputted once a full bloc has been received
       bool is_header;                  ///< Indicate that the first block hasn't been fully received
       uint8_t block_size;             ///< The number of lora symbol in one block
+      bool is_uplink;                  ///< Indicate whether the current rx is uplink/downlink
      
       #ifdef GRLORA_MEASUREMENTS
       std::ofstream energy_file;
