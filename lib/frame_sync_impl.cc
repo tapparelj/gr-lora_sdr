@@ -55,7 +55,20 @@ namespace gr
                 uint16_t tmp = m_sync_words[0];
                 m_sync_words.resize(2, 0);
                 m_sync_words[0] = ((tmp & 0xF0) >> 4) << 3;
-                m_sync_words[1] = (tmp & 0x0F) << 3;
+                // The second net ID symbol is encoded with a negative offset
+                // relative to the FFT size (wraps modulo 2^SF), not a small
+                // positive bin index like the first. The previous formula
+                // `(tmp & 0x0F) << 3` only produced the correct wrapped value
+                // by coincidence at SF7 (where mod 128 leaves small values
+                // unchanged) and silently broke for SF >= 9, where the true
+                // bin index is far outside [0, 15*8]. Confirmed against two
+                // independent live SF11 captures (Meshtastic sync word 0x2b,
+                // BW250k): observed netid2 bin was 2008, exactly matching
+                // ((11 - 16) << 3) mod 2048 = 2008, while the old formula
+                // gave 88 (never observed in the spectrum).
+                int32_t bins = (int32_t)(1u << sf);
+                int32_t lo_nibble = (int32_t)(tmp & 0x0F);
+                m_sync_words[1] = (uint16_t)(((lo_nibble - 16) << 3) % bins + bins) % bins;
             }
 
             m_number_of_bins = (uint32_t)(1u << m_sf);
