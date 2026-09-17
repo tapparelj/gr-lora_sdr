@@ -1,0 +1,22 @@
+id: lora_sdr_frame_info_to_pdu
+label: Frame Info to PDU
+category: '[LoRa_RX]'
+templates:
+  imports: import gnuradio.lora_sdr as lora_sdr
+  make: lora_sdr.frame_info_to_pdu()
+parameters: []
+inputs:
+- domain: stream
+  dtype: byte
+outputs:
+- domain: message
+  id: pdus
+documentation: |-
+  Segments the CRC verif payload stream into PDUs using the pay_len field of
+  the 'frame_info' tag. Combines what the frame_info to packet_len and tagged
+  stream to PDU blocks did separately.
+  Input:
+    in: payload byte stream tagged with 'frame_info' (as produced by CRC verif)
+  Output:
+    pdus: one PDU per received payload
+file_format: 1

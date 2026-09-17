@@ -35,6 +35,7 @@ list(APPEND lora_sdr_python_files
         deinterleaver_python.cc
         dewhitening_python.cc
         fft_demod_python.cc
+        frame_info_to_pdu_python.cc
         frame_sync_python.cc
         gray_demap_python.cc
         gray_mapping_python.cc
@@ -45,6 +46,7 @@ list(APPEND lora_sdr_python_files
         interleaver_python.cc
         modulate_python.cc
         payload_id_inc_python.cc
+        pdu_to_whitening_msg_python.cc
         RH_RF95_header_python.cc
         whitening_python.cc
         python_bindings.cc)

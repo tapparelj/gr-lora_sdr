@@ -164,7 +164,85 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 	- (Linux/macOS) `$CONDA_PREFIX/share/gr-lora_sdr/examples`
 	- (Windows) `%CONDA_PREFIX%\Library\share\gr-lora_sdr\examples`
 
-   
+## IP over LoRa Example
+
+### Simulation
+
+Uses: [tx_rx_simultaion_tun.grc](./examples/tx_rx_simulation_tun.grc)
+
+Create Tunnels:
+
+```bash
+sudo ip tuntap add dev lora-tun0 mode tun user $USER
+sudo ip addr add dev lora-tun0 10.100.200.2
+sudo ip link set dev lora-tun0 mtu 1500
+sudo ip link set dev lora-tun0 up
+
+sudo ip tuntap add dev lora-tun1 mode tun user $USER
+sudo ip addr add dev lora-tun1 10.100.200.3
+sudo ip link set dev lora-tun1 mtu 1500
+sudo ip link set dev lora-tun1 up
+```
+
+Ping over `lora-tun0`:
+
+```bash
+ping 10.100.200.3 -I lora-tun0
+```
+
+Verify on `lora-tun1`:
+
+```bash
+sudo tcpdump -i lora-tun1
+```
+
+Cleanup:
+
+```bash
+sudo ip link del lora-tun0
+sudo ip link del lora-tun1
+```
+
+### Cabled USRP B200s
+
+Uses: [tx_rx_usrp_tun.grc](./examples/tx_rx_usrp_tun.grc)
+
+Create tunnel on device 1:
+
+```bash
+sudo ip tuntap add dev lora-tun0 mode tun user $USER
+sudo ip addr add dev lora-tun0 10.100.200.2/24
+sudo ip link set dev lora-tun0 mtu 1500
+sudo ip link set dev lora-tun0 up
+```
+
+Create tunnel on device 2:
+
+```bash
+sudo ip tuntap add dev lora-tun0 mode tun user $USER
+sudo ip addr add dev lora-tun0 10.100.200.3/24
+sudo ip link set dev lora-tun0 mtu 1500
+sudo ip link set dev lora-tun0 up
+```
+
+On both devices, run the script or flowgraph:
+
+```bash
+sudo python3 tx_rx_usrp_tun.py
+```
+
+Ping from device 1 to device 2:
+
+```bash
+ping 10.100.200.3 -I lora-tun0
+```
+
+Cleanup on both devices:
+
+```bash
+sudo ip link del lora-tun0
+```
+
 ## Frequent issues:  
 - Fail to `make` after pulling a new version from git
 	- If the parameters of a block have changed in the new version, you need to first clean the old installation before building the module again.

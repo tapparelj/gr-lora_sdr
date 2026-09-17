@@ -1,0 +1,20 @@
+id: lora_sdr_pdu_to_whitening_msg
+label: PDU to Whitening Message Input
+category: '[LoRa_TX]'
+templates:
+  imports: import gnuradio.lora_sdr as lora_sdr
+  make: lora_sdr.pdu_to_whitening_msg()
+parameters: []
+inputs:
+- domain: message
+  id: pdus
+outputs:
+- domain: message
+  id: msg
+documentation: |-
+  Converts TUN PDUs to whitening message input.
+  Input:
+    pdus: PDU from a TUN interface
+  Output:
+    msg: PDU payload encoded as a hex string, suitable for the whitening block message input
+file_format: 1

@@ -27,6 +27,7 @@ void bind_data_source(py::module& m);
 void bind_deinterleaver(py::module& m);
 void bind_dewhitening(py::module& m);
 void bind_fft_demod(py::module& m);
+void bind_frame_info_to_pdu(py::module& m);
 void bind_frame_sync(py::module& m);
 void bind_gray_demap(py::module& m);
 void bind_gray_mapping(py::module& m);
@@ -37,6 +38,7 @@ void bind_header(py::module& m);
 void bind_interleaver(py::module& m);
 void bind_modulate(py::module& m);
 void bind_payload_id_inc(py::module& m);
+void bind_pdu_to_whitening_msg(py::module& m);
 void bind_RH_RF95_header(py::module& m);
 void bind_whitening(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
@@ -73,6 +75,7 @@ PYBIND11_MODULE(lora_sdr_python, m)
     bind_deinterleaver(m);
     bind_dewhitening(m);
     bind_fft_demod(m);
+    bind_frame_info_to_pdu(m);
     bind_frame_sync(m);
     bind_gray_demap(m);
     bind_gray_mapping(m);
@@ -83,6 +86,7 @@ PYBIND11_MODULE(lora_sdr_python, m)
     bind_interleaver(m);
     bind_modulate(m);
     bind_payload_id_inc(m);
+    bind_pdu_to_whitening_msg(m);
     bind_RH_RF95_header(m);
     bind_whitening(m);
     // ) END BINDING_FUNCTION_CALLS
