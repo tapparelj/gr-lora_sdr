@@ -45,8 +45,12 @@ In the GNU Radio implementation of the LoRa Tx and Rx chains the user can choose
 	- Verification of explicit header checksum
 	- Low datarate optimisation mode 
 	- Utilisation of soft-decision decoding for improved performances
+	- SX128x long interleaving (coding rate 4/8LI, implicit header)**
+	- SF5/SF6 fine-synchronisation symbols (two up-chirps after the SFD, verified with SX1280)
 
-\* Spreading factors 5 and 6 are not compatible with SX126x.
+\* Spreading factors 5 and 6 are not compatible with SX126x (`fine_sync` is untested with SX126x).
+
+\** Verified against SX1280 frames at SF6 (ExpressLRS 2.4 GHz, 8-byte payload, no CRC). The 4/5LI and 4/6LI rates are not supported.
 ## Reference
 ### Original publication
 J. Tapparel, O. Afisiadis, P. Mayoraz, A. Balatsoukas-Stimming and A. Burg, "An Open-Source LoRa Physical Layer Prototype on GNU Radio," 2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC), Atlanta, GA, USA, 2020, pp. 1-5.
@@ -184,6 +188,7 @@ Thanks to Ryan Volz this OOT module can also directly be installed as a Conda pa
 		[grc]
 		local_blocks_path=path_to_the_downloaded_folder/gr-lora_sdr/grc
 ## Changelog
+- Add SX128x long interleaving (CR 4/8LI) and SF5/SF6 fine-synchronisation symbols
 - Add option to ignore sync words checks and print the received values
 - Add optional print of received payload as hex values
 - Added tagged stream input support (for frame definition of frame length)

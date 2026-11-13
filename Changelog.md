@@ -1,3 +1,9 @@
+# Unreleased
+- Add SX128x long interleaving (coding rate 4/8LI) to _interleaver_ and _deinterleaver_ (option `long_interleaving`, implicit header and CR 4 only); verified on real SX1280 frames at SF6
+- Add the two fine-synchronisation up-chirps the SX1280 inserts after the SFD at SF5/SF6 to _modulate_ and _frame\_sync_ (option `fine_sync`)
+- Fix _frame\_sync_ reading outside its buffer when a large CFO/STO estimate moves the network-ID window (segfault)
+- Fix _crc\_verif_ holding back a frame until more input arrives when two frames reach it in one call
+- Fix _fft\_demod_ writing a full block when the output buffer has less room
 # v0.5.8
 - Add option to ignore sync words checks and print the received values
 # v0.5.7
