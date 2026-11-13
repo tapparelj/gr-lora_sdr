@@ -694,21 +694,39 @@ namespace gr
                     net_ids_samp_dec.resize(2 * m_number_of_bins, 0);
                     // start_off gives the offset in the net_id_samp vector required to be aligned in time (CFOint is equivalent to STOint since upchirp_val was forced to 0)
                     int start_off = (int)m_os_factor / 2 - (my_roundf(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
-                    for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
+                    // A large integer CFO/STO estimate (e.g. on a false or badly detected preamble) can move the
+                    // net ID window outside the buffered samples; such a detection is rejected.
+                    bool net_id_in_buffer = start_off >= 0 &&
+                        start_off + (2 * m_number_of_bins - 1) * m_os_factor < net_id_samp.size();
+                    int netid1 = 0;
+                    int netid2 = 0;
+                    if (net_id_in_buffer)
                     {
-                        net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
+                        for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
+                        {
+                            net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
+                        }
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_int_correc[0], 2 * m_number_of_bins);
+
+                        // correct CFO_frac in the network ids
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_frac_correc[0], m_number_of_bins);
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[m_number_of_bins], &net_ids_samp_dec[m_number_of_bins], &CFO_frac_correc[0], m_number_of_bins);
+
+                        netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
+                        netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     }
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_int_correc[0], 2 * m_number_of_bins);
-
-                    // correct CFO_frac in the network ids
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_frac_correc[0], m_number_of_bins);
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[m_number_of_bins], &net_ids_samp_dec[m_number_of_bins], &CFO_frac_correc[0], m_number_of_bins);
-
-                    int netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
-                    int netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     one_symbol_off = 0;
 
-                    if (m_sync_words[0] == 0) { // match netid1 only if requested
+                    if (!net_id_in_buffer)
+                    {
+                        m_state = DETECT;
+                        symbol_cnt = 1;
+                        items_to_output = 0;
+                        k_hat = 0;
+                        m_sto_frac = 0;
+                        items_to_consume = 0;
+                    }
+                    else if (m_sync_words[0] == 0) { // match netid1 only if requested
                         items_to_consume = 0;
                         m_state = SFO_COMPENSATION;
                         frame_cnt++;
