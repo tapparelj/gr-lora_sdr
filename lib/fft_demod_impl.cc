@@ -289,6 +289,17 @@ namespace gr {
                         m_downchirp[n] = m_downchirp[n] * gr_expj(-2 * M_PI * cfo_frac / m_samples_per_symbol * n);
                     }
                     output.clear();
+                    // Long interleaving (SX128x LI): no reduced-rate header block, the
+                    // whole frame of symb_numb full-rate symbols is a single block.
+                    m_long_interleaving = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("long_interleaving"), pmt::PMT_F));
+                    if (m_long_interleaving)
+                    {
+                        m_symb_numb = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("symb_numb"), err));
+                        m_ldro = false;
+                        is_header = false;
+                        m_symb_cnt = 0;
+                        LLRs_block.clear();
+                    }
                 } 
                 else
                 {
@@ -299,12 +310,17 @@ namespace gr {
             }
             if((uint32_t)ninput_items[0]>=m_samples_per_symbol)//check if we have enough samples at the input
             {
+                block_size = m_long_interleaving ? m_symb_numb : 4 + (is_header ? 4 : m_cr);
+                // The symbol completing a block releases the whole block: wait until it fits
+                // (long-interleaving blocks span the whole frame).
+                const size_t pending = m_soft_decoding ? LLRs_block.size() : output.size();
+                if (pending + 1 >= block_size && (uint32_t)noutput_items < block_size)
+                    return 0;
+
                 if (tags.size()){
                         tags[0].offset = nitems_written(0);
                         add_item_tag(0, tags[0]);  // 8 LoRa symbols in the header
                 }
-
-                block_size = 4 + (is_header ? 4 : m_cr);
 
                 if (m_soft_decoding) {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
@@ -315,7 +331,7 @@ namespace gr {
 
                 if (output.size() == block_size || LLRs_block.size() == block_size) {
                     if (m_soft_decoding) {
-                        for (int i = 0; i < block_size; i++)
+                        for (uint32_t i = 0; i < block_size; i++)
                             memcpy(out2 + i * MAX_SF, LLRs_block[i].data(), m_sf * sizeof(LLR));
                         LLRs_block.clear();
                     } else {  // Hard decoding

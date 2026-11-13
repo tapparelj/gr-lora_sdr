@@ -68,6 +68,16 @@ parameters:
     option_labels: ['Header & Payload','Payload','Header','None']
     default: '[True,True]'
     
+-   id: long_interleaving
+    label: Long interleaving
+    dtype: bool
+    default: 'False'
+    hide: part
+-   id: fine_sync
+    label: SF5/6 fine sync
+    dtype: bool
+    default: 'False'
+    hide: part
 
 inputs:
 -   label: in
@@ -88,7 +98,8 @@ templates:
     imports: 'import gnuradio.lora_sdr as lora_sdr'
     make: "lora_sdr.lora_sdr_lora_rx( bw=${ bw }, cr=${ cr }, has_crc=${ has_crc},
      impl_head=${ impl_head }, pay_len=${ pay_len }, samp_rate=${samp_rate },
-      sf=${ sf }, sync_word=${sync_word}, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx})"
+      sf=${ sf }, sync_word=${sync_word}, soft_decoding=${ soft_decoding }, ldro_mode=${ldro}, print_rx=${print_rx},
+      long_interleaving=${long_interleaving}, fine_sync=${fine_sync})"
 asserts:
 - ${ (samp_rate/bw).is_integer()}
 
@@ -107,6 +118,8 @@ documentation: |-
         - Use soft-decision decoding: Use soft-decision decoding
         - Sync word: Sync word to use (default 0x12 for private networks and 0x34 for LoRaWAN). Can be given as [0x12] (or directly the two modulated values [8,16])
         - Print info: Print received payload/header in the terminal
+        - Long interleaving: SX128x coding rate 4/8LI (implicit header, coding rate 4/8 only)
+        - SF5/6 fine sync: the two fine-synchronisation symbols SX128x send after the SFD at SF5 and SF6
     Inputs:
         - in: Stream of complex samples
     Outputs

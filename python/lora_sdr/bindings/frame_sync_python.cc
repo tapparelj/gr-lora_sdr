@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(frame_sync.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b4a54a4ca7837d4c1d890b6e75488fba) */
+/* BINDTOOL_HEADER_FILE_HASH(ed9606a1134287b51039d486045a4336) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -39,6 +39,7 @@ void bind_frame_sync(py::module &m) {
       .def(py::init(&frame_sync::make), py::arg("center_freq"),
            py::arg("bandwidth"), py::arg("sf"), py::arg("impl_head"),
            py::arg("sync_word"), py::arg("os_factor"), py::arg("preamble_len"),
+           py::arg("long_interleaving") = false, py::arg("fine_sync") = false,
            D(frame_sync, make))
 
       ;

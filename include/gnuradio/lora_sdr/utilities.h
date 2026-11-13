@@ -155,6 +155,38 @@ namespace gr {
         std::generate_n(std::back_inserter(result), Nbytes, generator);
         return result;
     }
+
+        /**
+         * @brief Long interleaving (LI) of the SX128x coding rate 4/8LI: bit layout.
+         *
+         * In LI mode the n_cw codewords of a frame form a single interleaving block
+         * (no reduced-rate first block). The codewords, in this module's layout
+         * (8 bits, MSB first, as hamming_enc produces them), are read out
+         * bit-position-major: bit 0 (MSB) of every codeword, then bit 1, ... bit 7.
+         * The resulting stream fills the symbols least significant bit first, sf bits
+         * per symbol, and the last symbol is padded with copies of stream bits 1, 2, ...
+         * Reverse-engineered from SX1280 captures at SF6, CR 4/8LI (ExpressLRS 2.4 GHz,
+         * 8-byte implicit-header payload, no CRC). Other SFs and payload lengths are
+         * assumed to follow the same rule; 4/5LI and 4/6LI (shorter codewords) are not
+         * covered.
+         */
+        inline uint32_t li_symbol_count(uint32_t n_cw, uint8_t sf)
+        {
+            return (8 * n_cw + sf - 1) / sf;
+        }
+
+        /// Position of codeword bit `cw_bit` (MSB-first index) of codeword `cw_idx` in the LI stream.
+        inline uint32_t li_stream_index(uint32_t cw_idx, uint8_t cw_bit, uint32_t n_cw)
+        {
+            return cw_bit * n_cw + cw_idx;
+        }
+
+        /// Symbol and MSB-first bit index within that symbol of LI stream position `t`.
+        inline void li_stream_position(uint32_t t, uint8_t sf, uint32_t &symbol, uint8_t &bit)
+        {
+            symbol = t / sf;
+            bit = sf - 1 - (t % sf);
+        }
     }
 }
 #endif /* UTILITIES_H */

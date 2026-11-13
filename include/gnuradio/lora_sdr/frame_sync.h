@@ -45,8 +45,14 @@ namespace gr {
        * constructor is in a private implementation
        * class. lora_sdr::frame_sync::make is the public interface for
        * creating new instances.
+       *
+       * \param long_interleaving decode SX128x long-interleaving frames (CR 4/8LI):
+       *        implicit header only; the frame parameters come from the header
+       *        decoder's frame_info message and the whole frame is one block.
+       * \param fine_sync skip the two fine-synchronisation symbols that
+       *        SX128x transceivers send after the SFD at SF5 and SF6.
        */
-      static sptr make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len);
+      static sptr make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len, bool long_interleaving = false, bool fine_sync = false);
     };
 
   } // namespace lora_sdr

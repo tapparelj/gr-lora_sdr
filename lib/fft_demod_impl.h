@@ -45,7 +45,8 @@ namespace gr {
       std::vector<uint16_t> output;   ///< Stores the value to be outputted once a full bloc has been received
       std::vector< std::vector<LLR> > LLRs_block; ///< Stores the LLRs to be outputted once a full bloc has been received
       bool is_header;                  ///< Indicate that the first block hasn't been fully received
-      uint8_t block_size;             ///< The number of lora symbol in one block
+      uint32_t block_size;            ///< The number of lora symbol in one block
+      bool m_long_interleaving = false; ///< current frame uses long interleaving: one full-rate block
      
       #ifdef GRLORA_MEASUREMENTS
       std::ofstream energy_file;

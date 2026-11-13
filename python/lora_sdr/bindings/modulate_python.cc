@@ -16,7 +16,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0) */
 /* BINDTOOL_USE_PYGCCXML(0) */
 /* BINDTOOL_HEADER_FILE(modulate.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(2f4e1101c5eabd18418839d5e0ac6b19) */
+/* BINDTOOL_HEADER_FILE_HASH(88830f5d87762c6f9080c2ee5b3ad5ec) */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,7 +38,7 @@ void bind_modulate(py::module &m) {
 
       .def(py::init(&modulate::make), py::arg("sf"), py::arg("samp_rate"),
            py::arg("bw"), py::arg("sync_words"), py::arg("inter_frame_padd"),
-           py::arg("preamble_len"), D(modulate, make))
+           py::arg("preamble_len"), py::arg("fine_sync") = false, D(modulate, make))
 
       ;
 }

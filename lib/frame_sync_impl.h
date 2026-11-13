@@ -106,6 +106,14 @@ namespace gr
       int net_id_off;                    ///< offset of the network identifier
 
       bool m_should_log;   ///< indicate that the sync values should be logged
+      bool m_long_interleaving;     ///< SX128x long-interleaving frames (implicit header, one block per frame)
+      bool m_li_config_known = false; ///< LI: implicit frame parameters received from the header decoder
+      uint8_t m_li_cr = 4;          ///< LI: coding rate
+      uint32_t m_li_pay_len = 0;    ///< LI: payload length in bytes
+      bool m_li_has_crc = false;    ///< LI: payload CRC present
+      bool m_fine_sync;             ///< skip the two SF5/SF6 fine-synchronisation symbols (SX128x)
+      uint8_t m_fine_sync_left = 0; ///< fine-synchronisation symbols still to skip in this frame
+      bool m_li_frame = false;      ///< the current frame is decoded with long interleaving
       float off_by_one_id; ///< Indicate that the network identifiers where off by one and corrected (float used as saved in a float32 bin file)
 #ifdef GRLORA_DEBUG
       std::ofstream preamb_file;
@@ -171,7 +179,7 @@ namespace gr
       float determine_snr(const gr_complex *samples);
 
     public:
-      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamb_len);
+      frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamb_len, bool long_interleaving, bool fine_sync);
       ~frame_sync_impl();
 
       // Where all the action really happens

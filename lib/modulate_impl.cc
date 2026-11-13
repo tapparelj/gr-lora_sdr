@@ -10,14 +10,14 @@ namespace gr
     {
 
         modulate::sptr
-        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len = 8)
+        modulate::make(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len, bool fine_sync)
         {
-            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd, preamble_len));
+            return gnuradio::get_initial_sptr(new modulate_impl(sf, samp_rate, bw, sync_words, frame_zero_padd, preamble_len, fine_sync));
         }
         /*
      * The private constructor
      */
-        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len)
+        modulate_impl::modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamble_len, bool fine_sync)
             : gr::block("modulate",
                         gr::io_signature::make(1, 1, sizeof(uint32_t)),
                         gr::io_signature::make(1, 1, sizeof(gr_complex)))
@@ -53,6 +53,7 @@ namespace gr
                std::cerr<<RED<<" Preamble length should be greater than 5!"<<RESET<<std::endl;
             }
             m_preamb_len = preamble_len;
+            m_fine_sync = fine_sync;
             samp_cnt = -1;
             preamb_samp_cnt = 0;
             frame_cnt = 0;
@@ -145,7 +146,7 @@ namespace gr
 
                         m_framelen_tag.offset = nitems_written(0);
 
-                        m_framelen_tag.value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25) * m_samples_per_symbol + m_inter_frame_padding ));
+                        m_framelen_tag.value = pmt::from_long(int((m_frame_len + m_preamb_len + 4.25 + fine_sync_symbols()) * m_samples_per_symbol + m_inter_frame_padding ));
 
                         add_item_tag(0, m_framelen_tag);                
 
@@ -162,7 +163,7 @@ namespace gr
                 
                 for (int i = 0; i < noutput_items / m_samples_per_symbol; i++)
                 {
-                    if (preamb_samp_cnt < (m_preamb_len + 5)*m_samples_per_symbol) //should output preamble part
+                    if (preamb_samp_cnt < (m_preamb_len + 5 + fine_sync_symbols())*m_samples_per_symbol) //should output preamble part
                     {
                         if (preamb_samp_cnt < (m_preamb_len*m_samples_per_symbol))
                         { //upchirps
@@ -179,8 +180,15 @@ namespace gr
                             memcpy(&out[output_offset], &m_downchirp[0], m_samples_per_symbol / 4 * sizeof(gr_complex));
                             //correct offset dur to quarter of downchirp
                             output_offset -= 3 * m_samples_per_symbol / 4;
-                            samp_cnt = 0;
+                            if (!fine_sync_symbols())
+                                samp_cnt = 0;
                             
+                        }
+                        else // fine-synchronisation symbols (SF5/SF6, SX128x)
+                        {
+                            build_upchirp(&out[output_offset], 1, m_sf, m_os_factor);
+                            if (preamb_samp_cnt == (m_preamb_len + 4 + fine_sync_symbols())*m_samples_per_symbol)
+                                samp_cnt = 0;
                         }
                         output_offset += m_samples_per_symbol;
                         preamb_samp_cnt += m_samples_per_symbol;

@@ -35,6 +35,8 @@ namespace gr {
         std::vector<gr_complex> m_downchirp; ///< reference downchirp
 
         uint16_t m_preamb_len; ///< number of upchirps in the preamble
+        bool m_fine_sync; ///< send the SF5/SF6 fine-synchronisation symbols (SX128x)
+        uint8_t fine_sync_symbols() const { return (m_fine_sync && m_sf < 7) ? 2 : 0; }
         int32_t samp_cnt; ///< counter of the number of lora samples sent
         int32_t preamb_samp_cnt; ///< counter of the number of preamble symbols output
         uint32_t padd_cnt; ///< counter of the number of null symbols output after each frame
@@ -45,7 +47,7 @@ namespace gr {
         tag_t m_framelen_tag;
 
      public:
-      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len);
+      modulate_impl(uint8_t sf, uint32_t samp_rate, uint32_t bw, std::vector<uint16_t> sync_words, uint32_t frame_zero_padd, uint16_t preamb_len, bool fine_sync);
       ~modulate_impl();
 
       void set_sf(uint8_t sf);

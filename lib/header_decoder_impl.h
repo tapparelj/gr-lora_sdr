@@ -34,8 +34,10 @@ namespace gr {
          *  \brief publish decoding information contained in the header or provided to the block   
          */
         void publish_frame_info(int cr, int pay_len, int crc, uint8_t ldro, int err);
+        pmt::pmt_t frame_info_dict(int cr, int pay_len, int crc, uint8_t ldro, int err);
 
      public:
+        bool start() override;
       header_decoder_impl(bool impl_head, uint8_t cr, uint32_t pay_len, bool has_crc, uint8_t ldro_mode, bool print_header);
       ~header_decoder_impl();
 

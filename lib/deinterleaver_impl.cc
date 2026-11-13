@@ -33,7 +33,31 @@ namespace gr {
         deinterleaver_impl::~deinterleaver_impl() {}
 
         void deinterleaver_impl::forecast(int noutput_items, gr_vector_int &ninput_items_required) {
-            ninput_items_required[0] = 4;
+            ninput_items_required[0] = m_long_interleaving ? m_li_symbols : 4;
+        }
+
+        int deinterleaver_impl::long_interleaving_work(const uint16_t *in1, const LLR *in2, uint8_t *out1, LLR *out2) {
+            // Codeword bit b (MSB first) of codeword k sits in symbol `symbol`, MSB-first bit `bit`.
+            for (uint32_t k = 0; k < m_li_codewords; k++) {
+                uint8_t cw = 0;
+                for (uint8_t b = 0; b < 8; b++) {
+                    uint32_t symbol;
+                    uint8_t bit;
+                    li_stream_position(li_stream_index(k, b, m_li_codewords), m_sf, symbol, bit);
+                    if (m_soft_decoding) {
+                        out2[k * 8 + b] = in2[symbol * MAX_SF + bit];
+                    } else {
+                        cw |= ((in1[symbol] >> (m_sf - 1 - bit)) & 1u) << (7 - b);
+                    }
+                }
+                if (!m_soft_decoding)
+                    out1[k] = cw;
+            }
+            m_li_tag.offset = nitems_written(0);
+            add_item_tag(0, m_li_tag);
+            consume_each(m_li_symbols);
+            m_long_interleaving = false;
+            return m_li_codewords;
         }
 
         int deinterleaver_impl::general_work(int noutput_items,
@@ -47,6 +71,21 @@ namespace gr {
 
             std::vector<tag_t> tags;
             get_tags_in_window(tags, 0, 0, 1, pmt::string_to_symbol("frame_info"));
+            if (tags.size() && pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("long_interleaving"), pmt::PMT_F))) {
+                // Long interleaving: the whole frame is one block (see li_stream_index()).
+                pmt::pmt_t err = pmt::string_to_symbol("error");
+                m_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
+                m_li_symbols = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("symb_numb"), err));
+                m_li_codewords = 2 * pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err)) +
+                                 (pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err)) ? 4 : 0);
+                m_li_tag = tags[0];
+                m_long_interleaving = true;
+            }
+            if (m_long_interleaving) {
+                if ((uint32_t)ninput_items[0] < m_li_symbols || (uint32_t)noutput_items < m_li_codewords)
+                    return 0;  // wait for the whole frame
+                return long_interleaving_work(in1, in2, out1, out2);
+            }
             if (tags.size()) {
                 pmt::pmt_t err = pmt::string_to_symbol("error");
                 m_is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));

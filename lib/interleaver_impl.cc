@@ -12,15 +12,15 @@ namespace gr
   {
 
     interleaver::sptr
-    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
+    interleaver::make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool long_interleaving)
     {
-      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw));
+      return gnuradio::get_initial_sptr(new interleaver_impl(cr, sf, ldro, bw, long_interleaving));
     }
 
     /*
      * The private constructor
      */
-    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw)
+    interleaver_impl::interleaver_impl(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool long_interleaving)
         : gr::block("interleaver",
                     gr::io_signature::make(1, 1, sizeof(uint8_t)),
                     gr::io_signature::make(1, 1, sizeof(uint32_t)))
@@ -37,9 +37,47 @@ namespace gr
         m_ldro = ldro;
       }
       cw_cnt = 0;
+      m_frame_len = 0;
 
       set_tag_propagation_policy(TPP_DONT);
       m_has_config_tag = false;
+      m_long_interleaving = long_interleaving;
+      if (m_long_interleaving && m_cr != 4)
+      {
+        std::cerr << RED << "[interleaver_impl.cc] Long interleaving is only defined for coding rate 4/8 (cr = 4)" << RESET << std::endl;
+      }
+    }
+
+    int interleaver_impl::long_interleaving_work(const uint8_t *in, uint32_t *out, int ninput, int noutput)
+    {
+      if (m_frame_len <= 0)
+        return 0; // no frame_len tag seen yet
+      const uint32_t n_cw = m_frame_len;
+      const uint32_t n_sym = li_symbol_count(n_cw, m_sf);
+      if ((uint32_t)ninput < n_cw || (uint32_t)noutput < n_sym)
+        return 0; // wait for the whole frame
+      add_item_tag(0, m_framelen_tag);
+      if (m_has_config_tag)
+      {
+        add_item_tag(0, m_config_tag);
+        m_has_config_tag = false;
+      }
+      std::vector<uint8_t> stream(n_sym * m_sf, 0);
+      for (uint32_t k = 0; k < n_cw; k++)
+        for (uint8_t b = 0; b < 8; b++)
+          stream[li_stream_index(k, b, n_cw)] = (in[k] >> (7 - b)) & 1u;
+      for (uint32_t t = 8 * n_cw; t < stream.size(); t++)
+        stream[t] = stream[t - 8 * n_cw + 1]; // pad bits repeat stream bits 1, 2, ...
+      for (uint32_t i = 0; i < n_sym; i++)
+      {
+        uint32_t symbol = 0;
+        for (uint8_t j = 0; j < m_sf; j++) // least significant bit first
+          symbol |= (uint32_t)stream[i * m_sf + j] << j;
+        out[i] = symbol;
+      }
+      consume_each(n_cw);
+      cw_cnt = 0;
+      return n_sym;
     }
 
     void interleaver_impl::set_cr(uint8_t cr){
@@ -139,12 +177,17 @@ namespace gr
           }
           // std::cout<<"update tag"<<std::endl;
           // std::cout<<"Sf Interleaver inside "<< static_cast<int>(m_sf) <<std::endl;
-          m_framelen_tag.value = pmt::from_long(8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
+          m_framelen_tag.value = pmt::from_long(m_long_interleaving
+              ? (long)li_symbol_count(m_frame_len, m_sf)
+              : 8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
           m_framelen_tag.offset = nitems_written(0); 
         }
       }
 
       
+
+      if (m_long_interleaving)
+        return long_interleaving_work(in, out, ninput_items[0], noutput_items);
 
       // nitems_to_process = std::min(nitems_to_process)
       // handle the first interleaved block special case
