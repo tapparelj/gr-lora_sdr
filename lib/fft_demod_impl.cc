@@ -129,6 +129,23 @@ namespace gr {
         }
 
         // Use in Soft-decoding
+        /**
+         *  \brief  Logarithm of the modified Bessel function of the first kind of order 0
+         *
+         *  Polynomial approximations of Abramowitz and Stegun (9.8.1 and 9.8.2), absolute error below 1e-6.
+         */
+        static inline double log_bessel_i0(double x) {
+            if (x < 3.75) {
+                double t = (x / 3.75) * (x / 3.75);
+                double poly = 1 + t * (3.5156229 + t * (3.0899424 + t * (1.2067492 + t * (0.2659732 + t * (0.0360768 + t * 0.0045813)))));
+                return std::log(poly);
+            }
+            double t = 3.75 / x;
+            double poly = 0.39894228 + t * (0.01328592 + t * (0.00225319 + t * (-0.00157565 + t * (0.00916281 +
+                          t * (-0.02057706 + t * (0.02635537 + t * (-0.01647633 + t * 0.00392377)))))));
+            return x - 0.5 * std::log(x) + std::log(poly);
+        }
+
         std::vector<LLR> fft_demod_impl::get_LLRs(const gr_complex *samples) {
             float *m_fft_mag_sq = compute_fft_mag(samples); // from dynamic memory alloc
 
@@ -195,13 +212,12 @@ namespace gr {
                 double bessel_arg = std::sqrt(m_Ps_est) / m_Pn_est * std::sqrt(m_fft_mag_sq[n]);
                 // Manage overflow of Bessel function
                 if (bessel_arg < 713)  // 713 ~ log(std::numeric_limits<LLR>::max())
-                    LLs[n] = boost::math::cyl_bessel_i(0, bessel_arg);  // compute Bessel safely
+                    LLs[n] = max_log_approx ? log_bessel_i0(bessel_arg) : boost::math::cyl_bessel_i(0, bessel_arg);  // Log-Likelihood, or Likelihood computed safely
                 else {
                     //std::cerr << RED << "Log-Likelihood clipping :-( SNR: " << SNRdB_estimate << " |Y|: " << std::sqrt(m_fft_mag_sq[n]) << RESET << std::endl;
                     //LLs[n] = std::numeric_limits<LLR>::max();  // clipping
                     clipping = true;
                 }
-                if (max_log_approx) LLs[n] = std::log(LLs[n]);  // Log-Likelihood
                 //LLs[n] = m_fft_mag_sq[n]; // same performance with just |Y[n]| or |Y[n]|²
             }
 
@@ -210,20 +226,21 @@ namespace gr {
 
             // Log-Likelihood Ratio estimations
             if (max_log_approx) {
-                for (uint32_t i = 0; i < m_sf; i++) { // sf bits => sf LLRs
-                    double max_X1(0), max_X0(0); // X1 = set of symbols where i-th bit is '1'
-                    for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
-                        // LoRa: shift by -1 and use reduce rate if first block (header)
-                        uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
-                        s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
+                std::vector<double> max_X1(m_sf, 0), max_X0(m_sf, 0); // X1 = set of symbols where i-th bit is '1'
+                for (uint32_t n = 0; n < m_samples_per_symbol; n++) {  // for all symbols n : 0 --> 2^sf
+                    // LoRa: shift by -1 and use reduce rate if first block (header)
+                    uint32_t s = mod(n - 1, (1 << m_sf)) / ((is_header||m_ldro )? 4 : 1);
+                    s = (s ^ (s >> 1u));  // Gray encoding formula               // Gray demap before (in this block)
+                    for (uint32_t i = 0; i < m_sf; i++) { // sf bits => sf LLRs
                         if (s & (1u << i)) {  // if i-th bit of symbol n is '1'
-                            if (LLs[n] > max_X1) max_X1 = LLs[n];
+                            if (LLs[n] > max_X1[i]) max_X1[i] = LLs[n];
                         } else {              // if i-th bit of symbol n is '0'
-                            if (LLs[n] > max_X0) max_X0 = LLs[n];
+                            if (LLs[n] > max_X0[i]) max_X0[i] = LLs[n];
                         }
                     }
-                    LLRs[m_sf - 1 - i] = max_X1 - max_X0;  // [MSB ... ... LSB]
                 }
+                for (uint32_t i = 0; i < m_sf; i++)
+                    LLRs[m_sf - 1 - i] = max_X1[i] - max_X0[i];  // [MSB ... ... LSB]
             } else {
                 // Without max-log approximation of the LLR estimation
                 for (uint32_t i = 0; i < m_sf; i++) {
