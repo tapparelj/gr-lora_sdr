@@ -532,7 +532,15 @@ namespace gr
                     symbol_cnt = 0;
                     cfo_frac_sto_frac_est = false;
                     k_hat = most_frequent(&preamb_up_vals[0], preamb_up_vals.size());
-                    memcpy(&net_id_samp[0], &in[int(0.75 * m_samples_per_symbol - k_hat * m_os_factor)], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
+                    // save the quarter of symbol preceding the coarsely aligned window. It starts before the current
+                    // input buffer when k_hat > 3/4 * 2^sf: those samples have already been consumed and are taken
+                    // from the saved preamble instead of being read before `in`.
+                    int net_id_start = int(0.75 * m_samples_per_symbol - k_hat * m_os_factor);
+                    int n_quarter = m_samples_per_symbol / 4;
+                    int n_saved = std::min(std::max(-net_id_start, 0), n_quarter);
+                    if (n_saved > 0)
+                        memcpy(&net_id_samp[0], &preamble_raw_up[(m_n_up_req - 1) * m_samples_per_symbol + net_id_start - (int)(m_os_factor / 2)], sizeof(gr_complex) * n_saved);
+                    memcpy(&net_id_samp[n_saved], &in[net_id_start + n_saved], sizeof(gr_complex) * (n_quarter - n_saved));
 
                     // perform the coarse synchronization
                     items_to_consume = m_os_factor * ((int)(m_number_of_bins - k_hat));
