@@ -67,7 +67,6 @@ namespace gr
       unsigned int frame_cnt;      ///< Number of frame received
       int32_t symbol_cnt;  ///< Number of symbols already received
       int32_t bin_idx;     ///< value of previous lora symbol
-      int32_t bin_idx_new; ///< value of newly demodulated symbol
 
       uint16_t m_preamb_len; ///< Number of consecutive upchirps in preamble
       uint8_t additional_upchirps; ///< indicate the number of additional upchirps found in preamble (in addition to the minimum required to trigger a detection)
@@ -89,7 +88,15 @@ namespace gr
 
       int up_symb_to_use;              ///< number of upchirp symbols to use for CFO and STO frac estimation
       int k_hat;                       ///< integer part of CFO+STO
-      std::vector<int> preamb_up_vals; ///< value of the preamble upchirps
+
+      const double m_det_pfa = 1e-6;       ///< false alarm probability per window targeted by the detection threshold
+      const float m_det_min_ratio = 0.25;  ///< minimum energy of a window of the preamble relative to the strongest one
+      float m_det_thresh;                  ///< detection threshold relative to the mean of the accumulated spectrum
+      uint32_t m_det_cnt;                  ///< number of windows saved for the detection
+      uint32_t m_det_run;                  ///< number of consecutive windows where the threshold was exceeded
+      int m_det_prev_bin;                  ///< strongest bin of the accumulated spectrum at the previous window
+      std::vector<float> m_det_spec;       ///< dechirped spectra of the last m_n_up_req windows
+      std::vector<float> m_det_acc;        ///< sum of the saved spectra
 
       float m_cfo_frac;                            ///< fractional part of CFO
       float m_cfo_frac_bernier;                    ///< fractional part of CFO using Berniers algo
@@ -167,6 +174,23 @@ namespace gr
           *  \brief  Set new SF received in a tag (used for CRAN)
           */
       void set_sf(int sf);
+
+      /**
+          *  \brief  Compute the squared magnitude of the FFT of a dechirped symbol
+          *
+          *  \param  samples
+          *          The pointer to the symbol beginning.
+          *  \param  ref_chirp
+          *          The reference chirp to use to dechirp the lora symbol.
+          *  \param  fft_mag_sq
+          *          The 2^sf resulting values.
+          */
+      void get_dechirped_spectrum(const gr_complex *samples, gr_complex *ref_chirp, float *fft_mag_sq);
+
+      /**
+          *  \brief  Reset the preamble detection and compute its threshold for the current SF
+          */
+      void init_detection();
 
       float determine_snr(const gr_complex *samples);
 

@@ -77,13 +77,13 @@ namespace gr
             bin_idx = 0;
             symbol_cnt = 1;
             k_hat = 0;
-            preamb_up_vals.resize(m_n_up_req, 0);
             frame_cnt = 0;
             m_symb_numb = 0;
 
             m_kiss_fft_cfg = kiss_fft_alloc(m_number_of_bins, 0, 0, 0);
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
+            init_detection();
             // register message ports
             message_port_register_in(pmt::mp("frame_info"));
             set_msg_handler(pmt::mp("frame_info"), [this](pmt::pmt_t msg)
@@ -319,10 +319,8 @@ namespace gr
             return sto_frac;
         }
 
-        uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
+        void frame_sync_impl::get_dechirped_spectrum(const gr_complex *samples, gr_complex *ref_chirp, float *fft_mag_sq)
         {
-            double sig_en = 0;
-            std::vector<float> fft_mag(m_number_of_bins);
             volk::vector<gr_complex> dechirped(m_number_of_bins);
 
             // Multiply with ideal downchirp
@@ -338,10 +336,48 @@ namespace gr
 
             // Get magnitude
             for (uint32_t i = 0u; i < m_number_of_bins; i++)
+                fft_mag_sq[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
+        }
+
+        void frame_sync_impl::init_detection()
+        {
+            m_det_cnt = 0;
+            m_det_run = 0;
+            m_det_prev_bin = 0;
+            m_det_spec.assign(m_n_up_req * m_number_of_bins, 0);
+            m_det_acc.assign(m_number_of_bins, 0);
+
+            // Without signal, each bin of the sum of n spectra follows a Gamma distribution of shape n once
+            // normalized by the noise power. Find by bisection the value exceeded by one of the 2^sf bins with a
+            // probability m_det_pfa, and express it relative to the mean of the accumulated spectrum.
+            int n = m_n_up_req;
+            double p_bin = m_det_pfa / m_number_of_bins;
+            double lo = 0, hi = 200;
+            for (int it = 0; it < 100; it++)
             {
-                fft_mag[i] = cx_out[i].r * cx_out[i].r + cx_out[i].i * cx_out[i].i;
-                sig_en += fft_mag[i];
+                double x = (lo + hi) / 2;
+                double term = 1, tail = 1;
+                for (int j = 1; j < n; j++)
+                {
+                    term *= x / j;
+                    tail += term;
+                }
+                if (exp(-x) * tail > p_bin)
+                    lo = x;
+                else
+                    hi = x;
             }
+            m_det_thresh = hi / n;
+        }
+
+        uint32_t frame_sync_impl::get_symbol_val(const gr_complex *samples, gr_complex *ref_chirp)
+        {
+            double sig_en = 0;
+            std::vector<float> fft_mag(m_number_of_bins);
+
+            get_dechirped_spectrum(samples, ref_chirp, &fft_mag[0]);
+            for (uint32_t i = 0u; i < m_number_of_bins; i++)
+                sig_en += fft_mag[i];
             // Return argmax here
 
             return sig_en ? (std::distance(std::begin(fft_mag), std::max_element(std::begin(fft_mag), std::end(fft_mag)))) : -1;
@@ -448,6 +484,7 @@ namespace gr
             cx_in = new kiss_fft_cpx[m_number_of_bins];
             cx_out = new kiss_fft_cpx[m_number_of_bins];
             set_output_multiple(m_number_of_bins);
+            init_detection();
         }
 
         int frame_sync_impl::general_work(int noutput_items,
@@ -504,34 +541,81 @@ namespace gr
             {
             case DETECT:
             {
-                bin_idx_new = get_symbol_val(&in_down[0], &m_downchirp[0]);
-
-                if (abs(mod(abs(bin_idx_new - bin_idx) + 1, m_number_of_bins) - 1) <= 1 && bin_idx_new != -1) // look for consecutive reference upchirps(with a margin of ±1)
-                {
-                    if (symbol_cnt == 1 && bin_idx != -1)
-                        preamb_up_vals[0] = bin_idx;
-
-                    preamb_up_vals[symbol_cnt] = bin_idx_new;
-                    memcpy(&preamble_raw[m_number_of_bins * symbol_cnt], &in_down[0], m_number_of_bins * sizeof(gr_complex));
-                    memcpy(&preamble_raw_up[m_samples_per_symbol * symbol_cnt], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
-
-                    symbol_cnt++;
+                // The preamble is searched in the sum of the dechirped spectra of the last m_n_up_req windows
+                // instead of in consecutive identical symbol decisions: a single noisy symbol does not prevent
+                // the detection anymore.
+                if (m_det_cnt == m_n_up_req)
+                { // history full, drop the oldest window
+                    memmove(&m_det_spec[0], &m_det_spec[m_number_of_bins], (m_n_up_req - 1) * m_number_of_bins * sizeof(float));
+                    memmove(&preamble_raw[0], &preamble_raw[m_number_of_bins], (m_n_up_req - 1) * m_number_of_bins * sizeof(gr_complex));
+                    memmove(&preamble_raw_up[0], &preamble_raw_up[m_samples_per_symbol], (m_n_up_req - 1) * m_samples_per_symbol * sizeof(gr_complex));
+                    m_det_cnt--;
                 }
-                else
-                {
-                    memcpy(&preamble_raw[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
-                    memcpy(&preamble_raw_up[0], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+                get_dechirped_spectrum(&in_down[0], &m_downchirp[0], &m_det_spec[m_det_cnt * m_number_of_bins]);
+                memcpy(&preamble_raw[m_number_of_bins * m_det_cnt], &in_down[0], m_number_of_bins * sizeof(gr_complex));
+                memcpy(&preamble_raw_up[m_samples_per_symbol * m_det_cnt], &in[(int)(m_os_factor / 2)], m_samples_per_symbol * sizeof(gr_complex));
+                m_det_cnt++;
 
-                    symbol_cnt = 1;
-                }
-                bin_idx = bin_idx_new;
-                if (symbol_cnt == (int)(m_n_up_req))
+                bool detected = false;
+                if (m_det_cnt == m_n_up_req)
                 {
+                    // accumulate the spectra and look for the strongest bin
+                    double spec_sum = 0;
+                    uint32_t k_max = 0;
+                    for (uint32_t k = 0; k < m_number_of_bins; k++)
+                    {
+                        m_det_acc[k] = 0;
+                        for (uint32_t w = 0; w < m_n_up_req; w++)
+                            m_det_acc[k] += m_det_spec[w * m_number_of_bins + k];
+                        spec_sum += m_det_acc[k];
+                        if (m_det_acc[k] > m_det_acc[k_max])
+                            k_max = k;
+                    }
+                    double noise_est = spec_sum / m_number_of_bins; // mean of the accumulated spectrum
+                    int k_diff = mod((int)k_max - m_det_prev_bin + (int)m_number_of_bins / 2, m_number_of_bins) - (int)m_number_of_bins / 2;
+                    if (noise_est > 0 && m_det_acc[k_max] > m_det_thresh * noise_est && (m_det_run == 0 || abs(k_diff) <= 1))
+                    {
+                        m_det_run++;
+                        m_det_prev_bin = k_max;
+                        // energy of each window around the detected bin
+                        std::vector<float> win_en(m_n_up_req, 0);
+                        for (uint32_t w = 0; w < m_n_up_req; w++)
+                            for (int d = -1; d <= 1; d++)
+                                win_en[w] = std::max(win_en[w], m_det_spec[w * m_number_of_bins + mod((int)k_max + d, m_number_of_bins)]);
+                        float win_en_min = m_det_min_ratio * *std::max_element(win_en.begin(), win_en.end());
+                        // With a strong signal a single window is enough to exceed the threshold while the
+                        // other ones still contain the noise preceding the frame. The CFO and STO estimations
+                        // use all the saved windows, so wait until the two oldest ones contain the preamble.
+                        // A few weak windows are tolerated among the following ones, but not more, which
+                        // rejects short bursts.
+                        uint32_t n_oldest = std::min<uint32_t>(2, m_n_up_req);
+                        uint32_t n_weak_oldest = 0, n_weak = 0;
+                        for (uint32_t w = 0; w < m_n_up_req; w++)
+                        {
+                            if (win_en[w] > win_en_min)
+                                continue;
+                            if (w < n_oldest)
+                                n_weak_oldest++;
+                            else
+                                n_weak++;
+                        }
+                        if (n_weak_oldest == 0 && n_weak <= (m_n_up_req - n_oldest) / 3)
+                        {
+                            detected = true;
+                            k_hat = k_max;
+                        }
+                    }
+                    else
+                        m_det_run = 0;
+                }
+                if (detected)
+                {
+                    m_det_cnt = 0;
+                    m_det_run = 0;
                     additional_upchirps = 0;
                     m_state = SYNC;
                     symbol_cnt = 0;
                     cfo_frac_sto_frac_est = false;
-                    k_hat = most_frequent(&preamb_up_vals[0], preamb_up_vals.size());
                     // save the quarter of symbol preceding the coarsely aligned window. It starts before the current
                     // input buffer when k_hat > 3/4 * 2^sf: those samples have already been consumed and are taken
                     // from the saved preamble instead of being read before `in`.
@@ -573,7 +657,23 @@ namespace gr
                 {
                 case NET_ID1:
                 {
-                    if (bin_idx == 0 || bin_idx == 1 || (uint32_t)bin_idx == m_number_of_bins - 1)
+                    bool is_upchirp = bin_idx == 0 || bin_idx == 1 || (uint32_t)bin_idx == m_number_of_bins - 1;
+                    if (m_sync_words[0] != 0)
+                    {
+                        // The expected network identifier is known: compare the energy around the upchirp bin
+                        // with the energy around the identifier instead of relying on the symbol decision, which
+                        // ends the preamble as soon as an upchirp is off by more than one bin.
+                        std::vector<float> fft_mag(m_number_of_bins);
+                        get_dechirped_spectrum(&symb_corr[0], &m_downchirp[0], &fft_mag[0]);
+                        float up_en = 0, net_id_en = 0;
+                        for (int d = -2; d <= 2; d++)
+                        {
+                            up_en = std::max(up_en, fft_mag[mod(d, m_number_of_bins)]);
+                            net_id_en = std::max(net_id_en, fft_mag[mod((int)m_sync_words[0] + d, m_number_of_bins)]);
+                        }
+                        is_upchirp = up_en >= net_id_en;
+                    }
+                    if (is_upchirp)
                     { // look for additional upchirps. Won't work if network identifier 1 equals 2^sf-1, 0 or 1!
                         memcpy(&net_id_samp[0], &in[(int)0.75 * m_samples_per_symbol], sizeof(gr_complex) * 0.25 * m_samples_per_symbol);
                         if (additional_upchirps >= 3)
