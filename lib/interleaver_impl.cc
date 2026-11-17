@@ -42,9 +42,9 @@ namespace gr
       set_tag_propagation_policy(TPP_DONT);
       m_has_config_tag = false;
       m_long_interleaving = long_interleaving;
-      if (m_long_interleaving && m_cr != 4)
+      if (m_long_interleaving && m_cr != 2 && m_cr != 4)
       {
-        std::cerr << RED << "[interleaver_impl.cc] Long interleaving is only defined for coding rate 4/8 (cr = 4)" << RESET << std::endl;
+        std::cerr << RED << "[interleaver_impl.cc] Long interleaving is only supported for coding rates 4/6 and 4/8 (cr = 2 or 4)" << RESET << std::endl;
       }
     }
 
@@ -53,7 +53,8 @@ namespace gr
       if (m_frame_len <= 0)
         return 0; // no frame_len tag seen yet
       const uint32_t n_cw = m_frame_len;
-      const uint32_t n_sym = li_symbol_count(n_cw, m_sf);
+      const uint8_t cw_len = 4 + m_cr;
+      const uint32_t n_sym = li_symbol_count(n_cw, m_cr, m_sf);
       if ((uint32_t)ninput < n_cw || (uint32_t)noutput < n_sym)
         return 0; // wait for the whole frame
       add_item_tag(0, m_framelen_tag);
@@ -62,18 +63,29 @@ namespace gr
         add_item_tag(0, m_config_tag);
         m_has_config_tag = false;
       }
-      std::vector<uint8_t> stream(n_sym * m_sf, 0);
+      const uint32_t n_bits = li_reduced_symbols(m_sf) * (m_sf - 2) + (n_sym - li_reduced_symbols(m_sf)) * m_sf;
+      std::vector<uint8_t> stream(n_bits, 0);
       for (uint32_t k = 0; k < n_cw; k++)
-        for (uint8_t b = 0; b < 8; b++)
-          stream[li_stream_index(k, b, n_cw)] = (in[k] >> (7 - b)) & 1u;
-      for (uint32_t t = 8 * n_cw; t < stream.size(); t++)
-        stream[t] = stream[t - 8 * n_cw + 1]; // pad bits repeat stream bits 1, 2, ...
-      for (uint32_t i = 0; i < n_sym; i++)
+        for (uint8_t b = 0; b < cw_len; b++)
+          stream[li_stream_index(k, b, n_cw)] = (in[k] >> (cw_len - 1 - b)) & 1u;
+      for (uint32_t t = cw_len * n_cw; t < n_bits; t++)
+        stream[t] = stream[t - cw_len * n_cw + 1]; // pad bits repeat stream bits 1, 2, ...
+      std::fill(out, out + n_sym, 0);
+      for (uint32_t t = 0; t < n_bits; t++)
       {
-        uint32_t symbol = 0;
-        for (uint8_t j = 0; j < m_sf; j++) // least significant bit first
-          symbol |= (uint32_t)stream[i * m_sf + j] << j;
-        out[i] = symbol;
+        uint32_t symbol;
+        uint8_t bit;
+        li_stream_position(t, m_sf, symbol, bit);
+        out[symbol] |= (uint32_t)stream[t] << bit;
+      }
+      for (uint32_t i = 0; i < li_reduced_symbols(m_sf); i++)
+      {
+        // Reduced-rate symbol: value in the upper sf - 2 bits; the parity bit below makes the two
+        // low bits zero after gray_demap, as in the first block of a regular frame.
+        uint32_t parity = 0;
+        for (uint32_t v = out[i]; v; v >>= 1)
+          parity ^= v & 1u;
+        out[i] = out[i] << 2 | parity << 1;
       }
       consume_each(n_cw);
       cw_cnt = 0;
@@ -178,7 +190,7 @@ namespace gr
           // std::cout<<"update tag"<<std::endl;
           // std::cout<<"Sf Interleaver inside "<< static_cast<int>(m_sf) <<std::endl;
           m_framelen_tag.value = pmt::from_long(m_long_interleaving
-              ? (long)li_symbol_count(m_frame_len, m_sf)
+              ? (long)li_symbol_count(m_frame_len, m_cr, m_sf)
               : 8 + std::max((int)std::ceil((double)(m_frame_len - m_sf + 2) / (m_sf-2*m_ldro)) * (m_cr + 4), 0)); //get number of items in frame
           m_framelen_tag.offset = nitems_written(0); 
         }

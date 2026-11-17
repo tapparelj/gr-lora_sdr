@@ -56,7 +56,8 @@ namespace gr {
                         nitems_to_process = tags[1].offset - tags[0].offset;
 
                     pmt::pmt_t err = pmt::string_to_symbol("error");
-                    is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err));
+                    is_header = pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("is_header"), err)) &&
+                                !pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("long_interleaving"), pmt::PMT_F));
 
                     if (!is_header) {
                         m_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));

@@ -157,22 +157,31 @@ namespace gr {
     }
 
         /**
-         * @brief Long interleaving (LI) of the SX128x coding rate 4/8LI: bit layout.
+         * @brief Long interleaving (LI) of the SX128x coding rates 4/6LI and 4/8LI: bit layout.
          *
-         * In LI mode the n_cw codewords of a frame form a single interleaving block
-         * (no reduced-rate first block). The codewords, in this module's layout
-         * (8 bits, MSB first, as hamming_enc produces them), are read out
-         * bit-position-major: bit 0 (MSB) of every codeword, then bit 1, ... bit 7.
-         * The resulting stream fills the symbols least significant bit first, sf bits
-         * per symbol, and the last symbol is padded with copies of stream bits 1, 2, ...
-         * Reverse-engineered from SX1280 captures at SF6, CR 4/8LI (ExpressLRS 2.4 GHz,
-         * 8-byte implicit-header payload, no CRC). Other SFs and payload lengths are
-         * assumed to follow the same rule; 4/5LI and 4/6LI (shorter codewords) are not
-         * covered.
+         * In LI mode the n_cw codewords of a frame form a single interleaving block.
+         * The codewords, in this module's layout (4 + cr bits, MSB first, as hamming_enc
+         * produces them), are read out bit-position-major: bit 0 (MSB) of every
+         * codeword, then bit 1, and so on. The resulting stream fills the symbols least
+         * significant bit first. At SF7 and above the first 8 symbols carry sf - 2 bits
+         * (reduced rate, like the first block of a regular frame); all other symbols
+         * carry sf bits. The last symbol is padded with copies of stream bits 1, 2, ...
+         * Reverse-engineered from SX1280 frames of ExpressLRS 4.1 at 2.4 GHz
+         * (812.5 kHz, implicit header, no CRC): 4/6LI at SF5 with 8-byte payloads, 4/8LI
+         * at SF5, SF6, SF7 and SF8 with 8- and 13-byte payloads. 4/5LI and SF9 to SF12
+         * are assumed to follow the same rule but are not verified.
          */
-        inline uint32_t li_symbol_count(uint32_t n_cw, uint8_t sf)
+        inline uint32_t li_reduced_symbols(uint8_t sf)
         {
-            return (8 * n_cw + sf - 1) / sf;
+            return sf >= 7 ? 8 : 0;
+        }
+
+        inline uint32_t li_symbol_count(uint32_t n_cw, uint8_t cr, uint8_t sf)
+        {
+            const uint32_t bits = (4 + cr) * n_cw;
+            const uint32_t reduced_bits = li_reduced_symbols(sf) * (sf - 2);
+            const uint32_t rest = bits > reduced_bits ? bits - reduced_bits : 0;
+            return li_reduced_symbols(sf) + (rest + sf - 1) / sf;
         }
 
         /// Position of codeword bit `cw_bit` (MSB-first index) of codeword `cw_idx` in the LI stream.
@@ -181,11 +190,20 @@ namespace gr {
             return cw_bit * n_cw + cw_idx;
         }
 
-        /// Symbol and MSB-first bit index within that symbol of LI stream position `t`.
+        /// Symbol and LSB-first bit index within that symbol's value (sf - 2 bits for a reduced-rate symbol) of LI stream position `t`.
         inline void li_stream_position(uint32_t t, uint8_t sf, uint32_t &symbol, uint8_t &bit)
         {
-            symbol = t / sf;
-            bit = sf - 1 - (t % sf);
+            const uint32_t reduced_bits = li_reduced_symbols(sf) * (sf - 2);
+            if (t < reduced_bits)
+            {
+                symbol = t / (sf - 2);
+                bit = t % (sf - 2);
+            }
+            else
+            {
+                symbol = li_reduced_symbols(sf) + (t - reduced_bits) / sf;
+                bit = (t - reduced_bits) % sf;
+            }
         }
     }
 }

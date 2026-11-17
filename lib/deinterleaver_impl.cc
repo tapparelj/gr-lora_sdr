@@ -37,17 +37,18 @@ namespace gr {
         }
 
         int deinterleaver_impl::long_interleaving_work(const uint16_t *in1, const LLR *in2, uint8_t *out1, LLR *out2) {
-            // Codeword bit b (MSB first) of codeword k sits in symbol `symbol`, MSB-first bit `bit`.
+            // Codeword bit b (MSB first) of codeword k sits in symbol `symbol`, LSB-first bit `bit`.
+            const uint8_t cw_len = 4 + m_cr;
             for (uint32_t k = 0; k < m_li_codewords; k++) {
                 uint8_t cw = 0;
-                for (uint8_t b = 0; b < 8; b++) {
+                for (uint8_t b = 0; b < cw_len; b++) {
                     uint32_t symbol;
                     uint8_t bit;
                     li_stream_position(li_stream_index(k, b, m_li_codewords), m_sf, symbol, bit);
                     if (m_soft_decoding) {
-                        out2[k * 8 + b] = in2[symbol * MAX_SF + bit];
+                        out2[k * 8 + b] = in2[symbol * MAX_SF + m_sf - 1 - bit];  // LLRs are MSB first
                     } else {
-                        cw |= ((in1[symbol] >> (m_sf - 1 - bit)) & 1u) << (7 - b);
+                        cw |= ((in1[symbol] >> bit) & 1u) << (cw_len - 1 - b);
                     }
                 }
                 if (!m_soft_decoding)
@@ -75,6 +76,7 @@ namespace gr {
                 // Long interleaving: the whole frame is one block (see li_stream_index()).
                 pmt::pmt_t err = pmt::string_to_symbol("error");
                 m_sf = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("sf"), err));
+                m_cr = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("cr"), err));
                 m_li_symbols = pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("symb_numb"), err));
                 m_li_codewords = 2 * pmt::to_long(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("pay_len"), err)) +
                                  (pmt::to_bool(pmt::dict_ref(tags[0].value, pmt::string_to_symbol("crc"), err)) ? 4 : 0);

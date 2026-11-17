@@ -858,7 +858,7 @@ namespace gr
                             {
                                 // One block for the whole frame; the downstream blocks read these keys.
                                 m_li_frame = true;
-                                m_symb_numb = li_symbol_count(2 * m_li_pay_len + (m_li_has_crc ? 4 : 0), m_sf);
+                                m_symb_numb = li_symbol_count(2 * m_li_pay_len + (m_li_has_crc ? 4 : 0), m_li_cr, m_sf);
                                 frame_info = pmt::dict_add(frame_info, pmt::intern("long_interleaving"), pmt::PMT_T);
                                 frame_info = pmt::dict_add(frame_info, pmt::intern("cr"), pmt::from_long(m_li_cr));
                                 frame_info = pmt::dict_add(frame_info, pmt::intern("pay_len"), pmt::from_long(m_li_pay_len));

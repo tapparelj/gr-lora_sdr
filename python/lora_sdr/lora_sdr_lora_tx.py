@@ -45,7 +45,7 @@ class lora_sdr_lora_tx(gr.hier_block2):
         self.lora_sdr_modulate_0 = lora_sdr.modulate(sf, samp_rate, bw, sync_word,frame_zero_padd,8, fine_sync)
         self.lora_sdr_interleaver_0 = lora_sdr.interleaver(cr, sf, ldro_mode, bw, long_interleaving)
         self.lora_sdr_header_0 = lora_sdr.header(impl_head, has_crc, cr)
-        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf)
+        self.lora_sdr_hamming_enc_0 = lora_sdr.hamming_enc(cr, sf, long_interleaving)
         self.lora_sdr_gray_demap_0 = lora_sdr.gray_demap(sf)
         self.lora_sdr_add_crc_0 = lora_sdr.add_crc(has_crc)
 

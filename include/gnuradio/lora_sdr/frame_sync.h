@@ -46,7 +46,7 @@ namespace gr {
        * class. lora_sdr::frame_sync::make is the public interface for
        * creating new instances.
        *
-       * \param long_interleaving decode SX128x long-interleaving frames (CR 4/8LI):
+       * \param long_interleaving decode SX128x long-interleaving frames (CR 4/6LI or 4/8LI):
        *        implicit header only; the frame parameters come from the header
        *        decoder's frame_info message and the whole frame is one block.
        * \param fine_sync skip the two fine-synchronisation symbols that

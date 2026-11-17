@@ -51,7 +51,11 @@ namespace gr {
        * class. lora_sdr::hamming_enc::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t cr, uint8_t sf);
+      /*!
+       * \param long_interleaving SX128x long interleaving: all codewords use the coding rate cr,
+       *        no 4/8 first block.
+       */
+      static sptr make(uint8_t cr, uint8_t sf, bool long_interleaving = false);
     };
 
   } // namespace lora_sdr

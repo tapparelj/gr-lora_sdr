@@ -100,7 +100,7 @@ documentation: |-
         - LDRO: usage of low data rate optimisation mode (Auto will enable this mode when symbol period exceed 16ms)
         - Sync word: Sync word to use (default 0x12 for private networks and 0x34 for LoRaWAN). Can be given as [0x12] (or directly the two modulated values [8,16])
         - Frame zero padding: number of null samples padded after each frame
-        - Long interleaving: SX128x coding rate 4/8LI (implicit header, coding rate 4/8 only)
+        - Long interleaving: SX128x coding rates 4/6LI and 4/8LI (implicit header, cr = 2 or 4)
         - SF5/6 fine sync: the two fine-synchronisation symbols SX128x send after the SFD at SF5 and SF6
 
     Inputs:

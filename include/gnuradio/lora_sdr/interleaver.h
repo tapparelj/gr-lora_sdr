@@ -50,8 +50,8 @@ namespace gr {
        * creating new instances.
        */
       /*!
-       * \param long_interleaving use SX128x long interleaving (CR 4/8LI, needs cr = 4):
-       *        all codewords of a frame form one block, no reduced-rate first block.
+       * \param long_interleaving use SX128x long interleaving (CR 4/6LI or 4/8LI, needs cr = 2 or 4):
+       *        all codewords of a frame form one block (see li_stream_index()).
        */
       static sptr make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool long_interleaving = false);
     };

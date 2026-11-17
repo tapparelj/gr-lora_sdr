@@ -322,6 +322,8 @@ namespace gr {
                         add_item_tag(0, tags[0]);  // 8 LoRa symbols in the header
                 }
 
+                if (m_long_interleaving)  // SF7+: the first 8 LI symbols are reduced rate, like a header block
+                    is_header = (m_soft_decoding ? LLRs_block.size() : output.size()) < li_reduced_symbols(m_sf);
                 if (m_soft_decoding) {
                     LLRs_block.push_back(get_LLRs(in));  // Store 'sf' LLRs
                 } else {                                 // Hard decoding

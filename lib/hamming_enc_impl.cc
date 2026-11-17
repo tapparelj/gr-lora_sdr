@@ -12,21 +12,22 @@ namespace gr
   {
 
     hamming_enc::sptr
-    hamming_enc::make(uint8_t cr, uint8_t sf)
+    hamming_enc::make(uint8_t cr, uint8_t sf, bool long_interleaving)
     {
-      return gnuradio::get_initial_sptr(new hamming_enc_impl(cr, sf));
+      return gnuradio::get_initial_sptr(new hamming_enc_impl(cr, sf, long_interleaving));
     }
 
     /*
      * The private constructor
      */
-    hamming_enc_impl::hamming_enc_impl(uint8_t cr, uint8_t sf)
+    hamming_enc_impl::hamming_enc_impl(uint8_t cr, uint8_t sf, bool long_interleaving)
         : gr::sync_block("hamming_enc",
                          gr::io_signature::make(1, 1, sizeof(uint8_t)),
                          gr::io_signature::make(1, 1, sizeof(uint8_t)))
     {
       m_cr = cr;
       m_sf = sf;
+      m_long_interleaving = long_interleaving;
       set_tag_propagation_policy(TPP_ONE_TO_ONE);
     }
 
@@ -102,7 +103,7 @@ namespace gr
 #ifdef GRLORA_DEBUG
         std::cout << std::hex << (int)in_data[i] << "   ";
 #endif
-        uint8_t cr_app = (m_cnt < m_sf - 2) ? 4 : m_cr;
+        uint8_t cr_app = (m_cnt < m_sf - 2 && !m_long_interleaving) ? 4 : m_cr;
         data_bin = int2bool(in_data[i], 4);
 
         //the data_bin is msb first

@@ -118,7 +118,7 @@ documentation: |-
         - Use soft-decision decoding: Use soft-decision decoding
         - Sync word: Sync word to use (default 0x12 for private networks and 0x34 for LoRaWAN). Can be given as [0x12] (or directly the two modulated values [8,16])
         - Print info: Print received payload/header in the terminal
-        - Long interleaving: SX128x coding rate 4/8LI (implicit header, coding rate 4/8 only)
+        - Long interleaving: SX128x coding rates 4/6LI and 4/8LI (implicit header, cr = 2 or 4)
         - SF5/6 fine sync: the two fine-synchronisation symbols SX128x send after the SFD at SF5 and SF6
     Inputs:
         - in: Stream of complex samples
