@@ -85,8 +85,14 @@ namespace gr
                     out_crc = (bool *)output_items[1]; 
             }
 
+            // At most one frame is emitted per call, so stop before the next frame's tag;
+            // otherwise its bytes wait in in_buff until more input arrives (or forever at the end of a burst).
+            int nitems_to_process = ninput_items[0];
             std::vector<tag_t> tags;
-            get_tags_in_window(tags, 0, 0, ninput_items[0], pmt::string_to_symbol("frame_info"));
+            get_tags_in_window(tags, 0, 1, ninput_items[0], pmt::string_to_symbol("frame_info"));
+            if (tags.size())
+                nitems_to_process = tags[0].offset - nitems_read(0);
+            get_tags_in_window(tags, 0, 0, nitems_to_process, pmt::string_to_symbol("frame_info"));
             if (tags.size())
             {
                 pmt::pmt_t err = pmt::string_to_symbol("error");
@@ -99,11 +105,11 @@ namespace gr
                 
             }
             //append received bytes to buffer
-            for (int i = 0; i < ninput_items[0]; i++)
+            for (int i = 0; i < nitems_to_process; i++)
             {
                 in_buff.push_back(in[i]);
             }
-            consume_each(ninput_items[0]);
+            consume_each(nitems_to_process);
 
 
             if ((in_buff.size() >= m_payload_len + 2) && m_crc_presence)

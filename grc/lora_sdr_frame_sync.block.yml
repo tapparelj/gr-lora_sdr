@@ -31,6 +31,16 @@ parameters:
     label: os_factor
     dtype: int
     default: 4
+-   id: long_interleaving
+    label: Long interleaving
+    dtype: bool
+    default: 'False'
+    hide: part
+-   id: fine_sync
+    label: SF5/6 fine sync
+    dtype: bool
+    default: 'False'
+    hide: part
 -   id: show_log_port
     dtype: enum
     options: ['True', 'False']
@@ -55,12 +65,12 @@ outputs:
 
 templates:
     imports: import gnuradio.lora_sdr as lora_sdr
-    make: lora_sdr.frame_sync(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len})
+    make: lora_sdr.frame_sync(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len}, ${long_interleaving}, ${fine_sync})
 
 cpp_templates:
     includes: ['#include "frame_sync.h"']
     declarations: 'lora_sdr::frame_sync::sptr ${id};'
-    make: 'this->${id} = lora_sdr::frame_sync::make(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len});'
+    make: 'this->${id} = lora_sdr::frame_sync::make(${center_freq}, ${bandwidth}, ${sf}, ${impl_head}, ${sync_word}, ${os_factor},${preamb_len}, ${long_interleaving}, ${fine_sync});'
     translations:
         'False': 'false'
         'True': 'true'

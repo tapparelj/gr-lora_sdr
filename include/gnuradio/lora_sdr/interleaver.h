@@ -49,7 +49,11 @@ namespace gr {
        * class. lora_sdr::interleaver::make is the public interface for
        * creating new instances.
        */
-      static sptr make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw);
+      /*!
+       * \param long_interleaving use SX128x long interleaving (CR 4/6LI or 4/8LI, needs cr = 2 or 4):
+       *        all codewords of a frame form one block (see li_stream_index()).
+       */
+      static sptr make(uint8_t cr, uint8_t sf, uint8_t ldro, int bw, bool long_interleaving = false);
     };
 
   } // namespace lora_sdr

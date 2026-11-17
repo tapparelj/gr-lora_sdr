@@ -53,9 +53,8 @@ namespace gr
             ninput_items_required[0] = noutput_items;
         }
 
-        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, uint8_t ldro_mode, int err)
+        pmt::pmt_t header_decoder_impl::frame_info_dict(int cr, int pay_len, int crc, uint8_t ldro_mode, int err)
         {
-
             pmt::pmt_t header_content = pmt::make_dict();
 
             header_content = pmt::dict_add(header_content, pmt::intern("cr"), pmt::from_long(cr));
@@ -63,6 +62,26 @@ namespace gr
             header_content = pmt::dict_add(header_content, pmt::intern("crc"), pmt::from_long(crc));
             header_content = pmt::dict_add(header_content, pmt::intern("ldro_mode"), pmt::from_long(ldro_mode));
             header_content = pmt::dict_add(header_content, pmt::intern("err"), pmt::from_long(err));
+            return header_content;
+        }
+
+        bool header_decoder_impl::start()
+        {
+            if (m_impl_header)
+            {
+                // Implicit header: the frame parameters are fixed. Tell frame_sync before the
+                // first frame (long interleaving needs them at the frame start); frame_sync
+                // ignores this message otherwise.
+                pmt::pmt_t config = frame_info_dict(m_cr, m_payload_len, m_has_crc, m_ldro_mode, 0);
+                config = pmt::dict_add(config, pmt::intern("config_only"), pmt::PMT_T);
+                message_port_pub(pmt::intern("frame_info"), config);
+            }
+            return block::start();
+        }
+
+        void header_decoder_impl::publish_frame_info(int cr, int pay_len, int crc, uint8_t ldro_mode, int err)
+        {
+            pmt::pmt_t header_content = frame_info_dict(cr, pay_len, crc, ldro_mode, err);
             message_port_pub(pmt::intern("frame_info"), header_content);
             if(!err) //don't propagate downstream that a frame was detected
                 add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), header_content);

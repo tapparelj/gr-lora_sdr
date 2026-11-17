@@ -41,3 +41,6 @@ add_custom_target(
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}
           ${CMAKE_BINARY_DIR}/test_modules/gnuradio/lora_sdr/
 )
+
+set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/test_modules)
+GR_ADD_TEST(qa_long_interleaving ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/test_modules/gnuradio/lora_sdr/qa_long_interleaving.py)

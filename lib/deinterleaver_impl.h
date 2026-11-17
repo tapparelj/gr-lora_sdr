@@ -17,6 +17,13 @@ namespace gr {
       bool m_is_header;    ///< Indicate that we need to deinterleave the first block with the default header parameters (cr=4/8, reduced rate)
       bool m_soft_decoding;   ///< Hard/Soft decoding
       bool m_ldro; ///< use low datarate optimization mode
+      bool m_long_interleaving = false; ///< current frame uses long interleaving (one block per frame)
+      uint32_t m_li_symbols = 0;        ///< LI: number of symbols of the frame
+      uint32_t m_li_codewords = 0;      ///< LI: number of codewords of the frame
+      gr::tag_t m_li_tag;               ///< LI: frame_info tag to re-emit with the codewords
+
+      /// Deinterleave one long-interleaving frame; returns the number of items produced.
+      int long_interleaving_work(const uint16_t *in1, const LLR *in2, uint8_t *out1, LLR *out2);
 
      public:
       deinterleaver_impl(bool soft_decoding);

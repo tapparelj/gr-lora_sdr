@@ -14,20 +14,26 @@ namespace gr
     {
 
         frame_sync::sptr
-        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len = 8)
+        frame_sync::make(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len, bool long_interleaving, bool fine_sync)
         {
-            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len));
+            return gnuradio::get_initial_sptr(new frame_sync_impl(center_freq, bandwidth, sf, impl_head, sync_word, os_factor, preamble_len, long_interleaving, fine_sync));
         }
 
         /*
          * The private constructor
          */
-        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len)
+        frame_sync_impl::frame_sync_impl(uint32_t center_freq, uint32_t bandwidth, uint8_t sf, bool impl_head, std::vector<uint16_t> sync_word, uint8_t os_factor, uint16_t preamble_len, bool long_interleaving, bool fine_sync)
             : gr::block("frame_sync",
                         gr::io_signature::make(1, 1, sizeof(gr_complex)),
                         gr::io_signature::make2(1, 2, sizeof(gr_complex), sizeof(float)))
         {
             m_state = DETECT;
+            m_long_interleaving = long_interleaving;
+            m_fine_sync = fine_sync;
+            if (m_long_interleaving && !impl_head)
+            {
+                std::cerr << RED << "[frame_sync_impl.cc] Long interleaving is only supported with implicit header" << RESET << std::endl;
+            }
             m_center_freq = center_freq;
             m_bw = bandwidth;
             m_sf = sf;
@@ -394,6 +400,9 @@ namespace gr
         void frame_sync_impl::frame_info_handler(pmt::pmt_t frame_info)
         {
             pmt::pmt_t err = pmt::string_to_symbol("error");
+            const bool config_only = pmt::to_bool(pmt::dict_ref(frame_info, pmt::string_to_symbol("config_only"), pmt::PMT_F));
+            if (config_only && !m_long_interleaving)
+                return;  // start-up configuration from an implicit-header decoder; only LI uses it
 
             m_cr = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("cr"), err));
             m_pay_len = pmt::to_double(pmt::dict_ref(frame_info, pmt::string_to_symbol("pay_len"), err));
@@ -401,6 +410,15 @@ namespace gr
             uint8_t ldro_mode = pmt::to_long(pmt::dict_ref(frame_info, pmt::string_to_symbol("ldro_mode"), err));
             m_invalid_header = pmt::to_double(pmt::dict_ref(frame_info, pmt::string_to_symbol("err"), err));
 
+            if (m_long_interleaving)
+            {
+                // Implicit-header parameters are fixed: cache them, the frame-start tag carries them.
+                m_li_cr = m_cr;
+                m_li_pay_len = m_pay_len;
+                m_li_has_crc = m_has_crc;
+                m_li_config_known = true;
+                return;
+            }
             if (m_invalid_header)
             {
                 m_state = DETECT;
@@ -694,21 +712,39 @@ namespace gr
                     net_ids_samp_dec.resize(2 * m_number_of_bins, 0);
                     // start_off gives the offset in the net_id_samp vector required to be aligned in time (CFOint is equivalent to STOint since upchirp_val was forced to 0)
                     int start_off = (int)m_os_factor / 2 - (my_roundf(m_sto_frac * m_os_factor)) + m_os_factor * (.25 * m_number_of_bins + m_cfo_int);
-                    for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
+                    // A large integer CFO/STO estimate (e.g. on a false or badly detected preamble) can move the
+                    // net ID window outside the buffered samples; such a detection is rejected.
+                    bool net_id_in_buffer = start_off >= 0 &&
+                        start_off + (2 * m_number_of_bins - 1) * m_os_factor < net_id_samp.size();
+                    int netid1 = 0;
+                    int netid2 = 0;
+                    if (net_id_in_buffer)
                     {
-                        net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
+                        for (uint32_t i = 0; i < m_number_of_bins * 2; i++)
+                        {
+                            net_ids_samp_dec[i] = net_id_samp[start_off + i * m_os_factor];
+                        }
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_int_correc[0], 2 * m_number_of_bins);
+
+                        // correct CFO_frac in the network ids
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_frac_correc[0], m_number_of_bins);
+                        volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[m_number_of_bins], &net_ids_samp_dec[m_number_of_bins], &CFO_frac_correc[0], m_number_of_bins);
+
+                        netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
+                        netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     }
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_int_correc[0], 2 * m_number_of_bins);
-
-                    // correct CFO_frac in the network ids
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[0], &net_ids_samp_dec[0], &CFO_frac_correc[0], m_number_of_bins);
-                    volk_32fc_x2_multiply_32fc(&net_ids_samp_dec[m_number_of_bins], &net_ids_samp_dec[m_number_of_bins], &CFO_frac_correc[0], m_number_of_bins);
-
-                    int netid1 = get_symbol_val(&net_ids_samp_dec[0], &m_downchirp[0]);
-                    int netid2 = get_symbol_val(&net_ids_samp_dec[m_number_of_bins], &m_downchirp[0]);
                     one_symbol_off = 0;
 
-                    if (m_sync_words[0] == 0) { // match netid1 only if requested
+                    if (!net_id_in_buffer)
+                    {
+                        m_state = DETECT;
+                        symbol_cnt = 1;
+                        items_to_output = 0;
+                        k_hat = 0;
+                        m_sto_frac = 0;
+                        items_to_consume = 0;
+                    }
+                    else if (m_sync_words[0] == 0) { // match netid1 only if requested
                         items_to_consume = 0;
                         m_state = SFO_COMPENSATION;
                         frame_cnt++;
@@ -735,12 +771,19 @@ namespace gr
                                     // the first symbol was mistaken for the end of the downchirp. we should correct and output it.
 
                                     int start_off = (int)m_os_factor / 2 - my_roundf(m_sto_frac * m_os_factor) + m_os_factor * (0.25 * m_number_of_bins + m_cfo_int);
-                                    for (int i = start_off; i < 1.25 * m_samples_per_symbol; i += m_os_factor)
+                                    if (m_fine_sync && m_sf < 7)
                                     {
-
-                                        out[int((i - start_off) / m_os_factor)] = additional_symbol_samp[i];
+                                        items_to_output = 0;  // that symbol is the first fine-synchronisation symbol
                                     }
-                                    items_to_output = m_number_of_bins;
+                                    else
+                                    {
+                                        for (int i = start_off; i < 1.25 * m_samples_per_symbol; i += m_os_factor)
+                                        {
+
+                                            out[int((i - start_off) / m_os_factor)] = additional_symbol_samp[i];
+                                        }
+                                        items_to_output = m_number_of_bins;
+                                    }
                                     m_state = SFO_COMPENSATION;
                                     symbol_cnt = 1;
                                     frame_cnt++;
@@ -804,11 +847,42 @@ namespace gr
                         frame_info = pmt::dict_add(frame_info, pmt::intern("cfo_frac"), pmt::mp((float)m_cfo_frac));
                         frame_info = pmt::dict_add(frame_info, pmt::intern("sf"), pmt::mp((long)m_sf));
 
+                        m_li_frame = false;
+                        if (m_long_interleaving)
+                        {
+                            if (!m_li_config_known)
+                            {
+                                std::cerr << RED << "[frame_sync_impl.cc] Long interleaving: frame parameters not received from the header decoder yet, decoding this frame without LI" << RESET << std::endl;
+                            }
+                            else
+                            {
+                                // One block for the whole frame; the downstream blocks read these keys.
+                                m_li_frame = true;
+                                m_symb_numb = li_symbol_count(2 * m_li_pay_len + (m_li_has_crc ? 4 : 0), m_li_cr, m_sf);
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("long_interleaving"), pmt::PMT_T);
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("cr"), pmt::from_long(m_li_cr));
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("pay_len"), pmt::from_long(m_li_pay_len));
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("crc"), pmt::from_bool(m_li_has_crc));
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("symb_numb"), pmt::from_long(m_symb_numb));
+                                frame_info = pmt::dict_add(frame_info, pmt::intern("ldro"), pmt::PMT_F);
+                            }
+                        }
+
                         add_item_tag(0, nitems_written(0), pmt::string_to_symbol("frame_info"), frame_info);
 
-                        m_received_head = false;
+                        m_received_head = m_li_frame;  // LI frames need no header round trip
                         items_to_consume += m_samples_per_symbol / 4 + m_os_factor * m_cfo_int;
-                        symbol_cnt = one_symbol_off;
+                        if (m_fine_sync && m_sf < 7)
+                        {
+                            // SX128x send two fine-synchronisation symbols after the SFD at SF5/6.
+                            m_fine_sync_left = 2 - one_symbol_off;
+                            symbol_cnt = 0;
+                        }
+                        else
+                        {
+                            m_fine_sync_left = 0;
+                            symbol_cnt = one_symbol_off;
+                        }
                         float snr_est2 = 0;
 
                         if (m_should_log)
@@ -846,7 +920,20 @@ namespace gr
             {
                 // transmit only useful symbols (at least 8 symbol for PHY header)
 
-                if (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head))
+                if (m_fine_sync_left > 0)
+                { // fine-synchronisation symbol: consume, do not output
+                    items_to_consume = m_samples_per_symbol;
+                    if (abs(sfo_cum) > 1.0 / 2 / m_os_factor)
+                    {
+                        items_to_consume -= (-2 * signbit(sfo_cum) + 1);
+                        sfo_cum -= (-2 * signbit(sfo_cum) + 1) * 1.0 / m_os_factor;
+                    }
+                    sfo_cum += sfo_hat;
+                    items_to_output = 0;
+                    m_fine_sync_left--;
+                }
+                else if (m_li_frame ? (uint32_t)symbol_cnt < m_symb_numb
+                                    : (symbol_cnt < 8 || ((uint32_t)symbol_cnt < m_symb_numb && m_received_head)))
                 {
                     // output downsampled signal (with no STO but with CFO)
                     memcpy(&out[0], &in_down[0], m_number_of_bins * sizeof(gr_complex));
